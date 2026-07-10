@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Official asset coming soon</title>
+  <desc id="desc">Placeholder for the official Podscape Labs hero photograph.</desc>
+  <rect width="900" height="1200" fill="#daddd2"/>
+  <path d="M0 800 900 485v715H0Z" fill="#b9c3b4"/>
+  <path d="M0 1010 900 790v410H0Z" fill="#839485"/>
+  <text x="450" y="575" text-anchor="middle" fill="#33443a" font-family="Arial, sans-serif" font-size="22">Official asset coming soon</text>
+  <text x="450" y="610" text-anchor="middle" fill="#5b6a61" font-family="Arial, sans-serif" font-size="14">Hero photo / portrait crop</text>
+</svg>
