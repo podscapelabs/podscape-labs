@@ -66,10 +66,10 @@ export default function Home() {
                 <p className="status"><span aria-hidden="true" />{podbound.status}</p>
                 <Image
                   className="project-logo"
-                  src="/assets/logos/podbound-logo.svg"
+                  src="/assets/logos/podbound-logo.png"
                   alt="PodBound"
-                  width={360}
-                  height={104}
+                  width={1800}
+                  height={791}
                 />
                 <h2 className="sr-only" id="project-title">{podbound.name}</h2>
                 <p className="project-description">{podbound.description}</p>
