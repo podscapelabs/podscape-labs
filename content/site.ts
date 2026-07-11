@@ -25,6 +25,7 @@ export const siteContent = {
   },
   podbound: {
     name: "PodBound™",
+    tagline: "Forecast. Adapt. Grow.",
     status: "Currently in active playtesting",
     description:
       "PodBound™ is a 1–4 player forecast-based tabletop strategy game. Players study a visible forecast, choose an isopod species, and guide their colony through changing habitat pressures.",
