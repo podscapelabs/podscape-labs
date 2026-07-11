@@ -71,7 +71,10 @@ export default function Home() {
                   width={1800}
                   height={791}
                 />
-                <h2 className="sr-only" id="project-title">{podbound.name}</h2>
+                <div className="project-identity">
+                  <h2 className="project-name" id="project-title">{podbound.name}</h2>
+                  <p className="project-tagline">{podbound.tagline}</p>
+                </div>
                 <p className="project-description">{podbound.description}</p>
                 <a className="button button-outline" href={podbound.url} target="_blank" rel="noreferrer">
                   {podbound.linkLabel}<ArrowUpRightIcon />
