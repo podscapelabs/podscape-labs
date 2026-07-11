@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { ArrowUpRightIcon } from "@/components/Icons";
+import { PodboundCardRotator } from "@/components/PodboundCardRotator";
 import { siteContent } from "@/content/site";
 
 export default function Home() {
@@ -66,14 +67,7 @@ export default function Home() {
                   {podbound.linkLabel}<ArrowUpRightIcon />
                 </a>
               </div>
-              <div className="podbound-card-slot">
-                <Image
-                  src="/assets/podbound/podbound-card.png"
-                  alt="PodBound Rotting Wood card, value three"
-                  width={420}
-                  height={590}
-                />
-              </div>
+              <PodboundCardRotator />
             </div>
           </div>
         </section>
