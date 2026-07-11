@@ -53,6 +53,14 @@ export default function Home() {
                   fill
                   sizes="(max-width: 800px) 100vw, 55vw"
                 />
+                <div className="podbound-card-slot">
+                  <Image
+                    src="/assets/podbound/podbound-card.png"
+                    alt="PodBound Rotting Wood card, value three"
+                    width={420}
+                    height={590}
+                  />
+                </div>
               </div>
               <div className="project-copy">
                 <p className="status"><span aria-hidden="true" />{podbound.status}</p>
