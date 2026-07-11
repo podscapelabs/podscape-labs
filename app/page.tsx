@@ -46,31 +46,17 @@ export default function Home() {
               <span>01</span><span>Featured project</span>
             </div>
             <div className="project-grid">
-              <div className="project-visual">
-                <Image
-                  src="/assets/podbound/podbound-feature.svg"
-                  alt=""
-                  fill
-                  sizes="(max-width: 800px) 100vw, 55vw"
-                />
-                <div className="podbound-card-slot">
-                  <Image
-                    src="/assets/podbound/podbound-card.png"
-                    alt="PodBound Rotting Wood card, value three"
-                    width={420}
-                    height={590}
-                  />
-                </div>
-              </div>
-              <div className="project-copy">
-                <p className="status"><span aria-hidden="true" />{podbound.status}</p>
+              <div className="project-logo-stage">
                 <Image
                   className="project-logo"
                   src="/assets/logos/podbound-logo.png"
-                  alt="PodBound"
+                  alt="PodBound Field Archives"
                   width={1800}
                   height={791}
                 />
+              </div>
+              <div className="project-copy">
+                <p className="status"><span aria-hidden="true" />{podbound.status}</p>
                 <div className="project-identity">
                   <h2 className="project-name" id="project-title">{podbound.name}</h2>
                   <p className="project-tagline">{podbound.tagline}</p>
@@ -79,6 +65,14 @@ export default function Home() {
                 <a className="button button-outline" href={podbound.url} target="_blank" rel="noreferrer">
                   {podbound.linkLabel}<ArrowUpRightIcon />
                 </a>
+              </div>
+              <div className="podbound-card-slot">
+                <Image
+                  src="/assets/podbound/podbound-card.png"
+                  alt="PodBound Rotting Wood card, value three"
+                  width={420}
+                  height={590}
+                />
               </div>
             </div>
           </div>
