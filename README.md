@@ -41,7 +41,6 @@ Replace the placeholder files below while keeping the same filenames. The layout
 | Podscape wordmark | `public/assets/logos/podscape-wordmark.svg` | Wide transparent SVG |
 | PodBound logo | `public/assets/logos/podbound-logo.png` | Wide transparent PNG |
 | Hero photo | `public/assets/photos/hero-photo.svg` | Portrait image, at least 1200 × 1600 px |
-| PodBound feature image | `public/assets/podbound/podbound-feature.svg` | Portrait image, at least 1400 × 1600 px |
 | PodBound tilted card | `public/assets/podbound/podbound-card.png` | Card face artwork, approximately 5:7 aspect ratio |
 
 For raster replacements, export the image as WebP and update the matching `src` in `app/page.tsx`. Logo assets can be replaced directly with no code change when their filenames and formats stay the same.
@@ -56,7 +55,7 @@ public/assets/
 └── podbound/
 ```
 
-The supplied assets are neutral, non-illustrative placeholders labelled “Official asset coming soon.”
+Any remaining supplied placeholders are neutral and clearly labelled “Official asset coming soon.”
 
 The tilted card in the PodBound feature panel is intentionally isolated at a stable path. Replace `podbound-card.png` with another finished card face using the same filename, or update that single `src` in `app/page.tsx`.
 
