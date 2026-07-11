@@ -21,7 +21,7 @@ export const siteContent = {
     eyebrow: "Independent Canadian Studio",
     title: "An independent studio building original projects for the isopod hobby.",
     body: "Thoughtful, original work from Ontario, Canada.",
-    primaryAction: { label: "Explore PodBound™", href: "https://podbound.net" },
+    primaryAction: { label: "Explore PodBound™", href: "https://www.podbound.net" },
     secondaryAction: { label: "Follow the Journey", href: "#lab" },
   },
   podbound: {
@@ -30,7 +30,7 @@ export const siteContent = {
     status: "Currently in active playtesting",
     description:
       "PodBound™ is a 1–4 player forecast-based tabletop strategy game. Players study a visible forecast, choose an isopod species, and guide their colony through changing habitat pressures.",
-    url: "https://podbound.net",
+    url: "https://www.podbound.net",
     linkLabel: "Visit podbound.net",
   },
   lab: {
