@@ -2,6 +2,7 @@ export type LabNote = {
   date: string;
   title: string;
   summary: string;
+  imageLabel: string;
 };
 
 export const siteContent = {
@@ -39,16 +40,25 @@ export const siteContent = {
       "Occasional records from the studio: project development, material decisions, and details worth keeping.",
     notes: [
       {
-        date: "2026.07",
-        title: "A new home for Podscape Labs",
+        date: "July 2026",
+        title: "Website launch",
         summary:
-          "Establishing a quieter, more flexible identity for the studio and the projects that will live under it.",
+          "A new home for Podscape Labs and the original projects that will live under it.",
+        imageLabel: "Studio desk photography coming soon",
       },
       {
-        date: "2026.06",
-        title: "Refining the PodBound forecast",
+        date: "June 2026",
+        title: "PodBound playtest update",
         summary:
-          "A closer look at how visible information shapes decisions, timing, and tension at the table.",
+          "Recent changes to the visible forecast, colony decisions, and timing at the table.",
+        imageLabel: "Playtest photography coming soon",
+      },
+      {
+        date: "May 2026",
+        title: "Merch prototypes",
+        summary:
+          "Early material tests and small-run ideas taking shape in the studio.",
+        imageLabel: "Prototype photography coming soon",
       },
     ] satisfies LabNote[],
   },

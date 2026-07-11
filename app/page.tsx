@@ -88,14 +88,17 @@ export default function Home() {
               <p>{lab.intro}</p>
             </div>
             <div className="notes" role="list">
-              {lab.notes.map((note, index) => (
+              {lab.notes.map((note) => (
                 <article className="note" key={note.title} role="listitem">
-                  <div className="note-meta">
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    <time>{note.date}</time>
+                  <div className="note-media" aria-label={note.imageLabel}>
+                    <span>{note.imageLabel}</span>
                   </div>
-                  <h3>{note.title}</h3>
-                  <p>{note.summary}</p>
+                  <div className="note-body">
+                    <time>{note.date}</time>
+                    <h3>{note.title}</h3>
+                    <p>{note.summary}</p>
+                    <span className="note-link">Read more <span aria-hidden="true">→</span></span>
+                  </div>
                 </article>
               ))}
             </div>
