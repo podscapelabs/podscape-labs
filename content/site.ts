@@ -21,7 +21,7 @@ export const siteContent = {
     eyebrow: "Independent Canadian Studio",
     title: "An independent studio building original projects for the isopod hobby.",
     body: "Thoughtful, original work from Ontario, Canada.",
-    primaryAction: { label: "Explore PodBound™", href: "#projects" },
+    primaryAction: { label: "Explore PodBound™", href: "https://podbound.net" },
     secondaryAction: { label: "Follow the Journey", href: "#lab" },
   },
   podbound: {
