@@ -23,6 +23,17 @@ export function Header() {
             PodBound<ArrowUpRightIcon />
           </a>
         </div>
+        <details className="mobile-menu">
+          <summary aria-label="Open primary navigation">Menu</summary>
+          <nav aria-label="Mobile primary navigation">
+            <ul className="mobile-nav-links">
+              {siteContent.navigation.map((item) => (
+                <li key={item.href}><a href={item.href}>{item.label}</a></li>
+              ))}
+              <li><a href={siteContent.podbound.url} target="_blank" rel="noreferrer">PodBound<ArrowUpRightIcon /></a></li>
+            </ul>
+          </nav>
+        </details>
       </div>
     </header>
   );
