@@ -25,7 +25,7 @@ export function PodboundCardRotator() {
 
   useEffect(() => {
     if (paused || reducedMotion) return;
-    const timer = window.setInterval(() => setActive((current) => (current + 1) % cards.length), 4500);
+    const timer = window.setInterval(() => setActive((current) => (current + 1) % cards.length), 5500);
     return () => window.clearInterval(timer);
   }, [paused, reducedMotion]);
 
@@ -33,26 +33,33 @@ export function PodboundCardRotator() {
 
   return (
     <button
-      className="podbound-card-slot"
+      className="podbound-card-stack"
       type="button"
-      aria-label={`Showing ${current.name}, value ${current.value}. Show next PodBound card.`}
+      aria-label={`Showing ${current.name}, value ${current.value}, at the front of the PodBound card stack. Show next card.`}
       onClick={() => setActive((currentIndex) => (currentIndex + 1) % cards.length)}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
     >
-      {cards.map((card, index) => (
-        <Image
-          className={index === active ? "is-active" : ""}
-          key={card.name}
-          src={card.src}
-          alt={`PodBound ${card.name} card, value ${card.value}`}
-          width={846}
-          height={1200}
-          sizes="(max-width: 819px) 220px, 230px"
-        />
-      ))}
+      {cards.map((card, index) => {
+        const offset = (index - active + cards.length) % cards.length;
+        const position = offset === 0 ? "front" : offset === 1 ? "right" : offset === cards.length - 1 ? "left" : "hidden";
+
+        return (
+          <Image
+            className="podbound-stack-card"
+            data-position={position}
+            key={card.name}
+            src={card.src}
+            alt=""
+            aria-hidden="true"
+            width={848}
+            height={1200}
+            sizes="(max-width: 819px) 46vw, 190px"
+          />
+        );
+      })}
     </button>
   );
 }
