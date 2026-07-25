@@ -17,7 +17,7 @@ export default function HomepagePreview() {
           <div className="hero-grid shell">
             <div className="hero-copy">
               <p className="eyebrow">{hero.eyebrow}</p>
-              <h1 id="hero-title">{hero.title}</h1>
+              <h1 className="hero-title" id="hero-title">{hero.title}</h1>
               <p className="hero-intro">{hero.body}</p>
               <div className="hero-actions">
                 <a className="button button-primary" href={hero.primaryAction.href}>
