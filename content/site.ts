@@ -2,7 +2,8 @@ export type LabNote = {
   date: string;
   title: string;
   summary: string;
-  imageLabel: string;
+  image: string;
+  imageAlt: string;
 };
 
 export const siteContent = {
@@ -44,21 +45,24 @@ export const siteContent = {
         title: "Website launch",
         summary:
           "A new home for Podscape Labs and the original projects that will live under it.",
-        imageLabel: "Studio desk photography coming soon",
+        image: "/assets/podbound/cards/leaf-litter.jpg",
+        imageAlt: "PodBound Leaf Litter card artwork",
       },
       {
         date: "June 2026",
         title: "PodBound playtest update",
         summary:
           "Recent changes to the visible forecast, colony decisions, and timing at the table.",
-        imageLabel: "Playtest photography coming soon",
+        image: "/assets/podbound/cards/rotting-wood.jpg",
+        imageAlt: "PodBound Rotting Wood card artwork",
       },
       {
         date: "May 2026",
         title: "Merch prototypes",
         summary:
           "Early material tests and small-run ideas taking shape in the studio.",
-        imageLabel: "Prototype photography coming soon",
+        image: "/assets/podbound/cards/moss.jpg",
+        imageAlt: "PodBound Moss card artwork",
       },
     ] satisfies LabNote[],
   },
