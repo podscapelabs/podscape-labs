@@ -1,0 +1,140 @@
+import Image from "next/image";
+import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
+import { ArrowUpRightIcon } from "@/components/Icons";
+import { PodboundCardRotator } from "@/components/PodboundCardRotator";
+import { siteContent } from "@/content/site";
+
+export default function HomepagePreview() {
+  const { hero, podbound, lab, about } = siteContent;
+
+  return (
+    <>
+      <a className="skip-link" href="#main">Skip to content</a>
+      <Header />
+      <main id="main">
+        <section className="hero" aria-labelledby="hero-title">
+          <div className="hero-grid shell">
+            <div className="hero-copy">
+              <p className="eyebrow">{hero.eyebrow}</p>
+              <h1 className="hero-title" id="hero-title">{hero.title}</h1>
+              <p className="hero-intro">{hero.body}</p>
+              <div className="hero-actions">
+                <a className="button button-primary" href={hero.primaryAction.href}>
+                  {hero.primaryAction.label}
+                </a>
+                <a className="text-link" href={hero.secondaryAction.href}>
+                  {hero.secondaryAction.label}<span aria-hidden="true"> ↓</span>
+                </a>
+              </div>
+            </div>
+
+            <div className="hero-visual" aria-label="Podscape Labs studio field note">
+              <div className="hero-record-head">
+                <span>PL–26 / Field note 01</span>
+                <span>Ontario, Canada</span>
+              </div>
+              <div className="hero-record-body">
+                <p>Collect.<br />Care.<br />Explore.</p>
+                <div className="hero-specimen" aria-hidden="true">
+                  <Image
+                    src="/assets/podbound/cards/rotting-wood.jpg"
+                    alt=""
+                    width={848}
+                    height={1200}
+                    priority
+                    sizes="(max-width: 819px) 54vw, 270px"
+                  />
+                </div>
+              </div>
+              <div className="hero-record-foot">
+                <span>Independent studio record</span>
+                <span>Original work / 2026</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="project-section" id="projects" aria-labelledby="project-title">
+          <div className="shell">
+            <div className="section-marker">
+              <span>01</span><span>Featured project</span>
+            </div>
+            <div className="project-grid">
+              <div className="project-logo-stage">
+                <Image
+                  className="project-logo"
+                  src="/assets/logos/podbound-logo.png"
+                  alt="PodBound Field Archives"
+                  width={1800}
+                  height={791}
+                />
+              </div>
+              <div className="project-copy">
+                <p className="status"><span aria-hidden="true" />{podbound.status}</p>
+                <div className="project-identity">
+                  <h2 className="project-name" id="project-title">{podbound.name}</h2>
+                  <p className="project-tagline">{podbound.tagline}</p>
+                </div>
+                <p className="project-description">{podbound.description}</p>
+                <a className="button button-outline" href={podbound.url} target="_blank" rel="noreferrer">
+                  {podbound.linkLabel}<ArrowUpRightIcon />
+                </a>
+              </div>
+              <PodboundCardRotator />
+            </div>
+          </div>
+        </section>
+
+        <section className="lab-section" id="lab" aria-labelledby="lab-title">
+          <div className="shell">
+            <div className="section-marker">
+              <span>02</span><span>{lab.eyebrow}</span>
+            </div>
+            <div className="section-heading-grid">
+              <h2 id="lab-title">{lab.title}</h2>
+              <p>{lab.intro}</p>
+            </div>
+            <div className="notes" role="list">
+              {lab.notes.map((note) => (
+                <article className="note" key={note.title} role="listitem">
+                  <div className="note-media">
+                    <Image
+                      src={note.image}
+                      alt={note.imageAlt}
+                      fill
+                      sizes="(max-width: 819px) 100vw, 33vw"
+                    />
+                    <span aria-hidden="true">{note.date}</span>
+                  </div>
+                  <div className="note-body">
+                    <time>{note.date}</time>
+                    <h3>{note.title}</h3>
+                    <p>{note.summary}</p>
+                    <span className="note-link">Read more <span aria-hidden="true">→</span></span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="about-section" id="about" aria-labelledby="about-title">
+          <div className="shell">
+            <div className="section-marker section-marker-light">
+              <span>03</span><span>{about.eyebrow}</span>
+            </div>
+            <div className="about-grid">
+              <h2 id="about-title">{about.title}</h2>
+              <div>
+                <p>{about.body}</p>
+                <p className="location">{siteContent.brand.location}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </>
+  );
+}
