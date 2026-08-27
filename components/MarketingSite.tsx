@@ -3,12 +3,11 @@ import Link from "next/link";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { ArrowUpRightIcon } from "./Icons";
-import { LedgerSpeciesCard } from "./LedgerSpeciesCard";
 import { BookIcon, CreativeIcon, DirectoryIcon, GameIcon, LeafIcon } from "./PlatformIcons";
 import { PodboundCardRotator } from "./PodboundCardRotator";
 import { SpecimenLeaf } from "./SpecimenLeaf";
 import { labBench, platformAreas, updates, type PlatformArea } from "@/data/platform";
-import { speciesRecords } from "@/data/species";
+import { specimenPhotoTests } from "@/data/photo-tests";
 
 const areaIcons: Record<PlatformArea["key"], React.ReactNode> = {
   ledger: <LeafIcon />, podbound: <GameIcon />, guide: <BookIcon />, creative: <CreativeIcon />, directory: <DirectoryIcon />,
@@ -18,6 +17,18 @@ function SmartLink({ href, className, children }: { href: string; className?: st
   return href.startsWith("http")
     ? <a href={href} className={className} target="_blank" rel="noreferrer">{children}</a>
     : <Link href={href} className={className}>{children}</Link>;
+}
+
+function SpecimenPhotoTestCard({ test, index }: { test: (typeof specimenPhotoTests)[number]; index: number }) {
+  return (
+    <article className="v2-species-card v2-photo-test-card">
+      <SpecimenLeaf image={test.image} alt={`${test.label}; species identity not assigned`} number={`TEST-${String(index + 1).padStart(2, "0")}`} size="card" />
+      <span className="v2-species-status">Temporary visual test</span>
+      <strong>{test.label}</strong>
+      <em>{test.note}</em>
+      <small>Owner-supplied photograph</small>
+    </article>
+  );
 }
 
 export function MarketingSite() {
@@ -38,8 +49,8 @@ export function MarketingSite() {
               </div>
             </div>
             <div className="v2-hero-specimen">
-              <SpecimenLeaf size="hero" number="FIELD NOTE 001" />
-              <aside className="v2-field-note"><span>Field Note</span><strong>No. 001</strong><LeafIcon /><small>Photo awaiting studio upload</small></aside>
+              <SpecimenLeaf image={specimenPhotoTests[0].image} alt="Temporary hero specimen photograph; species identity not assigned" size="hero" number="FIELD NOTE 001" />
+              <aside className="v2-field-note"><span>Field Note</span><strong>No. 001</strong><LeafIcon /><small>Temporary photo test</small></aside>
             </div>
           </div>
         </section>
@@ -75,7 +86,7 @@ export function MarketingSite() {
         <section className="v2-home-section" aria-labelledby="latest-ledger-title">
           <div className="v2-container">
             <div className="v2-section-line"><h2 id="latest-ledger-title">Latest in the Leaf Ledger</h2><Link href="/ledger">View all species <span aria-hidden="true">→</span></Link></div>
-            <div className="v2-species-rail">{speciesRecords.map((record) => <LedgerSpeciesCard record={record} compact key={record.id} />)}</div>
+            <div className="v2-species-rail">{specimenPhotoTests.map((test, index) => <SpecimenPhotoTestCard test={test} index={index} key={test.id} />)}</div>
           </div>
         </section>
 
