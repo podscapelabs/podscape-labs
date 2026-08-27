@@ -13,6 +13,9 @@
     "catalogueNumber": "TEST-01",
     "image": "/assets/photos/species-tests/test-specimen-01.jpg",
     "imageAlt": "Owner-supplied isopod specimen photograph; identity not assigned",
+    "imagePositionX": 50,
+    "imagePositionY": 50,
+    "imageZoom": 1,
     "summary": "Temporary visual record for testing the Leaf Ledger presentation.",
     "tags": [],
     "careLevel": "",
@@ -24,7 +27,7 @@
     "about": "",
     "keeperNotes": "",
     "fieldGuideLinks": [],
-    "updatedAt": "2026-08-27T00:00:00.000Z"
+    "updatedAt": "2026-08-27T18:39:56.245Z"
   },
   {
     "id": "test-specimen-02",
@@ -40,6 +43,9 @@
     "catalogueNumber": "TEST-02",
     "image": "/assets/photos/species-tests/test-specimen-02.jpg",
     "imageAlt": "Owner-supplied isopod specimen photograph; identity not assigned",
+    "imagePositionX": 50,
+    "imagePositionY": 50,
+    "imageZoom": 1,
     "summary": "Temporary visual record for testing the Leaf Ledger presentation.",
     "tags": [],
     "careLevel": "",
@@ -67,6 +73,9 @@
     "catalogueNumber": "TEST-03",
     "image": "/assets/photos/species-tests/test-specimen-03.jpg",
     "imageAlt": "Owner-supplied isopod specimen photograph; identity not assigned",
+    "imagePositionX": 50,
+    "imagePositionY": 50,
+    "imageZoom": 1,
     "summary": "Temporary visual record for testing the Leaf Ledger presentation.",
     "tags": [],
     "careLevel": "",

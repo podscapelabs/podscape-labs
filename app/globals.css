@@ -419,6 +419,21 @@ h1, h2, h3 { text-wrap: balance; }
 .admin-species-form label > span { color: var(--muted); font-size: .57rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 .admin-species-form input, .admin-species-form select, .admin-species-form textarea { width: 100%; min-height: 47px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 0; background: var(--paper-strong); color: var(--ink); font: inherit; }
 .admin-species-form textarea { resize: vertical; line-height: 1.55; }
+.admin-photo-editor { display: grid; gap: 28px; padding: 22px; border: 1px solid var(--line); background: var(--canvas); }
+.admin-photo-preview { position: relative; width: min(74vw, 310px); aspect-ratio: 1; place-self: center; overflow: hidden; border: 1px solid var(--forest); border-radius: 50%; background: var(--paper-strong); }
+.admin-photo-preview::after { position: absolute; inset: 8%; border: 1px solid rgba(255,255,255,.55); border-radius: 50%; box-shadow: 0 0 0 1px rgba(20,45,30,.16); content: ""; pointer-events: none; }
+.admin-photo-preview img { object-fit: cover; transition: object-position 120ms ease, transform 120ms ease; }
+.admin-photo-preview > span { display: grid; height: 100%; place-content: center; color: var(--muted); text-align: center; }
+.admin-photo-preview > span b { font-family: var(--serif); font-size: 1.7rem; font-weight: 400; }
+.admin-photo-preview > span small { margin-top: 4px; font-size: .55rem; letter-spacing: .07em; text-transform: uppercase; }
+.admin-photo-controls { display: grid; align-content: center; gap: 18px; }
+.admin-photo-drop { position: relative; min-height: 98px; place-content: center; overflow: hidden; padding: 18px; border: 1px dashed var(--forest) !important; background: color-mix(in srgb, var(--forest) 6%, var(--paper)); text-align: center; cursor: pointer; }
+.admin-photo-drop > span { color: var(--ink) !important; font-family: var(--serif); font-size: 1.15rem !important; font-weight: 400 !important; letter-spacing: 0 !important; text-transform: none !important; }
+.admin-photo-drop > small { color: var(--muted); font-size: .54rem; letter-spacing: .05em; text-transform: uppercase; }
+.admin-photo-drop input { position: absolute; inset: 0; min-height: 100%; cursor: pointer; opacity: 0; }
+.admin-photo-controls label:not(.admin-photo-drop) > span { display: flex; justify-content: space-between; }
+.admin-photo-controls output { color: var(--ink); font-variant-numeric: tabular-nums; }
+.admin-photo-controls input[type="range"] { min-height: 24px; padding: 0; border: 0; accent-color: var(--forest); }
 .admin-form-footer { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: clamp(24px, 4vw, 44px); }
 .admin-form-footer p { max-width: 570px; margin: 0; color: var(--muted); font-size: .72rem; line-height: 1.55; }
 .admin-form-footer .button { flex: 0 0 auto; cursor: pointer; }
@@ -472,6 +487,7 @@ h1, h2, h3 { text-wrap: balance; }
   .admin-record-editor-head { grid-template-columns: 1fr 280px; align-items: center; }
   .admin-form-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .admin-form-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .admin-photo-editor { grid-template-columns: minmax(250px, .7fr) minmax(300px, 1fr); align-items: center; }
 }
 
 @media (min-width: 1160px) {

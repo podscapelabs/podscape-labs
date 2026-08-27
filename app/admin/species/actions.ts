@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { SpeciesIdentityStatus, SpeciesRecord, SpeciesRecordKind, SpeciesStatus } from "@/data/species";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { appendSpeciesRecord, getSpeciesRecords, replaceSpeciesRecord } from "@/lib/species-store";
+import { appendSpeciesRecord, getSpeciesRecords, replaceSpeciesRecord, saveSpeciesPhoto } from "@/lib/species-store";
 
 function field(formData: FormData, name: string, limit = 2000) {
   return String(formData.get(name) || "").trim().slice(0, limit);
@@ -13,6 +13,11 @@ function field(formData: FormData, name: string, limit = 2000) {
 
 function slugify(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80);
+}
+
+function boundedNumber(formData: FormData, name: string, minimum: number, maximum: number, fallback: number) {
+  const value = Number(formData.get(name));
+  return Number.isFinite(value) ? Math.min(maximum, Math.max(minimum, value)) : fallback;
 }
 
 function studioRedirect(record: string, key: "saved" | "created" | "error", message = "1"): never {
@@ -39,6 +44,9 @@ export async function createSpeciesRecord() {
     catalogueNumber: `LL-${String(sequence).padStart(3, "0")}`,
     image: null,
     imageAlt: "",
+    imagePositionX: 50,
+    imagePositionY: 50,
+    imageZoom: 1,
     summary: "",
     tags: [],
     careLevel: "",
@@ -79,6 +87,14 @@ export async function saveSpeciesRecord(formData: FormData) {
     studioRedirect(id, "error", "Published records need approved common and scientific names");
   }
 
+  let image = current.image;
+  const photo = formData.get("photo");
+  try {
+    if (photo instanceof File && photo.size > 0) image = await saveSpeciesPhoto(id, photo);
+  } catch (error) {
+    studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to save photo");
+  }
+
   const nextRecord: SpeciesRecord = {
     ...current,
     slug,
@@ -91,8 +107,11 @@ export async function saveSpeciesRecord(formData: FormData) {
     species: field(formData, "species", 100),
     morph: field(formData, "morph", 120),
     catalogueNumber: field(formData, "catalogueNumber", 40) || current.catalogueNumber,
-    image: field(formData, "image", 500) || null,
+    image,
     imageAlt: field(formData, "imageAlt", 240),
+    imagePositionX: boundedNumber(formData, "imagePositionX", 0, 100, current.imagePositionX),
+    imagePositionY: boundedNumber(formData, "imagePositionY", 0, 100, current.imagePositionY),
+    imageZoom: boundedNumber(formData, "imageZoom", 1, 2, current.imageZoom),
     summary: field(formData, "summary", 600),
     tags: field(formData, "tags", 500).split(",").map((tag) => tag.trim()).filter(Boolean),
     careLevel: field(formData, "careLevel", 100),

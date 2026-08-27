@@ -1,10 +1,11 @@
 import "server-only";
 
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { SpeciesRecord } from "@/data/species";
 
 const recordsPath = path.join(process.cwd(), "data", "species-records.json");
+const photoDirectory = path.join(process.cwd(), "public", "assets", "photos", "species-records");
 
 function isSpeciesRecord(value: unknown): value is SpeciesRecord {
   if (!value || typeof value !== "object") return false;
@@ -39,4 +40,20 @@ export async function appendSpeciesRecord(record: SpeciesRecord) {
   const records = await getSpeciesRecords();
   records.push(record);
   await writeFile(recordsPath, `${JSON.stringify(records, null, 2)}\n`, "utf8");
+}
+
+export async function saveSpeciesPhoto(recordId: string, photo: File) {
+  const extensions: Record<string, string> = {
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+  };
+  const extension = extensions[photo.type];
+  if (!extension) throw new Error("Choose a JPG, PNG, or WebP image.");
+  if (photo.size > 12 * 1024 * 1024) throw new Error("The photo must be smaller than 12 MB.");
+  const safeId = recordId.replace(/[^a-zA-Z0-9-]/g, "");
+  const filename = `${safeId}-${Date.now()}.${extension}`;
+  await mkdir(photoDirectory, { recursive: true });
+  await writeFile(path.join(photoDirectory, filename), Buffer.from(await photo.arrayBuffer()));
+  return `/assets/photos/species-records/${filename}`;
 }

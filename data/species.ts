@@ -16,6 +16,9 @@ export type SpeciesRecord = {
   catalogueNumber: string;
   image: string | null;
   imageAlt: string;
+  imagePositionX: number;
+  imagePositionY: number;
+  imageZoom: number;
   summary: string;
   tags: string[];
   careLevel: string;
