@@ -1,6 +1,6 @@
 # Podscape Labs
 
-Production website for Podscape Labs™, built with Next.js App Router, TypeScript, and plain CSS.
+Platform-first website for Podscape Labs™, built with Next.js App Router, TypeScript, and plain CSS.
 
 ## Local setup
 
@@ -18,6 +18,23 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+## Construction mode and owner preview
+
+The public homepage is a construction page. The complete working site is available only through the owner studio at `/admin`.
+
+Create `.env.local` from `.env.example` and set both values:
+
+```text
+PODSCAPE_ADMIN_PASSWORD=
+PODSCAPE_ADMIN_SECRET=
+```
+
+Use a long unique password and a random secret of at least 32 characters. Both values must also be added to the Vercel project before deploying. Owner sessions use a signed, HTTP-only cookie, expire after 12 hours, and can be ended from the studio dashboard.
+
+The protected site preview is never linked from the public construction page. `/admin` and its preview are marked `noindex`, disallowed in `robots.txt`, and checked on the server for every request.
+
+The working platform also includes protected PodDex routes at `/poddex`, `/poddex/species`, and `/poddex/species/[slug]`. Until construction mode is removed, every PodDex request receives the same server-side owner check and redirects public visitors to the construction page.
+
 ## Quality checks
 
 ```bash
@@ -28,7 +45,7 @@ npm run build
 
 ## Edit content
 
-All site copy, navigation links, project status, Lab Notes, and social links live in [`content/site.ts`](content/site.ts). Edit that file to update content without changing page components.
+Platform copy, navigation links, project status, Lab Notes, and social links live in [`content/site.ts`](content/site.ts). PodDex records live in [`content/species.ts`](content/species.ts). Edit those files to update content without changing page components.
 
 The Facebook and Discord links are placeholders and should be replaced in `siteContent.social` before launch.
 
@@ -71,13 +88,14 @@ The first visit follows the operating system light or dark preference. The heade
 4. Leave the build command as `next build` and output settings at their defaults.
 5. Deploy.
 
-No environment variables are required. Vercel will use the Node.js requirement declared in `package.json`.
+Add `PODSCAPE_ADMIN_PASSWORD` and `PODSCAPE_ADMIN_SECRET` to the Vercel project before deploying. Vercel will use the Node.js requirement declared in `package.json`.
 
 ## Structure
 
 ```text
 app/              App Router layout, page, metadata, and global styles
-components/       Header, footer, theme control, and interface icons
+components/       Platform shell, reusable cards, search, theme control, and interface pieces
 content/site.ts   Centralized editable site content
+content/species.ts Structured PodDex catalogue records and release status
 public/assets/    Stable paths for official brand and project assets
 ```

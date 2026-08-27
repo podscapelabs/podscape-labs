@@ -3,14 +3,14 @@ import { siteContent } from "@/content/site";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: `${siteContent.brand.shortName} | ${siteContent.brand.descriptor}`,
+  title: `${siteContent.brand.shortName} | Tools, games, and resources for the isopod hobby`,
   description:
-    "Podscape Labs is an independent Canadian studio building original projects for the isopod hobby.",
+    "Podscape Labs is an independent Canadian studio creating original tools, games, and resources for the isopod hobby.",
   metadataBase: new URL("https://podscapelabs.com"),
   openGraph: {
     title: siteContent.brand.name,
     description:
-      "An independent studio building original projects for the isopod hobby.",
+      "Original tools, games, and resources for the isopod hobby.",
     type: "website",
     locale: "en_CA",
   },

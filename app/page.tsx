@@ -1,120 +1,55 @@
+import type { Metadata } from "next";
 import Image from "next/image";
-import { Footer } from "@/components/Footer";
-import { Header } from "@/components/Header";
 import { ArrowUpRightIcon } from "@/components/Icons";
-import { PodboundCardRotator } from "@/components/PodboundCardRotator";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { siteContent } from "@/content/site";
 
-export default function Home() {
-  const { hero, podbound, lab, about } = siteContent;
+export const metadata: Metadata = {
+  title: "Podscape Labs | Site update in progress",
+  description: "Podscape Labs is preparing an updated home for its original projects.",
+};
 
+export default function ConstructionPage() {
   return (
-    <>
-      <a className="skip-link" href="#main">Skip to content</a>
-      <Header />
-      <main id="main">
-        <section className="hero" aria-labelledby="hero-title">
-          <div className="hero-grid shell">
-            <div className="hero-copy">
-              <p className="eyebrow">{hero.eyebrow}</p>
-              <h1 id="hero-title">{hero.title}</h1>
-              <p className="hero-intro">{hero.body}</p>
-              <div className="hero-actions">
-                <a className="button button-primary" href={hero.primaryAction.href}>
-                  {hero.primaryAction.label}
-                </a>
-                <a className="text-link" href={hero.secondaryAction.href}>
-                  {hero.secondaryAction.label}<span aria-hidden="true"> ↓</span>
-                </a>
-              </div>
-            </div>
-            <div className="hero-visual">
-              <Image
-                src="/assets/photos/hero-photo.svg"
-                alt=""
-                fill
-                priority
-                sizes="(max-width: 800px) 100vw, 46vw"
-              />
-              <span className="figure-index" aria-hidden="true">PL / 01</span>
-            </div>
+    <main className="construction-page">
+      <div className="construction-frame">
+        <header className="construction-header">
+          <Image
+            className="construction-wordmark"
+            src="/assets/logos/podscape-wordmark.svg"
+            alt="Podscape Labs"
+            width={232}
+            height={38}
+            priority
+          />
+          <ThemeToggle />
+        </header>
+
+        <section className="construction-content" aria-labelledby="construction-title">
+          <div className="construction-status">
+            <span aria-hidden="true" />
+            Site update in progress
           </div>
+          <p className="eyebrow">Independent Canadian Studio</p>
+          <h1 id="construction-title">A new site is taking shape.</h1>
+          <p className="construction-intro">
+            Podscape Labs is preparing an updated home for its original projects. The studio is still active while this work is underway.
+          </p>
+          <a
+            className="button button-primary construction-action"
+            href={siteContent.podbound.url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Visit PodBound<ArrowUpRightIcon />
+          </a>
         </section>
 
-        <section className="project-section" id="projects" aria-labelledby="project-title">
-          <div className="shell">
-            <div className="section-marker">
-              <span>01</span><span>Featured project</span>
-            </div>
-            <div className="project-grid">
-              <div className="project-logo-stage">
-                <Image
-                  className="project-logo"
-                  src="/assets/logos/podbound-logo.png"
-                  alt="PodBound Field Archives"
-                  width={1800}
-                  height={791}
-                />
-              </div>
-              <div className="project-copy">
-                <p className="status"><span aria-hidden="true" />{podbound.status}</p>
-                <div className="project-identity">
-                  <h2 className="project-name" id="project-title">{podbound.name}</h2>
-                  <p className="project-tagline">{podbound.tagline}</p>
-                </div>
-                <p className="project-description">{podbound.description}</p>
-                <a className="button button-outline" href={podbound.url} target="_blank" rel="noreferrer">
-                  {podbound.linkLabel}<ArrowUpRightIcon />
-                </a>
-              </div>
-              <PodboundCardRotator />
-            </div>
-          </div>
-        </section>
-
-        <section className="lab-section" id="lab" aria-labelledby="lab-title">
-          <div className="shell">
-            <div className="section-marker">
-              <span>02</span><span>{lab.eyebrow}</span>
-            </div>
-            <div className="section-heading-grid">
-              <h2 id="lab-title">{lab.title}</h2>
-              <p>{lab.intro}</p>
-            </div>
-            <div className="notes" role="list">
-              {lab.notes.map((note) => (
-                <article className="note" key={note.title} role="listitem">
-                  <div className="note-media" aria-label={note.imageLabel}>
-                    <span>{note.imageLabel}</span>
-                  </div>
-                  <div className="note-body">
-                    <time>{note.date}</time>
-                    <h3>{note.title}</h3>
-                    <p>{note.summary}</p>
-                    <span className="note-link">Read more <span aria-hidden="true">→</span></span>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="about-section" id="about" aria-labelledby="about-title">
-          <div className="shell">
-            <div className="section-marker section-marker-light">
-              <span>03</span><span>{about.eyebrow}</span>
-            </div>
-            <div className="about-grid">
-              <h2 id="about-title">{about.title}</h2>
-              <div>
-                <p>{about.body}</p>
-                <p className="location">{siteContent.brand.location}</p>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </>
+        <footer className="construction-footer">
+          <span>{siteContent.brand.location}</span>
+          <span>{siteContent.footer.copyright}</span>
+        </footer>
+      </div>
+    </main>
   );
 }
