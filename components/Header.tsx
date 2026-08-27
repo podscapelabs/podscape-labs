@@ -1,37 +1,36 @@
 import Image from "next/image";
 import Link from "next/link";
-import { siteContent } from "@/content/site";
+import { navigation } from "@/data/platform";
 import { ArrowUpRightIcon } from "./Icons";
+import { SearchIcon, UserIcon } from "./PlatformIcons";
 import { ThemeToggle } from "./ThemeToggle";
+
+function PlatformLink({ href, children }: { href: string; children: React.ReactNode }) {
+  const external = href.startsWith("http");
+  return external ? <a href={href} target="_blank" rel="noreferrer">{children}</a> : <Link href={href}>{children}</Link>;
+}
 
 export function Header() {
   return (
-    <header className="site-header">
-      <div className="header-inner shell-wide">
-        <Link className="brand" href="/admin/preview" aria-label="Podscape Labs working site home">
+    <header className="v2-header">
+      <div className="v2-header-inner v2-container">
+        <Link className="v2-brand" href="/admin/preview" aria-label="Podscape Labs preview home">
           <Image src="/assets/logos/podscape-wordmark.svg" alt="Podscape Labs" width={232} height={38} priority />
+          <span>Independent Canadian Studio</span>
         </Link>
-        <nav className="desktop-navigation" aria-label="Primary navigation">
-          <ul className="nav-links">
-            {siteContent.navigation.map((item) => (
-              <li key={item.href}><Link href={item.href}>{item.label}</Link></li>
-            ))}
-          </ul>
+        <nav className="v2-desktop-nav" aria-label="Primary navigation">
+          {navigation.map((item) => <PlatformLink href={item.href} key={item.label}>{item.label}</PlatformLink>)}
         </nav>
-        <div className="header-actions">
+        <div className="v2-header-tools">
+          <Link className="v2-icon-button" href="/search" aria-label="Search Podscape"><SearchIcon /></Link>
+          <button className="v2-icon-button v2-account-button" type="button" aria-label="Account tools are planned for Phase 2" title="Account tools are planned for Phase 2"><UserIcon /></button>
           <ThemeToggle />
-          <a className="podbound-link" href={siteContent.podbound.url} target="_blank" rel="noreferrer">
-            PodBound<ArrowUpRightIcon />
-          </a>
-          <details className="mobile-menu">
-            <summary aria-label="Open primary navigation">Menu</summary>
-            <nav aria-label="Mobile primary navigation">
-              <ul className="mobile-nav-links">
-                {siteContent.navigation.map((item) => (
-                  <li key={item.href}><Link href={item.href}>{item.label}</Link></li>
-                ))}
-                <li><a href={siteContent.podbound.url} target="_blank" rel="noreferrer">PodBound<ArrowUpRightIcon /></a></li>
-              </ul>
+          <a className="v2-podbound-cta" href="https://www.podbound.net" target="_blank" rel="noreferrer">PodBound <ArrowUpRightIcon /></a>
+          <details className="v2-mobile-menu">
+            <summary aria-label="Open navigation">Menu</summary>
+            <nav aria-label="Mobile navigation">
+              {navigation.map((item) => <PlatformLink href={item.href} key={item.label}>{item.label}<span aria-hidden="true">→</span></PlatformLink>)}
+              <Link href="/search">Search<span aria-hidden="true">→</span></Link>
             </nav>
           </details>
         </div>

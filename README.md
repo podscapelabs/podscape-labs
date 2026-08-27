@@ -33,7 +33,7 @@ Use a long unique password and a random secret of at least 32 characters. Both v
 
 The protected site preview is never linked from the public construction page. `/admin` and its preview are marked `noindex`, disallowed in `robots.txt`, and checked on the server for every request.
 
-The working platform also includes protected PodDex routes at `/poddex`, `/poddex/species`, and `/poddex/species/[slug]`. Until construction mode is removed, every PodDex request receives the same server-side owner check and redirects public visitors to the construction page.
+The Version B platform preview includes protected routes for `/ledger`, `/explore`, `/field-guide`, `/from-the-lab`, and `/search`. Until construction mode is removed, every route receives a server-side owner check and redirects public visitors to the owner sign-in. Legacy `/poddex` routes redirect authenticated owners to Leaf Ledger.
 
 ## Quality checks
 
@@ -45,7 +45,7 @@ npm run build
 
 ## Edit content
 
-Platform copy, navigation links, project status, Lab Notes, and social links live in [`content/site.ts`](content/site.ts). PodDex records live in [`content/species.ts`](content/species.ts). Edit those files to update content without changing page components.
+Construction-page copy remains in [`content/site.ts`](content/site.ts). Version B platform content lives in [`data/platform.ts`](data/platform.ts), species records in [`data/species.ts`](data/species.ts), and Field Guide foundations in [`data/guides.ts`](data/guides.ts). Species photos are intentionally `null` until approved photographs are uploaded.
 
 The Facebook and Discord links are placeholders and should be replaced in `siteContent.social` before launch.
 
@@ -96,6 +96,6 @@ Add `PODSCAPE_ADMIN_PASSWORD` and `PODSCAPE_ADMIN_SECRET` to the Vercel project 
 app/              App Router layout, page, metadata, and global styles
 components/       Platform shell, reusable cards, search, theme control, and interface pieces
 content/site.ts   Centralized editable site content
-content/species.ts Structured PodDex catalogue records and release status
+data/species.ts Structured Leaf Ledger records and future photo paths
 public/assets/    Stable paths for official brand and project assets
 ```

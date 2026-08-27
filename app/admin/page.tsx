@@ -56,7 +56,7 @@ export default async function AdminPage() {
         <div className="admin-preview-head">
           <div>
             <p className="admin-kicker">Private preview</p>
-            <h2 id="preview-title">Current website</h2>
+            <h2 id="preview-title">Platform rebuild · Version B</h2>
           </div>
           <Link className="button button-primary" href="/admin/preview" target="_blank">
             Open full preview
