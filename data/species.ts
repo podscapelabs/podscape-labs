@@ -1,105 +1,50 @@
+export type SpeciesStatus = "draft" | "published";
+export type SpeciesIdentityStatus = "unassigned" | "provisional" | "verified";
+export type SpeciesRecordKind = "photo-test" | "species";
+
 export type SpeciesRecord = {
   id: string;
   slug: string;
+  kind: SpeciesRecordKind;
+  status: SpeciesStatus;
+  identityStatus: SpeciesIdentityStatus;
   commonName: string;
   scientificName: string;
   genus: string;
+  species: string;
+  morph: string;
   catalogueNumber: string;
   image: string | null;
-  status: "draft" | "published";
+  imageAlt: string;
   summary: string;
   tags: string[];
-  careLevel: string | null;
-  moisture: string | null;
-  temperature: string | null;
-  ventilation: string | null;
+  careLevel: string;
+  moisture: string;
+  temperature: string;
+  ventilation: string;
+  substrate: string;
+  feeding: string;
+  about: string;
+  keeperNotes: string;
+  fieldGuideLinks: string[];
+  updatedAt: string;
 };
 
-// Species photography and studio-authored husbandry fields remain intentionally
-// empty until the owner supplies approved records and images.
-export const speciesRecords: SpeciesRecord[] = [
-  {
-    id: "armadillidium-vulgare",
-    slug: "armadillidium-vulgare",
-    commonName: "Common pillbug",
-    scientificName: "Armadillidium vulgare",
-    genus: "Armadillidium",
-    catalogueNumber: "LL-001",
-    image: null,
-    status: "draft",
-    summary: "Studio record in preparation.",
-    tags: [],
-    careLevel: null,
-    moisture: null,
-    temperature: null,
-    ventilation: null,
-  },
-  {
-    id: "porcellio-scaber",
-    slug: "porcellio-scaber",
-    commonName: "Rough woodlouse",
-    scientificName: "Porcellio scaber",
-    genus: "Porcellio",
-    catalogueNumber: "LL-002",
-    image: null,
-    status: "draft",
-    summary: "Studio record in preparation.",
-    tags: [],
-    careLevel: null,
-    moisture: null,
-    temperature: null,
-    ventilation: null,
-  },
-  {
-    id: "armadillidium-maculatum",
-    slug: "armadillidium-maculatum",
-    commonName: "Zebra isopod",
-    scientificName: "Armadillidium maculatum",
-    genus: "Armadillidium",
-    catalogueNumber: "LL-003",
-    image: null,
-    status: "draft",
-    summary: "Studio record in preparation.",
-    tags: [],
-    careLevel: null,
-    moisture: null,
-    temperature: null,
-    ventilation: null,
-  },
-  {
-    id: "porcellio-laevis",
-    slug: "porcellio-laevis",
-    commonName: "Smooth isopod",
-    scientificName: "Porcellio laevis",
-    genus: "Porcellio",
-    catalogueNumber: "LL-004",
-    image: null,
-    status: "draft",
-    summary: "Studio record in preparation.",
-    tags: [],
-    careLevel: null,
-    moisture: null,
-    temperature: null,
-    ventilation: null,
-  },
-  {
-    id: "porcellionides-pruinosus",
-    slug: "porcellionides-pruinosus",
-    commonName: "Powder isopod",
-    scientificName: "Porcellionides pruinosus",
-    genus: "Porcellionides",
-    catalogueNumber: "LL-005",
-    image: null,
-    status: "draft",
-    summary: "Studio record in preparation.",
-    tags: [],
-    careLevel: null,
-    moisture: null,
-    temperature: null,
-    ventilation: null,
-  },
-];
+export function speciesDisplayName(record: SpeciesRecord) {
+  return record.commonName.trim() || "Identity not assigned";
+}
 
-export function getSpecies(slug: string) {
-  return speciesRecords.find((record) => record.slug === slug);
+export function speciesScientificName(record: SpeciesRecord) {
+  return record.scientificName.trim() || "Awaiting identification";
+}
+
+export function speciesGenus(record: SpeciesRecord) {
+  return record.genus.trim() || "Unassigned";
+}
+
+export function speciesRecordLabel(record: SpeciesRecord) {
+  if (record.kind === "photo-test") return "Temporary photo test";
+  if (record.identityStatus === "verified") return "Verified species record";
+  if (record.identityStatus === "provisional") return "Provisional identity";
+  return "Draft species record";
 }

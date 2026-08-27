@@ -70,6 +70,10 @@ export default async function AdminPage() {
           <iframe src="/admin/preview" title="Private preview of the Podscape Labs website" />
         </div>
       </section>
+      <section className="admin-studio-tools" aria-labelledby="studio-tools-title">
+        <div><p className="admin-kicker">Content systems</p><h2 id="studio-tools-title">Build the archive from the inside.</h2><p>Prepare identities, catalogue metadata, husbandry snapshots, and editorial notes before anything becomes public.</p></div>
+        <Link className="admin-tool-card" href="/admin/species"><span>Leaf Ledger · Phase 1</span><strong>Species records</strong><p>Edit the three unnamed photo tests or create a blank permanent record.</p><b>Open Ledger desk →</b></Link>
+      </section>
     </main>
   );
 }
