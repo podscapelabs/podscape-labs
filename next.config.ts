@@ -2,6 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  outputFileTracingRoot: process.cwd(),
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "13mb",
+    },
+  },
   // Keep the live preview and production build from overwriting each other's
   // generated chunks when both are running during owner review.
   distDir: process.env.NODE_ENV === "development" ? ".next-dev" : ".next",

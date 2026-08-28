@@ -7,9 +7,13 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "db:migrate": "node scripts/apply-supabase-schema.mjs",
+    "db:seed": "node scripts/seed-supabase-species.mjs",
+    "db:setup": "pnpm db:migrate && pnpm db:seed"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.112.4",
     "next": "15.5.7",
     "react": "19.1.1",
     "react-dom": "19.1.1"
@@ -21,6 +25,7 @@
     "@types/react-dom": "19.1.9",
     "eslint": "9.39.1",
     "eslint-config-next": "15.5.7",
+    "postgres": "^3.4.9",
     "typescript": "5.9.3"
   },
   "engines": {
