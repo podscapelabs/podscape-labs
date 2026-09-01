@@ -30,8 +30,13 @@ export type SpeciesRecord = {
   about: string;
   keeperNotes: string;
   fieldGuideLinks: string[];
+  archivedAt?: string | null;
   updatedAt: string;
 };
+
+export function isSpeciesRecordActive(record: SpeciesRecord) {
+  return !record.archivedAt;
+}
 
 export function speciesDisplayName(record: SpeciesRecord) {
   return record.commonName.trim() || "Identity not assigned";

@@ -2,7 +2,7 @@ import "server-only";
 
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import type { SpeciesRecord } from "@/data/species";
+import { isSpeciesRecordActive, type SpeciesRecord } from "@/data/species";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
 const recordsPath = path.join(process.cwd(), "data", "species-records.json");
@@ -53,7 +53,7 @@ export async function getSpeciesRecords() {
 
 export async function getSpeciesRecord(slug: string) {
   const records = await getSpeciesRecords();
-  return records.find((record) => record.slug === slug);
+  return records.find((record) => record.slug === slug && isSpeciesRecordActive(record));
 }
 
 export async function replaceSpeciesRecord(nextRecord: SpeciesRecord) {

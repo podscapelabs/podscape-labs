@@ -395,8 +395,17 @@ h1, h2, h3 { text-wrap: balance; }
 .admin-record-list > div span { color: var(--muted); font-size: .6rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
 .admin-record-list > div strong { font-family: var(--serif); font-size: 2rem; font-weight: 400; }
 .admin-record-list nav { display: flex; flex-direction: column; }
+.admin-record-views { display: grid; grid-template-columns: 1fr 1fr; padding: 0 !important; border-bottom: 1px solid var(--line); }
+.admin-record-views a { padding: 12px; color: var(--muted); font-size: .58rem; font-weight: 800; letter-spacing: .06em; text-align: center; text-transform: uppercase; }
+.admin-record-views a + a { border-left: 1px solid var(--line); }
+.admin-record-views a.is-active { background: var(--paper-strong); color: var(--ink); }
 .admin-record-list nav a { display: grid; gap: 3px; padding: 17px 19px; border-bottom: 1px solid var(--line); }
 .admin-record-list nav a.is-active { background: var(--forest-deep); color: #f1eddf; }
+.admin-check-control { display: flex !important; align-items: center; gap: 10px; }
+.admin-check-control input { width: auto !important; min-height: auto !important; }
+.admin-archive-form { display: flex; align-items: center; justify-content: space-between; gap: 28px; margin: 0 clamp(18px, 4vw, 42px) clamp(18px, 4vw, 42px); padding: 22px; border: 1px solid var(--line); background: var(--paper-strong); }
+.admin-archive-form strong { font-family: var(--serif); font-size: 1.35rem; font-weight: 400; }
+.admin-archive-form p { max-width: 680px; margin: 6px 0 0; color: var(--muted); font-size: .75rem; line-height: 1.5; }
 .admin-record-list nav small, .admin-record-list nav span { color: var(--muted); font-size: .53rem; font-style: normal; letter-spacing: .06em; text-transform: uppercase; }
 .admin-record-list nav a.is-active small, .admin-record-list nav a.is-active span { color: rgba(241,237,223,.62); }
 .admin-record-list nav b { margin-top: 3px; font-family: var(--serif); font-size: 1.06rem; font-weight: 400; }
@@ -506,6 +515,8 @@ h1, h2, h3 { text-wrap: balance; }
   .preview-owner-bar { align-items: flex-start; flex-direction: column; gap: 4px; }
   .admin-form-footer { align-items: stretch; flex-direction: column; }
   .admin-form-footer .button { width: 100%; }
+  .admin-archive-form { align-items: stretch; flex-direction: column; }
+  .admin-archive-form .button { width: 100%; }
   .field-guide-topics > div { grid-template-columns: 34px 1fr; padding: 12px 0; }
   .field-guide-topics small { grid-column: 2; }
 }

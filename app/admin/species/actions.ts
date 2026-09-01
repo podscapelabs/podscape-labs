@@ -20,8 +20,9 @@ function boundedNumber(formData: FormData, name: string, minimum: number, maximu
   return Number.isFinite(value) ? Math.min(maximum, Math.max(minimum, value)) : fallback;
 }
 
-function studioRedirect(record: string, key: "saved" | "created" | "error", message = "1"): never {
+function studioRedirect(record: string, key: "saved" | "created" | "error", message = "1", view?: "active" | "archived"): never {
   const params = new URLSearchParams({ record, [key]: message });
+  if (view) params.set("view", view);
   redirect(`/admin/species?${params.toString()}`);
 }
 
@@ -71,6 +72,7 @@ export async function saveSpeciesRecord(formData: FormData) {
   const records = await getSpeciesRecords();
   const current = records.find((record) => record.id === id);
   if (!current) studioRedirect(id, "error", "Record not found");
+  const view = current.archivedAt ? "archived" : "active";
 
   const commonName = field(formData, "commonName", 120);
   const scientificName = field(formData, "scientificName", 160);
@@ -80,19 +82,20 @@ export async function saveSpeciesRecord(formData: FormData) {
   const identityStatus = field(formData, "identityStatus", 20) as SpeciesIdentityStatus;
   const kind = field(formData, "kind", 20) as SpeciesRecordKind;
 
-  if (!["draft", "published"].includes(status)) studioRedirect(id, "error", "Invalid publication status");
-  if (!["unassigned", "provisional", "verified"].includes(identityStatus)) studioRedirect(id, "error", "Invalid identity status");
-  if (!["photo-test", "species"].includes(kind)) studioRedirect(id, "error", "Invalid record type");
+  if (!["draft", "published"].includes(status)) studioRedirect(id, "error", "Invalid publication status", view);
+  if (!["unassigned", "provisional", "verified"].includes(identityStatus)) studioRedirect(id, "error", "Invalid identity status", view);
+  if (!["photo-test", "species"].includes(kind)) studioRedirect(id, "error", "Invalid record type", view);
   if (status === "published" && (!commonName || !scientificName || identityStatus === "unassigned")) {
-    studioRedirect(id, "error", "Published records need approved common and scientific names");
+    studioRedirect(id, "error", "Published records need approved common and scientific names", view);
   }
 
   let image = current.image;
+  if (formData.get("removePhoto") === "yes") image = null;
   const photo = formData.get("photo");
   try {
     if (photo instanceof File && photo.size > 0) image = await saveSpeciesPhoto(id, photo);
   } catch (error) {
-    studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to save photo");
+    studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to save photo", view);
   }
 
   const nextRecord: SpeciesRecord = {
@@ -129,11 +132,38 @@ export async function saveSpeciesRecord(formData: FormData) {
   try {
     await replaceSpeciesRecord(nextRecord);
   } catch (error) {
-    studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to save record");
+    studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to save record", view);
   }
   revalidatePath("/ledger");
   revalidatePath(`/ledger/${current.slug}`);
   revalidatePath(`/ledger/${nextRecord.slug}`);
   revalidatePath("/search");
-  studioRedirect(id, "saved");
+  studioRedirect(id, "saved", "1", view);
+}
+
+export async function toggleSpeciesArchive(formData: FormData) {
+  if (!(await isAdminAuthenticated())) redirect("/admin");
+  const id = field(formData, "id", 100);
+  const records = await getSpeciesRecords();
+  const current = records.find((record) => record.id === id);
+  if (!current) studioRedirect(id, "error", "Record not found");
+
+  const restoring = Boolean(current.archivedAt);
+  const nextRecord: SpeciesRecord = {
+    ...current,
+    archivedAt: restoring ? null : new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  try {
+    await replaceSpeciesRecord(nextRecord);
+  } catch (error) {
+    studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to update archive");
+  }
+
+  revalidatePath("/ledger");
+  revalidatePath(`/ledger/${current.slug}`);
+  revalidatePath("/search");
+  const params = new URLSearchParams({ view: restoring ? "active" : "archived", record: id, saved: "1" });
+  redirect(`/admin/species?${params.toString()}`);
 }
