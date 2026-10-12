@@ -1,0 +1,53 @@
+/* Extends, rather than replaces, the existing PodScape species card vocabulary. */
+.tile { display: flex; min-width: 0; flex-direction: column; }
+.tile > a { flex: 1; }
+.control { margin-top: 12px; }
+.action {
+  display: flex;
+  width: 100%;
+  min-height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 13px;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--surface);
+  color: var(--text-primary);
+  cursor: pointer;
+  font: inherit;
+  font-size: .62rem;
+  font-weight: 800;
+  letter-spacing: .055em;
+  line-height: 1.4;
+  text-align: left;
+  text-transform: uppercase;
+}
+.action:hover { border-color: var(--accent); }
+.action[data-collected="true"] {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--background);
+}
+.action:disabled { opacity: .65; cursor: wait; }
+.action:focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; }
+.detail { max-width: 330px; margin: 24px 0 0; }
+.error { color: var(--clay); font-size: .75rem; line-height: 1.5; }
+.tabs { display: flex; gap: 4px; margin-bottom: 25px; border-bottom: 1px solid var(--border); }
+.tab {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 17px 11px;
+  color: var(--text-muted);
+  font-size: .68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  border-bottom: 2px solid transparent;
+}
+.tab[aria-current="page"] { border-bottom-color: var(--accent); color: var(--text-primary); }
+.tab:hover { color: var(--text-primary); }
+.empty { border: 1px solid var(--border); background: var(--surface); padding: clamp(26px, 6vw, 55px); }
+.empty h2 { margin-top: 0; font-family: var(--display); font-size: clamp(1.7rem, 3.5vw, 2.5rem); font-weight: 500; }
+.empty p { max-width: 50ch; color: var(--text-secondary); }
+.empty a { display: inline-flex; min-height: 44px; align-items: center; font-size: .73rem; color: var(--accent); font-weight: 800; text-transform: uppercase; }
