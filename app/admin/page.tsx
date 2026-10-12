@@ -41,6 +41,7 @@ export default async function AdminPage() {
       <header className="admin-dashboard-head">
         <div>
           <p className="eyebrow">Podscape Labs</p>
+          <p className="admin-kicker">Development preview · GitHub workflow test</p>
           <h1>Owner studio</h1>
           <p>Review the private working site while visitors continue to see the construction page.</p>
         </div>
