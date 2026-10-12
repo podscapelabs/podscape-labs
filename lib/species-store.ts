@@ -3,7 +3,7 @@ import "server-only";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { isSpeciesRecordActive, type SpeciesRecord } from "@/data/species";
-import { getSupabaseAdmin } from "@/lib/supabase-admin";
+import { getSupabaseAdmin, getWritableSupabaseAdmin } from "@/lib/supabase-admin";
 
 const recordsPath = path.join(process.cwd(), "data", "species-records.json");
 const photoDirectory = path.join(process.cwd(), "public", "assets", "photos", "species-records");
@@ -22,7 +22,7 @@ async function getLocalSpeciesRecords() {
 }
 
 async function seedCloudRecords(records: SpeciesRecord[]) {
-  const supabase = getSupabaseAdmin();
+  const supabase = getWritableSupabaseAdmin();
   if (!supabase || records.length === 0) return;
   const { error } = await supabase.from("species_records").upsert(
     records.map((record) => ({
@@ -40,15 +40,20 @@ export async function getSpeciesRecords() {
   const supabase = getSupabaseAdmin();
   if (!supabase) return getLocalSpeciesRecords();
 
-  const { data, error } = await supabase.from("species_records").select("record").order("updated_at", { ascending: true });
-  if (error) throw new Error(`Unable to load species records: ${error.message}`);
-  const records = (data || []).map((row) => row.record as unknown);
-  if (!records.every(isSpeciesRecord)) throw new Error("Cloud species records are not valid.");
-  if (records.length > 0) return records;
+  try {
+    const { data, error } = await supabase.from("species_records").select("record").order("updated_at", { ascending: true });
+    if (error) throw new Error(error.message);
+    const records = (data || []).map((row) => row.record as unknown);
+    if (!records.every(isSpeciesRecord)) throw new Error("Cloud species records are not valid.");
+    if (records.length > 0) return records;
 
-  const localRecords = await getLocalSpeciesRecords();
-  await seedCloudRecords(localRecords);
-  return localRecords;
+    const localRecords = await getLocalSpeciesRecords();
+    await seedCloudRecords(localRecords);
+    return localRecords;
+  } catch (error) {
+    console.warn("Species cloud read failed; using the bundled catalogue.", error);
+    return getLocalSpeciesRecords();
+  }
 }
 
 export async function getSpeciesRecord(slug: string) {
@@ -63,7 +68,7 @@ export async function replaceSpeciesRecord(nextRecord: SpeciesRecord) {
   if (records.some((record, recordIndex) => recordIndex !== index && record.slug === nextRecord.slug)) {
     throw new Error("That URL slug is already in use.");
   }
-  const supabase = getSupabaseAdmin();
+  const supabase = getWritableSupabaseAdmin();
   if (supabase) {
     const { error } = await supabase.from("species_records").upsert(
       { id: nextRecord.id, slug: nextRecord.slug, record: nextRecord, updated_at: nextRecord.updatedAt },
@@ -78,7 +83,7 @@ export async function replaceSpeciesRecord(nextRecord: SpeciesRecord) {
 }
 
 export async function appendSpeciesRecord(record: SpeciesRecord) {
-  const supabase = getSupabaseAdmin();
+  const supabase = getWritableSupabaseAdmin();
   if (supabase) {
     const { error } = await supabase
       .from("species_records")
@@ -103,7 +108,7 @@ export async function saveSpeciesPhoto(recordId: string, photo: File) {
   if (photo.size > 12 * 1024 * 1024) throw new Error("The photo must be smaller than 12 MB.");
   const safeId = recordId.replace(/[^a-zA-Z0-9-]/g, "");
   const filename = `${safeId}-${Date.now()}.${extension}`;
-  const supabase = getSupabaseAdmin();
+  const supabase = getWritableSupabaseAdmin();
   if (supabase) {
     const objectPath = `${safeId}/${filename}`;
     const { error } = await supabase.storage.from("species-photos").upload(objectPath, await photo.arrayBuffer(), {

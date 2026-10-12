@@ -3,14 +3,19 @@ import Link from "next/link";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { ArrowUpRightIcon } from "./Icons";
-import { BookIcon, CreativeIcon, DirectoryIcon, GameIcon, LeafIcon } from "./PlatformIcons";
+import { LedgerSpeciesCard } from "./LedgerSpeciesCard";
+import { BookIcon, CreativeIcon, DirectoryIcon, GameIcon, LeafIcon, ShopIcon } from "./PlatformIcons";
 import { PodboundCardRotator } from "./PodboundCardRotator";
 import { SpecimenLeaf } from "./SpecimenLeaf";
-import { labBench, platformAreas, updates, type PlatformArea } from "@/data/platform";
+import { labBench, platformAreas, type PlatformArea } from "@/data/platform";
 import { specimenPhotoTests } from "@/data/photo-tests";
+import { isLabRecordActive, labRecordDate } from "@/data/lab";
+import { isSpeciesRecordActive, speciesRecordLabel } from "@/data/species";
+import { getLabRecords } from "@/lib/lab-store";
+import { getSpeciesRecords } from "@/lib/species-store";
 
 const areaIcons: Record<PlatformArea["key"], React.ReactNode> = {
-  ledger: <LeafIcon />, podbound: <GameIcon />, guide: <BookIcon />, creative: <CreativeIcon />, directory: <DirectoryIcon />,
+  ledger: <LeafIcon />, podbound: <GameIcon />, guide: <BookIcon />, shop: <ShopIcon />, creative: <CreativeIcon />, directory: <DirectoryIcon />,
 };
 
 function SmartLink({ href, className, children }: { href: string; className?: string; children: React.ReactNode }) {
@@ -19,19 +24,18 @@ function SmartLink({ href, className, children }: { href: string; className?: st
     : <Link href={href} className={className}>{children}</Link>;
 }
 
-function SpecimenPhotoTestCard({ test, index }: { test: (typeof specimenPhotoTests)[number]; index: number }) {
-  return (
-    <article className="v2-species-card v2-photo-test-card">
-      <SpecimenLeaf image={test.image} alt={`${test.label}; species identity not assigned`} number={`TEST-${String(index + 1).padStart(2, "0")}`} size="card" />
-      <span className="v2-species-status">Temporary visual test</span>
-      <strong>{test.label}</strong>
-      <em>{test.note}</em>
-      <small>Owner-supplied photograph</small>
-    </article>
-  );
-}
+export async function MarketingSite() {
+  const [speciesRecords, labRecords] = await Promise.all([getSpeciesRecords(), getLabRecords()]);
+  const ledgerRecords = speciesRecords
+    .filter((record) => isSpeciesRecordActive(record) && record.image)
+    .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
+    .slice(0, 5);
+  const latestUpdates = labRecords
+    .filter(isLabRecordActive)
+    .sort((a, b) => Date.parse(b.publishedAt || b.updatedAt) - Date.parse(a.publishedAt || a.updatedAt))
+    .slice(0, 5);
+  const heroRecord = ledgerRecords[0];
 
-export function MarketingSite() {
   return (
     <div className="v2-site">
       <a className="skip-link" href="#platform-main">Skip to content</a>
@@ -49,8 +53,8 @@ export function MarketingSite() {
               </div>
             </div>
             <div className="v2-hero-specimen">
-              <SpecimenLeaf image={specimenPhotoTests[0].image} alt="Temporary hero specimen photograph; species identity not assigned" size="hero" number="FIELD NOTE 001" />
-              <aside className="v2-field-note"><span>Field Note</span><strong>No. 001</strong><LeafIcon /><small>Temporary photo test</small></aside>
+              <SpecimenLeaf image={heroRecord?.image || specimenPhotoTests[0].image} alt={heroRecord?.imageAlt || "Temporary hero specimen photograph; species identity not assigned"} size="hero" number={heroRecord?.catalogueNumber || "FIELD NOTE 001"} positionX={heroRecord?.imagePositionX} positionY={heroRecord?.imagePositionY} zoom={heroRecord?.imageZoom} />
+              <aside className="v2-field-note"><span>Field Note</span><strong>No. 001</strong><LeafIcon /><small>{heroRecord ? speciesRecordLabel(heroRecord) : "Temporary photo test"}</small></aside>
             </div>
           </div>
         </section>
@@ -77,16 +81,14 @@ export function MarketingSite() {
         <section className="v2-home-section" aria-labelledby="whats-new-title">
           <div className="v2-container">
             <div className="v2-section-line"><h2 id="whats-new-title">What&apos;s New</h2><Link href="/from-the-lab">View all updates <span aria-hidden="true">→</span></Link></div>
-            <div className="v2-update-grid">
-              {updates.map((update) => <SmartLink className="v2-update-card" href={update.href} key={update.title}><span>{update.category}</span><strong>{update.title}</strong><p>{update.description}</p><small>{update.date}</small></SmartLink>)}
-            </div>
+            {latestUpdates.length ? <div className="v2-update-grid">{latestUpdates.map((update) => <Link className="v2-update-card" href={`/from-the-lab/${update.slug}`} key={update.id}><span>{update.category}</span><strong>{update.title}</strong><p>{update.summary || "Summary pending."}</p><small>{update.status === "draft" ? "Studio draft" : labRecordDate(update)}</small></Link>)}</div> : <div className="v2-home-empty"><strong>The studio notebook is ready for its first update.</strong><Link href="/admin/lab">Open the notebook desk →</Link></div>}
           </div>
         </section>
 
         <section className="v2-home-section" aria-labelledby="latest-ledger-title">
           <div className="v2-container">
             <div className="v2-section-line"><h2 id="latest-ledger-title">Latest in the Leaf Ledger</h2><Link href="/ledger">View all species <span aria-hidden="true">→</span></Link></div>
-            <div className="v2-species-rail">{specimenPhotoTests.map((test, index) => <SpecimenPhotoTestCard test={test} index={index} key={test.id} />)}</div>
+            {ledgerRecords.length ? <div className="v2-species-rail">{ledgerRecords.map((record) => <LedgerSpeciesCard record={record} compact key={record.id} />)}</div> : <div className="v2-home-empty"><strong>The Ledger is ready for its first photographed record.</strong><Link href="/admin/species">Open the Ledger desk →</Link></div>}
           </div>
         </section>
 

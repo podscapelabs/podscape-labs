@@ -1,0 +1,25 @@
+[
+  {
+    "id": "product-3b34a61c-4943-4a6f-bbf4-7dd2b5304e53",
+    "slug": "draft-b5304e53",
+    "title": "Untitled product",
+    "category": "Field Tools",
+    "summary": "",
+    "description": "",
+    "priceCents": 0,
+    "currency": "CAD",
+    "status": "draft",
+    "availability": "coming-soon",
+    "featured": false,
+    "image": null,
+    "imageAlt": "",
+    "imagePositionX": 50,
+    "imagePositionY": 50,
+    "imageZoom": 1,
+    "tags": [],
+    "materials": "",
+    "shippingNote": "",
+    "archivedAt": null,
+    "updatedAt": "2026-09-29T22:21:41.150Z"
+  }
+]

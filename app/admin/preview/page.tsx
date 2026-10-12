@@ -12,7 +12,7 @@ export default async function AdminPreviewPage() {
     <div className="admin-preview-page">
       <div className="preview-owner-bar">
         <span>Private owner preview</span>
-        <div><Link href="/admin/species">Open Ledger desk</Link><Link href="/admin">Return to studio</Link></div>
+        <div><Link href="/admin/species">Ledger desk</Link><Link href="/admin/guides">Guide desk</Link><Link href="/admin/lab">Lab desk</Link><Link href="/admin/products">Product desk</Link><Link href="/admin">Owner studio</Link></div>
       </div>
       <MarketingSite />
     </div>

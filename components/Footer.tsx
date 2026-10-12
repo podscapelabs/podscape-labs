@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const groups = [
   { title: "Explore", links: [["Leaf Ledger", "/ledger"], ["Field Guide", "/field-guide"], ["Creative Network", "/explore#creative-network"], ["Vendor Directory", "/explore#vendor-directory"]] },
-  { title: "Projects", links: [["PodBound", "https://www.podbound.net"], ["From the Lab", "/from-the-lab"]] },
+  { title: "Projects", links: [["PodBound", "https://www.podbound.net"], ["Shop", "/shop"], ["From the Lab", "/from-the-lab"]] },
   { title: "Studio", links: [["About", "/explore#about"], ["Studio Notes", "/from-the-lab"], ["Press Kit", "/explore#press"]] },
   { title: "Support", links: [["FAQ", "/explore#support"], ["Contact", "/explore#contact"], ["Shipping & Returns", "/explore#support"]] },
 ] as const;
@@ -21,7 +21,7 @@ export function Footer() {
           <p className="v2-kicker">Stay in the Loop</p>
           <h2>New projects, species, resources, and studio updates.</h2>
           <label htmlFor="newsletter-email">Email address</label>
-          <div><input id="newsletter-email" type="email" placeholder="you@example.com" /><button type="button">Subscribe</button></div>
+          <div><input id="newsletter-email" type="email" placeholder="you@example.com" disabled /><button type="button" disabled>Subscribe</button></div>
           <small>Preview only — subscriptions are not connected yet.</small>
         </form>
       </div>

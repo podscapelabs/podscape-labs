@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Explore Podscape", robots: { index: 
 
 const supporting = [
   { title: "From the Lab", copy: "Studio notes, project development, and work in progress.", href: "/from-the-lab", phase: "Phase 1" },
-  { title: "Shop", copy: "A future home for Podscape products and physical resources.", href: "#shop", phase: "Planned" },
+  { title: "Shop", copy: "A visual catalogue for Podscape tools, field resources, and studio goods.", href: "/shop", phase: "Foundation" },
   { title: "About", copy: "The independent Ontario studio behind Podscape.", href: "#about", phase: "Studio" },
 ];
 

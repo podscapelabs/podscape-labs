@@ -78,14 +78,14 @@ export async function saveSpeciesRecord(formData: FormData) {
   const scientificName = field(formData, "scientificName", 160);
   const requestedSlug = slugify(field(formData, "slug", 100));
   const slug = requestedSlug || slugify(commonName || scientificName) || current.slug;
-  const status = field(formData, "status", 20) as SpeciesStatus;
+  const publication = field(formData, "status", 20);
   const identityStatus = field(formData, "identityStatus", 20) as SpeciesIdentityStatus;
   const kind = field(formData, "kind", 20) as SpeciesRecordKind;
 
-  if (!["draft", "published"].includes(status)) studioRedirect(id, "error", "Invalid publication status", view);
+  if (!["draft", "published", "archived"].includes(publication)) studioRedirect(id, "error", "Invalid publication status", view);
   if (!["unassigned", "provisional", "verified"].includes(identityStatus)) studioRedirect(id, "error", "Invalid identity status", view);
   if (!["photo-test", "species"].includes(kind)) studioRedirect(id, "error", "Invalid record type", view);
-  if (status === "published" && (!commonName || !scientificName || identityStatus === "unassigned")) {
+  if (publication === "published" && (!commonName || !scientificName || identityStatus === "unassigned")) {
     studioRedirect(id, "error", "Published records need approved common and scientific names", view);
   }
 
@@ -98,11 +98,15 @@ export async function saveSpeciesRecord(formData: FormData) {
     studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to save photo", view);
   }
 
+  const status: SpeciesStatus = publication === "archived" ? current.status : (publication as SpeciesStatus);
+  const archivedAt = publication === "archived" ? current.archivedAt || new Date().toISOString() : null;
+
   const nextRecord: SpeciesRecord = {
     ...current,
     slug,
     kind,
     status,
+    archivedAt,
     identityStatus,
     commonName,
     scientificName,
@@ -138,7 +142,7 @@ export async function saveSpeciesRecord(formData: FormData) {
   revalidatePath(`/ledger/${current.slug}`);
   revalidatePath(`/ledger/${nextRecord.slug}`);
   revalidatePath("/search");
-  studioRedirect(id, "saved", "1", view);
+  studioRedirect(id, "saved", "1", nextRecord.archivedAt ? "archived" : "active");
 }
 
 export async function toggleSpeciesArchive(formData: FormData) {

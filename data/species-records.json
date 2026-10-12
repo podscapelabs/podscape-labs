@@ -11,7 +11,7 @@
     "species": "cf.laevis",
     "morph": "Dairy Cow",
     "catalogueNumber": "PL-SP-01",
-    "image": "/assets/photos/species-tests/test-specimen-01.jpg",
+    "image": null,
     "imageAlt": "Owner-supplied isopod specimen photograph; identity not assigned",
     "imagePositionX": 50,
     "imagePositionY": 50,
@@ -34,7 +34,7 @@
     "about": "",
     "keeperNotes": "",
     "fieldGuideLinks": [],
-    "updatedAt": "2026-08-27T19:17:35.608Z"
+    "updatedAt": "2026-09-29T23:23:21.327Z"
   },
   {
     "id": "test-specimen-02",
@@ -48,7 +48,7 @@
     "species": "laevis",
     "morph": "Orange",
     "catalogueNumber": "PL-SP-02",
-    "image": "/assets/photos/species-tests/test-specimen-02.jpg",
+    "image": null,
     "imageAlt": "Owner-supplied isopod specimen photograph; identity not assigned",
     "imagePositionX": 50,
     "imagePositionY": 50,
@@ -71,11 +71,11 @@
     "about": "",
     "keeperNotes": "",
     "fieldGuideLinks": [],
-    "updatedAt": "2026-08-27T19:24:07.556Z"
+    "updatedAt": "2026-09-29T23:24:27.906Z"
   },
   {
     "id": "test-specimen-03",
-    "slug": "test-specimen-03",
+    "slug": "test-o",
     "kind": "photo-test",
     "status": "draft",
     "identityStatus": "unassigned",
@@ -85,7 +85,7 @@
     "species": "",
     "morph": "",
     "catalogueNumber": "TEST-03",
-    "image": "/assets/photos/species-tests/test-specimen-03.jpg",
+    "image": null,
     "imageAlt": "Owner-supplied isopod specimen photograph; identity not assigned",
     "imagePositionX": 50,
     "imagePositionY": 50,
@@ -101,7 +101,7 @@
     "about": "",
     "keeperNotes": "",
     "fieldGuideLinks": [],
-    "updatedAt": "2026-08-27T00:00:00.000Z"
+    "updatedAt": "2026-09-29T23:24:57.962Z"
   },
   {
     "id": "species-04a86d0c-ad4c-4f88-bcfe-78bce4bb52f9",

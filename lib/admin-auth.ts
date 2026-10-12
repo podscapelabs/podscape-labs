@@ -2,6 +2,7 @@ import "server-only";
 
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
+import { getOwnerUser, isAccountLoginConfigured } from "@/lib/supabase-auth";
 
 const ADMIN_COOKIE = "podscape-owner-session";
 const SESSION_VALUE = "podscape-owner-preview-v1";
@@ -27,8 +28,12 @@ function sessionToken() {
   return `v1.${signature}`;
 }
 
-export function isAdminConfigured() {
+export function isLegacyAdminConfigured() {
   return Boolean(adminPassword() && adminSecret());
+}
+
+export function isAdminConfigured() {
+  return isAccountLoginConfigured() || isLegacyAdminConfigured();
 }
 
 export function isValidAdminPassword(candidate: string) {
@@ -37,7 +42,8 @@ export function isValidAdminPassword(candidate: string) {
 }
 
 export async function isAdminAuthenticated() {
-  if (!isAdminConfigured()) return false;
+  if (await getOwnerUser()) return true;
+  if (!isLegacyAdminConfigured()) return false;
 
   const cookieStore = await cookies();
   const suppliedToken = cookieStore.get(ADMIN_COOKIE)?.value || "";

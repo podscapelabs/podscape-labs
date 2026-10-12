@@ -13,8 +13,9 @@
     "db:setup": "pnpm db:migrate && pnpm db:seed"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.112.4",
-    "next": "15.5.7",
+    "next": "15.5.9",
     "react": "19.1.1",
     "react-dom": "19.1.1"
   },

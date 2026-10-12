@@ -1,0 +1,31 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { GuideSectionsEditor } from "@/components/GuideSectionsEditor";
+import { labCategories, labRecordDate } from "@/data/lab";
+import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { getLabRecords } from "@/lib/lab-store";
+import { createLabRecord, saveLabRecord, toggleLabArchive } from "./actions";
+
+export const dynamic = "force-dynamic";
+
+export default async function LabDeskPage({ searchParams }: { searchParams: Promise<{ record?: string; view?: string; saved?: string; created?: string; error?: string }> }) {
+  if (!(await isAdminAuthenticated())) redirect("/admin");
+  const params = await searchParams;
+  const records = await getLabRecords();
+  const archivedView = params.view === "archived";
+  const activeRecords = records.filter((record) => !record.archivedAt);
+  const archivedRecords = records.filter((record) => Boolean(record.archivedAt));
+  const visibleRecords = archivedView ? archivedRecords : activeRecords;
+  const selected = visibleRecords.find((record) => record.id === params.record) || visibleRecords[0];
+
+  return <main className="admin-shell admin-ledger-desk">
+    <header className="admin-dashboard-head admin-ledger-head"><div><p className="eyebrow">From the Lab · Owner studio</p><h1>Studio notebook</h1><p>Write project updates, research notes, and behind-the-scenes articles for the Podscape journal.</p></div><div className="admin-dashboard-actions"><Link className="button button-outline" href="/admin">Owner studio</Link><Link className="button button-primary" href="/from-the-lab" target="_blank">Open From the Lab</Link></div></header>
+    <div className="admin-ledger-layout">
+      <aside className="admin-record-list"><div><span>{archivedView ? "Archived notes" : "Active notes"}</span><strong>{visibleRecords.length}</strong></div><div className="admin-record-views"><Link className={!archivedView ? "is-active" : ""} href="/admin/lab">Active · {activeRecords.length}</Link><Link className={archivedView ? "is-active" : ""} href="/admin/lab?view=archived">Archived · {archivedRecords.length}</Link></div><nav aria-label="From the Lab records">{visibleRecords.map((record) => <Link className={record.id === selected?.id ? "is-active" : ""} href={`/admin/lab?view=${archivedView ? "archived" : "active"}&record=${record.id}`} key={record.id}><small>{record.category}</small><b>{record.title}</b><em>{record.summary || "Summary pending"}</em><span>{record.archivedAt ? "Archived" : `${record.status} · ${labRecordDate(record)}`}</span></Link>)}</nav>{!archivedView ? <form action={createLabRecord}><button className="button button-outline" type="submit">+ New studio note</button></form> : null}</aside>
+      {selected ? <section className="admin-record-editor"><header className="admin-record-editor-head admin-guide-editor-head"><div><p className="admin-kicker">Permanent ID · {selected.id}</p><h2>{selected.title}</h2><p>{selected.category} · {selected.status} · Last saved {new Date(selected.updatedAt).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" })}</p></div><div className="admin-guide-monogram" aria-hidden="true">LAB</div></header>{params.saved ? <p className="admin-save-message is-success">Studio note saved. The journal, homepage, and search now use this version.</p> : null}{params.created ? <p className="admin-save-message is-success">Blank studio note created. Add the article details below.</p> : null}{params.error ? <p className="admin-save-message is-error">{params.error}</p> : null}
+        <form className="admin-species-form" action={saveLabRecord}><input type="hidden" name="id" value={selected.id} /><fieldset><legend>Editorial control</legend><div className="admin-form-grid three"><label><span>Category</span><select name="category" defaultValue={selected.category}>{labCategories.map((category) => <option value={category} key={category}>{category}</option>)}</select></label><label><span>Publication</span><select name="status" defaultValue={selected.status}><option value="draft">Draft</option><option value="published">Published</option></select></label><label><span>Publication date</span><input name="publishedAt" type="date" defaultValue={selected.publishedAt} /></label></div><label><span>URL slug</span><input name="slug" defaultValue={selected.slug} /></label><label><span>Article title</span><input name="title" defaultValue={selected.title} /></label><label><span>Short summary</span><textarea name="summary" defaultValue={selected.summary} rows={3} /></label><label><span>Tags · comma separated</span><input name="tags" defaultValue={selected.tags.join(", ")} /></label></fieldset><fieldset><legend>Article sections</legend><GuideSectionsEditor initialSections={selected.sections} bodyPlaceholder="Write the studio update or field note here." addLabel="+ Add article section" /></fieldset><fieldset><legend>Related destination</legend><div className="admin-form-grid two"><label><span>Button label</span><input name="relatedLabel" defaultValue={selected.relatedLabel} placeholder="Explore Leaf Ledger" /></label><label><span>Link</span><input name="relatedHref" defaultValue={selected.relatedHref} placeholder="/ledger" /></label></div></fieldset><div className="admin-form-footer"><p>Published notes require a summary and at least one complete section. Drafts remain visible only inside the private preview.</p><button className="button button-primary" type="submit">Save studio note</button></div></form>
+        <form className="admin-archive-form" action={toggleLabArchive}><input type="hidden" name="id" value={selected.id} /><div><strong>{selected.archivedAt ? "Restore this studio note" : "Archive this studio note"}</strong><p>{selected.archivedAt ? "Restoring returns it to the notebook and journal preview." : "Archiving hides it without deleting the article."}</p></div><button className="button button-outline" type="submit">{selected.archivedAt ? "Restore note" : "Archive note"}</button></form>
+      </section> : <section className="admin-record-editor admin-empty-desk"><div><p className="admin-kicker">Studio journal</p><h2>No notes yet.</h2><p>Create the first studio note from the left-hand desk. Nothing will be published until you choose Published.</p></div></section>}
+    </div>
+  </main>;
+}

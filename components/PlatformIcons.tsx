@@ -18,6 +18,10 @@ export function DirectoryIcon() {
   return <svg aria-hidden="true" viewBox="0 0 32 32"><path d="M5 10h22v17H5zM9 10V6h14v4M11 16h10M11 21h7"/></svg>;
 }
 
+export function ShopIcon() {
+  return <svg aria-hidden="true" viewBox="0 0 32 32"><path d="M5 11h22l-1.5 16h-19L5 11Z"/><path d="M11 13V9a5 5 0 0 1 10 0v4"/></svg>;
+}
+
 export function SearchIcon() {
   return <svg aria-hidden="true" viewBox="0 0 32 32"><circle cx="14" cy="14" r="8"/><path d="m20 20 7 7"/></svg>;
 }

@@ -22,14 +22,22 @@ Open [http://localhost:3000](http://localhost:3000).
 
 The public homepage is a construction page. The complete working site is available only through the owner studio at `/admin`.
 
-Create `.env.local` from `.env.example` and set both values:
+Owner access uses Supabase Auth with server-verified sessions. Owner accounts must have `app_metadata.role` set to `owner`; ordinary Supabase users cannot access the studio. Configure:
+
+```text
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+NEXT_PUBLIC_SITE_URL=
+```
+
+The legacy shared-password settings below are retained only as a temporary migration bridge and should be removed from production after the first owner account has successfully signed in:
 
 ```text
 PODSCAPE_ADMIN_PASSWORD=
 PODSCAPE_ADMIN_SECRET=
 ```
 
-Use a long unique password and a random secret of at least 32 characters. Both values must also be added to the Vercel project before deploying. Owner sessions use a signed, HTTP-only cookie, expire after 12 hours, and can be ended from the studio dashboard.
+Supabase sessions use secure, HTTP-only cookies, refresh through middleware, and can be ended from the studio dashboard. Password reset links return only to the configured Podscape URL. Login and reset errors intentionally avoid revealing whether an email address is registered.
 
 The protected site preview is never linked from the public construction page. `/admin` and its preview are marked `noindex`, disallowed in `robots.txt`, and checked on the server for every request.
 

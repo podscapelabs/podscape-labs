@@ -4,6 +4,7 @@ import { AdminLoginForm } from "@/components/AdminLoginForm";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { signOutAdmin } from "@/app/admin/actions";
 import { isAdminAuthenticated, isAdminConfigured } from "@/lib/admin-auth";
+import { isAccountLoginConfigured } from "@/lib/supabase-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +30,7 @@ export default async function AdminPage() {
           <p className="admin-intro">
             The public site remains under construction. Sign in to review the complete working site.
           </p>
-          <AdminLoginForm configured={isAdminConfigured()} />
+          <AdminLoginForm configured={isAdminConfigured()} accountLogin={isAccountLoginConfigured()} />
           <Link className="admin-back-link" href="/">← Return to public page</Link>
         </section>
       </main>
@@ -46,6 +47,9 @@ export default async function AdminPage() {
         </div>
         <div className="admin-dashboard-actions">
           <ThemeToggle />
+          <Link className="button button-outline" href="/admin/reset-password">
+            Change password
+          </Link>
           <form action={signOutAdmin}>
             <button className="button button-outline" type="submit">Sign out</button>
           </form>
@@ -72,7 +76,7 @@ export default async function AdminPage() {
       </section>
       <section className="admin-studio-tools" aria-labelledby="studio-tools-title">
         <div><p className="admin-kicker">Content systems</p><h2 id="studio-tools-title">Build the archive from the inside.</h2><p>Prepare identities, catalogue metadata, husbandry snapshots, and editorial notes before anything becomes public.</p></div>
-        <Link className="admin-tool-card" href="/admin/species"><span>Leaf Ledger · Phase 1</span><strong>Species records</strong><p>Edit the three unnamed photo tests or create a blank permanent record.</p><b>Open Ledger desk →</b></Link>
+        <div className="admin-tool-grid"><Link className="admin-tool-card" href="/admin/species"><span>Leaf Ledger · Phase 1</span><strong>Species records</strong><p>Edit photographs, identities, catalogue metadata, and husbandry snapshots.</p><b>Open Ledger desk →</b></Link><Link className="admin-tool-card" href="/admin/guides"><span>Field Guide · Phase 1</span><strong>Guide articles</strong><p>Write structured resources, connect related species, and control publication.</p><b>Open Editorial desk →</b></Link><Link className="admin-tool-card" href="/admin/lab"><span>From the Lab · Phase 1</span><strong>Studio notebook</strong><p>Publish project updates, research notes, and behind-the-scenes articles.</p><b>Open Notebook desk →</b></Link><Link className="admin-tool-card" href="/admin/products"><span>Shop · Foundation</span><strong>Product catalogue</strong><p>Add product photography, descriptions, pricing, and publication status before Shopify is connected.</p><b>Open Product desk →</b></Link></div>
       </section>
     </main>
   );

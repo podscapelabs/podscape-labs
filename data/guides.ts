@@ -1,9 +1,23 @@
+export type GuideStatus = "draft" | "published";
+
+export type GuideSection = {
+  id: string;
+  heading: string;
+  body: string;
+};
+
 export type GuideRecord = {
+  id: string;
   slug: string;
   category: string;
   title: string;
   summary: string;
-  status: "draft";
+  status: GuideStatus;
+  sections: GuideSection[];
+  caution: string;
+  relatedSpeciesSlugs: string[];
+  archivedAt?: string | null;
+  updatedAt: string;
 };
 
 export const guideCategories = [
@@ -16,12 +30,6 @@ export const guideCategories = [
   "Colony Management",
 ] as const;
 
-export const guideDrafts: GuideRecord[] = [
-  {
-    slug: "article-template",
-    category: "Template preview",
-    title: "Field Guide article template",
-    summary: "A layout preview for future studio-authored husbandry material.",
-    status: "draft",
-  },
-];
+export function isGuideActive(guide: GuideRecord) {
+  return !guide.archivedAt;
+}

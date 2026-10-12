@@ -1,0 +1,26 @@
+[
+  {
+    "id": "guide-article-template",
+    "slug": "article-template",
+    "category": "Getting Started",
+    "title": "Field Guide article template",
+    "summary": "A layout preview for future studio-authored husbandry material.",
+    "status": "draft",
+    "sections": [
+      {
+        "id": "section-overview",
+        "heading": "Article content has not been written yet.",
+        "body": "This template demonstrates the intended reading width, hierarchy, metadata column, and related-resource structure without fabricating husbandry advice."
+      },
+      {
+        "id": "section-context",
+        "heading": "Contextual care notes belong here.",
+        "body": "Future material will be reviewed before publication and connected to relevant Leaf Ledger records."
+      }
+    ],
+    "caution": "",
+    "relatedSpeciesSlugs": [],
+    "archivedAt": null,
+    "updatedAt": "2026-08-27T12:00:00.000Z"
+  }
+]

@@ -1,5 +1,5 @@
 export type PlatformArea = {
-  key: "ledger" | "podbound" | "guide" | "creative" | "directory";
+  key: "ledger" | "podbound" | "guide" | "shop" | "creative" | "directory";
   title: string;
   description: string;
   href: string;
@@ -25,6 +25,12 @@ export const platformAreas: PlatformArea[] = [
     href: "/field-guide",
   },
   {
+    key: "shop",
+    title: "Shop",
+    description: "Original tools, field resources, and studio goods for thoughtful keepers.",
+    href: "/shop",
+  },
+  {
     key: "creative",
     title: "Creative Network",
     description: "Find independent artists and creators working with the hobby.",
@@ -43,12 +49,6 @@ export const labBench = [
   { status: "Testing", area: "PodBound 2.0", detail: "Playtesting in progress", tone: "podbound" },
   { status: "Building", area: "Creative Network", detail: "Platform structure in development", tone: "creative" },
   { status: "Researching", area: "Field Guide", detail: "Husbandry material in development", tone: "guide" },
-] as const;
-
-export const updates = [
-  { category: "Studio", title: "Platform rebuild", description: "A new Podscape structure is taking shape.", date: "In progress", href: "/from-the-lab" },
-  { category: "Leaf Ledger", title: "Catalogue foundation", description: "The first species-record system is being assembled.", date: "In progress", href: "/ledger" },
-  { category: "PodBound", title: "PodBound 2.0", description: "Development and playtesting continue.", date: "In progress", href: "https://www.podbound.net" },
 ] as const;
 
 export const navigation = [
