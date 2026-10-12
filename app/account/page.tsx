@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { CustomerAccountForm } from "@/components/CustomerAccountForm";
 import { signOutCustomer } from "./actions";
 import { customerSupabase } from "@/lib/customer-auth/server";
+import { getMemberSpeciesIds } from "@/lib/member-collection";
 import styles from "./customer-auth.module.css";
 
 export default async function CustomerAccountPage({ searchParams }: { searchParams: Promise<{ verified?: string }> }) {
@@ -11,8 +12,10 @@ export default async function CustomerAccountPage({ searchParams }: { searchPara
   const { data: { user } } = await db.auth.getUser();
   if (!user) redirect("/account/login");
 
-  const { data: profile } = await db.from("customer_profiles")
-    .select("display_name,created_at").eq("id", user.id).maybeSingle();
+  const [{ data: profile }, collectedIds] = await Promise.all([
+    db.from("customer_profiles").select("display_name,created_at").eq("id", user.id).maybeSingle(),
+    getMemberSpeciesIds(db, user.id),
+  ]);
   const { verified } = await searchParams;
   const displayName = profile?.display_name || "Keeper";
 
@@ -34,10 +37,11 @@ export default async function CustomerAccountPage({ searchParams }: { searchPara
             <CustomerAccountForm kind="profile" initialName={profile?.display_name || ""} /><div className={styles.securitySection}><h3>Account security</h3><p className={styles.secondary}>Manage your sign-in details securely.</p><div className={styles.securityActions}><Link className={styles.textLink} href="/account/change-password">Change password →</Link><Link className={styles.textLink} href="/account/forgot-password">Forgot password?</Link></div></div>
           </section>
           <section className={styles.panel}>
-            <p className={styles.panelLabel}>Leaf Ledger · Later phase</p>
+            <p className={styles.panelLabel}>Leaf Ledger · Personal archive</p>
             <h2>My Collection</h2>
-            <p className={styles.secondary}>Your personal species collection, wishlists, and keeper notes will appear here when those features are ready.</p>
-            <Link className={styles.textLink} href="/ledger">Explore the Leaf Ledger →</Link>
+            <p className={styles.secondary}>{collectedIds.length === 0 ? "You haven't saved any species yet. Browse Leaf Ledger and add the ones you keep." : `You have ${collectedIds.length} species ${collectedIds.length === 1 ? "entry" : "entries"} in your collection.`}</p>
+            <Link className={styles.textLink} href="/ledger/my-collection">Open My Collection →</Link>
+            <p><Link className={styles.textLink} href="/ledger">Explore the Leaf Ledger →</Link></p>
           </section>
         </div>
       </div>
