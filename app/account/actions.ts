@@ -125,3 +125,26 @@ export async function signOutCustomer() {
   await clearCustomerRecoveryPermission();
   redirect("/account/login");
 }
+
+/** Require the current password before allowing a signed-in password change. */
+export async function changeAuthenticatedCustomerPassword(_prev: CustomerFormState, form: FormData): Promise<CustomerFormState> {
+  await requireCustomerPreviewAccess();
+  const db = await customerSupabase();
+  if (!db) return { error: "Customer sign-in is not configured yet.", message: "" };
+  const { data: { user } } = await db.auth.getUser();
+  if (!user?.email) return { error: "Please sign in again.", message: "" };
+  const currentPassword = String(form.get("currentPassword") || "");
+  const password = passwordFrom(form);
+  const confirmation = String(form.get("confirmPassword") || "");
+  if (!currentPassword) return { error: "Enter your current password.", message: "" };
+  if (!validNewPassword(password)) return { error: "Use a password of 12–128 characters.", message: "" };
+  if (password !== confirmation) return { error: "Your new passwords do not match.", message: "" };
+  if (currentPassword === password) return { error: "Choose a different password.", message: "" };
+  const { data: verified, error } = await db.auth.signInWithPassword({ email: user.email, password: currentPassword });
+  if (error || verified.user?.id !== user.id) return { error: "Your current password is not correct.", message: "" };
+  const updated = await db.auth.updateUser({ password });
+  if (updated.error) return { error: "Password could not be changed. Try again or use email recovery.", message: "" };
+  await clearCustomerRecoveryPermission();
+  await db.auth.signOut();
+  redirect("/account/login?status=password-changed");
+}

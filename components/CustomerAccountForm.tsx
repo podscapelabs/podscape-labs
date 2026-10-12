@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState } from "react";
 import {
   changeCustomerPassword,
+  changeAuthenticatedCustomerPassword,
   requestCustomerPasswordReset,
   signInCustomer,
   signUpCustomer,
@@ -11,7 +12,7 @@ import {
 } from "@/app/account/actions";
 import styles from "@/app/account/customer-auth.module.css";
 
-type FormKind = "login" | "sign-up" | "forgot" | "reset" | "profile";
+type FormKind = "login" | "sign-up" | "forgot" | "reset" | "profile" | "change";
 
 const INITIAL_STATE = { error: "", message: "" };
 
@@ -21,6 +22,7 @@ const formActions = {
   forgot: requestCustomerPasswordReset,
   reset: changeCustomerPassword,
   profile: updateCustomerProfile,
+  change: changeAuthenticatedCustomerPassword,
 };
 
 export function CustomerAccountForm({ kind, initialName = "" }: { kind: FormKind; initialName?: string }) {
@@ -39,9 +41,10 @@ export function CustomerAccountForm({ kind, initialName = "" }: { kind: FormKind
           <input id="customer-email" type="email" name="email" autoComplete="email" maxLength={254} required />
         </div>
       ) : null}
-      {["login", "sign-up", "reset"].includes(kind) ? (
+      {kind === "change" ? <div className={styles.field}><label htmlFor="customer-current-password">Current password</label><input id="customer-current-password" type="password" name="currentPassword" autoComplete="current-password" required /></div> : null}
+      {["login", "sign-up", "reset", "change"].includes(kind) ? (
         <div className={styles.field}>
-          <label htmlFor="customer-password">{kind === "reset" ? "New password" : "Password"}</label>
+          <label htmlFor="customer-password">{kind === "reset" || kind === "change" ? "New password" : "Password"}</label>
           <input
             id="customer-password" type="password" name="password"
             autoComplete={kind === "login" ? "current-password" : "new-password"}
@@ -50,7 +53,7 @@ export function CustomerAccountForm({ kind, initialName = "" }: { kind: FormKind
           {kind !== "login" ? <small>At least 12 characters.</small> : null}
         </div>
       ) : null}
-      {["sign-up", "reset"].includes(kind) ? (
+      {["sign-up", "reset", "change"].includes(kind) ? (
         <div className={styles.field}>
           <label htmlFor="customer-confirm-password">Confirm password</label>
           <input id="customer-confirm-password" type="password" name="confirmPassword" autoComplete="new-password" minLength={12} maxLength={128} required />
@@ -59,12 +62,13 @@ export function CustomerAccountForm({ kind, initialName = "" }: { kind: FormKind
       {state.error ? <p className={styles.error} role="alert">{state.error}</p> : null}
       {state.message ? <p className={styles.success} role="status">{state.message}</p> : null}
       <button type="submit" disabled={pending} className={styles.submit}>
-        {pending ? "Working…" : ({ login: "Sign in", "sign-up": "Create account", forgot: "Send recovery link", reset: "Update password", profile: "Save profile" })[kind]}
+        {pending ? "Working…" : ({ login: "Sign in", "sign-up": "Create account", forgot: "Send recovery link", reset: "Update password", profile: "Save profile", change: "Change password" })[kind]}
         <span aria-hidden="true">→</span>
       </button>
       {kind === "login" ? (
         <div className={styles.formLinks}><Link href="/account/forgot-password">Forgot password?</Link><Link href="/account/sign-up">Create an account →</Link></div>
       ) : null}
+      {kind === "change" ? <p className={styles.formLinks}><Link href="/account">← Back to account</Link></p> : null}
       {kind === "sign-up" || kind === "forgot" || kind === "reset" ? (
         <p className={styles.formLinks}><Link href="/account/login">← Back to sign in</Link></p>
       ) : null}

@@ -31,7 +31,7 @@ export default async function CustomerAccountPage({ searchParams }: { searchPara
             <h2>Account details</h2>
             <dl className={styles.facts}><div><dt>Email</dt><dd>{user.email}</dd></div><div><dt>Member since</dt><dd>{new Date(user.created_at).toLocaleDateString("en-CA", { month: "long", year: "numeric" })}</dd></div></dl>
             <h3>Display name</h3>
-            <CustomerAccountForm kind="profile" initialName={profile?.display_name || ""} />
+            <CustomerAccountForm kind="profile" initialName={profile?.display_name || ""} /><div className={styles.securitySection}><h3>Account security</h3><p className={styles.secondary}>Manage your sign-in details securely.</p><div className={styles.securityActions}><Link className={styles.textLink} href="/account/change-password">Change password →</Link><Link className={styles.textLink} href="/account/forgot-password">Forgot password?</Link></div></div>
           </section>
           <section className={styles.panel}>
             <p className={styles.panelLabel}>Leaf Ledger · Later phase</p>
