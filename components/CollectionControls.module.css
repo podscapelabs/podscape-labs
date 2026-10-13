@@ -57,16 +57,34 @@
 .empty a { display: inline-flex; min-height: 44px; align-items: center; font-size: .73rem; color: var(--accent); font-weight: 800; text-transform: uppercase; }
 
 @media (max-width: 699px) {
-  .control { margin-top: 9px; }
+  .control { display: flex; margin-top: 7px; }
   .action {
-    gap: 8px;
-    padding-inline: 10px;
-    font-size: .56rem;
-    letter-spacing: .035em;
+    width: auto;
+    min-height: 44px;
+    gap: 6px;
+    padding: 8px 11px;
+    font-size: .53rem;
+    letter-spacing: .045em;
   }
+  .action span:last-child { display: none; }
   .detail { max-width: 280px; }
   .tabs { margin-bottom: 19px; }
   .tab { padding: 0 12px 9px; font-size: .62rem; }
-  .collectionMeta { grid-template-columns: 1fr; }
-  .collectionMeta small { grid-column: auto; }
+  .collectionMeta {
+    grid-template-columns: repeat(2, max-content);
+    gap: 6px;
+    margin-top: 10px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+  .collectionMeta span {
+    gap: 4px;
+    padding: 7px 9px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-size: .5rem;
+    letter-spacing: .035em;
+  }
+  .collectionMeta small { display: none; }
 }
