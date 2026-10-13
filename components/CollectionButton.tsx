@@ -51,7 +51,7 @@ export function CollectionButton({ speciesId, speciesName, initialCollected, sig
       aria-pressed={collected}
       aria-label={collected ? `Remove ${speciesName} from My Collection` : `Add ${speciesName} to My Collection`}
     >
-      <span>{pending ? "Updating…" : collected ? "✓ In My Collection" : "+ Add to My Collection"}</span>
+      <span>{pending ? "Updating…" : collected ? "✓ In Collection" : "+ Add to Collection"}</span>
       <span aria-hidden="true">{collected ? "−" : "→"}</span>
     </button>
     {error ? <p className={styles.error} role="alert">{error}</p> : null}
