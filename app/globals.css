@@ -1053,6 +1053,31 @@ h1, h2, h3 { text-wrap: balance; }
   .v2-page-header aside { width: 100%; min-height: 128px; padding: 19px; }
   .v2-page-header aside strong { margin-bottom: 14px; font-size: 1.65rem; }
   .v2-page-section { padding: 34px 0 52px; }
+  .v2-collection-overview {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 18px;
+    border: 0;
+    background: transparent;
+  }
+  .v2-collection-overview > div {
+    min-height: 92px;
+    grid-template-columns: 1fr;
+    align-content: center;
+    justify-items: center;
+    gap: 6px;
+    padding: 11px 6px;
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+  .v2-collection-overview strong {
+    grid-row: auto;
+    grid-column: auto;
+    order: -1;
+    font-size: 2rem;
+  }
+  .v2-collection-overview span { font-size: .48rem; line-height: 1.25; }
+  .v2-collection-overview small { display: none; }
   .v2-filter-bar { padding: 13px; }
   .v2-record-hero { gap: 25px; padding-bottom: 44px; }
   .v2-record-identity h1 { font-size: clamp(2.55rem, 11.5vw, 3.5rem); }
