@@ -1,12 +1,56 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { isColonyStatus, type ColonyStatus } from "@/data/collection";
 import { isSpeciesRecordActive } from "@/data/species";
 import { requireCustomerPreviewAccess } from "@/lib/customer-auth/access";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import { getSpeciesRecords } from "@/lib/species-store";
 
 export type CollectionMutationResult = { success: boolean; collected: boolean; error?: string };
+export type CollectionDetailsResult = { success: boolean; error?: string };
+
+export async function updateCollectionDetails(input: {
+  speciesId: string;
+  quantity: number;
+  acquiredOn: string;
+  colonyStatus: ColonyStatus;
+  privateNotes: string;
+}): Promise<CollectionDetailsResult> {
+  await requireCustomerPreviewAccess();
+  const quantity = Number(input.quantity);
+  const acquiredOn = input.acquiredOn.trim();
+  const privateNotes = input.privateNotes.trim();
+  const validDate = acquiredOn === "" || (/^\d{4}-\d{2}-\d{2}$/.test(acquiredOn) && !Number.isNaN(Date.parse(`${acquiredOn}T00:00:00Z`)));
+  if (typeof input.speciesId !== "string" || input.speciesId.length < 1 || input.speciesId.length > 120
+    || !Number.isInteger(quantity) || quantity < 1 || quantity > 9999
+    || !isColonyStatus(input.colonyStatus) || !validDate || privateNotes.length > 5000) {
+    return { success: false, error: "Please review the keeper details and try again." };
+  }
+
+  const db = await customerSupabase();
+  if (!db) return { success: false, error: "Member accounts are not configured." };
+  const { data: { user }, error: authError } = await db.auth.getUser();
+  if (authError || !user) return { success: false, error: "Sign in to update your collection." };
+
+  const { data, error } = await db.from("member_species_collection")
+    .update({
+      quantity,
+      acquired_on: acquiredOn || null,
+      colony_status: input.colonyStatus,
+      private_notes: privateNotes,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("user_id", user.id)
+    .eq("species_id", input.speciesId)
+    .select("species_id")
+    .maybeSingle();
+  if (error || !data) return { success: false, error: "Couldn't save these keeper details. Please try again." };
+
+  revalidatePath("/ledger", "layout");
+  revalidatePath("/account");
+  return { success: true };
+}
 
 /** A user can mutate only their own collection. The database repeats this guarantee with RLS. */
 export async function setSpeciesCollected(speciesId: string, collected: boolean): Promise<CollectionMutationResult> {

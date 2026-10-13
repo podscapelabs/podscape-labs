@@ -2,6 +2,10 @@
 .tile { display: flex; min-width: 0; flex-direction: column; }
 .tile > a { flex: 1; }
 .control { margin-top: 12px; }
+.collectionMeta { display: grid; grid-template-columns: auto 1fr; gap: 5px 14px; margin-top: 11px; padding: 11px 12px; border: 1px solid var(--border); background: var(--surface); }
+.collectionMeta span { display: flex; gap: 5px; color: var(--text-muted); font-size: .55rem; text-transform: uppercase; }
+.collectionMeta span b { color: var(--text-primary); }
+.collectionMeta small { grid-column: 1 / -1; color: var(--accent); font-size: .52rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
 .action {
   display: flex;
   width: 100%;
@@ -63,4 +67,6 @@
   .detail { max-width: 280px; }
   .tabs { margin-bottom: 19px; }
   .tab { padding: 0 12px 9px; font-size: .62rem; }
+  .collectionMeta { grid-template-columns: 1fr; }
+  .collectionMeta small { grid-column: auto; }
 }

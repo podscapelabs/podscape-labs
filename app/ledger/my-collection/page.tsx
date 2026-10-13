@@ -17,6 +17,7 @@ export default async function MyCollectionPage() {
   const saved = new Set(member.ids);
   const inCollection = records.filter((record) => saved.has(record.id) && record.kind === "species" && isSpeciesRecordActive(record));
   const addedAtById = Object.fromEntries(member.entries.map((entry) => [entry.speciesId, entry.addedAt]));
+  const collectionDetailsById = Object.fromEntries(member.entries.map((entry) => [entry.speciesId, { quantity: entry.quantity, colonyStatus: entry.colonyStatus }]));
   const generaCount = new Set(inCollection.map((record) => record.genus).filter(Boolean)).size;
   const verifiedCount = inCollection.filter((record) => record.identityStatus === "verified").length;
 
@@ -38,7 +39,7 @@ export default async function MyCollectionPage() {
           <div><span>Genera represented</span><strong>{generaCount}</strong><small>Across your collection</small></div>
           <div><span>Verified records</span><strong>{verifiedCount}</strong><small>Confirmed catalogue identities</small></div>
         </section>
-        <LedgerExplorer records={inCollection} collectedIds={member.ids} signedIn mode="collection" addedAtById={addedAtById} />
+        <LedgerExplorer records={inCollection} collectedIds={member.ids} signedIn mode="collection" addedAtById={addedAtById} collectionDetailsById={collectionDetailsById} />
       </>}
     </div></section>
   </PlatformShell>;

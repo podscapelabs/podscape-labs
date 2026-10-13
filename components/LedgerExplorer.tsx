@@ -2,16 +2,18 @@
 
 import { useDeferredValue, useMemo, useState } from "react";
 import { LedgerSpeciesCard } from "./LedgerSpeciesCard";
+import type { ColonyStatus } from "@/data/collection";
 import { speciesDisplayName, speciesScientificName, type SpeciesRecord } from "@/data/species";
 
 type SortMode = "catalogue" | "common" | "scientific" | "recent";
 
-export function LedgerExplorer({ records, collectedIds = [], signedIn = false, mode = "catalogue", addedAtById = {} }: {
+export function LedgerExplorer({ records, collectedIds = [], signedIn = false, mode = "catalogue", addedAtById = {}, collectionDetailsById = {} }: {
   records: SpeciesRecord[];
   collectedIds?: string[];
   signedIn?: boolean;
   mode?: "catalogue" | "collection";
   addedAtById?: Record<string, string>;
+  collectionDetailsById?: Record<string, { quantity: number; colonyStatus: ColonyStatus }>;
 }) {
   const [query, setQuery] = useState("");
   const [genus, setGenus] = useState("all");
@@ -54,6 +56,6 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
       <label><span>Sort</span><select value={sort} onChange={(event) => setSort(event.target.value as SortMode)}>{mode === "collection" ? <option value="recent">Recently added</option> : null}<option value="catalogue">Catalogue number</option><option value="common">Common name</option><option value="scientific">Scientific name</option></select></label>
     </div>
     <div className="v2-results-meta"><span id="ledger-directory-title">{results.length} {results.length === 1 ? "record" : "records"}</span>{query || genus !== "all" || care !== "all" || sort !== (mode === "collection" ? "recent" : "catalogue") ? <button type="button" onClick={clear}>Clear filters</button> : <span>{mode === "collection" ? "Your private archive" : "Leaf Ledger archive"}</span>}</div>
-    {results.length ? <div className="v2-species-grid">{results.map((record) => <LedgerSpeciesCard record={record} key={record.id} showCollectionAction collected={saved.has(record.id)} signedIn={signedIn} />)}</div> : <div className="v2-empty-state"><span className="v2-empty-leaf" aria-hidden="true" /><h2>No species match these filters.</h2><p>Try a different name, genus, or care level.</p><button type="button" onClick={clear}>Reset filters</button></div>}
+    {results.length ? <div className="v2-species-grid">{results.map((record) => <LedgerSpeciesCard record={record} key={record.id} showCollectionAction collected={saved.has(record.id)} signedIn={signedIn} collectionDetails={collectionDetailsById[record.id]} />)}</div> : <div className="v2-empty-state"><span className="v2-empty-leaf" aria-hidden="true" /><h2>No species match these filters.</h2><p>Try a different name, genus, or care level.</p><button type="button" onClick={clear}>Reset filters</button></div>}
   </section>;
 }
