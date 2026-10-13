@@ -16,6 +16,9 @@ export default async function MyCollectionPage() {
   const records = member.signedIn ? await getSpeciesRecords() : [];
   const saved = new Set(member.ids);
   const inCollection = records.filter((record) => saved.has(record.id) && record.kind === "species" && isSpeciesRecordActive(record));
+  const addedAtById = Object.fromEntries(member.entries.map((entry) => [entry.speciesId, entry.addedAt]));
+  const generaCount = new Set(inCollection.map((record) => record.genus).filter(Boolean)).size;
+  const verifiedCount = inCollection.filter((record) => record.identityStatus === "verified").length;
 
   return <PlatformShell>
     <PlatformPageHeader eyebrow="Leaf Ledger · Personal keeper archive" title="My Collection" intro="The species you've saved from Leaf Ledger, kept private to your account." index="LL / 002" />
@@ -29,7 +32,14 @@ export default async function MyCollectionPage() {
         <h2>Your collection begins in the Ledger.</h2>
         <p>Browse a species record and choose “Add to My Collection” to save it here.</p>
         <Link href="/ledger">Browse Leaf Ledger →</Link>
-      </div> : <LedgerExplorer records={inCollection} collectedIds={member.ids} signedIn />}
+      </div> : <>
+        <section className="v2-collection-overview" aria-label="Collection overview">
+          <div><span>Species kept</span><strong>{inCollection.length}</strong><small>Saved Leaf Ledger records</small></div>
+          <div><span>Genera represented</span><strong>{generaCount}</strong><small>Across your collection</small></div>
+          <div><span>Verified records</span><strong>{verifiedCount}</strong><small>Confirmed catalogue identities</small></div>
+        </section>
+        <LedgerExplorer records={inCollection} collectedIds={member.ids} signedIn mode="collection" addedAtById={addedAtById} />
+      </>}
     </div></section>
   </PlatformShell>;
 }
