@@ -57,7 +57,14 @@
 .empty a { display: inline-flex; min-height: 44px; align-items: center; font-size: .73rem; color: var(--accent); font-weight: 800; text-transform: uppercase; }
 
 @media (max-width: 699px) {
-  .control { display: flex; margin-top: 7px; }
+  .tile {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    column-gap: 6px;
+    align-items: end;
+  }
+  .tile > a { grid-column: 1 / -1; }
+  .control { display: flex; margin-top: 10px; }
   .action {
     width: auto;
     min-height: 44px;
@@ -80,11 +87,11 @@
   }
   .collectionMeta span {
     gap: 4px;
-    padding: 7px 9px;
+    padding: 7px;
     border: 1px solid var(--border);
     background: var(--surface);
-    font-size: .5rem;
-    letter-spacing: .035em;
+    font-size: .46rem;
+    letter-spacing: .025em;
   }
   .collectionMeta small { display: none; }
 }
