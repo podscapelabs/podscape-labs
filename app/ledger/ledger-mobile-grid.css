@@ -1,0 +1,15 @@
+/* Leaf Ledger browse + My Collection: restore two specimens per row on phones.
+   Scoped to the Ledger route so unrelated platform grids stay unchanged.
+   Preserve existing collection controls and the desktop grid rules. */
+@media (max-width: 699px) {
+  .v2-site .v2-species-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 12px;
+  }
+
+  .v2-site .v2-species-grid > *,
+  .v2-site .v2-species-card {
+    min-width: 0;
+  }
+}
