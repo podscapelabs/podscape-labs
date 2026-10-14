@@ -1,0 +1,236 @@
+/* Leaf Ledger-specific responsive workspace. Never affects the public construction page. */
+.hero {
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.heroInner { padding-block: clamp(24px, 4vw, 43px); }
+.heroKicker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--text-muted);
+  font-size: .61rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.heroKicker svg {
+  flex: 0 0 23px;
+  width: 23px;
+  height: 23px;
+  color: var(--accent);
+  stroke-width: 1.5;
+}
+.hero h1 {
+  margin: 10px 0 0;
+  font-family: var(--display);
+  font-size: clamp(2.9rem, 8.5vw, 5.3rem);
+  font-weight: 540;
+  letter-spacing: -.05em;
+  line-height: 1.01;
+}
+.hero p {
+  max-width: 660px;
+  margin: 13px 0 0;
+  color: var(--text-secondary);
+  font-size: clamp(.88rem, 1.5vw, 1.04rem);
+  line-height: 1.5;
+}
+.workspace { padding-block: 0 68px; }
+.tabs {
+  display: flex;
+  gap: 18px;
+  margin: 0 0 18px;
+  border-bottom: 1px solid var(--border);
+}
+.tab {
+  display: inline-flex;
+  min-height: 51px;
+  align-items: center;
+  padding: 4px 6px 0;
+  border-bottom: 3px solid transparent;
+  color: var(--text-muted);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .035em;
+  text-transform: uppercase;
+}
+.tab:hover { color: var(--accent); }
+.tab[aria-current="page"] { border-bottom-color: var(--accent); color: var(--text-primary); }
+
+.explorer { min-width: 0; }
+.toolbar {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 2px;
+}
+.searchField {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  height: 49px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--surface);
+}
+.searchField:focus-within { border-color: var(--accent); outline: 2px solid var(--focus); outline-offset: 2px; }
+.searchField svg { flex: 0 0 19px; width: 19px; height: 19px; color: var(--text-muted); }
+.searchField input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: .88rem;
+}
+.searchField input::placeholder { color: var(--text-muted); opacity: .8; }
+.searchField input:focus-visible { outline: 0; }
+.filterChips {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  min-width: 0;
+}
+.filterChip {
+  position: relative;
+  display: block;
+  min-width: 0;
+  height: 42px;
+}
+.filterChip select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0 23px 0 12px;
+  appearance: none;
+  -webkit-appearance: none;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: .7rem;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.filterChip select:hover { border-color: var(--border-strong); }
+.filterChip select:focus-visible { border-color: var(--accent); outline: 2px solid var(--focus); outline-offset: 2px; }
+.filterChip svg {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  width: 13px;
+  height: 13px;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+.resultsMeta {
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  color: var(--text-muted);
+  font-size: .63rem;
+  font-weight: 750;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+.resultTools { display: flex; min-width: 0; align-items: center; gap: 12px; }
+.clear {
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font-size: .65rem;
+  font-weight: 800;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+.clear:hover { text-decoration: underline; }
+.legend {
+  position: relative;
+  --legend-dormant: color-mix(in srgb, var(--bark) 78%, var(--line) 22%);
+  --legend-collected: var(--forest);
+}
+:global(:root[data-theme="dark"]) .legend {
+  --legend-dormant: color-mix(in srgb, var(--bark) 46%, var(--moss-light) 54%);
+}
+.legend summary {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 7px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: .64rem;
+  font-weight: 750;
+  white-space: nowrap;
+  list-style: none;
+}
+.legend summary::-webkit-details-marker { display: none; }
+.legend summary::marker { content: ""; }
+.legend summary:hover { color: var(--accent); }
+.legend summary svg { width: 15px; height: 15px; flex: 0 0 15px; }
+.legendPanel {
+  position: absolute;
+  z-index: 12;
+  top: calc(100% + 3px);
+  right: 0;
+  display: grid;
+  width: min(275px, 80vw);
+  gap: 13px;
+  padding: 18px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-raised);
+  box-shadow: 0 9px 30px color-mix(in srgb, var(--text-primary) 12%, transparent);
+  color: var(--text-secondary);
+  font-size: .73rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.5;
+  text-transform: none;
+}
+.legendPanel p { margin: 0; }
+.legendRow { display: flex; align-items: center; gap: 10px; }
+.legendSample { width: 18px; height: 18px; border: 2px solid var(--legend-dormant); border-radius: 80% 10% 75% 20% / 80% 20% 75% 20%; transform: rotate(-20deg); }
+.legendSampleCollected { border-color: var(--legend-collected); background: color-mix(in srgb, var(--legend-collected) 14%, transparent); }
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+@media (min-width: 820px) {
+  .heroInner { padding-block: 36px 41px; }
+  .toolbar { grid-template-columns: minmax(290px, 1.35fr) minmax(390px, 1fr); align-items: center; gap: 14px; }
+  .filterChips { gap: 10px; }
+  .filterChip select { font-size: .73rem; padding-left: 14px; }
+}
+@media (max-width: 420px) {
+  .heroInner { padding-block: 22px 25px; }
+  .hero h1 { font-size: clamp(2.8rem, 12vw, 3.35rem); margin-top: 9px; }
+  .hero p { font-size: .89rem; margin-top: 11px; }
+  .heroKicker { font-size: .55rem; }
+  .tabs { gap: 12px; margin-bottom: 14px; }
+  .tab { min-height: 47px; padding-inline: 3px; font-size: .69rem; }
+  .filterChip select { padding-left: 10px; padding-right: 19px; font-size: .64rem; }
+  .filterChip svg { right: 5px; width: 11px; }
+  .resultsMeta { font-size: .57rem; }
+  .legend summary { font-size: .57rem; }
+  .resultTools { gap: 8px; }
+}

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import styles from "./CollectionControls.module.css";
+import styles from "./LedgerWorkspace.module.css";
 
 export function LedgerCollectionTabs({ active, signedIn }: { active: "discover" | "collection"; signedIn: boolean }) {
   return <nav className={styles.tabs} aria-label="Leaf Ledger views">
