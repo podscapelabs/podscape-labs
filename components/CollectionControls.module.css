@@ -4,14 +4,14 @@
   display: flex;
   min-width: 0;
   flex-direction: column;
-  /* Dried botanical specimens remain inviting; saved leaves become vibrant. */
-  --ownership-leaf-dormant: #936747;
-  --ownership-leaf-active: #216d3c;
+  /* Pull from the existing natural-history palette, not a separate UI palette. */
+  --ownership-leaf-dormant: color-mix(in srgb, var(--bark) 78%, var(--line) 22%);
+  --ownership-leaf-active: var(--forest);
 }
 :global(:root[data-theme="dark"]) .tile {
-  /* Both states stay intentional and distinct against the dark background. */
-  --ownership-leaf-dormant: #c2a07c;
-  --ownership-leaf-active: #95d487;
+  /* In dark mode, a dried olive-bark ink replaces the former gold and mint. */
+  --ownership-leaf-dormant: color-mix(in srgb, var(--bark) 46%, var(--moss-light) 54%);
+  --ownership-leaf-active: var(--forest);
 }
 .tile > a.v2-species-card, .tile > a { flex: 1; }
 .control { margin-top: 12px; }
@@ -37,19 +37,19 @@
   color: var(--ownership-leaf-dormant);
 }
 .tile :global(.specimen-leaf-outline) {
-  opacity: .95;
-  border-width: 2px;
-  background-color: color-mix(in srgb, var(--ownership-leaf-dormant) 13%, transparent);
+  opacity: .85;
+  border-width: 1.6px;
+  background-color: color-mix(in srgb, var(--ownership-leaf-dormant) 7%, transparent);
 }
-.tile :global(.specimen-leaf-vein) { opacity: .7; }
+.tile :global(.specimen-leaf-vein) { opacity: .55; }
 
 /* Overlay geometry mirrors the existing outline's rotated shape and the original veins. */
 .tile :global(.specimen-leaf-revival-outline) {
   position: absolute;
   inset: 8% 2% 9% 3%;
-  border: 2.8px solid currentColor;
+  border: 2.25px solid currentColor;
   border-radius: 96% 4% 94% 8% / 73% 8% 91% 27%;
-  background-color: color-mix(in srgb, var(--ownership-leaf-active) 27%, transparent);
+  background-color: color-mix(in srgb, var(--ownership-leaf-active) 14%, transparent);
   color: var(--ownership-leaf-active);
   transform: rotate(-9deg) skewX(-1.5deg);
   transform-origin: center;
@@ -60,7 +60,7 @@
 .tile :global(.specimen-leaf-revival-outline)::before {
   position: absolute;
   inset: 9% 8% 11% 10%;
-  border: 1.6px solid color-mix(in srgb, currentColor 68%, transparent);
+  border: 1.35px solid color-mix(in srgb, currentColor 60%, transparent);
   border-radius: 95% 5% 92% 10% / 71% 10% 88% 30%;
   content: "";
 }
@@ -69,7 +69,7 @@
   bottom: 10%;
   left: -8%;
   width: 17%;
-  border-top: 2.2px solid currentColor;
+  border-top: 1.8px solid currentColor;
   content: "";
   transform: rotate(24deg);
   transform-origin: right center;
@@ -78,7 +78,7 @@
   position: absolute;
   z-index: 2;
   width: 74%;
-  height: 2px;
+  height: 1.5px;
   background: currentColor;
   color: var(--ownership-leaf-active);
   transform: rotate(-24deg);
@@ -93,7 +93,7 @@
   top: 0;
   left: 29%;
   width: 18%;
-  height: 2px;
+  height: 1.5px;
   background: currentColor;
   content: "";
   opacity: .88;
@@ -112,27 +112,27 @@
   clip-path: inset(0 0 0 0);
 }
 
-/* Cinematic, one-shot transformation on confirmed collection mutations.
-   The veins wake first; the green spreads from stem (left) to tip (right). */
+/* A restrained, one-shot botanical transition on confirmed collection changes.
+   Veins lead briefly, followed by green travelling from stem to tip. */
 @keyframes leafLedgerGrow {
   from { clip-path: inset(0 100% 0 0); }
   to { clip-path: inset(0 0 0 0); }
 }
 .tile:has(.ownershipToggle[data-animation="sprout"]) :global(.specimen-leaf-revival-vein) {
   opacity: 1;
-  animation: leafLedgerGrow 780ms cubic-bezier(.2, .7, .25, 1) 40ms both;
+  animation: leafLedgerGrow 440ms cubic-bezier(.2, .7, .25, 1) 15ms both;
 }
 .tile:has(.ownershipToggle[data-animation="sprout"]) :global(.specimen-leaf-revival-outline) {
   opacity: 1;
-  animation: leafLedgerGrow 990ms cubic-bezier(.2, .7, .25, 1) 130ms both;
+  animation: leafLedgerGrow 550ms cubic-bezier(.2, .7, .25, 1) 50ms both;
 }
 .tile:has(.ownershipToggle[data-animation="wither"]) :global(.specimen-leaf-revival-vein) {
   opacity: 1;
-  animation: leafLedgerGrow 610ms ease-in 80ms both reverse;
+  animation: leafLedgerGrow 345ms ease-in 35ms both reverse;
 }
 .tile:has(.ownershipToggle[data-animation="wither"]) :global(.specimen-leaf-revival-outline) {
   opacity: 1;
-  animation: leafLedgerGrow 780ms ease-in both reverse;
+  animation: leafLedgerGrow 430ms ease-in both reverse;
 }
 .toggleError { position: absolute; top: 46px; right: 0; width: min(230px, 70vw); margin: 0; padding: 9px 11px; border: 1px solid var(--clay); background: var(--surface); color: var(--clay); font-size: .68rem; line-height: 1.45; box-shadow: 0 5px 16px color-mix(in srgb, var(--text-primary) 10%, transparent); }
 .srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }

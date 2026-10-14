@@ -30,7 +30,7 @@ export function CollectionButton({ speciesId, speciesName, initialCollected, sig
   useEffect(() => { setCollected(initialCollected); }, [initialCollected]);
   useEffect(() => {
     if (!animation) return;
-    const timer = window.setTimeout(() => setAnimation(null), 1250);
+    const timer = window.setTimeout(() => setAnimation(null), 710);
     return () => window.clearTimeout(timer);
   }, [animation]);
 
