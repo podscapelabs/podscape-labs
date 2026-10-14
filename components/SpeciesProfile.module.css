@@ -1,0 +1,118 @@
+/* Compact, mobile-first Leaf Ledger species profile.
+   Scoped: the private homepage, admin desks and public maintenance page are unchanged. */
+.page { min-width: 0; padding-bottom: 46px; background: var(--background); }
+.hero {
+  display: grid;
+  grid-template-areas: "intro" "art";
+  gap: 18px;
+  align-items: start;
+  padding: 0 0 28px;
+  border-bottom: 1px solid var(--border);
+}
+.intro { grid-area: intro; min-width: 0; }
+.artwork { grid-area: art; display: grid; width: min(100%, 330px); justify-self: center; place-items: center; }
+.artwork :global(.specimen-leaf-profile) { width: 100%; }
+.kicker {
+  margin: 0;
+  color: var(--accent);
+  font-size: .61rem;
+  font-weight: 780;
+  line-height: 1.4;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+.intro h1 {
+  margin: 9px 0 0;
+  font-family: var(--display);
+  font-size: clamp(2.45rem, 9vw, 5.6rem);
+  font-weight: 540;
+  letter-spacing: -.045em;
+  line-height: 1.02;
+  overflow-wrap: break-word;
+}
+.scientific {
+  margin: 6px 0 0;
+  color: var(--text-secondary);
+  font-family: var(--display);
+  font-size: clamp(1.12rem, 4vw, 1.7rem);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.summary {
+  max-width: 59ch;
+  margin: 14px 0 0;
+  color: var(--text-secondary);
+  font-size: .88rem;
+  line-height: 1.52;
+}
+.metadata {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  margin-top: 13px;
+  color: var(--text-muted);
+  font-size: .62rem;
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: .02em;
+}
+.metadata span + span::before { content: "·"; margin-right: 13px; color: var(--border-strong); }
+.collectAction { max-width: 300px; }
+.collectAction :global(.v2-button) { margin-top: 15px; }
+.body { max-width: 1020px; }
+.section {
+  display: grid;
+  gap: 12px;
+  padding: 25px 0;
+  border-bottom: 1px solid var(--border);
+}
+.sectionKicker {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: .6rem;
+  font-weight: 750;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.section h2 {
+  margin: 5px 0 0;
+  color: var(--text-primary);
+  font-family: var(--display);
+  font-size: clamp(1.7rem, 4vw, 2.35rem);
+  font-weight: 520;
+  letter-spacing: -.025em;
+  line-height: 1.13;
+}
+.careGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  min-width: 0;
+  margin: 0;
+  border: 1px solid var(--border);
+  background: var(--border);
+}
+.careGrid div { min-width: 0; padding: 13px 14px; background: var(--surface); }
+.careGrid dt { color: var(--text-muted); font-size: .59rem; font-weight: 750; letter-spacing: .04em; text-transform: uppercase; }
+.careGrid dd { margin: 7px 0 0; color: var(--text-primary); font-size: .85rem; line-height: 1.45; overflow-wrap: anywhere; }
+.empty, .longform { max-width: 78ch; margin: 0; color: var(--text-secondary); font-size: .85rem; line-height: 1.65; white-space: pre-line; }
+@media (min-width: 780px) {
+  .hero {
+    grid-template-columns: minmax(260px, .78fr) minmax(0, 1.22fr);
+    grid-template-areas: "art intro";
+    gap: clamp(26px, 4vw, 58px);
+    align-items: center;
+    padding: 16px 0 38px;
+  }
+  .artwork { width: min(100%, 480px); justify-self: start; }
+  .body { margin-top: 2px; }
+  .section { grid-template-columns: minmax(210px, .43fr) minmax(0, 1fr); gap: 26px; padding: 30px 0; }
+  .careGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 360px) {
+  .intro h1 { font-size: 2.32rem; }
+  .metadata { gap: 5px 9px; }
+  .metadata span + span::before { margin-right: 8px; }
+  .artwork { width: min(100%, 295px); }
+}

@@ -45,7 +45,7 @@ export function CollectionButton({ speciesId, speciesName, initialCollected, sig
   const toggle = () => {
     if (pending) return;
     // Removing a saved species also removes its keeper details, so guard the smaller control against accidental taps.
-    if (collected && compact && !window.confirm(`Remove ${speciesName} from My Collection? Your saved keeper details for this species will also be deleted.`)) return;
+    if (collected && !window.confirm(`Remove ${speciesName} from My Collection? Your saved keeper details for this species will also be deleted.`)) return;
     setError("");
     startTransition(async () => {
       try {
@@ -77,7 +77,7 @@ export function CollectionButton({ speciesId, speciesName, initialCollected, sig
   return <div className={`${styles.control} ${detail ? styles.detail : ""}`}>
     <button type="button" className={styles.action} data-collected={collected} disabled={pending}
       onClick={toggle} aria-pressed={collected} aria-label={title}>
-      <span>{pending ? "Updating…" : collected ? "✓ In Collection" : "+ Add to Collection"}</span>
+      <span>{pending ? "Updating…" : collected && detail ? "Remove from collection" : collected ? "✓ In Collection" : "+ Add to Collection"}</span>
       <span aria-hidden="true">{collected ? "−" : "→"}</span>
     </button>
     {error ? <p className={styles.error} role="alert">{error}</p> : null}

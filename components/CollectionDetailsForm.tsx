@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { updateCollectionDetails } from "@/app/ledger/collection/actions";
+import { updateCollectionKeeperMetadata } from "@/app/ledger/collection/actions";
 import { colonyStatusLabels, colonyStatuses, type ColonyStatus } from "@/data/collection";
 import type { MemberCollectionEntry } from "@/lib/member-collection";
+import { CollectionButton } from "./CollectionButton";
+import { CollectionQuantityControl } from "./CollectionQuantityControl";
 import styles from "./CollectionDetailsForm.module.css";
 
-export function CollectionDetailsForm({ entry }: { entry: MemberCollectionEntry }) {
-  const [quantity, setQuantity] = useState(entry.quantity);
+export function CollectionDetailsForm({ entry, speciesName }: { entry: MemberCollectionEntry; speciesName: string }) {
   const [acquiredOn, setAcquiredOn] = useState(entry.acquiredOn || "");
   const [colonyStatus, setColonyStatus] = useState<ColonyStatus>(entry.colonyStatus);
   const [privateNotes, setPrivateNotes] = useState(entry.privateNotes);
@@ -17,30 +18,69 @@ export function CollectionDetailsForm({ entry }: { entry: MemberCollectionEntry 
   const [pending, startTransition] = useTransition();
   const router = useRouter();
 
-  function save() {
+  function save(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     setMessage("");
     startTransition(async () => {
-      const result = await updateCollectionDetails({ speciesId: entry.speciesId, quantity, acquiredOn, colonyStatus, privateNotes });
-      setIsError(!result.success);
-      setMessage(result.success ? "Private keeper details saved." : result.error || "Unable to save.");
-      if (result.success) router.refresh();
+      try {
+        // Quantity is deliberately updated separately by the quick stepper.
+        // Never save a stale quantity when editing acquired date, status or notes.
+        const result = await updateCollectionKeeperMetadata({
+          speciesId: entry.speciesId, acquiredOn, colonyStatus, privateNotes,
+        });
+        setIsError(!result.success);
+        setMessage(result.success ? "Private keeper details saved." : result.error || "Unable to save.");
+        if (result.success) router.refresh();
+      } catch {
+        setIsError(true);
+        setMessage("Unable to save. Please try again.");
+      }
     });
   }
 
-  return <section className={styles.panel} aria-labelledby="private-keeper-record-title">
-    <div className={styles.heading}>
-      <div><p>My Collection · Private</p><h2 id="private-keeper-record-title">Keeper record</h2></div>
-      <span>Only visible in your account</span>
+  return <section className={styles.panel} aria-label="Your private collection record">
+    <div className={styles.top}>
+      <div className={styles.topLabel}>
+        <strong>In your collection</strong><span>Private</span>
+      </div>
+      <div className={styles.quick}>
+        <CollectionQuantityControl speciesId={entry.speciesId} speciesName={speciesName} initialQuantity={entry.quantity} />
+        <span className={styles.status} data-status={colonyStatus}> {colonyStatusLabels[colonyStatus]}</span>
+      </div>
     </div>
-    <div className={styles.grid}>
-      <label><span>Quantity</span><input type="number" min="1" max="9999" value={quantity} onChange={(event) => setQuantity(Number(event.target.value))} /></label>
-      <label><span>Acquired on</span><input type="date" value={acquiredOn} onChange={(event) => setAcquiredOn(event.target.value)} /></label>
-      <label><span>Colony status</span><select value={colonyStatus} onChange={(event) => setColonyStatus(event.target.value as ColonyStatus)}>{colonyStatuses.map((status) => <option value={status} key={status}>{colonyStatusLabels[status]}</option>)}</select></label>
-      <label className={styles.notes}><span>Private notes</span><textarea rows={6} maxLength={5000} value={privateNotes} onChange={(event) => setPrivateNotes(event.target.value)} placeholder="Observations, source details, breeding notes, or reminders…" /><small>{privateNotes.length} / 5000</small></label>
-    </div>
-    <div className={styles.footer}>
-      <p className={isError ? styles.error : ""} role="status">{message || "Saved separately from the public Leaf Ledger record."}</p>
-      <button type="button" onClick={save} disabled={pending}>{pending ? "Saving…" : "Save keeper record"}</button>
-    </div>
+    <details className={styles.disclosure} id="keeper-details">
+      <summary>
+        <span>Keeper details</span>
+        <span className={styles.hint}>Date, status &amp; notes</span>
+        <span className={styles.chevron} aria-hidden="true">⌄</span>
+      </summary>
+      <form onSubmit={save}>
+        <div className={styles.grid}>
+          <label>
+            <span>Acquired on</span>
+            <input type="date" value={acquiredOn} onChange={(event) => { setAcquiredOn(event.target.value); setMessage(""); }} />
+          </label>
+          <label>
+            <span>Colony status</span>
+            <select value={colonyStatus} onChange={(event) => { setColonyStatus(event.target.value as ColonyStatus); setMessage(""); }}>
+              {colonyStatuses.map((status) => <option value={status} key={status}>{colonyStatusLabels[status]}</option>)}
+            </select>
+          </label>
+          <label className={styles.notes}>
+            <span>Private notes</span>
+            <textarea rows={3} maxLength={5000} value={privateNotes} onChange={(event) => { setPrivateNotes(event.target.value); setMessage(""); }} placeholder="Observations, source, breeding notes…" />
+            <small>{privateNotes.length} / 5000</small>
+          </label>
+        </div>
+        <div className={styles.footer}>
+          <span className={isError ? styles.error : styles.feedback} role={isError ? "alert" : "status"} aria-live="polite">{message || "Only you can see these details."}</span>
+          <button type="submit" disabled={pending}>{pending ? "Saving…" : "Save details"}</button>
+        </div>
+      </form>
+      <div className={styles.remove}>
+        <span>Collection management</span>
+        <CollectionButton speciesId={entry.speciesId} speciesName={speciesName} initialCollected signedIn detail />
+      </div>
+    </details>
   </section>;
 }

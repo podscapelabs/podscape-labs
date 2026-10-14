@@ -52,6 +52,51 @@ export async function updateCollectionDetails(input: {
   return { success: true };
 }
 
+
+/**
+ * Update private keeper metadata without touching quantity.
+ * The quick quantity stepper has its own isolated mutation, so saving older
+ * notes or dates cannot overwrite a newly adjusted count.
+ */
+export async function updateCollectionKeeperMetadata(input: {
+  speciesId: string;
+  acquiredOn: string;
+  colonyStatus: ColonyStatus;
+  privateNotes: string;
+}): Promise<CollectionDetailsResult> {
+  await requireCustomerPreviewAccess();
+  if (typeof input.speciesId !== "string" || input.speciesId.length < 1 || input.speciesId.length > 120
+    || typeof input.acquiredOn !== "string" || typeof input.privateNotes !== "string") {
+    return { success: false, error: "Please review the keeper details and try again." };
+  }
+  const acquiredOn = input.acquiredOn.trim();
+  const privateNotes = input.privateNotes.trim();
+  const validDate = acquiredOn === "" || (/^\d{4}-\d{2}-\d{2}$/.test(acquiredOn) && !Number.isNaN(Date.parse(`${acquiredOn}T00:00:00Z`)));
+  if (!isColonyStatus(input.colonyStatus) || !validDate || privateNotes.length > 5000) {
+    return { success: false, error: "Please review the keeper details and try again." };
+  }
+  const db = await customerSupabase();
+  if (!db) return { success: false, error: "Member accounts are not configured." };
+  const { data: { user }, error: authError } = await db.auth.getUser();
+  if (authError || !user) return { success: false, error: "Sign in to update your collection." };
+
+  const { data, error } = await db.from("member_species_collection")
+    .update({
+      acquired_on: acquiredOn || null,
+      colony_status: input.colonyStatus,
+      private_notes: privateNotes,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("user_id", user.id)
+    .eq("species_id", input.speciesId)
+    .select("species_id")
+    .maybeSingle();
+  if (error || !data) return { success: false, error: "Couldn't save these keeper details. Please try again." };
+  revalidatePath("/ledger", "layout");
+  revalidatePath("/account");
+  return { success: true };
+}
+
 /**
  * Adjust only the signed-in keeper's quantity. Unlike the full details form,
  * this cannot replace notes, dates, or colony status with stale card data.

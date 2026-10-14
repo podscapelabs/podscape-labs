@@ -4,6 +4,7 @@ import { CollectionButton } from "@/components/CollectionButton";
 import { CollectionDetailsForm } from "@/components/CollectionDetailsForm";
 import { Breadcrumbs, PlatformShell } from "@/components/PlatformShell";
 import { SpecimenLeaf } from "@/components/SpecimenLeaf";
+import styles from "@/components/SpeciesProfile.module.css";
 import { speciesDisplayName, speciesGenus, speciesRecordLabel, speciesScientificName } from "@/data/species";
 import { getMemberCollectionState } from "@/lib/member-collection";
 import { getSpeciesRecord } from "@/lib/species-store";
@@ -18,24 +19,80 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function SpeciesPage({ params }: { params: Promise<{ slug: string }> }) {
   const record = await getSpeciesRecord((await params).slug);
   if (!record) notFound();
+
   const member = await getMemberCollectionState();
   const collectionEntry = member.entries.find((entry) => entry.speciesId === record.id);
-  const care = [["Care level", record.careLevel], ["Moisture", record.moisture], ["Temperature", record.temperature], ["Ventilation", record.ventilation], ["Substrate", record.substrate], ["Feeding", record.feeding]];
   const displayName = speciesDisplayName(record);
-  return <PlatformShell><section className="v2-record-page"><div className="v2-container">
-    <Breadcrumbs items={[{ label: "Leaf Ledger", href: "/ledger" }, { label: displayName }]} />
-    <div className="v2-record-hero">
-      <SpecimenLeaf image={record.image} alt={record.imageAlt || speciesScientificName(record)} number={record.catalogueNumber} size="profile" positionX={record.imagePositionX} positionY={record.imagePositionY} zoom={record.imageZoom} />
-      <div className="v2-record-identity">
-        <p className="v2-label">{speciesRecordLabel(record)}</p><h1>{displayName}</h1><h2><em>{speciesScientificName(record)}</em></h2>
-        <p>{record.summary || "This record is awaiting studio-authored notes."}</p>
-        {record.kind === "species" ? <CollectionButton speciesId={record.id} speciesName={displayName} initialCollected={member.ids.includes(record.id)} signedIn={member.signedIn} detail /> : null}
-        <div className="v2-record-meta"><span><small>Catalogue</small><b>{record.catalogueNumber}</b></span><span><small>Genus</small><b>{speciesGenus(record)}</b></span><span><small>Identity</small><b>{record.identityStatus}</b></span></div>
+  const scientificName = speciesScientificName(record);
+  const care = [
+    ["Care level", record.careLevel],
+    ["Moisture", record.moisture],
+    ["Temperature", record.temperature],
+    ["Ventilation", record.ventilation],
+    ["Substrate", record.substrate],
+    ["Feeding", record.feeding],
+  ].filter(([, value]) => typeof value === "string" && value.trim().length > 0);
+
+  return <PlatformShell>
+    <section className={styles.page}>
+      <div className="v2-container">
+        <Breadcrumbs items={[{ label: "Leaf Ledger", href: "/ledger" }, { label: displayName }]} />
+
+        <header className={styles.hero}>
+          <div className={styles.intro}>
+            <p className={styles.kicker}>Leaf Ledger · Species record</p>
+            <h1>{displayName}</h1>
+            <p className={styles.scientific}><em>{scientificName}</em></p>
+            {record.summary ? <p className={styles.summary}>{record.summary}</p> : null}
+            <div className={styles.metadata} aria-label="Record information">
+              <span>{record.catalogueNumber}</span>
+              <span>{speciesGenus(record)}</span>
+              <span>{speciesRecordLabel(record)}</span>
+            </div>
+
+            {record.kind === "species" ? collectionEntry
+              ? <CollectionDetailsForm entry={collectionEntry} speciesName={displayName} />
+              : <div className={styles.collectAction}>
+                <CollectionButton speciesId={record.id} speciesName={displayName} initialCollected={false} signedIn={member.signedIn} detail />
+              </div>
+              : null}
+          </div>
+
+          <div className={styles.artwork}>
+            <SpecimenLeaf image={record.image} alt={record.imageAlt || scientificName}
+              number={record.catalogueNumber} size="profile"
+              positionX={record.imagePositionX} positionY={record.imagePositionY} zoom={record.imageZoom} />
+          </div>
+        </header>
+
+        <div className={styles.body}>
+          <section className={styles.section} aria-labelledby="record-care-title">
+            <div className={styles.sectionHeading}>
+              <p className={styles.sectionKicker}>Husbandry</p>
+              <h2 id="record-care-title">Care at a glance</h2>
+            </div>
+            {care.length ? <dl className={styles.careGrid}>
+              {care.map(([label, value]) => <div key={label}>
+                <dt>{label}</dt><dd>{value}</dd>
+              </div>)}
+            </dl> : <p className={styles.empty}>Care information is awaiting review in the Leaf Ledger.</p>}
+          </section>
+          {record.about ? <section className={styles.section} aria-labelledby="record-about-title">
+            <div className={styles.sectionHeading}>
+              <p className={styles.sectionKicker}>Field notes</p>
+              <h2 id="record-about-title">About this record</h2>
+            </div>
+            <p className={styles.longform}>{record.about}</p>
+          </section> : null}
+          {record.keeperNotes ? <section className={styles.section} aria-labelledby="record-keeper-notes-title">
+            <div className={styles.sectionHeading}>
+              <p className={styles.sectionKicker}>Published keeper observations</p>
+              <h2 id="record-keeper-notes-title">Keeper notes</h2>
+            </div>
+            <p className={styles.longform}>{record.keeperNotes}</p>
+          </section> : null}
+        </div>
       </div>
-    </div>
-    {collectionEntry ? <CollectionDetailsForm entry={collectionEntry} /> : null}
-    <section className="v2-record-section"><div><p className="v2-kicker">Husbandry Snapshot</p><h2>{record.careLevel || record.moisture || record.temperature ? "Care details from the Ledger." : "Approved care details will appear here."}</h2><p>Values remain blank until they have been reviewed in the owner studio.</p></div><div className="v2-care-grid">{care.map(([label, value]) => <div key={label}><span>{label}</span><strong>{value || "Not yet entered"}</strong></div>)}</div></section>
-    <section className="v2-record-section v2-record-notes"><div><p className="v2-kicker">About this record</p><h2>{record.about ? "Field context and identification notes." : "This specimen has not been identified yet."}</h2></div><p>{record.about || "No species identity or natural-history copy has been assigned to this temporary photo test."}</p></section>
-    <section className="v2-record-section v2-record-notes"><div><p className="v2-kicker">Keeper Notes</p><h2>Practical observations, carefully separated from identity.</h2></div><p>{record.keeperNotes || "No keeper notes have been entered."}</p></section>
-  </div></section></PlatformShell>;
+    </section>
+  </PlatformShell>;
 }
