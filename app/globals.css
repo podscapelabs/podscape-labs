@@ -1094,7 +1094,10 @@ h1, h2, h3 { text-wrap: balance; }
   .v2-brand img { width: 125px; }
   .v2-brand span, .v2-header .theme-toggle { display: none; }
   .v2-home-empty { align-items: flex-start; flex-direction: column; }
-  .v2-species-grid { grid-template-columns: 1fr; gap: 31px; }
+  .v2-species-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px 12px; }
+  .v2-species-card > strong { font-size: .76rem; line-height: 1.25; }
+  .v2-species-card > em { font-size: .7rem; line-height: 1.25; }
+  .v2-species-card > small { margin-top: 6px; font-size: .48rem; line-height: 1.35; }
   .v2-actions { grid-template-columns: 1fr; }
   .v2-hero-specimen { min-height: 230px; }
   .v2-record-meta { grid-template-columns: 1fr; }

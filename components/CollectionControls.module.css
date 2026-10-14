@@ -75,7 +75,8 @@
   .tabs { margin-bottom: 19px; }
   .tab { padding: 0 12px 9px; font-size: .62rem; }
   .collectionMeta {
-    grid-template-columns: repeat(2, max-content);
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
     margin-top: 10px;
     padding: 0;
@@ -83,6 +84,8 @@
     background: transparent;
   }
   .collectionMeta span {
+    min-width: 0;
+    flex-wrap: wrap;
     gap: 4px;
     padding: 7px;
     border: 1px solid var(--border);
