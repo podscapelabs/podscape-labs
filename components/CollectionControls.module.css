@@ -58,13 +58,10 @@
 
 @media (max-width: 699px) {
   .tile {
-    display: grid;
-    grid-template-columns: max-content minmax(0, 1fr);
-    column-gap: 6px;
-    align-items: end;
+    display: flex;
+    flex-direction: column;
   }
-  .tile > a { grid-column: 1 / -1; }
-  .control { display: flex; margin-top: 10px; }
+  .control { display: flex; margin-top: 6px; }
   .action {
     width: auto;
     min-height: 44px;
