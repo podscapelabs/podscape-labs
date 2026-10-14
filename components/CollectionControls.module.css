@@ -16,8 +16,36 @@
 .tile > a.v2-species-card, .tile > a { flex: 1; }
 .control { margin-top: 12px; }
 
+/* The directory's leaf illustration gets a modest 4% enlargement.
+   Percentage margins keep its centre aligned in both mobile columns. */
+.tile :global(.specimen-leaf-card) {
+  width: 104%;
+  margin-inline: -2%;
+}
+
+/* Let the specimen image read a little more clearly without changing
+   the profile, homepage or owner-editor leaf components. */
+.tile :global(.specimen-leaf-card .specimen-photo) {
+  width: 36%;
+}
+
+/* The photo medallion follows the same ownership colour as the leaf.
+   Keep the neutral inner gap so real photographs stay legible. */
+.tile :global(.specimen-photo) {
+  border: 1.5px solid var(--ownership-leaf-dormant);
+  box-shadow:
+    0 0 0 5px color-mix(in srgb, var(--surface) 88%, transparent),
+    0 0 0 7px var(--ownership-leaf-dormant);
+  transition: border-color 500ms ease, box-shadow 500ms ease;
+}
+.tile:has(.ownershipToggle[data-collected="true"]) :global(.specimen-photo) {
+  border-color: var(--ownership-leaf-active);
+  box-shadow:
+    0 0 0 5px color-mix(in srgb, var(--surface) 88%, transparent),
+    0 0 0 7px var(--ownership-leaf-active);
+}
+
 /* Preserve the card's text hierarchy and keeper summary. */
-.identityNote { display: block; margin-top: 9px; color: var(--text-muted); font-size: .51rem; font-weight: 750; letter-spacing: .055em; line-height: 1.35; text-transform: uppercase; }
 .collectionSummary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 5px; margin: 11px 0 0; padding: 0; color: var(--text-secondary); font-size: .62rem; font-weight: 600; line-height: 1.45; }
 .collectionSummary > span:first-child { color: var(--text-primary); }
 
@@ -164,13 +192,13 @@
 
 @media (max-width: 699px) {
   .collectionSummary { gap: 4px; margin-top: 8px; font-size: .56rem; }
-  .identityNote { margin-top: 7px; font-size: .48rem; }
   .tabs { margin-bottom: 19px; }
   .tab { padding: 0 12px 9px; font-size: .62rem; }
   .detail { max-width: 280px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ownershipToggle { transition: none; }
+  .ownershipToggle,
+  .tile :global(.specimen-photo) { transition: none; }
   .tile:has(.ownershipToggle[data-animation]) :global(.specimen-leaf-revival-outline),
   .tile:has(.ownershipToggle[data-animation]) :global(.specimen-leaf-revival-vein) {
     animation: none;

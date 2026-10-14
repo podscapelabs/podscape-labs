@@ -3,7 +3,7 @@ import { CollectionButton } from "./CollectionButton";
 import styles from "./CollectionControls.module.css";
 import { SpecimenLeaf } from "./SpecimenLeaf";
 import { colonyStatusLabels, type ColonyStatus } from "@/data/collection";
-import { speciesDisplayName, speciesRecordLabel, speciesScientificName, type SpeciesRecord } from "@/data/species";
+import { speciesDisplayName, speciesScientificName, type SpeciesRecord } from "@/data/species";
 
 export function LedgerSpeciesCard({ record, compact = false, showCollectionAction = false, collected = false, signedIn = false, collectionDetails }: {
   record: SpeciesRecord;
@@ -17,7 +17,6 @@ export function LedgerSpeciesCard({ record, compact = false, showCollectionActio
     <SpecimenLeaf image={record.image} alt={record.imageAlt || speciesScientificName(record)} number={record.catalogueNumber} size="card" positionX={record.imagePositionX} positionY={record.imagePositionY} zoom={record.imageZoom} revivable={showCollectionAction && record.kind === "species"} />
     <strong>{speciesDisplayName(record)}</strong>
     <em>{speciesScientificName(record)}</em>
-    {record.kind === "photo-test" || record.identityStatus !== "verified" ? <span className={styles.identityNote}>{speciesRecordLabel(record)}</span> : null}
   </Link>;
 
   // Keep the clickable card and the mutation button as separate, valid targets.
