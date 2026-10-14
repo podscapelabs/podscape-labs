@@ -654,6 +654,53 @@ h1, h2, h3 { text-wrap: balance; }
 .specimen-leaf-vein { position: absolute; z-index: 1; width: 74%; height: 1px; background: currentColor; color: var(--accent); transform: rotate(-24deg); transform-origin: center; opacity: .67; }
 .specimen-leaf-vein::before, .specimen-leaf-vein::after { position: absolute; top: 0; left: 29%; width: 18%; height: 1px; background: currentColor; content: ""; opacity: .62; transform: rotate(39deg); transform-origin: left; }
 .specimen-leaf-vein::after { left: 55%; transform: rotate(-38deg); }
+
+/* Fuller, softly asymmetric field-journal leaf for the Ledger grid only.
+   Both collection states reuse these exact paths; photos remain independent. */
+.specimen-organic-leaf {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.specimen-organic-base { color: var(--ownership-leaf-dormant, var(--bark)); }
+.specimen-organic-shape {
+  fill: color-mix(in srgb, currentColor 7%, transparent);
+  stroke: currentColor;
+  stroke-width: 2.7;
+}
+.specimen-organic-inner {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-opacity: .35;
+}
+.specimen-organic-vein {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-opacity: .68;
+}
+.specimen-organic-branches {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+  stroke-opacity: .39;
+}
+.specimen-organic-revival-outline,
+.specimen-organic-revival-veins {
+  color: var(--ownership-leaf-active, var(--forest));
+  opacity: 0;
+  clip-path: inset(0 100% 0 0);
+}
+.specimen-organic-revival-outline .specimen-organic-shape {
+  fill: color-mix(in srgb, currentColor 14%, transparent);
+  stroke-width: 2.75;
+}
 .specimen-photo { position: relative; z-index: 3; display: grid; width: 34%; aspect-ratio: 1; place-items: center; overflow: hidden; border: 1px solid var(--border-strong); border-radius: 50%; background: var(--surface); box-shadow: 0 0 0 5px color-mix(in srgb, var(--surface) 88%, transparent), 0 0 0 6px var(--border); }
 .specimen-photo img { object-fit: cover; }
 .specimen-photo-placeholder { display: grid; width: 100%; height: 100%; place-content: center; background: repeating-linear-gradient(135deg, transparent 0 8px, color-mix(in srgb, var(--border) 34%, transparent) 8px 9px); color: var(--text-muted); text-align: center; text-transform: uppercase; }
