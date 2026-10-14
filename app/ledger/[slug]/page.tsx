@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { CollectionButton } from "@/components/CollectionButton";
 import { CollectionDetailsForm } from "@/components/CollectionDetailsForm";
 import { Breadcrumbs, PlatformShell } from "@/components/PlatformShell";
@@ -51,6 +52,7 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
             </div>
 
             <div id="keeper-record" className={styles.keeperAnchor} />
+            {collectionEntry ? <p style={{marginTop:16}}><Link href={`/keeper?species=${encodeURIComponent(record.id)}`} style={{ color:"var(--accent)",fontWeight:750 }}>Create or manage an enclosure →</Link></p> : null}
             {record.kind === "species" ? collectionEntry
               ? <CollectionDetailsForm entry={collectionEntry} speciesName={displayName} careSpecs={care.map(([label, value]) => ({ label: String(label), value: String(value) }))} />
               : <div className={styles.collectAction}>
