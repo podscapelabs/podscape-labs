@@ -2,6 +2,7 @@
 
 import { useDeferredValue, useMemo, useState } from "react";
 import { LedgerSpeciesCard } from "./LedgerSpeciesCard";
+import styles from "./LedgerLayout.module.css";
 import type { ColonyStatus } from "@/data/collection";
 import { speciesDisplayName, speciesScientificName, type SpeciesRecord } from "@/data/species";
 
@@ -45,17 +46,51 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
     setSort(mode === "collection" ? "recent" : "catalogue");
   }
 
+  const filtersActive = Boolean(query || genus !== "all" || care !== "all" || sort !== (mode === "collection" ? "recent" : "catalogue"));
+
   return <section className="v2-ledger-explorer" aria-labelledby="ledger-directory-title">
-    <div className="v2-filter-bar">
-      <label className="v2-search-field">
-        <span>{mode === "collection" ? "Search your collection" : "Search the catalogue"}</span>
-        <input value={query} onChange={(event) => setQuery(event.target.value)} type="search" placeholder="Common or scientific name" />
-      </label>
-      <label><span>Genus</span><select value={genus} onChange={(event) => setGenus(event.target.value)}><option value="all">All genera</option>{genera.map((value) => <option value={value} key={value}>{value}</option>)}</select></label>
-      <label><span>Care level</span><select value={care} onChange={(event) => setCare(event.target.value)}><option value="all">All care levels</option>{careLevels.map((value) => <option value={value} key={value}>{value}</option>)}</select></label>
-      <label><span>Sort</span><select value={sort} onChange={(event) => setSort(event.target.value as SortMode)}>{mode === "collection" ? <option value="recent">Recently added</option> : null}<option value="catalogue">Catalogue number</option><option value="common">Common name</option><option value="scientific">Scientific name</option></select></label>
+    <div className={`v2-filter-bar ${styles.filterBar}`} role="search" aria-label={mode === "collection" ? "Search and filter your collection" : "Search and filter the species catalogue"}>
+      <div className={styles.searchField}>
+        <svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <circle cx="10.8" cy="10.8" r="6.5" /><path d="m16 16 5 5" />
+        </svg>
+        <input className={styles.searchInput} aria-label={mode === "collection" ? "Search your collection" : "Search species"} value={query} onChange={(event) => setQuery(event.target.value)} type="search" placeholder={mode === "collection" ? "Search your collection…" : "Search species…"} />
+      </div>
+      <div className={styles.filterRow}>
+        <label className={styles.filterPill}>
+          <select className={styles.filterSelect} aria-label="Filter by genus" value={genus} onChange={(event) => setGenus(event.target.value)}>
+            <option value="all">Genus</option>{genera.map((value) => <option value={value} key={value}>{value}</option>)}
+          </select>
+        </label>
+        <label className={styles.filterPill}>
+          <select className={styles.filterSelect} aria-label="Filter by care level" value={care} onChange={(event) => setCare(event.target.value)}>
+            <option value="all">Care level</option>{careLevels.map((value) => <option value={value} key={value}>{value}</option>)}
+          </select>
+        </label>
+        <label className={styles.filterPill}>
+          <select className={styles.filterSelect} aria-label="Sort species" value={sort} onChange={(event) => setSort(event.target.value as SortMode)}>
+            {mode === "collection" ? <option value="recent">Sort: Recent</option> : null}
+            <option value="catalogue">Sort: Number</option>
+            <option value="common">Sort: Name</option>
+            <option value="scientific">Sort: Scientific</option>
+          </select>
+        </label>
+      </div>
     </div>
-    <div className="v2-results-meta"><span id="ledger-directory-title">{results.length} {results.length === 1 ? "record" : "records"}</span>{query || genus !== "all" || care !== "all" || sort !== (mode === "collection" ? "recent" : "catalogue") ? <button type="button" onClick={clear}>Clear filters</button> : <span>{mode === "collection" ? "Your private archive" : "Leaf Ledger archive"}</span>}</div>
+    <div className={`v2-results-meta ${styles.resultMeta}`}>
+      <span id="ledger-directory-title">{results.length} {results.length === 1 ? "record" : "records"}</span>
+      <div className={styles.metaActions}>
+        {filtersActive ? <button type="button" onClick={clear}>Clear filters</button> : null}
+        <details className={styles.legend}>
+          <summary>Leaf colour guide</summary>
+          <div className={styles.legendPanel}>
+            <strong>Understanding the leaves</strong>
+            <p><span className={styles.legendSwatch} aria-hidden="true" /> Brown — Not collected</p>
+            <p><span className={`${styles.legendSwatch} ${styles.legendSwatchCollected}`} aria-hidden="true" /> Green — In your collection</p>
+          </div>
+        </details>
+      </div>
+    </div>
     {results.length ? <div className="v2-species-grid">{results.map((record) => <LedgerSpeciesCard record={record} key={record.id} showCollectionAction collected={saved.has(record.id)} signedIn={signedIn} collectionDetails={collectionDetailsById[record.id]} />)}</div> : <div className="v2-empty-state"><span className="v2-empty-leaf" aria-hidden="true" /><h2>No species match these filters.</h2><p>Try a different name, genus, or care level.</p><button type="button" onClick={clear}>Reset filters</button></div>}
   </section>;
 }

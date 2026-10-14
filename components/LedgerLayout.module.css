@@ -1,0 +1,216 @@
+/* A compact, page-specific introduction. Other Podscape interior headers are unaffected. */
+.intro {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.introInner {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding-block: clamp(22px, 3.2vw, 40px) clamp(22px, 3vw, 35px);
+}
+.introCopy { min-width: 0; }
+.eyebrow {
+  margin: 0;
+  color: var(--accent);
+  font-size: .6rem;
+  font-weight: 780;
+  letter-spacing: .11em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+.title {
+  margin: 10px 0 0;
+  color: var(--text-primary);
+  font-family: var(--display);
+  font-size: clamp(2.75rem, 5.6vw, 5.15rem);
+  font-weight: 530;
+  letter-spacing: -.055em;
+  line-height: .99;
+}
+.description {
+  max-width: 57ch;
+  margin: 12px 0 0;
+  color: var(--text-secondary);
+  font-size: clamp(.83rem, 1.3vw, .97rem);
+  line-height: 1.5;
+}
+.introLeaf {
+  flex: 0 0 auto;
+  width: 37px;
+  height: 37px;
+  margin-top: 1px;
+  color: var(--accent);
+  opacity: .68;
+}
+.content { padding: 18px 0 70px; }
+
+/* Search comes first; all filtering is still available in three compact selectors. */
+.filterBar.filterBar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.searchField {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  width: 100%;
+  align-items: center;
+}
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+.filterBar .searchInput {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 10px 14px 10px 42px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  outline-offset: 2px;
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: .88rem;
+}
+.searchInput::placeholder { color: var(--text-muted); opacity: .85; }
+.searchField:focus-within .searchIcon { color: var(--accent); }
+.filterRow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.filterPill {
+  position: relative;
+  display: block;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+}
+.filterPill::after {
+  position: absolute;
+  top: calc(50% - 3px);
+  right: 12px;
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid var(--text-muted);
+  border-bottom: 1.5px solid var(--text-muted);
+  content: "";
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+.filterBar .filterSelect {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 43px;
+  padding: 8px 26px 8px 14px;
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: .72rem;
+  font-weight: 680;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.filterPill:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.filterPill:has(.filterSelect:not([value="all"])) { border-color: var(--border-strong); }
+.resultMeta.resultMeta {
+  display: flex;
+  min-height: 47px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: .65rem;
+  letter-spacing: .02em;
+}
+.metaActions { display: flex; min-width: 0; align-items: center; gap: 14px; }
+.legend { position: relative; }
+.legend summary {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: .64rem;
+  font-weight: 700;
+  letter-spacing: .01em;
+  text-transform: none;
+  white-space: nowrap;
+  cursor: pointer;
+  list-style: none;
+}
+.legend summary::-webkit-details-marker { display: none; }
+.legend summary::after {
+  display: inline-grid;
+  width: 16px;
+  height: 16px;
+  place-items: center;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  content: "i";
+  font-family: Georgia, serif;
+  font-size: .67rem;
+  font-style: italic;
+}
+.legend[open] summary, .legend summary:hover { color: var(--accent); }
+.legendPanel {
+  position: absolute;
+  z-index: 15;
+  top: calc(100% + 4px);
+  right: 0;
+  width: min(265px, calc(100vw - 32px));
+  padding: 15px 16px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-raised);
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--text-primary) 13%, transparent);
+  color: var(--text-primary);
+  text-align: left;
+  text-transform: none;
+}
+.legendPanel strong { display: block; margin-bottom: 11px; font-size: .72rem; }
+.legendPanel p { display: flex; align-items: center; gap: 10px; margin: 8px 0; font-size: .73rem; font-weight: 500; line-height: 1.4; }
+.legendSwatch {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  border: 2px solid var(--bark);
+  border-radius: 72% 0 72% 5%;
+  background: color-mix(in srgb, var(--bark) 7%, transparent);
+  transform: rotate(-17deg);
+}
+.legendSwatchCollected { border-color: var(--forest); background: color-mix(in srgb, var(--forest) 14%, transparent); }
+@media (min-width: 700px) {
+  .content { padding-top: 23px; }
+  .filterBar.filterBar { flex-direction: row; align-items: stretch; gap: 12px; }
+  .searchField { flex: 1 1 48%; }
+  .filterRow { flex: 1 1 52%; align-items: stretch; }
+  .filterBar .filterSelect { min-height: 48px; }
+}
+@media (max-width: 420px) {
+  .introInner { padding-block: 21px 22px; gap: 12px; }
+  .title { font-size: clamp(2.45rem, 11.7vw, 3.15rem); }
+  .description { margin-top: 10px; font-size: .82rem; }
+  .introLeaf { width: 30px; height: 30px; }
+  .content { padding-top: 13px; }
+  .filterBar .filterSelect { padding-left: 11px; padding-right: 22px; font-size: .67rem; }
+  .filterPill::after { right: 9px; }
+  .resultMeta.resultMeta { font-size: .59rem; }
+  .legend summary { font-size: .59rem; }
+  .metaActions { gap: 9px; }
+}

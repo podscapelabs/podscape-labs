@@ -4,7 +4,9 @@ import { LedgerCollectionTabs } from "@/components/LedgerCollectionTabs";
 import { LedgerExplorer } from "@/components/LedgerExplorer";
 import styles from "@/components/CollectionControls.module.css";
 import { isSpeciesRecordActive } from "@/data/species";
-import { PlatformPageHeader, PlatformShell } from "@/components/PlatformShell";
+import { PlatformShell } from "@/components/PlatformShell";
+import { LedgerPageIntro } from "@/components/LedgerPageIntro";
+import layout from "@/components/LedgerLayout.module.css";
 import { getMemberCollectionState } from "@/lib/member-collection";
 import { getSpeciesRecords } from "@/lib/species-store";
 
@@ -22,8 +24,8 @@ export default async function MyCollectionPage() {
   const verifiedCount = inCollection.filter((record) => record.identityStatus === "verified").length;
 
   return <PlatformShell>
-    <PlatformPageHeader eyebrow="Leaf Ledger · Personal keeper archive" title="My Collection" intro="The species you've saved from Leaf Ledger, kept private to your account." index="LL / 002" />
-    <section className="v2-page-section"><div className="v2-container">
+    <LedgerPageIntro mode="collection" />
+    <section className={layout.content}><div className="v2-container">
       <LedgerCollectionTabs active="collection" signedIn={member.signedIn} />
       {!member.signedIn ? <div className={styles.empty}>
         <h2>Sign in to open your collection.</h2>
