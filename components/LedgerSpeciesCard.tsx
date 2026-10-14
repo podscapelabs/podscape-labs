@@ -14,7 +14,7 @@ export function LedgerSpeciesCard({ record, compact = false, showCollectionActio
   collectionDetails?: { quantity: number; colonyStatus: ColonyStatus };
 }) {
   const card = <Link className={`v2-species-card${compact ? " is-compact" : ""}`} href={`/ledger/${record.slug}`}>
-    <SpecimenLeaf image={record.image} alt={record.imageAlt || speciesScientificName(record)} number={record.catalogueNumber} size="card" positionX={record.imagePositionX} positionY={record.imagePositionY} zoom={record.imageZoom} />
+    <SpecimenLeaf image={record.image} alt={record.imageAlt || speciesScientificName(record)} number={record.catalogueNumber} size="card" positionX={record.imagePositionX} positionY={record.imagePositionY} zoom={record.imageZoom} revivable={showCollectionAction && record.kind === "species"} />
     <strong>{speciesDisplayName(record)}</strong>
     <em>{speciesScientificName(record)}</em>
     {record.kind === "photo-test" || record.identityStatus !== "verified" ? <span className={styles.identityNote}>{speciesRecordLabel(record)}</span> : null}

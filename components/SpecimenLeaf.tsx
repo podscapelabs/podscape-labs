@@ -8,13 +8,18 @@ type SpecimenLeafProps = {
   positionX?: number;
   positionY?: number;
   zoom?: number;
+  revivable?: boolean;
 };
 
-export function SpecimenLeaf({ image, alt = "", number, size = "card", positionX = 50, positionY = 50, zoom = 1 }: SpecimenLeafProps) {
+export function SpecimenLeaf({ image, alt = "", number, size = "card", positionX = 50, positionY = 50, zoom = 1, revivable = false }: SpecimenLeafProps) {
   return (
     <div className={`specimen-leaf specimen-leaf-${size}`}>
       <span className="specimen-leaf-outline" aria-hidden="true" />
       <span className="specimen-leaf-vein" aria-hidden="true" />
+      {revivable ? <>
+        <span className="specimen-leaf-revival-outline" aria-hidden="true" />
+        <span className="specimen-leaf-revival-vein" aria-hidden="true" />
+      </> : null}
       <span className="specimen-photo">
         {image ? (
           <Image src={image} alt={alt} fill sizes={size === "hero" ? "(min-width: 960px) 34vw, 78vw" : "220px"} style={{ objectPosition: `${positionX}% ${positionY}%`, transform: `scale(${zoom})` }} />

@@ -22,11 +22,17 @@ export function CollectionButton({ speciesId, speciesName, initialCollected, sig
   compact?: boolean;
 }) {
   const [collected, setCollected] = useState(initialCollected);
+  const [animation, setAnimation] = useState<"sprout" | "wither" | null>(null);
   const [error, setError] = useState("");
   const [pending, startTransition] = useTransition();
   const router = useRouter();
 
   useEffect(() => { setCollected(initialCollected); }, [initialCollected]);
+  useEffect(() => {
+    if (!animation) return;
+    const timer = window.setTimeout(() => setAnimation(null), 1250);
+    return () => window.clearTimeout(timer);
+  }, [animation]);
 
   const title = collected ? `Remove ${speciesName} from My Collection` : `Add ${speciesName} to My Collection`;
 
@@ -45,6 +51,7 @@ export function CollectionButton({ speciesId, speciesName, initialCollected, sig
       try {
         const result = await setSpeciesCollected(speciesId, !collected);
         if (result.success) {
+          if (compact) setAnimation(result.collected ? "sprout" : "wither");
           setCollected(result.collected);
           router.refresh();
         } else {
@@ -58,7 +65,7 @@ export function CollectionButton({ speciesId, speciesName, initialCollected, sig
 
   if (compact) {
     return <div className={styles.ownershipControl}>
-      <button type="button" className={styles.ownershipToggle} data-collected={collected} disabled={pending}
+      <button type="button" className={styles.ownershipToggle} data-collected={collected} data-animation={animation || undefined} disabled={pending}
         onClick={toggle} aria-pressed={collected} aria-label={title} title={title}>
         <OwnershipLeaf filled={collected} />
       </button>
