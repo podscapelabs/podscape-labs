@@ -128,7 +128,7 @@
   cursor: pointer;
 }
 .filterPill:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
-.filterPill:has(.filterSelect:not([value="all"])) { border-color: var(--border-strong); }
+.filterPill[data-active="true"] { border-color: var(--border-strong); }
 .resultMeta.resultMeta {
   display: flex;
   min-height: 47px;
@@ -195,6 +195,37 @@
   transform: rotate(-17deg);
 }
 .legendSwatchCollected { border-color: var(--forest); background: color-mix(in srgb, var(--forest) 14%, transparent); }
+
+/* Keep the collection summary useful without placing three full cards above search. */
+.collectionOverview.collectionOverview {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 0 0 13px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+}
+.collectionOverview.collectionOverview > div {
+  display: flex;
+  min-width: 0;
+  min-height: auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  padding: 4px 0;
+  background: transparent;
+}
+.collectionOverview.collectionOverview strong {
+  grid-row: auto;
+  grid-column: auto;
+  align-self: auto;
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+}
+.collectionOverview.collectionOverview span { font-size: .54rem; line-height: 1.35; }
+.collectionOverview.collectionOverview small { font-size: .6rem; line-height: 1.3; }
+
 @media (min-width: 700px) {
   .content { padding-top: 23px; }
   .filterBar.filterBar { flex-direction: row; align-items: stretch; gap: 12px; }

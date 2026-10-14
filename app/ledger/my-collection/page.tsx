@@ -36,7 +36,7 @@ export default async function MyCollectionPage() {
         <p>Browse a species record and choose “Add to My Collection” to save it here.</p>
         <Link href="/ledger">Browse Leaf Ledger →</Link>
       </div> : <>
-        <section className="v2-collection-overview" aria-label="Collection overview">
+        <section className={`v2-collection-overview ${layout.collectionOverview}`} aria-label="Collection overview">
           <div><span>Species kept</span><strong>{inCollection.length}</strong><small>Saved Leaf Ledger records</small></div>
           <div><span>Genera represented</span><strong>{generaCount}</strong><small>Across your collection</small></div>
           <div><span>Verified records</span><strong>{verifiedCount}</strong><small>Confirmed catalogue identities</small></div>
