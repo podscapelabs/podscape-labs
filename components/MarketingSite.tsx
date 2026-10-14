@@ -4,7 +4,7 @@ import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { ArrowUpRightIcon } from "./Icons";
 import { LedgerSpeciesCard } from "./LedgerSpeciesCard";
-import { BookIcon, LeafIcon } from "./PlatformIcons";
+import { BookIcon, LeafIcon, ShopIcon } from "./PlatformIcons";
 import { PodboundCardRotator } from "./PodboundCardRotator";
 import { SpecimenLeaf } from "./SpecimenLeaf";
 import styles from "./MarketingHome.module.css";
@@ -36,10 +36,6 @@ export async function MarketingSite() {
             <p className={styles.kicker}>Podscape Labs · Independent Canadian Studio</p>
             <h1 id="home-title">Explore the world of isopods.</h1>
             <p className={styles.description}>Original games, species knowledge, and practical resources for curious keepers.</p>
-            <div className={styles.heroLinks}>
-              <Link className={`${styles.heroLink} ${styles.heroPrimary}`} href="/ledger">Leaf Ledger <span aria-hidden="true">→</span></Link>
-              <a className={`${styles.heroLink} ${styles.heroSecondary}`} href="https://www.podbound.net" target="_blank" rel="noreferrer">PodBound <ArrowUpRightIcon /></a>
-            </div>
           </div>
           {featuredSpecies ? <Link className={styles.heroFeature} href={`/ledger/${featuredSpecies.slug}`} aria-label={`View ${speciesDisplayName(featuredSpecies)} in Leaf Ledger`}>
             <span className={styles.heroFeatureLabel}>From the Leaf Ledger</span>
@@ -59,13 +55,30 @@ export async function MarketingSite() {
             <Link href="/ledger" className={styles.quickCard}>
               <span className={styles.quickIcon}><LeafIcon /></span>
               <strong>Leaf Ledger</strong>
-              <span className={styles.quickDescription}>Discover species and organize your collection.</span>
+              <span className={styles.quickDescription}>Species and collections</span>
               <span className={styles.quickArrow} aria-hidden="true">↗</span>
             </Link>
             <Link href="/field-guide" className={styles.quickCard}>
               <span className={styles.quickIcon}><BookIcon /></span>
               <strong>Field Guide</strong>
-              <span className={styles.quickDescription}>Care guides and resources for keepers.</span>
+              <span className={styles.quickDescription}>Care and husbandry</span>
+              <span className={styles.quickArrow} aria-hidden="true">↗</span>
+            </Link>
+            <Link href="/shop" className={styles.quickCard}>
+              <span className={styles.quickIcon}><ShopIcon /></span>
+              <strong>Shop</strong>
+              <span className={styles.quickDescription}>Catalogue preview · checkout offline</span>
+              <span className={styles.quickArrow} aria-hidden="true">↗</span>
+            </Link>
+            <Link href="/from-the-lab" className={styles.quickCard}>
+              <span className={styles.quickIcon}>
+                <svg aria-hidden="true" viewBox="0 0 32 32">
+                  <path d="M12 3.5h8M14 3.5V13L7.2 24.7a3.1 3.1 0 0 0 2.7 4.6h12.2a3.1 3.1 0 0 0 2.7-4.6L18 13V3.5"/>
+                  <path d="M10 23h12M14 18h5"/>
+                </svg>
+              </span>
+              <strong>From the Lab</strong>
+              <span className={styles.quickDescription}>Projects and studio updates</span>
               <span className={styles.quickArrow} aria-hidden="true">↗</span>
             </Link>
           </div>

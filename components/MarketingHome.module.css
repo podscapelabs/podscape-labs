@@ -5,12 +5,6 @@
 .kicker { margin: 0; color: var(--accent); font-size: .59rem; font-weight: 800; line-height: 1.4; letter-spacing: .085em; text-transform: uppercase; }
 .hero h1 { max-width: 13ch; margin: 12px 0 0; color: var(--text-primary); font-family: var(--display); font-size: clamp(2.7rem,10.8vw,3.7rem); font-weight: 540; letter-spacing: -.047em; line-height: .98; text-wrap: balance; }
 .description { max-width: 49ch; margin: 15px 0 0; color: var(--text-secondary); font-size: .91rem; line-height: 1.55; }
-.heroLinks { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); max-width: 460px; gap: 9px; margin-top: 21px; }
-.heroLink { display: inline-flex; min-width: 0; min-height: 48px; justify-content: space-between; align-items: center; gap: 8px; padding: 0 13px; border: 1px solid var(--border-strong); font-size: .69rem; font-weight: 780; line-height: 1.2; letter-spacing: .015em; }
-.hero .heroPrimary { border-color: var(--accent); background: var(--accent); color: var(--background); }
-.hero .heroSecondary { background: transparent; color: var(--text-primary); }
-.heroLink:hover { border-color: var(--accent); }
-.heroLink svg { width: 15px; height: 15px; flex: 0 0 15px; }
 .heroFeature { display: none; }
 .discover { padding: 23px 0 4px; }
 .sectionHeading { display: flex; min-width: 0; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
@@ -18,12 +12,13 @@
 .sectionHeading a { display: inline-flex; min-height: 36px; flex: 0 0 auto; align-items: center; gap: 6px; color: var(--accent); font-size: .62rem; font-weight: 770; white-space: nowrap; }
 .sectionHeading a:hover { text-decoration: underline; text-underline-offset: 4px; }
 .quickGrid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
-.quickCard { position: relative; display: flex; min-width: 0; min-height: 155px; flex-direction: column; align-items: flex-start; padding: 15px 13px 19px; border: 1px solid var(--border); background: var(--surface); transition: border-color 150ms ease, background-color 150ms ease; }
+.quickCard { position: relative; display: flex; min-width: 0; min-height: 134px; flex-direction: column; align-items: flex-start; padding: 14px 13px 16px; border: 1px solid var(--border); background: var(--surface); transition: border-color 150ms ease, background-color 150ms ease; }
 .quickCard:hover { border-color: var(--accent); background: color-mix(in srgb,var(--ledger) 6%,var(--surface)); }
-.quickIcon { display: grid; width: 29px; height: 29px; place-items: center; color: var(--ledger); }
-.quickIcon svg { width: 27px; height: 27px; }
-.quickCard strong { display: block; margin-top: 10px; color: var(--text-primary); font-family: var(--display); font-size: 1.05rem; font-weight: 590; line-height: 1.2; }
-.quickDescription { display: block; max-width: 31ch; margin-top: 6px; padding-right: 4px; color: var(--text-secondary); font-size: .72rem; line-height: 1.42; }
+.quickCard:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.quickIcon { display: grid; width: 27px; height: 27px; place-items: center; color: var(--ledger); }
+.quickIcon svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.6; }
+.quickCard strong { display: block; margin-top: 9px; color: var(--text-primary); font-family: var(--display); font-size: 1.05rem; font-weight: 590; line-height: 1.2; }
+.quickDescription { display: block; max-width: 31ch; margin-top: 4px; padding-right: 6px; color: var(--text-secondary); font-size: .72rem; line-height: 1.42; }
 .quickArrow { position: absolute; top: 14px; right: 13px; color: var(--accent); font-size: .99rem; }
 .podboundFeature { position: relative; display: grid; min-width: 0; margin-top: 15px; overflow: hidden; border: 1px solid color-mix(in srgb,var(--ledger) 44%,var(--border)); background: #142b20; color: #f2ead4; }
 .podboundCopy { min-width: 0; padding: 20px 19px 22px; }
@@ -64,7 +59,8 @@
   .heroFeature :global(.specimen-leaf) { width: min(100%,345px); }
   .heroFeatureFoot { display: flex; justify-content: space-between; }
   .discover { padding-top: 34px; }
-  .quickCard { min-height: 164px; padding: 20px; }
+  .quickCard { min-height: 150px; padding: 18px; }
+  .quickGrid { grid-template-columns: repeat(4,minmax(0,1fr)); }
   .quickCard strong { font-size: 1.28rem; }
   .quickDescription { font-size: .83rem; }
   .podboundFeature { grid-template-columns: minmax(0,1.1fr) minmax(240px,.75fr); align-items: center; min-height: 254px; }
@@ -78,5 +74,5 @@
   .ownerBar.ownerBar { min-height: 42px; padding: 8px 18px; }
 }
 @media (min-width: 1000px) { .heroInner { grid-template-columns: minmax(0,1.12fr) minmax(350px,.68fr); } .quickGrid { gap: 16px; } }
-@media (max-width: 360px) { .hero h1 { font-size: 2.55rem; } .heroLinks { gap: 7px; } .heroLink { padding-inline: 10px; font-size: .65rem; } .quickCard { padding-inline: 11px; } .quickDescription { font-size: .68rem; } }
+@media (max-width: 360px) { .hero h1 { font-size: 2.55rem; } .quickCard { padding-inline: 11px; } .quickDescription { font-size: .68rem; } }
 @media (prefers-reduced-motion: reduce) { .quickCard { transition: none; } }
