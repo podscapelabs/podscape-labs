@@ -1,0 +1,24 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { PlatformShell, Breadcrumbs } from "@/components/PlatformShell";
+import { CreateEnclosure } from "@/components/KeeperWorkspace";
+import { getMemberCollectionState } from "@/lib/member-collection";
+import { listEnclosures } from "@/lib/keeper";
+import { getSpeciesRecords } from "@/lib/species-store";
+import { speciesDisplayName } from "@/data/species";
+import styles from "./page.module.css";
+export const dynamic="force-dynamic";
+export const metadata:Metadata={title:"My Enclosures | PodScape Labs",robots:{index:false,follow:false}};
+export default async function KeeperIndex({searchParams}:{searchParams:Promise<{species?:string}>}){
+ const member=await getMemberCollectionState();
+ const species=member.signedIn?await getSpeciesRecords():[];
+ let enclosures:Awaited<ReturnType<typeof listEnclosures>>=[];let unavailable=false;
+ if(member.signedIn)try{enclosures=await listEnclosures();}catch{unavailable=true;}
+ const selected=(await searchParams).species;
+ const record=species.find(s=>s.id===selected&&s.kind==="species");
+ return <PlatformShell><main className={styles.page}><div className="v2-container"><Breadcrumbs items={[{label:"My Collection",href:"/ledger/my-collection"},{label:"My Enclosures"}]}/><p className={styles.kicker}>MY COLLECTION / KEEPER</p><h1>My enclosures</h1><p className={styles.lead}>Your own colony workspace. Each enclosure has a dedicated record, activity log and future QR label.</p>
+ {!member.signedIn?<p>Please <Link href="/account/login">sign in</Link> to manage your enclosures.</p>:unavailable?<p role="alert">Keeper storage isn't configured yet. The customer database migration must be applied before enclosure records can be saved.</p>:<>
+ {enclosures.length?<div className={styles.list}>{enclosures.map(e=><Link className={styles.entry} href={`/keeper/${e.id}`} key={e.id}><span><strong>{e.name}</strong><small>{speciesDisplayName(species.find(x=>x.id===e.speciesId)!)||"Species"} · {e.label||"No bin label"}</small></span><span>{e.quantity} recorded ↗</span></Link>)}</div>:<p className={styles.empty}>No enclosures yet. Start by selecting a species from your collection.</p>}
+ {record?<CreateEnclosure speciesId={record.id} speciesName={speciesDisplayName(record)}/>:<p><Link href="/ledger/my-collection">Select a species from My Collection →</Link></p>}
+ </>}</div></main></PlatformShell>;
+}
