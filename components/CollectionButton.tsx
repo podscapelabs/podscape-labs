@@ -32,7 +32,7 @@ export function CollectionButton({ speciesId, speciesName, initialCollected, sig
 
   if (!signedIn) {
     return compact
-      ? <Link className={styles.ownershipToggle} href="/account/login" aria-label={`Sign in to save ${speciesName}`} title={`Sign in to save ${speciesName}`}><OwnershipLeaf filled={false} /></Link>
+      ? <div className={styles.ownershipControl}><Link className={styles.ownershipToggle} href="/account/login" aria-label={`Sign in to save ${speciesName}`} title={`Sign in to save ${speciesName}`}><OwnershipLeaf filled={false} /></Link></div>
       : <Link className={`${styles.action} ${detail ? styles.detail : ""}`} href="/account/login">Sign in to collect →</Link>;
   }
 
