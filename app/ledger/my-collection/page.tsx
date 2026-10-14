@@ -22,8 +22,6 @@ export default async function MyCollectionPage() {
   const addedAtById = Object.fromEntries(member.entries.map((entry) => [entry.speciesId, entry.addedAt]));
   const collectionDetailsById = Object.fromEntries(member.entries.map((entry) => [entry.speciesId, { quantity: entry.quantity, colonyStatus: entry.colonyStatus }]));
   const generaCount = new Set(inCollection.map((record) => record.genus).filter(Boolean)).size;
-  const visibleIds = new Set(inCollection.map((record) => record.id));
-  const recordedQuantity = member.entries.filter((entry) => visibleIds.has(entry.speciesId)).reduce((total, entry) => total + entry.quantity, 0);
 
   return <PlatformShell>
     <LedgerPageIntro mode="collection" />
@@ -40,7 +38,6 @@ export default async function MyCollectionPage() {
       </div> : <>
         <section className={collectionStyles.overview} aria-label="Collection overview">
           <div><strong>{inCollection.length}</strong><span>Species</span></div>
-          <div><strong>{recordedQuantity}</strong><span>Total quantity</span></div>
           <div><strong>{generaCount}</strong><span>Genera</span></div>
         </section>
         <LedgerExplorer records={inCollection} collectedIds={member.ids} signedIn mode="collection" addedAtById={addedAtById} collectionDetailsById={collectionDetailsById} />

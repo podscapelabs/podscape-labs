@@ -50,6 +50,7 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
               <span>{speciesRecordLabel(record)}</span>
             </div>
 
+            <div id="keeper-record" className={styles.keeperAnchor} />
             {record.kind === "species" ? collectionEntry
               ? <CollectionDetailsForm entry={collectionEntry} speciesName={displayName} />
               : <div className={styles.collectAction}>

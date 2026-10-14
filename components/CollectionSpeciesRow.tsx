@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { CollectionQuantityControl } from "./CollectionQuantityControl";
 import { LeafIcon } from "./PlatformIcons";
 import { colonyStatusLabels, type ColonyStatus } from "@/data/collection";
 import { speciesDisplayName, speciesScientificName, type SpeciesRecord } from "@/data/species";
@@ -31,9 +30,9 @@ export function CollectionSpeciesRow({ record, details }: {
       </span>
       <span className={styles.openArrow} aria-hidden="true">↗</span>
     </Link>
-    {details ? <div className={styles.controls}>
-      <span className={styles.status} data-status={details.colonyStatus}>{colonyStatusLabels[details.colonyStatus]}</span>
-      <CollectionQuantityControl speciesId={record.id} speciesName={name} initialQuantity={details.quantity} />
-    </div> : <div className={styles.controls}><span className={styles.status}>Open keeper record to manage</span></div>}
+    <div className={styles.controls}>
+      <span className={styles.status} data-status={details?.colonyStatus}>{details ? colonyStatusLabels[details.colonyStatus] : "Keeper record"}</span>
+      <Link href={`/ledger/${record.slug}#keeper-record`} className={styles.recordLink}>Manage keeper record <span aria-hidden="true">↗</span></Link>
+    </div>
   </article>;
 }

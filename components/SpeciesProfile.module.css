@@ -58,6 +58,7 @@
   letter-spacing: .02em;
 }
 .metadata span + span::before { content: "·"; margin-right: 13px; color: var(--border-strong); }
+.keeperAnchor { scroll-margin-top: 110px; }
 .collectAction { max-width: 300px; }
 .collectAction :global(.v2-button) { margin-top: 15px; }
 .body { max-width: 1020px; }
