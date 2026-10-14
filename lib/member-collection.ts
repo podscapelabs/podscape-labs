@@ -22,7 +22,10 @@ export async function getMemberCollectionEntries(db: MemberDatabase, userId: str
     .select("species_id,added_at,quantity,acquired_on,colony_status,private_notes,updated_at")
     .eq("user_id", userId)
     .order("added_at", { ascending: false });
-  if (error) throw new Error("Unable to load My Collection right now.");
+  if (error) {
+    console.error("Member collection query failed", { code: error.code, message: error.message, details: error.details });
+    throw new Error("Unable to load My Collection right now.");
+  }
   return (data || []).map((row) => ({
     speciesId: row.species_id as string,
     addedAt: row.added_at as string,
