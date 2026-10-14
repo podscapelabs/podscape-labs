@@ -1,0 +1,82 @@
+/* Private homepage preview: existing PodScape theme variables and real assets only. */
+.hero { border-bottom: 1px solid var(--border); background: var(--surface); }
+.heroInner { display: grid; min-width: 0; grid-template-columns: minmax(0,1fr); align-items: center; gap: 24px; padding-block: 27px 30px; }
+.heroCopy { min-width: 0; }
+.kicker { margin: 0; color: var(--accent); font-size: .59rem; font-weight: 800; line-height: 1.4; letter-spacing: .085em; text-transform: uppercase; }
+.hero h1 { max-width: 13ch; margin: 12px 0 0; color: var(--text-primary); font-family: var(--display); font-size: clamp(2.7rem,10.8vw,3.7rem); font-weight: 540; letter-spacing: -.047em; line-height: .98; text-wrap: balance; }
+.description { max-width: 49ch; margin: 15px 0 0; color: var(--text-secondary); font-size: .91rem; line-height: 1.55; }
+.heroLinks { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); max-width: 460px; gap: 9px; margin-top: 21px; }
+.heroLink { display: inline-flex; min-width: 0; min-height: 48px; justify-content: space-between; align-items: center; gap: 8px; padding: 0 13px; border: 1px solid var(--border-strong); font-size: .69rem; font-weight: 780; line-height: 1.2; letter-spacing: .015em; }
+.hero .heroPrimary { border-color: var(--accent); background: var(--accent); color: var(--background); }
+.hero .heroSecondary { background: transparent; color: var(--text-primary); }
+.heroLink:hover { border-color: var(--accent); }
+.heroLink svg { width: 15px; height: 15px; flex: 0 0 15px; }
+.heroFeature { display: none; }
+.discover { padding: 23px 0 4px; }
+.sectionHeading { display: flex; min-width: 0; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.sectionHeading h2 { min-width: 0; margin: 0; color: var(--text-primary); font-family: var(--display); font-size: clamp(1.45rem,3vw,2rem); font-weight: 540; letter-spacing: -.027em; line-height: 1.15; }
+.sectionHeading a { display: inline-flex; min-height: 36px; flex: 0 0 auto; align-items: center; gap: 6px; color: var(--accent); font-size: .62rem; font-weight: 770; white-space: nowrap; }
+.sectionHeading a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.quickGrid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+.quickCard { position: relative; display: flex; min-width: 0; min-height: 155px; flex-direction: column; align-items: flex-start; padding: 15px 13px 19px; border: 1px solid var(--border); background: var(--surface); transition: border-color 150ms ease, background-color 150ms ease; }
+.quickCard:hover { border-color: var(--accent); background: color-mix(in srgb,var(--ledger) 6%,var(--surface)); }
+.quickIcon { display: grid; width: 29px; height: 29px; place-items: center; color: var(--ledger); }
+.quickIcon svg { width: 27px; height: 27px; }
+.quickCard strong { display: block; margin-top: 10px; color: var(--text-primary); font-family: var(--display); font-size: 1.05rem; font-weight: 590; line-height: 1.2; }
+.quickDescription { display: block; max-width: 31ch; margin-top: 6px; padding-right: 4px; color: var(--text-secondary); font-size: .72rem; line-height: 1.42; }
+.quickArrow { position: absolute; top: 14px; right: 13px; color: var(--accent); font-size: .99rem; }
+.podboundFeature { position: relative; display: grid; min-width: 0; margin-top: 15px; overflow: hidden; border: 1px solid color-mix(in srgb,var(--ledger) 44%,var(--border)); background: #142b20; color: #f2ead4; }
+.podboundCopy { min-width: 0; padding: 20px 19px 22px; }
+.podboundKicker { margin: 0; color: #c3ad76; font-size: .58rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.podboundLogo { display: block; width: min(145px,52%); height: auto; margin-top: 13px; filter: invert(95%) sepia(8%) saturate(568%) hue-rotate(353deg) brightness(101%); }
+.podboundFeature h2 { max-width: 21ch; margin: 10px 0 0; font-family: var(--display); font-size: clamp(1.55rem,4.7vw,2.25rem); font-weight: 500; letter-spacing: -.032em; line-height: 1.06; }
+.podboundCopy > p:not(.podboundKicker) { max-width: 54ch; margin: 9px 0 0; color: rgba(242,234,212,.78); font-size: .78rem; line-height: 1.48; }
+.podboundFeature .podboundLink { display: inline-flex; min-height: 40px; align-items: center; gap: 8px; margin-top: 13px; color: #f2ead4; font-size: .68rem; font-weight: 800; }
+.podboundLink svg { width: 15px; height: 15px; }
+.podboundLink:hover { text-decoration: underline; text-underline-offset: 4px; }
+.podboundCards { display: none; }
+.contentSection { padding: 26px 0 2px; }
+.speciesRail { padding-top: 6px; }
+.updateGrid { display: grid; gap: 10px; }
+.updateCard { display: flex; min-width: 0; min-height: 132px; flex-direction: column; padding: 17px 18px; border: 1px solid var(--border); background: var(--surface); }
+.updateCard > span { color: var(--accent); font-size: .59rem; font-weight: 800; text-transform: uppercase; }
+.updateCard strong { margin-top: 7px; font-size: .93rem; }
+.updateCard p { margin: 5px 0 0; color: var(--text-secondary); font-size: .76rem; line-height: 1.45; }
+.updateCard small { margin-top: auto; padding-top: 12px; color: var(--text-muted); font-size: .64rem; }
+/* Compact private toolbar avoids hiding the preview homepage on narrow screens. */
+.ownerBar.ownerBar { display: flex; min-height: 49px; flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 16px; }
+.ownerBar > span { min-width: 0; font-size: .59rem; line-height: 1.4; }
+.ownerBar .ownerDesktopLinks { display: none; }
+.ownerMobileMenu { position: relative; min-width: 0; margin-left: auto; }
+.ownerMobileMenu summary { display: inline-flex; min-height: 36px; align-items: center; gap: 8px; cursor: pointer; list-style: none; white-space: nowrap; }
+.ownerMobileMenu summary::-webkit-details-marker { display: none; }
+.ownerMobileMenu summary::after { content: "+"; font-size: 1rem; }
+.ownerMobileMenu[open] summary::after { content: "−"; }
+.ownerMobileMenu nav { position: absolute; z-index: 100; top: calc(100% + 3px); right: 0; display: grid; width: min(252px,86vw); padding: 7px 12px; border: 1px solid #657b60; background: #11271d; box-shadow: 0 12px 28px rgba(0,0,0,.18); }
+.ownerMobileMenu nav a { display: flex; min-height: 44px; align-items: center; border-bottom: 1px solid rgba(241,237,223,.13); color: #f1eddf; }
+.ownerMobileMenu nav a:last-child { border-bottom: 0; }
+@media (min-width: 700px) {
+  .heroInner { grid-template-columns: minmax(0,1.1fr) minmax(260px,.85fr); gap: 35px; padding-block: 42px 44px; }
+  .hero h1 { max-width: 11ch; font-size: clamp(3.6rem,5.8vw,5.3rem); }
+  .description { font-size: 1rem; }
+  .heroFeature { display: grid; min-width: 0; align-content: center; justify-items: center; gap: 8px; padding: 15px; border: 1px solid var(--border); background: var(--background); }
+  .heroFeatureLabel, .heroFeatureFoot { width: 100%; color: var(--text-muted); font-size: .6rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+  .heroFeature :global(.specimen-leaf) { width: min(100%,345px); }
+  .heroFeatureFoot { display: flex; justify-content: space-between; }
+  .discover { padding-top: 34px; }
+  .quickCard { min-height: 164px; padding: 20px; }
+  .quickCard strong { font-size: 1.28rem; }
+  .quickDescription { font-size: .83rem; }
+  .podboundFeature { grid-template-columns: minmax(0,1.1fr) minmax(240px,.75fr); align-items: center; min-height: 254px; }
+  .podboundCopy { padding: 30px 32px; }
+  .podboundCards { display: grid; place-items: center; height: 100%; min-height: 240px; }
+  .podboundCards :global(.podbound-card-stack) { width: min(75%,290px); }
+  .contentSection { padding-top: 36px; }
+  .updateGrid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .ownerBar .ownerDesktopLinks { display: flex; }
+  .ownerMobileMenu { display: none; }
+  .ownerBar.ownerBar { min-height: 42px; padding: 8px 18px; }
+}
+@media (min-width: 1000px) { .heroInner { grid-template-columns: minmax(0,1.12fr) minmax(350px,.68fr); } .quickGrid { gap: 16px; } }
+@media (max-width: 360px) { .hero h1 { font-size: 2.55rem; } .heroLinks { gap: 7px; } .heroLink { padding-inline: 10px; font-size: .65rem; } .quickCard { padding-inline: 11px; } .quickDescription { font-size: .68rem; } }
+@media (prefers-reduced-motion: reduce) { .quickCard { transition: none; } }

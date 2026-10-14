@@ -4,25 +4,14 @@ import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { ArrowUpRightIcon } from "./Icons";
 import { LedgerSpeciesCard } from "./LedgerSpeciesCard";
-import { BookIcon, CreativeIcon, DirectoryIcon, GameIcon, LeafIcon, ShopIcon } from "./PlatformIcons";
+import { BookIcon, LeafIcon } from "./PlatformIcons";
 import { PodboundCardRotator } from "./PodboundCardRotator";
 import { SpecimenLeaf } from "./SpecimenLeaf";
-import { labBench, platformAreas, type PlatformArea } from "@/data/platform";
-import { specimenPhotoTests } from "@/data/photo-tests";
+import styles from "./MarketingHome.module.css";
 import { isLabRecordActive, labRecordDate } from "@/data/lab";
-import { isSpeciesRecordActive, speciesRecordLabel } from "@/data/species";
+import { isSpeciesRecordActive, speciesDisplayName } from "@/data/species";
 import { getLabRecords } from "@/lib/lab-store";
 import { getSpeciesRecords } from "@/lib/species-store";
-
-const areaIcons: Record<PlatformArea["key"], React.ReactNode> = {
-  ledger: <LeafIcon />, podbound: <GameIcon />, guide: <BookIcon />, shop: <ShopIcon />, creative: <CreativeIcon />, directory: <DirectoryIcon />,
-};
-
-function SmartLink({ href, className, children }: { href: string; className?: string; children: React.ReactNode }) {
-  return href.startsWith("http")
-    ? <a href={href} className={className} target="_blank" rel="noreferrer">{children}</a>
-    : <Link href={href} className={className}>{children}</Link>;
-}
 
 export async function MarketingSite() {
   const [speciesRecords, labRecords] = await Promise.all([getSpeciesRecords(), getLabRecords()]);
@@ -30,88 +19,98 @@ export async function MarketingSite() {
     .filter((record) => isSpeciesRecordActive(record) && record.image)
     .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
     .slice(0, 5);
+  // Preview the eventual customer-facing layout: never highlight unpublished drafts.
   const latestUpdates = labRecords
-    .filter(isLabRecordActive)
+    .filter((record) => isLabRecordActive(record) && record.status === "published")
     .sort((a, b) => Date.parse(b.publishedAt || b.updatedAt) - Date.parse(a.publishedAt || a.updatedAt))
-    .slice(0, 5);
-  const heroRecord = ledgerRecords[0];
+    .slice(0, 3);
+  const featuredSpecies = ledgerRecords[0];
 
-  return (
-    <div className="v2-site">
-      <a className="skip-link" href="#platform-main">Skip to content</a>
-      <Header />
-      <main id="platform-main">
-        <section className="v2-hero">
-          <div className="v2-container v2-hero-grid">
-            <div className="v2-hero-copy">
-              <p className="v2-label">Independent Canadian Studio</p>
-              <h1>Tools, games, and resources for the isopod hobby.</h1>
-              <p>Podscape Labs is an independent Canadian studio building projects, practical tools, and useful resources for isopod keepers.</p>
-              <div className="v2-actions">
-                <Link className="v2-button v2-button-primary" href="/explore">Explore Podscape <span aria-hidden="true">→</span></Link>
-                <Link className="v2-button v2-button-outline" href="/ledger">Open Leaf Ledger <span aria-hidden="true">→</span></Link>
-              </div>
-            </div>
-            <div className="v2-hero-specimen">
-              <SpecimenLeaf image={heroRecord?.image || specimenPhotoTests[0].image} alt={heroRecord?.imageAlt || "Temporary hero specimen photograph; species identity not assigned"} size="hero" number={heroRecord?.catalogueNumber || "FIELD NOTE 001"} positionX={heroRecord?.imagePositionX} positionY={heroRecord?.imagePositionY} zoom={heroRecord?.imageZoom} />
-              <aside className="v2-field-note"><span>Field Note</span><strong>No. 001</strong><LeafIcon /><small>{heroRecord ? speciesRecordLabel(heroRecord) : "Temporary photo test"}</small></aside>
+  return <div className="v2-site">
+    <a className="skip-link" href="#platform-main">Skip to content</a>
+    <Header />
+    <main id="platform-main">
+      <section className={styles.hero} aria-labelledby="home-title">
+        <div className={`v2-container ${styles.heroInner}`}>
+          <div className={styles.heroCopy}>
+            <p className={styles.kicker}>Podscape Labs · Independent Canadian Studio</p>
+            <h1 id="home-title">Explore the world of isopods.</h1>
+            <p className={styles.description}>Original games, species knowledge, and practical resources for curious keepers.</p>
+            <div className={styles.heroLinks}>
+              <Link className={`${styles.heroLink} ${styles.heroPrimary}`} href="/ledger">Leaf Ledger <span aria-hidden="true">→</span></Link>
+              <a className={`${styles.heroLink} ${styles.heroSecondary}`} href="https://www.podbound.net" target="_blank" rel="noreferrer">PodBound <ArrowUpRightIcon /></a>
             </div>
           </div>
-        </section>
+          {featuredSpecies ? <Link className={styles.heroFeature} href={`/ledger/${featuredSpecies.slug}`} aria-label={`View ${speciesDisplayName(featuredSpecies)} in Leaf Ledger`}>
+            <span className={styles.heroFeatureLabel}>From the Leaf Ledger</span>
+            <SpecimenLeaf image={featuredSpecies.image} alt={featuredSpecies.imageAlt || "Isopod specimen photograph"} size="hero" positionX={featuredSpecies.imagePositionX} positionY={featuredSpecies.imagePositionY} zoom={featuredSpecies.imageZoom} />
+            <span className={styles.heroFeatureFoot}>Explore species <span aria-hidden="true">↗</span></span>
+          </Link> : null}
+        </div>
+      </section>
 
-        <section className="v2-home-section v2-explore-section" aria-labelledby="explore-podscape-title">
-          <div className="v2-container">
-            <div className="v2-section-line"><h2 id="explore-podscape-title">Explore Podscape</h2><Link href="/explore">View everything <span aria-hidden="true">→</span></Link></div>
-            <div className="v2-area-grid">
-              {platformAreas.map((area) => <SmartLink className={`v2-area-card tone-${area.key}`} href={area.href} key={area.key}><span className="v2-area-icon">{areaIcons[area.key]}</span><strong>{area.title}</strong><p>{area.description}</p><span className="v2-card-arrow" aria-hidden="true">→</span></SmartLink>)}
+      <section className={styles.discover} aria-labelledby="start-exploring-title">
+        <div className="v2-container">
+          <div className={styles.sectionHeading}>
+            <h2 id="start-exploring-title">Start exploring</h2>
+            <Link href="/explore">All destinations <span aria-hidden="true">→</span></Link>
+          </div>
+          <div className={styles.quickGrid}>
+            <Link href="/ledger" className={styles.quickCard}>
+              <span className={styles.quickIcon}><LeafIcon /></span>
+              <strong>Leaf Ledger</strong>
+              <span className={styles.quickDescription}>Discover species and organize your collection.</span>
+              <span className={styles.quickArrow} aria-hidden="true">↗</span>
+            </Link>
+            <Link href="/field-guide" className={styles.quickCard}>
+              <span className={styles.quickIcon}><BookIcon /></span>
+              <strong>Field Guide</strong>
+              <span className={styles.quickDescription}>Care guides and resources for keepers.</span>
+              <span className={styles.quickArrow} aria-hidden="true">↗</span>
+            </Link>
+          </div>
+          <article className={styles.podboundFeature} aria-labelledby="featured-podbound-title">
+            <div className={styles.podboundCopy}>
+              <p className={styles.podboundKicker}>Featured project · PodBound</p>
+              <Image className={styles.podboundLogo} src="/assets/logos/podbound-logo.png" alt="PodBound" width={1800} height={791} />
+              <h2 id="featured-podbound-title">Forecast. Choice. Colony.</h2>
+              <p>A two-player tabletop strategy game about managing an isopod colony through changing conditions.</p>
+              <a href="https://www.podbound.net" className={styles.podboundLink} target="_blank" rel="noreferrer">Explore PodBound <ArrowUpRightIcon /></a>
             </div>
-          </div>
-        </section>
+            <div className={styles.podboundCards}><PodboundCardRotator /></div>
+          </article>
+        </div>
+      </section>
 
-        <section className="v2-home-section" aria-labelledby="lab-bench-title">
-          <div className="v2-container">
-            <div className="v2-section-line"><h2 id="lab-bench-title">The Lab Bench</h2><Link href="/from-the-lab">View all projects <span aria-hidden="true">→</span></Link></div>
-            <div className="v2-bench-grid">
-              {labBench.map((item) => <article className={`v2-status-card tone-${item.tone}`} key={item.area}><span>{item.status}</span><strong>{item.area}</strong><p>{item.detail}</p></article>)}
-              <Link className="v2-process-card" href="/from-the-lab"><LeafIcon /><span>Curious about our process?</span><strong>From the Lab →</strong></Link>
-            </div>
+      {ledgerRecords.length ? <section className={styles.contentSection} aria-labelledby="latest-ledger-title">
+        <div className="v2-container">
+          <div className={styles.sectionHeading}>
+            <h2 id="latest-ledger-title">From the Leaf Ledger</h2>
+            <Link href="/ledger">Browse species <span aria-hidden="true">→</span></Link>
           </div>
-        </section>
+          <div className={`v2-species-rail ${styles.speciesRail}`}>
+            {ledgerRecords.map((record) => <LedgerSpeciesCard record={record} compact key={record.id} />)}
+          </div>
+        </div>
+      </section> : null}
 
-        <section className="v2-home-section" aria-labelledby="whats-new-title">
-          <div className="v2-container">
-            <div className="v2-section-line"><h2 id="whats-new-title">What&apos;s New</h2><Link href="/from-the-lab">View all updates <span aria-hidden="true">→</span></Link></div>
-            {latestUpdates.length ? <div className="v2-update-grid">{latestUpdates.map((update) => <Link className="v2-update-card" href={`/from-the-lab/${update.slug}`} key={update.id}><span>{update.category}</span><strong>{update.title}</strong><p>{update.summary || "Summary pending."}</p><small>{update.status === "draft" ? "Studio draft" : labRecordDate(update)}</small></Link>)}</div> : <div className="v2-home-empty"><strong>The studio notebook is ready for its first update.</strong><Link href="/admin/lab">Open the notebook desk →</Link></div>}
+      {latestUpdates.length ? <section className={styles.contentSection} aria-labelledby="studio-updates-title">
+        <div className="v2-container">
+          <div className={styles.sectionHeading}>
+            <h2 id="studio-updates-title">From the Lab</h2>
+            <Link href="/from-the-lab">All updates <span aria-hidden="true">→</span></Link>
           </div>
-        </section>
-
-        <section className="v2-home-section" aria-labelledby="latest-ledger-title">
-          <div className="v2-container">
-            <div className="v2-section-line"><h2 id="latest-ledger-title">Latest in the Leaf Ledger</h2><Link href="/ledger">View all species <span aria-hidden="true">→</span></Link></div>
-            {ledgerRecords.length ? <div className="v2-species-rail">{ledgerRecords.map((record) => <LedgerSpeciesCard record={record} compact key={record.id} />)}</div> : <div className="v2-home-empty"><strong>The Ledger is ready for its first photographed record.</strong><Link href="/admin/species">Open the Ledger desk →</Link></div>}
+          <div className={styles.updateGrid}>
+            {latestUpdates.map((update) => <Link className={styles.updateCard} href={`/from-the-lab/${update.slug}`} key={update.id}>
+              <span>{update.category}</span>
+              <strong>{update.title}</strong>
+              <p>{update.summary || "Studio update"}</p>
+              <small>{labRecordDate(update)}</small>
+            </Link>)}
           </div>
-        </section>
-
-        <section className="v2-feature-section">
-          <div className="v2-container v2-feature-grid">
-            <article className="v2-podbound-feature">
-              <div className="v2-feature-copy">
-                <p className="v2-kicker">PodBound · Field Archives</p>
-                <Image src="/assets/logos/podbound-logo.png" alt="PodBound" width={1800} height={791} />
-                <h2>The game of forecast, choice, and colony.</h2>
-                <p>PodBound is a tabletop strategy game built around managing an isopod colony through changing conditions.</p>
-                <a className="v2-button v2-button-light" href="https://www.podbound.net" target="_blank" rel="noreferrer">Visit PodBound <ArrowUpRightIcon /></a>
-              </div>
-              <PodboundCardRotator />
-            </article>
-            <article className="v2-creative-feature" id="creative-network">
-              <div><p className="v2-kicker">Creative Network · Phase 2</p><h2>Made by people who make things.</h2><p>A future discovery space for independent artists, designers, makers, and creators working with the hobby.</p><Link className="v2-button v2-button-outline" href="/explore#creative-network">Explore the plan <span aria-hidden="true">→</span></Link></div>
-              <div className="v2-creative-mark" aria-hidden="true"><CreativeIcon /><span>Independent<br />creative work</span></div>
-            </article>
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
-  );
+        </div>
+      </section> : null}
+    </main>
+    <Footer />
+  </div>;
 }
