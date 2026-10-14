@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { CollectionButton } from "@/components/CollectionButton";
-import { CollectionDetailsForm } from "@/components/CollectionDetailsForm";
 import { Breadcrumbs, PlatformShell } from "@/components/PlatformShell";
 import { SpecimenLeaf } from "@/components/SpecimenLeaf";
 import styles from "@/components/SpeciesProfile.module.css";
@@ -52,9 +51,8 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
             </div>
 
             <div id="keeper-record" className={styles.keeperAnchor} />
-            {collectionEntry ? <p style={{marginTop:16}}><Link href={`/keeper?species=${encodeURIComponent(record.id)}`} style={{ color:"var(--accent)",fontWeight:750 }}>Create or manage an enclosure →</Link></p> : null}
             {record.kind === "species" ? collectionEntry
-              ? <CollectionDetailsForm entry={collectionEntry} speciesName={displayName} careSpecs={care.map(([label, value]) => ({ label: String(label), value: String(value) }))} />
+              ? <div className={styles.collectAction}><p style={{fontSize:".78rem",color:"var(--text-secondary)"}}>Saved to My Collection. Manage your individual colonies in the Keeper workspace.</p><Link href={`/keeper?species=${encodeURIComponent(record.id)}`} className="v2-button">Open Keeper workspace →</Link></div>
               : <div className={styles.collectAction}>
                 <CollectionButton speciesId={record.id} speciesName={displayName} initialCollected={false} signedIn={member.signedIn} detail />
               </div>
