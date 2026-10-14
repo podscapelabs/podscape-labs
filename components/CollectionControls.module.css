@@ -1,5 +1,18 @@
 /* The Ledger keeps a single card link; the ownership toggle is a separate, accessible target. */
-.tile { position: relative; display: flex; min-width: 0; flex-direction: column; }
+.tile {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  /* Distinct states calibrated for the light Ledger palette. */
+  --ownership-leaf-muted: #a8adaa;
+  --ownership-leaf-active: #247842;
+}
+:global(:root[data-theme="dark"]) .tile {
+  /* Grey remains grey, while saved specimens are a brighter botanical green. */
+  --ownership-leaf-muted: #66736b;
+  --ownership-leaf-active: #a6da78;
+}
 .tile > a.v2-species-card, .tile > a { flex: 1; }
 .control { margin-top: 12px; }
 
@@ -10,31 +23,37 @@
 
 /* A filled leaf denotes a saved species. The 44px tap area remains independently focusable. */
 .ownershipControl { position: absolute; z-index: 5; top: 0; right: 0; }
-.ownershipToggle { display: grid; width: 44px; height: 44px; place-items: center; padding: 0; border: 1px solid var(--border-strong); border-radius: 50%; background: var(--surface); color: var(--accent); box-shadow: 0 2px 7px color-mix(in srgb, var(--text-primary) 8%, transparent); cursor: pointer; text-decoration: none; transition: background 160ms ease, border-color 160ms ease; }
-.ownershipToggle:hover { border-color: var(--accent); background: var(--surface-raised); }
-.ownershipToggle[data-collected="true"] { color: var(--accent); border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--surface)); }
+.ownershipToggle { display: grid; width: 44px; height: 44px; place-items: center; padding: 0; border: 1px solid var(--border-strong); border-radius: 50%; background: var(--surface); color: var(--ownership-leaf-muted); box-shadow: 0 2px 7px color-mix(in srgb, var(--text-primary) 8%, transparent); cursor: pointer; text-decoration: none; transition: background 180ms ease, border-color 180ms ease, color 180ms ease; }
+.ownershipToggle:hover { border-color: var(--ownership-leaf-active); background: var(--surface-raised); }
+.ownershipToggle[data-collected="true"] { color: var(--ownership-leaf-active); border-color: var(--ownership-leaf-active); background: color-mix(in srgb, var(--ownership-leaf-active) 13%, var(--surface)); }
 .ownershipToggle:focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; }
 .ownershipToggle:disabled { opacity: .65; cursor: wait; }
 .ownershipLeaf { width: 23px; height: 23px; overflow: visible; }
-/* Collection ownership is expressed by the existing decorative leaf, not by greying out the species or its photograph. */
+/* Keep the specimen photo and text fully coloured.
+   Unsaved: neutral, fine grey linework, no green fill.
+   Saved: saturated green outline + visible translucent botanical fill. */
 .tile :global(.specimen-leaf-outline),
 .tile :global(.specimen-leaf-vein) {
-  color: color-mix(in srgb, var(--text-muted) 80%, var(--surface));
-  opacity: .66;
-  transition: color 200ms ease, opacity 200ms ease;
+  color: var(--ownership-leaf-muted);
+  transition: color 240ms ease, opacity 240ms ease, border-width 240ms ease, background-color 240ms ease;
 }
 .tile :global(.specimen-leaf-outline) {
-  background-color: color-mix(in srgb, var(--text-muted) 5%, transparent);
-  transition: color 200ms ease, opacity 200ms ease, background-color 200ms ease;
+  opacity: .72;
+  border-width: 1.5px;
+  background-color: transparent;
 }
-/* The same signed-in collection state used by the small toggle animates the larger leaf. */
+.tile :global(.specimen-leaf-vein) {
+  opacity: .45;
+}
+/* Match the already-live, user-specific toggle state. No new data or UI controls. */
 .tile:has(.ownershipToggle[data-collected="true"]) :global(.specimen-leaf-outline),
 .tile:has(.ownershipToggle[data-collected="true"]) :global(.specimen-leaf-vein) {
-  color: var(--accent);
+  color: var(--ownership-leaf-active);
   opacity: 1;
 }
 .tile:has(.ownershipToggle[data-collected="true"]) :global(.specimen-leaf-outline) {
-  background-color: color-mix(in srgb, var(--accent) 9%, transparent);
+  border-width: 2.5px;
+  background-color: color-mix(in srgb, var(--ownership-leaf-active) 27%, transparent);
 }
 .toggleError { position: absolute; top: 46px; right: 0; width: min(230px, 70vw); margin: 0; padding: 9px 11px; border: 1px solid var(--clay); background: var(--surface); color: var(--clay); font-size: .68rem; line-height: 1.45; box-shadow: 0 5px 16px color-mix(in srgb, var(--text-primary) 10%, transparent); }
 .srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
