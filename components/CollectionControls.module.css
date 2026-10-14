@@ -16,8 +16,26 @@
 .ownershipToggle:focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; }
 .ownershipToggle:disabled { opacity: .65; cursor: wait; }
 .ownershipLeaf { width: 23px; height: 23px; overflow: visible; }
-/* Mirror the filled leaf state on the existing specimen outline, without altering photographs. */
-.tile:has(.ownershipToggle[data-collected="true"]) :global(.specimen-leaf-outline) { color: color-mix(in srgb, var(--accent) 68%, #b39a56); }
+/* Collection ownership is expressed by the existing decorative leaf, not by greying out the species or its photograph. */
+.tile :global(.specimen-leaf-outline),
+.tile :global(.specimen-leaf-vein) {
+  color: color-mix(in srgb, var(--text-muted) 80%, var(--surface));
+  opacity: .66;
+  transition: color 200ms ease, opacity 200ms ease;
+}
+.tile :global(.specimen-leaf-outline) {
+  background-color: color-mix(in srgb, var(--text-muted) 5%, transparent);
+  transition: color 200ms ease, opacity 200ms ease, background-color 200ms ease;
+}
+/* The same signed-in collection state used by the small toggle animates the larger leaf. */
+.tile:has(.ownershipToggle[data-collected="true"]) :global(.specimen-leaf-outline),
+.tile:has(.ownershipToggle[data-collected="true"]) :global(.specimen-leaf-vein) {
+  color: var(--accent);
+  opacity: 1;
+}
+.tile:has(.ownershipToggle[data-collected="true"]) :global(.specimen-leaf-outline) {
+  background-color: color-mix(in srgb, var(--accent) 9%, transparent);
+}
 .toggleError { position: absolute; top: 46px; right: 0; width: min(230px, 70vw); margin: 0; padding: 9px 11px; border: 1px solid var(--clay); background: var(--surface); color: var(--clay); font-size: .68rem; line-height: 1.45; box-shadow: 0 5px 16px color-mix(in srgb, var(--text-primary) 10%, transparent); }
 .srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
 
@@ -54,5 +72,7 @@
   .detail { max-width: 280px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ownershipToggle { transition: none; }
+  .ownershipToggle,
+  .tile :global(.specimen-leaf-outline),
+  .tile :global(.specimen-leaf-vein) { transition: none; }
 }
