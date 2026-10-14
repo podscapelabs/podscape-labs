@@ -126,6 +126,35 @@
 .outlineButton { justify-content: center; background: transparent; color: var(--forest); white-space: nowrap; }
 .outlineButton:hover { background: var(--paper); }
 .dashboardGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 25px; }
+.keeperDashboard { margin: 0 0 25px; padding: clamp(24px, 4vw, 50px); border: 1px solid var(--line); background: var(--paper); }
+.sectionHeading { display: flex; align-items: flex-start; justify-content: space-between; gap: 30px; }
+.sectionHeading .panelLabel { margin-bottom: 15px; }
+.sectionHeading h2 { margin: 0; font: 400 clamp(2rem, 4.5vw, 4rem)/1.05 var(--serif, Georgia, serif); }
+.sectionHeading .secondary { margin: 14px 0 0; }
+.sectionHeading .outlineButton { text-decoration: none; }
+.keeperStats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 36px 0; border: 1px solid var(--line); }
+.keeperStats div { display: flex; min-height: 116px; flex-direction: column; justify-content: space-between; gap: 14px; padding: 20px; border-right: 1px solid var(--line); }
+.keeperStats div:last-child { border-right: 0; }
+.keeperStats span { color: var(--muted); font-size: .64rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.keeperStats strong { color: var(--forest); font: 400 2.4rem/1 var(--serif, Georgia, serif); }
+.speciesManagerGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.speciesManagerCard { display: grid; min-width: 0; gap: 20px; padding: 22px; border: 1px solid var(--line); background: var(--paper-strong); }
+.speciesManagerCard p { margin: 0 0 8px; color: var(--moss); font-size: .62rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+.speciesManagerCard h3 { margin: 0 0 4px; font: 400 1.55rem/1.1 var(--serif, Georgia, serif); }
+.speciesManagerCard em { color: var(--muted); font-family: var(--serif, Georgia, serif); }
+.speciesManagerCard > a { color: var(--forest); font-size: .68rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+.speciesCardSummary { display: flex; flex-wrap: wrap; gap: 7px; }
+.speciesCardSummary span { padding: 7px 9px; border: 1px solid var(--line); color: var(--muted); font-size: .62rem; }
+.speciesCardSummary b { color: var(--ink); }
+.emptyDashboard { padding: 30px; border: 1px dashed var(--line); }
+.emptyDashboard h3 { margin: 0 0 9px; font-family: var(--serif, Georgia, serif); font-size: 1.5rem; font-weight: 400; }
+.emptyDashboard p { color: var(--muted); }
+.keeperSpeciesHeader { display: grid; grid-template-columns: minmax(260px, .68fr) minmax(0, 1fr); gap: clamp(30px, 7vw, 90px); align-items: center; margin-bottom: clamp(45px, 8vw, 90px); }
+.keeperSpeciesHeader h1 { margin: 0; font: 400 clamp(2.8rem, 6vw, 5.8rem)/.98 var(--serif, Georgia, serif); letter-spacing: -.035em; }
+.scientificName { margin: 13px 0 0; color: var(--muted); font: 400 clamp(1.15rem, 2vw, 1.5rem)/1.3 var(--serif, Georgia, serif); }
+.keeperSpeciesStats { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 27px; }
+.keeperSpeciesStats span { padding: 9px 11px; border: 1px solid var(--line); color: var(--muted); font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; }
+.keeperSpeciesStats b { color: var(--forest); }
 .facts { display: grid; gap: 15px; margin: 0 0 32px; }
 .facts div { display: flex; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--line); padding-bottom: 15px; }
 .facts dt { color: var(--muted); font-size: .73rem; }
@@ -137,6 +166,10 @@
   .intro h1 { max-width: 660px; }
   .plate { margin-top: 30px; }
   .dashboardGrid { grid-template-columns: 1fr; }
+  .keeperStats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .keeperStats div:nth-child(2) { border-right: 0; }
+  .keeperStats div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+  .keeperSpeciesHeader { grid-template-columns: 1fr; }
 }
 @media (max-width: 600px) {
   .page { padding-top: 43px; }
@@ -147,6 +180,9 @@
   .plate { display: none; }
   .panel { padding: 24px 19px; }
   .accountHeading { flex-direction: column; margin-bottom: 32px; }
+  .sectionHeading { flex-direction: column; }
+  .sectionHeading .outlineButton { width: 100%; }
+  .speciesManagerGrid { grid-template-columns: 1fr; }
   .formLinks { flex-direction: column; align-items: flex-start; }
 }
 @media (prefers-reduced-motion: reduce) {

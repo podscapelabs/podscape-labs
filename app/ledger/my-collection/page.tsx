@@ -9,6 +9,7 @@ import { PlatformShell } from "@/components/PlatformShell";
 import { LedgerPageIntro } from "@/components/LedgerPageIntro";
 import layout from "@/components/LedgerLayout.module.css";
 import { getMemberCollectionState } from "@/lib/member-collection";
+import { listEnclosures } from "@/lib/keeper";
 import { getSpeciesRecords } from "@/lib/species-store";
 
 export const dynamic = "force-dynamic";
@@ -16,11 +17,18 @@ export const metadata: Metadata = { title: "My Collection | Podscape Leaf Ledger
 
 export default async function MyCollectionPage() {
   const member = await getMemberCollectionState();
-  const records = member.signedIn ? await getSpeciesRecords() : [];
+  const [records, enclosures] = member.signedIn ? await Promise.all([getSpeciesRecords(), listEnclosures()]) : [[], []];
   const saved = new Set(member.ids);
   const inCollection = records.filter((record) => saved.has(record.id) && record.kind === "species" && isSpeciesRecordActive(record));
   const addedAtById = Object.fromEntries(member.entries.map((entry) => [entry.speciesId, entry.addedAt]));
-  const collectionDetailsById = Object.fromEntries(member.entries.map((entry) => [entry.speciesId, { quantity: entry.quantity, colonyStatus: entry.colonyStatus }]));
+  const collectionDetailsById = Object.fromEntries(member.entries.map((entry) => {
+    const colonies = enclosures.filter((enclosure) => enclosure.speciesId === entry.speciesId && !enclosure.isArchived);
+    const primary = colonies.find((colony) => colony.isPrimary) || colonies[0];
+    return [entry.speciesId, {
+      quantity: colonies.reduce((total, colony) => total + colony.quantity, 0) || entry.quantity,
+      colonyStatus: (primary?.status || entry.colonyStatus) as typeof entry.colonyStatus,
+    }];
+  }));
   const generaCount = new Set(inCollection.map((record) => record.genus).filter(Boolean)).size;
 
   return <PlatformShell>

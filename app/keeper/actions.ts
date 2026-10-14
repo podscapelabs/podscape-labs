@@ -21,16 +21,25 @@ export async function createEnclosure(input: { speciesId: string; name: string }
  if (error || !data) return { success:false,error:"Couldn't create enclosure. Keeper database migration may be required." };
  revalidatePath("/keeper"); revalidatePath("/ledger/my-collection"); return { success:true,id:data.id };
 }
-export async function updateEnclosure(input: { id:string; name:string; label:string; quantity:number; status:string; breeding:string; enclosureType:string; notes:string }):Promise<Result> {
+export async function updateEnclosure(input: { id:string; name:string; label:string; quantity:number; status:string; breeding:string; enclosureType:string; acquiredOn:string; source:string; notes:string }):Promise<Result> {
  await requireCustomerPreviewAccess();
- if (!input.id || !input.name?.trim() || input.name.length > 80 || input.label.length > 70 || !Number.isInteger(input.quantity) || input.quantity < 0 || input.quantity > 99999 || !statuses.includes(input.status) || !breedingValues.includes(input.breeding) || input.enclosureType.length > 120 || input.notes.length > 5000) return {success:false,error:"Review your enclosure details."};
+ const validDate = input.acquiredOn === "" || /^\d{4}-\d{2}-\d{2}$/.test(input.acquiredOn);
+ if (!input.id || !input.name?.trim() || input.name.length > 80 || input.label.length > 70 || !Number.isInteger(input.quantity) || input.quantity < 0 || input.quantity > 99999 || !statuses.includes(input.status) || !breedingValues.includes(input.breeding) || input.enclosureType.length > 120 || !validDate || input.source.length > 300 || input.notes.length > 5000) return {success:false,error:"Review your enclosure details."};
  const { db, user } = await keeperContext(); if (!db || !user) return {success:false,error:"Sign in first."};
  const { data: old } = await db.from("keeper_enclosures").select("quantity").eq("id",input.id).eq("user_id",user.id).maybeSingle();
  if (!old) return {success:false,error:"Enclosure not found."};
- const { data,error } = await db.from("keeper_enclosures").update({ name:input.name.trim(),label:input.label.trim(),quantity:input.quantity,status:input.status,breeding:input.breeding,enclosure_type:input.enclosureType.trim(),notes:input.notes.trim(),updated_at:new Date().toISOString() }).eq("id",input.id).eq("user_id",user.id).select("id").maybeSingle();
+ const { data,error } = await db.from("keeper_enclosures").update({ name:input.name.trim(),label:input.label.trim(),quantity:input.quantity,status:input.status,breeding:input.breeding,enclosure_type:input.enclosureType.trim(),acquired_on:input.acquiredOn||null,source:input.source.trim(),notes:input.notes.trim(),updated_at:new Date().toISOString() }).eq("id",input.id).eq("user_id",user.id).select("id").maybeSingle();
  if (error || !data) return {success:false,error:"Couldn't save enclosure."};
  if (old.quantity !== input.quantity) await db.from("keeper_events").insert({user_id:user.id,enclosure_id:input.id,kind:"inventory",note:"Population updated",quantity_change:input.quantity-old.quantity});
- revalidatePath("/keeper"); revalidatePath("/keeper/"+input.id); return {success:true};
+ revalidatePath("/keeper"); revalidatePath("/keeper/"+input.id); revalidatePath("/account"); revalidatePath("/ledger/my-collection"); return {success:true};
+}
+export async function setEnclosureArchived(input:{id:string;archived:boolean}):Promise<Result>{
+ await requireCustomerPreviewAccess();
+ if(!/^[a-f0-9-]{36}$/i.test(input.id)||typeof input.archived!=="boolean")return{success:false,error:"Invalid enclosure."};
+ const {db,user}=await keeperContext();if(!db||!user)return{success:false,error:"Sign in first."};
+ const {data,error}=await db.from("keeper_enclosures").update({is_archived:input.archived,updated_at:new Date().toISOString()}).eq("id",input.id).eq("user_id",user.id).select("id").maybeSingle();
+ if(error||!data)return{success:false,error:"Couldn't update this enclosure."};
+ revalidatePath("/keeper");revalidatePath("/keeper/"+input.id);revalidatePath("/account");revalidatePath("/ledger/my-collection");return{success:true};
 }
 export async function logKeeperEvent(input:{ id:string; kind:string; note:string }):Promise<Result> {
  await requireCustomerPreviewAccess();

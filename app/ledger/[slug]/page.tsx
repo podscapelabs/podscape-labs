@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { CollectionButton } from "@/components/CollectionButton";
 import { Breadcrumbs, PlatformShell } from "@/components/PlatformShell";
 import { SpecimenLeaf } from "@/components/SpecimenLeaf";

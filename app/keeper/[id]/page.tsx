@@ -17,6 +17,6 @@ export default async function EnclosurePage({params}:{params:Promise<{id:string}
  return <PlatformShell><main className={styles.page}><div className="v2-container"><Breadcrumbs items={[{label:"My Enclosures",href:"/keeper"},{label:enclosure.name}]}/><p className={styles.kicker}>KEEPER / PRIVATE ENCLOSURE</p><h1>{enclosure.name}</h1><p className={styles.lead}>{record?speciesDisplayName(record):"Unlinked species"} · {enclosure.label||"No bin label"} {record?<><br/><em>{speciesScientificName(record)}</em> · <Link href={`/ledger/${record.slug}`}>View species reference ↗</Link></>:null}</p>
  <KeeperControls entry={enclosure}/>
  <section style={{marginTop:30}}><h2>Activity history</h2>{events.length?<div className={styles.list}>{events.map(event=><div className={styles.entry} key={event.id}><span><strong>{event.kind.replaceAll("-"," ")}</strong><small>{event.note}</small></span><span>{new Date(event.createdAt).toLocaleDateString()}</span></div>)}</div>:<p className={styles.empty}>No activity recorded yet. Your first entry will appear here.</p>}</section>
- <p className={styles.lead}>QR labels are coming next. This private address can already be used as a direct shortcut, but don't share it publicly.</p>
+ <p className={styles.lead}>QR labels are coming next. This private address can already be used as a direct shortcut, but do not share it publicly.</p>
  </div></main></PlatformShell>;
 }
