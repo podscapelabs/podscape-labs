@@ -3,6 +3,17 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   outputFileTracingRoot: process.cwd(),
+  // Uploaded species photographs live in this public Supabase Storage bucket.
+  // Next/Image must explicitly allow the remote hostname and public object path.
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "qptvfwmxmhmhdmfyuzbb.supabase.co",
+        pathname: "/storage/v1/object/public/species-photos/**",
+      },
+    ],
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: "13mb",
