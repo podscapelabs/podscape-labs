@@ -3,6 +3,7 @@ import Link from "next/link";
 import { LedgerCollectionTabs } from "@/components/LedgerCollectionTabs";
 import { LedgerExplorer } from "@/components/LedgerExplorer";
 import styles from "@/components/CollectionControls.module.css";
+import collectionStyles from "@/components/CollectionRows.module.css";
 import { isSpeciesRecordActive } from "@/data/species";
 import { PlatformShell } from "@/components/PlatformShell";
 import { LedgerPageIntro } from "@/components/LedgerPageIntro";
@@ -21,7 +22,8 @@ export default async function MyCollectionPage() {
   const addedAtById = Object.fromEntries(member.entries.map((entry) => [entry.speciesId, entry.addedAt]));
   const collectionDetailsById = Object.fromEntries(member.entries.map((entry) => [entry.speciesId, { quantity: entry.quantity, colonyStatus: entry.colonyStatus }]));
   const generaCount = new Set(inCollection.map((record) => record.genus).filter(Boolean)).size;
-  const verifiedCount = inCollection.filter((record) => record.identityStatus === "verified").length;
+  const visibleIds = new Set(inCollection.map((record) => record.id));
+  const recordedQuantity = member.entries.filter((entry) => visibleIds.has(entry.speciesId)).reduce((total, entry) => total + entry.quantity, 0);
 
   return <PlatformShell>
     <LedgerPageIntro mode="collection" />
@@ -36,10 +38,10 @@ export default async function MyCollectionPage() {
         <p>Browse a species record and choose “Add to My Collection” to save it here.</p>
         <Link href="/ledger">Browse Leaf Ledger →</Link>
       </div> : <>
-        <section className="v2-collection-overview" aria-label="Collection overview">
-          <div><span>Species kept</span><strong>{inCollection.length}</strong><small>Saved Leaf Ledger records</small></div>
-          <div><span>Genera represented</span><strong>{generaCount}</strong><small>Across your collection</small></div>
-          <div><span>Verified records</span><strong>{verifiedCount}</strong><small>Confirmed catalogue identities</small></div>
+        <section className={collectionStyles.overview} aria-label="Collection overview">
+          <div><strong>{inCollection.length}</strong><span>Species</span></div>
+          <div><strong>{recordedQuantity}</strong><span>Total quantity</span></div>
+          <div><strong>{generaCount}</strong><span>Genera</span></div>
         </section>
         <LedgerExplorer records={inCollection} collectedIds={member.ids} signedIn mode="collection" addedAtById={addedAtById} collectionDetailsById={collectionDetailsById} />
       </>}

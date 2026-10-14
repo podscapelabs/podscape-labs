@@ -2,6 +2,8 @@
 
 import { useDeferredValue, useMemo, useState } from "react";
 import { LedgerSpeciesCard } from "./LedgerSpeciesCard";
+import { CollectionSpeciesRow } from "./CollectionSpeciesRow";
+import collectionStyles from "./CollectionRows.module.css";
 import styles from "./LedgerLayout.module.css";
 import type { ColonyStatus } from "@/data/collection";
 import { speciesDisplayName, speciesScientificName, type SpeciesRecord } from "@/data/species";
@@ -81,16 +83,19 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
       <span id="ledger-directory-title">{results.length} {results.length === 1 ? "record" : "records"}</span>
       <div className={styles.metaActions}>
         {filtersActive ? <button type="button" onClick={clear}>Clear filters</button> : null}
-        <details className={styles.legend}>
+        {mode === "catalogue" ? <details className={styles.legend}>
           <summary>Leaf colour guide</summary>
           <div className={styles.legendPanel}>
             <strong>Understanding the leaves</strong>
             <p><span className={styles.legendSwatch} aria-hidden="true" /> Brown — Not collected</p>
             <p><span className={`${styles.legendSwatch} ${styles.legendSwatchCollected}`} aria-hidden="true" /> Green — In your collection</p>
           </div>
-        </details>
+        </details> : null}
       </div>
     </div>
-    {results.length ? <div className="v2-species-grid">{results.map((record) => <LedgerSpeciesCard record={record} key={record.id} showCollectionAction collected={saved.has(record.id)} signedIn={signedIn} collectionDetails={collectionDetailsById[record.id]} />)}</div> : <div className="v2-empty-state"><span className="v2-empty-leaf" aria-hidden="true" /><h2>No species match these filters.</h2><p>Try a different name, genus, or care level.</p><button type="button" onClick={clear}>Reset filters</button></div>}
+    {results.length ? (mode === "collection"
+      ? <div className={collectionStyles.grid}>{results.map((record) => <CollectionSpeciesRow record={record} details={collectionDetailsById[record.id]} key={record.id} />)}</div>
+      : <div className="v2-species-grid">{results.map((record) => <LedgerSpeciesCard record={record} key={record.id} showCollectionAction collected={saved.has(record.id)} signedIn={signedIn} collectionDetails={collectionDetailsById[record.id]} />)}</div>
+    ) : <div className="v2-empty-state"><span className="v2-empty-leaf" aria-hidden="true" /><h2>No species match these filters.</h2><p>Try a different name, genus, or care level.</p><button type="button" onClick={clear}>Reset filters</button></div>}
   </section>;
 }
