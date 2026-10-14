@@ -1,52 +1,42 @@
-/* Extends, rather than replaces, the existing PodScape species card vocabulary. */
-.tile { display: flex; min-width: 0; flex-direction: column; }
-.tile > a { flex: 1; }
+/* The Ledger keeps a single card link; the ownership toggle is a separate, accessible target. */
+.tile { position: relative; display: flex; min-width: 0; flex-direction: column; }
+.tile > a.v2-species-card, .tile > a { flex: 1; }
 .control { margin-top: 12px; }
-.collectionMeta { display: grid; grid-template-columns: auto 1fr; gap: 5px 14px; margin-top: 11px; padding: 11px 12px; border: 1px solid var(--border); background: var(--surface); }
-.collectionMeta span { display: flex; gap: 5px; color: var(--text-muted); font-size: .55rem; text-transform: uppercase; }
-.collectionMeta span b { color: var(--text-primary); }
-.collectionMeta small { grid-column: 1 / -1; color: var(--accent); font-size: .52rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+
+/* Specimens and names lead; identity details stay available but visually secondary. */
+.identityNote { display: block; margin-top: 9px; color: var(--text-muted); font-size: .51rem; font-weight: 750; letter-spacing: .055em; line-height: 1.35; text-transform: uppercase; }
+.collectionSummary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 5px; margin: 11px 0 0; padding: 0; color: var(--text-secondary); font-size: .62rem; font-weight: 600; line-height: 1.45; }
+.collectionSummary > span:first-child { color: var(--text-primary); }
+
+/* A filled leaf denotes a saved species. The 44px tap area remains independently focusable. */
+.ownershipControl { position: absolute; z-index: 5; top: 0; right: 0; }
+.ownershipToggle { display: grid; width: 44px; height: 44px; place-items: center; padding: 0; border: 1px solid var(--border-strong); border-radius: 50%; background: var(--surface); color: var(--accent); box-shadow: 0 2px 7px color-mix(in srgb, var(--text-primary) 8%, transparent); cursor: pointer; text-decoration: none; transition: background 160ms ease, border-color 160ms ease; }
+.ownershipToggle:hover { border-color: var(--accent); background: var(--surface-raised); }
+.ownershipToggle[data-collected="true"] { color: var(--accent); border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--surface)); }
+.ownershipToggle:focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; }
+.ownershipToggle:disabled { opacity: .65; cursor: wait; }
+.ownershipLeaf { width: 23px; height: 23px; overflow: visible; }
+/* Mirror the filled leaf state on the existing specimen outline, without altering photographs. */
+.tile:has(.ownershipToggle[data-collected="true"]) :global(.specimen-leaf-outline) { color: color-mix(in srgb, var(--accent) 68%, #b39a56); }
+.toggleError { position: absolute; top: 46px; right: 0; width: min(230px, 70vw); margin: 0; padding: 9px 11px; border: 1px solid var(--clay); background: var(--surface); color: var(--clay); font-size: .68rem; line-height: 1.45; box-shadow: 0 5px 16px color-mix(in srgb, var(--text-primary) 10%, transparent); }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+
 .action {
-  display: flex;
-  width: 100%;
-  min-height: 44px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 13px;
-  border: 1px solid var(--border);
-  border-radius: 0;
-  background: var(--surface);
-  color: var(--text-primary);
-  cursor: pointer;
-  font: inherit;
-  font-size: .62rem;
-  font-weight: 800;
-  letter-spacing: .055em;
-  line-height: 1.4;
-  text-align: left;
-  text-transform: uppercase;
+  display: flex; width: 100%; min-height: 44px; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 10px 13px; border: 1px solid var(--border); border-radius: 0;
+  background: var(--surface); color: var(--text-primary); cursor: pointer; font: inherit;
+  font-size: .62rem; font-weight: 800; letter-spacing: .055em; line-height: 1.4; text-align: left; text-transform: uppercase;
 }
 .action:hover { border-color: var(--accent); }
-.action[data-collected="true"] {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: var(--background);
-}
+.action[data-collected="true"] { border-color: var(--accent); color: var(--accent); background: var(--background); }
 .action:disabled { opacity: .65; cursor: wait; }
 .action:focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; }
 .detail { max-width: 330px; margin: 24px 0 0; }
 .error { color: var(--clay); font-size: .75rem; line-height: 1.5; }
 .tabs { display: flex; gap: 4px; margin-bottom: 25px; border-bottom: 1px solid var(--border); }
 .tab {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 17px 11px;
-  color: var(--text-muted);
-  font-size: .68rem;
-  font-weight: 800;
-  text-transform: uppercase;
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 17px 11px;
+  color: var(--text-muted); font-size: .68rem; font-weight: 800; text-transform: uppercase;
   border-bottom: 2px solid transparent;
 }
 .tab[aria-current="page"] { border-bottom-color: var(--accent); color: var(--text-primary); }
@@ -57,41 +47,12 @@
 .empty a { display: inline-flex; min-height: 44px; align-items: center; font-size: .73rem; color: var(--accent); font-weight: 800; text-transform: uppercase; }
 
 @media (max-width: 699px) {
-  .tile {
-    display: flex;
-    flex-direction: column;
-  }
-  .control { display: flex; margin-top: 6px; }
-  .action {
-    width: auto;
-    min-height: 44px;
-    gap: 6px;
-    padding: 8px 11px;
-    font-size: .53rem;
-    letter-spacing: .045em;
-  }
-  .action span:last-child { display: none; }
-  .detail { max-width: 280px; }
+  .collectionSummary { gap: 4px; margin-top: 8px; font-size: .56rem; }
+  .identityNote { margin-top: 7px; font-size: .48rem; }
   .tabs { margin-bottom: 19px; }
   .tab { padding: 0 12px 9px; font-size: .62rem; }
-  .collectionMeta {
-    width: 100%;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 6px;
-    margin-top: 10px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-  }
-  .collectionMeta span {
-    min-width: 0;
-    flex-wrap: wrap;
-    gap: 4px;
-    padding: 7px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    font-size: .46rem;
-    letter-spacing: .025em;
-  }
-  .collectionMeta small { display: none; }
+  .detail { max-width: 280px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ownershipToggle { transition: none; }
 }

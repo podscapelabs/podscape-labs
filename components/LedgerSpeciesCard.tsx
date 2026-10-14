@@ -3,7 +3,7 @@ import { CollectionButton } from "./CollectionButton";
 import styles from "./CollectionControls.module.css";
 import { SpecimenLeaf } from "./SpecimenLeaf";
 import { colonyStatusLabels, type ColonyStatus } from "@/data/collection";
-import { speciesDisplayName, speciesGenus, speciesRecordLabel, speciesScientificName, type SpeciesRecord } from "@/data/species";
+import { speciesDisplayName, speciesRecordLabel, speciesScientificName, type SpeciesRecord } from "@/data/species";
 
 export function LedgerSpeciesCard({ record, compact = false, showCollectionAction = false, collected = false, signedIn = false, collectionDetails }: {
   record: SpeciesRecord;
@@ -15,21 +15,18 @@ export function LedgerSpeciesCard({ record, compact = false, showCollectionActio
 }) {
   const card = <Link className={`v2-species-card${compact ? " is-compact" : ""}`} href={`/ledger/${record.slug}`}>
     <SpecimenLeaf image={record.image} alt={record.imageAlt || speciesScientificName(record)} number={record.catalogueNumber} size="card" positionX={record.imagePositionX} positionY={record.imagePositionY} zoom={record.imageZoom} />
-    <span className="v2-species-status">{speciesRecordLabel(record)}</span>
     <strong>{speciesDisplayName(record)}</strong>
     <em>{speciesScientificName(record)}</em>
-    {!compact ? <small>{speciesGenus(record)} · {record.catalogueNumber}</small> : null}
+    {record.kind === "photo-test" || record.identityStatus !== "verified" ? <span className={styles.identityNote}>{speciesRecordLabel(record)}</span> : null}
   </Link>;
 
   // Keep the clickable card and the mutation button as separate, valid targets.
   if (!showCollectionAction || record.kind !== "species") return card;
   return <article className={styles.tile}>
     {card}
-    {collectionDetails ? <div className={styles.collectionMeta} aria-label="Private keeper record summary">
-      <span>Quantity <b>{collectionDetails.quantity}</b></span>
-      <span>Status <b>{colonyStatusLabels[collectionDetails.colonyStatus]}</b></span>
-      <small>Open species to edit keeper record</small>
-    </div> : null}
-    <CollectionButton speciesId={record.id} speciesName={speciesDisplayName(record)} initialCollected={collected} signedIn={signedIn} />
+    <CollectionButton speciesId={record.id} speciesName={speciesDisplayName(record)} initialCollected={collected} signedIn={signedIn} compact />
+    {collectionDetails ? <p className={styles.collectionSummary} aria-label={`Quantity ${collectionDetails.quantity}, colony status ${colonyStatusLabels[collectionDetails.colonyStatus]}`}>
+      <span>Qty ${collectionDetails.quantity}</span><span aria-hidden="true">·</span><span>${colonyStatusLabels[collectionDetails.colonyStatus]}</span>
+    </p> : null}
   </article>;
 }
