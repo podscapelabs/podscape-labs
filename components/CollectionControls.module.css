@@ -45,18 +45,46 @@
     0 0 0 7px var(--ownership-leaf-active);
 }
 
+/* Archive numbers remain discoverable under the scientific name without sticker-like boxes.
+   Only Ledger directory cards opt in; profile pages keep their original treatment. */
+:global(.v2-species-card) > .catalogueCode {
+  display: block;
+  margin-top: 7px;
+  color: var(--text-muted);
+  font-family: var(--sans);
+  font-size: .55rem;
+  font-weight: 650;
+  letter-spacing: .07em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
 /* Preserve the card's text hierarchy and keeper summary. */
 .collectionSummary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 5px; margin: 11px 0 0; padding: 0; color: var(--text-secondary); font-size: .62rem; font-weight: 600; line-height: 1.45; }
 .collectionSummary > span:first-child { color: var(--text-primary); }
 
-/* The 44px tap target stays subtle beside the illustrated leaf. */
+/* The botanical ownership icon now sits at the leaf tip without a competing round badge.
+   Keep a 44px interactive area for touch and keyboard accessibility. */
 .ownershipControl { position: absolute; z-index: 5; top: 0; right: 0; }
-.ownershipToggle { display: grid; width: 44px; height: 44px; place-items: center; padding: 0; border: 1px solid var(--border-strong); border-radius: 50%; background: var(--surface); color: var(--ownership-leaf-dormant); box-shadow: 0 2px 7px color-mix(in srgb, var(--text-primary) 8%, transparent); cursor: pointer; text-decoration: none; transition: background 180ms ease, border-color 180ms ease, color 180ms ease; }
-.ownershipToggle:hover { border-color: var(--ownership-leaf-active); background: var(--surface-raised); }
-.ownershipToggle[data-collected="true"] { color: var(--ownership-leaf-active); border-color: var(--ownership-leaf-active); background: color-mix(in srgb, var(--ownership-leaf-active) 13%, var(--surface)); }
-.ownershipToggle:focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; }
+.ownershipToggle {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--ownership-leaf-dormant);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+.ownershipToggle:hover { background: color-mix(in srgb, var(--ownership-leaf-active) 8%, transparent); }
+.ownershipToggle[data-collected="true"] { color: var(--ownership-leaf-active); }
+.ownershipToggle:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; background: color-mix(in srgb, var(--ownership-leaf-active) 8%, transparent); }
 .ownershipToggle:disabled { opacity: .65; cursor: wait; }
-.ownershipLeaf { width: 23px; height: 23px; overflow: visible; }
+.ownershipLeaf { width: 27px; height: 27px; overflow: visible; }
 
 /* Dormant leaf stays brown. The separate green botanical overlay is unveiled after a successful save.
    Only the decorative outlines, fill, and veins change. Photo and labels are untouched. */
