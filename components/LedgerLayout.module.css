@@ -128,7 +128,7 @@
   cursor: pointer;
 }
 .filterPill:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
-.filterPill:has(.filterSelect:not([value="all"])) { border-color: var(--border-strong); }
+.filterPill[data-active="true"] { border-color: var(--border-strong); }
 .resultMeta.resultMeta {
   display: flex;
   min-height: 47px;

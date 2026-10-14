@@ -57,17 +57,17 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
         <input className={styles.searchInput} aria-label={mode === "collection" ? "Search your collection" : "Search species"} value={query} onChange={(event) => setQuery(event.target.value)} type="search" placeholder={mode === "collection" ? "Search your collection…" : "Search species…"} />
       </div>
       <div className={styles.filterRow}>
-        <label className={styles.filterPill}>
+        <label className={styles.filterPill} data-active={genus !== "all"}>
           <select className={styles.filterSelect} aria-label="Filter by genus" value={genus} onChange={(event) => setGenus(event.target.value)}>
             <option value="all">Genus</option>{genera.map((value) => <option value={value} key={value}>{value}</option>)}
           </select>
         </label>
-        <label className={styles.filterPill}>
+        <label className={styles.filterPill} data-active={care !== "all"}>
           <select className={styles.filterSelect} aria-label="Filter by care level" value={care} onChange={(event) => setCare(event.target.value)}>
             <option value="all">Care level</option>{careLevels.map((value) => <option value={value} key={value}>{value}</option>)}
           </select>
         </label>
-        <label className={styles.filterPill}>
+        <label className={styles.filterPill} data-active={sort !== (mode === "collection" ? "recent" : "catalogue")}>
           <select className={styles.filterSelect} aria-label="Sort species" value={sort} onChange={(event) => setSort(event.target.value as SortMode)}>
             {mode === "collection" ? <option value="recent">Sort: Recent</option> : null}
             <option value="catalogue">Sort: Number</option>
