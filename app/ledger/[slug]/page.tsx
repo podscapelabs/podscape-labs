@@ -52,7 +52,7 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
 
             <div id="keeper-record" className={styles.keeperAnchor} />
             {record.kind === "species" ? collectionEntry
-              ? <CollectionDetailsForm entry={collectionEntry} speciesName={displayName} />
+              ? <CollectionDetailsForm entry={collectionEntry} speciesName={displayName} careSpecs={care.map(([label, value]) => ({ label, value }))} />
               : <div className={styles.collectAction}>
                 <CollectionButton speciesId={record.id} speciesName={displayName} initialCollected={false} signedIn={member.signedIn} detail />
               </div>
