@@ -10,6 +10,8 @@ import { LedgerPageIntro } from "@/components/LedgerPageIntro";
 import layout from "@/components/LedgerLayout.module.css";
 import { getMemberCollectionState } from "@/lib/member-collection";
 import { listEnclosures } from "@/lib/keeper";
+import { KeeperCollectionHub } from "@/components/KeeperCollectionHub";
+import { speciesDisplayName, speciesScientificName } from "@/data/species";
 import { getSpeciesRecords } from "@/lib/species-store";
 
 export const dynamic = "force-dynamic";
@@ -45,6 +47,7 @@ export default async function MyCollectionPage() {
         <p>Browse a species record and choose “Add to My Collection” to save it here.</p>
         <Link href="/ledger">Browse Leaf Ledger →</Link>
       </div> : <>
+        <KeeperCollectionHub bins={enclosures.filter(e=>!e.isArchived).map(e=>{const species=records.find(r=>r.id===e.speciesId);return {id:e.id,speciesId:e.speciesId,speciesName:species?speciesDisplayName(species):"Species",scientificName:species?speciesScientificName(species):"",speciesSlug:species?.slug||"",name:e.name,label:e.label,quantity:e.quantity,status:e.status,isPrimary:e.isPrimary};})}/>
         <section className={collectionStyles.overview} aria-label="Collection overview">
           <div><strong>{inCollection.length}</strong><span>Species</span></div>
           <div><strong>{generaCount}</strong><span>Genera</span></div>
