@@ -41,13 +41,14 @@ export async function setEnclosureArchived(input:{id:string;archived:boolean}):P
  if(error||!data)return{success:false,error:"Couldn't update this enclosure."};
  revalidatePath("/keeper");revalidatePath("/keeper/"+input.id);revalidatePath("/account");revalidatePath("/ledger/my-collection");return{success:true};
 }
-export async function logKeeperEvent(input:{ id:string; kind:string; note:string }):Promise<Result> {
+export async function logKeeperEvent(input:{ id:string; kind:string; note:string; occurredOn?:string }):Promise<Result> {
  await requireCustomerPreviewAccess();
  if (!input.id || !eventKinds.includes(input.kind) || !input.note?.trim() || input.note.length > 1500) return {success:false,error:"Choose an activity and add a short note."};
+ if(input.occurredOn && (!/^\d{4}-\d{2}-\d{2}$/.test(input.occurredOn)||!Number.isFinite(Date.parse(input.occurredOn+"T12:00:00Z"))||input.occurredOn>new Date().toISOString().slice(0,10)))return {success:false,error:"Choose a valid date that is not in the future."};
  const { db,user }=await keeperContext(); if(!db || !user) return {success:false,error:"Sign in first."};
  const { data: owner }=await db.from("keeper_enclosures").select("id").eq("id",input.id).eq("user_id",user.id).maybeSingle();
  if(!owner) return {success:false,error:"Enclosure not found."};
- const {error}=await db.from("keeper_events").insert({user_id:user.id,enclosure_id:input.id,kind:input.kind,note:input.note.trim()});
+ const {error}=await db.from("keeper_events").insert({user_id:user.id,enclosure_id:input.id,kind:input.kind,note:input.note.trim(),...(input.occurredOn?{created_at:input.occurredOn+"T12:00:00Z"}:{})});
  if(error) return {success:false,error:"Couldn't log the activity."};
  revalidatePath("/keeper/"+input.id);return {success:true};
 }
