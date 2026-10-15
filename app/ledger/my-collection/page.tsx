@@ -35,7 +35,7 @@ export default async function MyCollectionPage() {
     <LedgerPageIntro mode="collection" />
     <section className={layout.content}><div className="v2-container">
       <LedgerCollectionTabs active="collection" signedIn={member.signedIn} />
-      {member.signedIn ? <p style={{ margin: "12px 0 20px" }}><Link href="/keeper" style={{ fontWeight: 750, color: "var(--accent)" }}>Open My Enclosures / Keeper Dashboard →</Link></p> : null}
+      {member.signedIn ? <p style={{ margin: "12px 0 20px" }}><Link href="/keeper/scan" style={{ fontWeight: 750, color: "var(--accent)", marginRight: 20 }}>▣ Scan a Bin →</Link><Link href="/keeper" style={{ fontWeight: 750, color: "var(--accent)" }}>Open My Enclosures / Keeper Dashboard →</Link></p> : null}
       {!member.signedIn ? <div className={styles.empty}>
         <h2>Sign in to open your collection.</h2>
         <p>Your personal species list is kept in your member account.</p>
