@@ -15,6 +15,7 @@ function readId(value:string):string|null {
 const tasks=[{label:"Misted",kind:"maintenance",note:"Misted"},{label:"Fed",kind:"feeding",note:"Fed"},{label:"Spot cleaned",kind:"maintenance",note:"Spot cleaned"},{label:"Leaf litter",kind:"maintenance",note:"Leaf litter added"}] as const;
 export function KeeperScanner({bins,initialBinId=""}:{bins:Bin[];initialBinId?:string}){
  const video=useRef<HTMLVideoElement>(null);const stream=useRef<MediaStream|null>(null);const lock=useRef(false);
+ const saving=useRef(false);
  const [selected,setSelected]=useState<Bin|null>(()=>bins.find(b=>b.id===initialBinId)||null);const [state,setState]=useState<"idle"|"scanning"|"saved">("idle");const [error,setError]=useState("");const [choice,setChoice]=useState("");const [pending,start]=useTransition();
  const [sessionCount,setSessionCount]=useState(0);const [customNote,setCustomNote]=useState("");const [customDate,setCustomDate]=useState("");const [manual,setManual]=useState(initialBinId);const [lastSaved,setLastSaved]=useState<{bin:Bin;task:string}|null>(null);
  const stop=()=>{stream.current?.getTracks().forEach(t=>t.stop());stream.current=null;};
@@ -35,8 +36,8 @@ export function KeeperScanner({bins,initialBinId=""}:{bins:Bin[];initialBinId?:s
  },[state]);
  function beginScan(){lock.current=false;setSelected(null);setLastSaved(null);setChoice("");setError("");setState("scanning");}
  function save(kind:string,note:string,label:string,occurredOn?:string){
- if(!selected||pending)return;setError("");setChoice(label);
- start(async()=>{const result=await logKeeperEvent({id:selected.id,kind,note,occurredOn});if(result.success){setLastSaved({bin:selected,task:label});setSessionCount(v=>v+1);setState("saved");}else{setError(result.error||"Save failed. Please retry.");}});
+ if(!selected||pending||saving.current)return;saving.current=true;setError("");setChoice(label);
+ start(async()=>{try{const result=await logKeeperEvent({id:selected.id,kind,note,occurredOn});if(result.success){setLastSaved({bin:selected,task:label});setSessionCount(v=>v+1);setState("saved");}else{setError(result.error||"Save failed. Please retry.");}}finally{saving.current=false;}});
  }
  return <section className={styles.wrap}>
  <div className={styles.heading}><div><p className={styles.kicker}>PODSCAPE LABS / KEEPER</p><h1>Quick Care</h1><p>Scan a bin, log care, and move on.</p><p className={styles.sessionCount} aria-live="polite">{sessionCount} {sessionCount===1?"care action":"care actions"} logged this session</p></div><Link href="/ledger/my-collection">My Collection ↗</Link></div>

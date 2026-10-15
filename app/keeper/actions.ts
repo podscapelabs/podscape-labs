@@ -17,6 +17,8 @@ export async function createEnclosure(input: { speciesId: string; name: string }
  if (!available) return { success:false,error:"Choose a species from the Leaf Ledger." };
  const { db, user } = await keeperContext();
  if (!db || !user) return { success:false,error:"Sign in to manage your enclosures." };
+ const {data:saved}=await db.from("member_species_collection").select("species_id").eq("user_id",user.id).eq("species_id",input.speciesId).maybeSingle();
+ if(!saved)return{success:false,error:"Add this species to My Collection before creating an enclosure."};
  const { data, error } = await db.from("keeper_enclosures").insert({ user_id:user.id,species_id:input.speciesId,name }).select("id").single();
  if (error || !data) return { success:false,error:"Couldn't create enclosure. Keeper database migration may be required." };
  revalidatePath("/keeper"); revalidatePath("/ledger/my-collection"); return { success:true,id:data.id };

@@ -21,6 +21,6 @@ export default async function EnclosurePage({params}:{params:Promise<{id:string}
  <p><Link href={"/keeper/"+enclosure.id+"/history"}>View complete care history →</Link></p>
  <KeeperControls entry={enclosure}/>
  <section style={{marginTop:30}}><h2>Activity history</h2>{events.length?<div className={styles.list}>{events.map(event=><div className={styles.entry} key={event.id}><span><strong>{event.kind.replaceAll("-"," ")}</strong><small>{event.note}</small></span><span>{new Date(event.createdAt).toLocaleDateString()}</span></div>)}</div>:<p className={styles.empty}>No activity recorded yet. Your first entry will appear here.</p>}</section>
- <p className={styles.lead}>QR labels are coming next. This private address can already be used as a direct shortcut, but do not share it publicly.</p>
+ <p className={styles.lead}>This enclosure has a stable private route for its printed QR label. The link identifies the bin; signing in and ownership checks still control access.</p>
  </div></main></PlatformShell>;
 }
