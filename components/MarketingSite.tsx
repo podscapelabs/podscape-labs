@@ -27,6 +27,10 @@ const destinations = [
   { icon: "△", label: "From the Lab", copy: "Projects & updates", href: "/from-the-lab" },
 ] as const;
 
+const priorityDestinations = ["Leaf Ledger", "My Collection", "Guides", "Shop", "PodBound", "Creative Network"];
+const primaryDestinations = priorityDestinations.map((label) => destinations.find((item) => item.label === label)!);
+const moreDestinations = destinations.filter((item) => !priorityDestinations.includes(item.label));
+
 function SmartLink({ href, children, className }: { href: string; children: React.ReactNode; className?: string }) {
   return href.startsWith("http") ? <a className={className} href={href} target="_blank" rel="noreferrer">{children}</a> : <Link className={className} href={href}>{children}</Link>;
 }
@@ -47,7 +51,9 @@ export async function MarketingSite() {
         {featuredSpecies ? <Link className={styles.heroVisual} href={`/ledger/${featuredSpecies.slug}`}><span className={styles.heroNote}>Small creatures.<br/>Big world.</span><div className={styles.heroPhoto}><Image src={featuredSpecies.image!} alt={featuredSpecies.imageAlt||speciesDisplayName(featuredSpecies)} fill sizes="(max-width: 720px) 100vw, 50vw" priority style={{objectPosition:`${featuredSpecies.imagePositionX}% ${featuredSpecies.imagePositionY}%`,transform:`scale(${featuredSpecies.imageZoom})`}}/></div><span className={styles.speciesTag}><em>{speciesScientificName(featuredSpecies)}</em><strong>“{speciesDisplayName(featuredSpecies)}”</strong></span></Link> : null}
       </div></section>
 
-      <section className={styles.destinationSection}><div className="v2-container"><div className={styles.sectionHeading}><h2>Explore Podscape</h2><Link href="/explore">All destinations →</Link></div><div className={styles.destinationGrid}>{destinations.map((item)=><SmartLink href={item.href} className={styles.destination} key={item.label}><span>{item.icon}</span><strong>{item.label}</strong><small>{item.copy}</small></SmartLink>)}</div></div></section>
+      <section className={styles.destinationSection}><div className="v2-container"><div className={styles.sectionHeading}><h2>Explore Podscape</h2><Link href="/explore">All destinations →</Link></div><div className={styles.destinationGrid}>{primaryDestinations.map((item)=><SmartLink href={item.href} className={styles.destination} key={item.label}><span aria-hidden="true">{item.icon}</span><strong>{item.label}</strong><small>{item.copy}</small></SmartLink>)}</div>
+      <details className={styles.moreDestinations}><summary>More to explore <span aria-hidden="true">⌄</span></summary><div className={styles.moreDestinationGrid}>{moreDestinations.map((item)=><SmartLink href={item.href} className={styles.moreDestination} key={item.label}><span aria-hidden="true">{item.icon}</span><strong>{item.label}</strong><small>{item.copy}</small><span aria-hidden="true">→</span></SmartLink>)}</div></details>
+      </div></section>
 
       <section className={styles.showcase}><div className={`v2-container ${styles.showcaseGrid}`}>
         <article className={styles.speciesPanel}><div className={styles.sectionHeading}><div><h2>Featured Species</h2><p>Discover something new.</p></div><Link href="/ledger">View all →</Link></div><div className={styles.speciesRail}>{species.slice(0,4).map((record)=><Link href={`/ledger/${record.slug}`} key={record.id}><SpecimenLeaf image={record.image} alt={record.imageAlt} size="card" positionX={record.imagePositionX} positionY={record.imagePositionY} zoom={record.imageZoom}/><strong>{speciesDisplayName(record)}</strong><em>{speciesScientificName(record)}</em></Link>)}</div></article>
@@ -61,7 +67,7 @@ export async function MarketingSite() {
         <article><div className={styles.sectionHeading}><div><h2>Guides</h2><p>Helpful resources for every keeper.</p></div><Link href="/field-guide">View all →</Link></div><div className={styles.guideList}>{guides.length?guides.map(guide=><Link href={`/field-guide/${guide.slug}`} key={guide.id}><span>◇</span><span><strong>{guide.title}</strong><small>{guide.summary}</small></span><b>›</b></Link>):<p>Guides are being prepared in the studio.</p>}</div></article>
       </div></section>
     </main>
-    <nav className={styles.mobileNav} aria-label="Mobile shortcuts"><Link href="/admin/preview"><span>⌂</span>Home</Link><Link href="/explore"><span>◇</span>Explore</Link><Link href="/keeper/scan" className={styles.scan}><span>▣</span>Scan</Link><Link href="/shop"><span>▤</span>Shop</Link><Link href="/account"><span>•••</span>More</Link></nav>
+    <nav className={styles.mobileNav} aria-label="Mobile shortcuts"><Link href="/admin/preview" aria-current="page"><span>⌂</span>Home</Link><Link href="/explore"><span>◇</span>Explore</Link><Link href="/keeper/scan" className={styles.scan}><span>▣</span>Scan</Link><Link href="/shop"><span>▤</span>Shop</Link><Link href="/account"><span>•••</span>More</Link></nav>
     <Footer />
   </div>;
 }
