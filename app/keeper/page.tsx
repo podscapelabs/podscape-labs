@@ -7,6 +7,7 @@ import { listEnclosures } from "@/lib/keeper";
 import { getSpeciesRecords } from "@/lib/species-store";
 import { speciesDisplayName } from "@/data/species";
 import styles from "./page.module.css";
+import { KeeperMobileNav } from "@/components/KeeperMobileNav";
 export const dynamic="force-dynamic";
 export const metadata:Metadata={title:"My Enclosures | PodScape Labs",robots:{index:false,follow:false}};
 export default async function KeeperIndex({searchParams}:{searchParams:Promise<{species?:string}>}){
@@ -22,5 +23,5 @@ export default async function KeeperIndex({searchParams}:{searchParams:Promise<{
  {active.length?<div className={styles.list}>{active.map(e=><Link className={styles.entry} href={`/keeper/${e.id}`} key={e.id}><span><strong>{e.name}</strong><small>{(species.find(x=>x.id===e.speciesId)?.commonName || "Species")} · {e.label||"No bin label"}</small></span><span>{e.quantity} recorded ↗</span></Link>)}</div>:<p className={styles.empty}>No active enclosures yet. Start by selecting a species from your collection.</p>}
  {archived.length?<details><summary>Archived enclosures ({archived.length})</summary><div className={styles.list}>{archived.map(e=><Link className={styles.entry} href={`/keeper/${e.id}`} key={e.id}><span><strong>{e.name}</strong><small>{species.find(x=>x.id===e.speciesId)?.commonName||"Species"}</small></span><span>Archived ↗</span></Link>)}</div></details>:null}
  {record?<CreateEnclosure speciesId={record.id} speciesName={speciesDisplayName(record)}/>:<p><Link href="/ledger/my-collection">Select a species from My Collection →</Link></p>}
- </>}</div></main></PlatformShell>;
+ </>}</div></main>{member.signedIn?<KeeperMobileNav active="keeper"/>:null}</PlatformShell>;
 }

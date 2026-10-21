@@ -13,6 +13,7 @@ import { listEnclosures } from "@/lib/keeper";
 import { KeeperCollectionHub } from "@/components/KeeperCollectionHub";
 import { speciesDisplayName, speciesScientificName } from "@/data/species";
 import { getSpeciesRecords } from "@/lib/species-store";
+import { KeeperMobileNav } from "@/components/KeeperMobileNav";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "My Collection | Podscape Leaf Ledger", robots: { index: false, follow: false } };
@@ -37,7 +38,6 @@ export default async function MyCollectionPage() {
     <LedgerPageIntro mode="collection" />
     <section className={layout.content}><div className="v2-container">
       <LedgerCollectionTabs active="collection" signedIn={member.signedIn} />
-      {member.signedIn ? <p style={{ margin: "12px 0 20px" }}><Link href="/keeper/scan" style={{ fontWeight: 750, color: "var(--accent)", marginRight: 20 }}>▣ Scan a Bin →</Link><Link href="/keeper" style={{ fontWeight: 750, color: "var(--accent)" }}>Open My Enclosures / Keeper Dashboard →</Link></p> : null}
       {!member.signedIn ? <div className={styles.empty}>
         <h2>Sign in to open your collection.</h2>
         <p>Your personal species list is kept in your member account.</p>
@@ -47,7 +47,7 @@ export default async function MyCollectionPage() {
         <p>Browse a species record and choose “Add to My Collection” to save it here.</p>
         <Link href="/ledger">Browse Leaf Ledger →</Link>
       </div> : <>
-        <KeeperCollectionHub bins={enclosures.filter(e=>!e.isArchived).map(e=>{const species=records.find(r=>r.id===e.speciesId);return {id:e.id,speciesId:e.speciesId,speciesName:species?speciesDisplayName(species):"Species",scientificName:species?speciesScientificName(species):"",speciesSlug:species?.slug||"",name:e.name,label:e.label,quantity:e.quantity,status:e.status,isPrimary:e.isPrimary};})}/>
+        <KeeperCollectionHub bins={enclosures.filter(e=>!e.isArchived).map(e=>{const species=records.find(r=>r.id===e.speciesId);return {id:e.id,speciesId:e.speciesId,speciesName:species?speciesDisplayName(species):"Species",scientificName:species?speciesScientificName(species):"",speciesSlug:species?.slug||"",speciesImage:species?.image||null,name:e.name,label:e.label,quantity:e.quantity,status:e.status,isPrimary:e.isPrimary};})}/>
         <section className={collectionStyles.overview} aria-label="Collection overview">
           <div><strong>{inCollection.length}</strong><span>Species</span></div>
           <div><strong>{generaCount}</strong><span>Genera</span></div>
@@ -55,5 +55,6 @@ export default async function MyCollectionPage() {
         <LedgerExplorer records={inCollection} collectedIds={member.ids} signedIn mode="collection" addedAtById={addedAtById} collectionDetailsById={collectionDetailsById} />
       </>}
     </div></section>
+    {member.signedIn ? <KeeperMobileNav active="collection" /> : null}
   </PlatformShell>;
 }

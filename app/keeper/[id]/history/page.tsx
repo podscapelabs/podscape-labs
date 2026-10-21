@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { PlatformShell, Breadcrumbs } from "@/components/PlatformShell";
 import { getEnclosure, getEnclosureEvents } from "@/lib/keeper";
 import styles from "../../page.module.css";
+import { KeeperMobileNav } from "@/components/KeeperMobileNav";
 export const dynamic="force-dynamic";
 export const metadata:Metadata={title:"Care History | PodScape Keeper",robots:{index:false,follow:false}};
 export default async function CareHistory({params,searchParams}:{params:Promise<{id:string}>;searchParams:Promise<{page?:string}>}){
@@ -22,5 +23,5 @@ export default async function CareHistory({params,searchParams}:{params:Promise<
   {hasNext?<Link href={`/keeper/${id}/history?page=${page+1}`}>Older entries →</Link>:null}
  </nav>
  <p className={styles.lead}>Showing {events.length} of {total} care records · Page {page}.</p>
- </div></main></PlatformShell>;
+ </div></main><KeeperMobileNav active="keeper"/></PlatformShell>;
 }
