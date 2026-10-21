@@ -12,6 +12,11 @@ const nextConfig: NextConfig = {
         hostname: "qptvfwmxmhmhdmfyuzbb.supabase.co",
         pathname: "/storage/v1/object/public/species-photos/**",
       },
+      {
+        protocol: "https",
+        hostname: "qptvfwmxmhmhdmfyuzbb.supabase.co",
+        pathname: "/storage/v1/object/public/product-photos/**",
+      },
     ],
   },
   experimental: {
