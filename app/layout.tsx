@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { siteContent } from "@/content/site";
 import "./globals.css";
+import "./home.css";
 
 export const metadata: Metadata = {
   title: `${siteContent.brand.shortName} | ${siteContent.brand.descriptor}`,
