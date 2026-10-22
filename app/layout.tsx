@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { siteContent } from "@/content/site";
 import "./globals.css";
+import { AchievementToast } from "@/components/AchievementToast";
 
 export const metadata: Metadata = {
   title: `${siteContent.brand.shortName} | Tools, games, and resources for the isopod hobby`,
@@ -33,7 +34,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body>{children}</body>
+      <body>{children}<AchievementToast /></body>
     </html>
   );
 }
