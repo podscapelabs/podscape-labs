@@ -1,0 +1,1 @@
+import type {Metadata} from "next";import {PlatformShell} from "@/components/PlatformShell";import Leaderboard from "./Leaderboard";export const metadata:Metadata={title:"Fun Zone Leaderboard | PodScape Labs",robots:{index:false,follow:false}};export default function Page(){return <PlatformShell><Leaderboard/></PlatformShell>}
