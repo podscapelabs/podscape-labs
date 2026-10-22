@@ -1166,3 +1166,5 @@ h1, h2, h3 { text-wrap: balance; }
 .v2-header-tools .v2-account-button{display:grid;border:1px solid var(--border);border-radius:12px;width:44px;height:44px;margin-left:3px;background:var(--surface);}
 .v2-header-tools .v2-account-button svg{width:23px;height:23px;}
 .v2-header-tools .v2-account-button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+
+@media(max-width:720px){body:has(nav[aria-label="PodScape mobile navigation"]){padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}}
