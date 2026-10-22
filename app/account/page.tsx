@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { CustomerAccountForm } from "@/components/CustomerAccountForm";
 import { signOutCustomer } from "./actions";
 import { customerSupabase } from "@/lib/customer-auth/server";
-import { KeeperMobileNav } from "@/components/KeeperMobileNav";
 import styles from "./account-dashboard.module.css";
 
 export default async function CustomerAccountPage({ searchParams }: { searchParams: Promise<{ verified?: string }> }) {
@@ -38,6 +37,6 @@ export default async function CustomerAccountPage({ searchParams }: { searchPara
         <details id="profile-settings"><summary><span className={styles.symbol}>♢</span><span><strong>Account &amp; Security</strong><small>Profile, email, password and privacy.</small></span><span className={styles.chevron}>⌄</span></summary><div className={styles.panel}><p className={styles.label}>Display name</p><CustomerAccountForm kind="profile" initialName={profile?.display_name || ""}/><p className={styles.label}>Email</p><p>{user.email}</p><Link href="/account/change-password">Change password →</Link><Link href="/account/forgot-password">Password recovery →</Link><form action={signOutCustomer}><button type="submit" className={styles.signout}>Sign out</button></form></div></details>
       </div>
     </div>
-    <KeeperMobileNav active="menu"/>
+
   </main>;
 }
