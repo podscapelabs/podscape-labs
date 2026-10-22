@@ -8,7 +8,7 @@ import { getSpeciesRecords } from "@/lib/species-store";
 
 const homeDestinations = [
   { icon: "leaf", label: "Explore Species", copy: "Discover and learn about isopods.", href: "/ledger", tone: "green" },
-  { icon: "jar", label: "My Collection", copy: "Track, manage and care for your isopods.", href: "/ledger/my-collection", tone: "sand" },
+  { icon: "book", label: "PodBound", copy: "Explore our isopod colony card game.", href: "https://www.podbound.net", tone: "sand" },
   { icon: "shop", label: "Shop", copy: "Supplies, enclosures and more.", href: "/shop", tone: "clay" },
   { icon: "book", label: "Guides & Resources", copy: "Care sheets, habitats, breeding and more.", href: "/field-guide", tone: "sage" },
   { icon: "community", label: "Community", copy: "Share, learn and connect with keepers.", href: "/from-the-lab", tone: "moss" },
