@@ -23,7 +23,7 @@ export async function MarketingSite(){
  const hero=featured[0];
  const db=await customerSupabase();
  const {data:{user}}=db?await db.auth.getUser():{data:{user:null}};
- const name=user?(user.user_metadata?.first_name||user.user_metadata?.display_name||user.user_metadata?.full_name||"").split(" ")[0]:undefined;
+ const name=user?(user.user_metadata?.first_name||user.user_metadata?.display_name||user.user_metadata?.full_name||user.email?.split("@")[0]||"").split(" ")[0]:undefined;
  return <div className={styles.site}><a className="skip-link" href="#platform-main">Skip to content</a><Header/>
  <main id="platform-main" className={styles.main}>
  <div className={styles.greeting}><HomeGreeting name={name}/></div>
@@ -37,9 +37,9 @@ export async function MarketingSite(){
  {hero?<Link href={`/ledger/${hero.slug}`} className={styles.feature}><div className={styles.featureImage}><Image src={hero.image!} alt={hero.imageAlt||speciesDisplayName(hero)} fill sizes="(max-width: 720px) 48vw, 360px"/></div><div className={styles.featureCopy}><span className={styles.eyebrow}>SPECIES SPOTLIGHT</span><h3>{speciesDisplayName(hero)}</h3><p>Meet one of the fascinating species in our growing Ledger.</p><span className={styles.featureLink}>Explore species →</span></div></Link>:<div className={styles.empty}>New species spotlights are on their way.</div>}
  </section>
  <section className={styles.section}><div className={styles.heading}><h2>More to Explore</h2><Link href="/menu">See all →</Link></div><div className={styles.more}>
- <Link href="/field-guide"><span className={styles.moreIcon}><PodscapeLineIcon name="book"/></span><strong>Care Guides</strong><small>Learn something new</small><b>↗</b></Link>
- <Link href="/fun-zone"><span className={styles.moreIcon}><PodscapeLineIcon name="creative"/></span><strong>Fun Zone</strong><small>Play and explore</small><b>↗</b></Link>
- <Link href="/podbound"><span className={styles.moreIcon}><PodscapeLineIcon name="podbound"/></span><strong>PodBound</strong><small>Explore the card game</small><b>↗</b></Link>
+ <Link href="/field-guide"><span className={styles.moreIcon}><PodscapeLineIcon name="book"/></span><strong>Care Guides</strong><small>Learn something new</small><b>→</b></Link>
+ <Link href="/fun-zone"><span className={styles.moreIcon}><PodscapeLineIcon name="creative"/></span><strong>Fun Zone</strong><small>Play and explore</small><b>→</b></Link>
+ <Link href="/podbound"><span className={styles.moreIcon}><PodscapeLineIcon name="podbound"/></span><strong>PodBound</strong><small>Explore the card game</small><b>→</b></Link>
  </div></section>
  </main></div>;
 }
