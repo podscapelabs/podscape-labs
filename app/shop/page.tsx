@@ -1,15 +1,37 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PlatformPageHeader, PlatformShell } from "@/components/PlatformShell";
-import { ProductCard } from "@/components/ProductCard";
-import { isProductActive, productCategories } from "@/data/products";
+import { PlatformShell } from "@/components/PlatformShell";
+import { formatProductPrice, isProductActive } from "@/data/products";
 import { getProductRecords } from "@/lib/product-store";
+import styles from "./shop-home.module.css";
 
 export const metadata: Metadata = { title: "Shop | Podscape Labs", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
+const paths = [
+  { label: "PodScape Products", icon: "❧", href: "#products" },
+  { label: "Makers & Artists", icon: "✿", href: "#community" },
+  { label: "Isopod Vendors", icon: "⌂", href: "#community" },
+  { label: "Collections", icon: "✦", href: "#collections" },
+];
+const categories = [
+  { label: "Isopods & Springtails", icon: "◌" },
+  { label: "Habitat Supplies", icon: "❧" },
+  { label: "Apparel", icon: "♧" },
+  { label: "Prints & Collectibles", icon: "✿" },
+  { label: "Books & Journals", icon: "▤" },
+  { label: "Field Tools", icon: "⚒" },
+];
 export default async function ShopPage() {
-  const products = (await getProductRecords()).filter(isProductActive);
-  const featured = products.filter((product) => product.featured);
-  return <PlatformShell><PlatformPageHeader eyebrow="Tools, guides, and studio goods" title="The Podscape Shop" intro="A considered collection of practical tools, field resources, and original goods for isopod keepers." index="SHOP / 001" /><section className="v2-shop-intro"><div className="v2-container v2-shop-intro-grid"><div><p className="v2-kicker">Storefront foundation</p><h2>Useful things for thoughtful keepers.</h2><p>The catalogue is being assembled inside the owner studio. Products can be previewed here, but checkout remains intentionally offline until Shopify is connected.</p></div><aside><span>Checkout status</span><strong>Not connected</strong><p>No payment information can be entered or collected in this preview.</p></aside></div></section>{featured.length ? <section className="v2-shop-featured"><div className="v2-container"><div className="v2-section-line"><h2>Studio selections</h2><span>Featured products</span></div><div className="v2-product-grid">{featured.map((product) => <ProductCard product={product} key={product.id} />)}</div></div></section> : null}<section className="v2-page-section"><div className="v2-container"><div className="v2-shop-categories"><p className="v2-kicker">Browse the future catalogue</p><div>{productCategories.map((category, index) => <span key={category}><b>{String(index + 1).padStart(2, "0")}</b>{category}</span>)}</div></div><div className="v2-section-line v2-shop-product-heading"><h2>All products</h2><span>{products.length} catalogue records</span></div>{products.length ? <div className="v2-product-grid">{products.map((product) => <ProductCard product={product} key={product.id} />)}</div> : <div className="v2-shop-empty"><div><span>01</span><b>Product photography</b><small>Ready for owner uploads</small></div><div><span>02</span><b>Product details</b><small>Managed in the Product desk</small></div><div><span>03</span><b>Checkout</b><small>Shopify connection later</small></div><h2>The shelves are ready.</h2><p>Create the first product in the owner studio to populate this catalogue.</p><Link className="v2-button v2-button-outline" href="/admin/products">Open Product desk →</Link></div>}</div></section></PlatformShell>;
+  const products = (await getProductRecords()).filter(isProductActive).filter((p) => p.status === "published");
+  const featured = [...products].sort((a,b) => Number(b.featured) - Number(a.featured)).slice(0, 4);
+  return <PlatformShell><main className={styles.page}><div className={styles.wrap}>
+    <section className={styles.hero} aria-labelledby="shop-title"><span className={styles.ornament} aria-hidden="true">❧</span><div className={styles.heroCopy}><p className={styles.eyebrow}>Welcome to the shop</p><h1 id="shop-title">The PodScape Shop</h1><p>Curated goods, supplies and creative finds for the curious keeper.</p></div></section>
+    <Link className={styles.search} href="/search" aria-label="Search PodScape products"><span aria-hidden="true">⌕</span> Search the shop and beyond →</Link>
+    <nav className={styles.paths} aria-label="Shop discovery"><>{paths.map((item) => <Link className={styles.path} href={item.href} key={item.label}><span className={styles.pathIcon} aria-hidden="true">{item.icon}</span><strong>{item.label}</strong></Link>)}</></nav>
+    <section className={styles.section} id="collections"><div className={styles.heading}><h2>Curated for keepers</h2></div><div className={styles.feature}><div><small>From the PodScape collection</small><h2>Habitat essentials</h2><p>Thoughtful finds for building a thriving little world.</p><Link href="#categories">Explore categories →</Link></div></div></section>
+    <section className={styles.section} id="categories"><div className={styles.heading}><h2>Shop by category</h2></div><div className={styles.categories}>{categories.map((item) => <Link className={styles.category} href="#products" key={item.label}><span aria-hidden="true">{item.icon}</span><strong>{item.label}</strong></Link>)}</div></section>
+    <section className={styles.section} id="products"><div className={styles.heading}><h2>Featured products</h2><Link href="#products">Browse products →</Link></div>{featured.length ? <div className={styles.products}>{featured.map((p) => <Link href={`/shop/${p.slug}`} className={styles.product} key={p.id}><div className={styles.photo}>{p.image ? <img src={p.image} alt={p.imageAlt || p.title} /> : <span>Photograph coming soon</span>}</div><div className={styles.productBody}><small>{p.category}</small><strong>{p.title}</strong><b>{formatProductPrice(p)}</b></div></Link>)}</div> : <p className={styles.empty}>Our first collections are taking shape. Check back soon for new discoveries.</p>}</section>
+    <section className={styles.section} id="community"><div className={styles.community}><small>More than a storefront</small><h2>Made by the community.</h2><p>PodScape is growing into a place to discover independent breeders, artists and makers. Vendor shopping and fulfillment options are planned for a future phase.</p></div></section>
+  </div></main></PlatformShell>;
 }
