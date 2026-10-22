@@ -14,7 +14,7 @@ export function Header() {
   return (
     <header className="v2-header">
       <div className="v2-header-inner v2-container">
-        <Link className="v2-brand" href="/admin/preview" aria-label="Podscape Labs preview home">
+        <Link className="v2-brand" href="/app" aria-label="Podscape Labs app home">
           <Image src="/assets/logos/podscape-wordmark.svg" alt="Podscape Labs" width={232} height={38} priority />
           <span>Independent Canadian Studio</span>
         </Link>

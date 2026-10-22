@@ -4,7 +4,7 @@ import Link from "next/link";
 import { PodscapeLineIcon, type PodscapeIconName } from "./PodscapeLineIcon";
 import styles from "./KeeperMobileNav.module.css";
 const items: {href:string;icon:PodscapeIconName;label:string;primary?:boolean}[] = [
- {href:"/admin/preview",icon:"leaf",label:"Explore"},
+ {href:"/app",icon:"leaf",label:"Explore"},
  {href:"/ledger",icon:"book",label:"Ledger"},
  {href:"/keeper/scan",icon:"scan",label:"Scan",primary:true},
  {href:"/keeper",icon:"manager",label:"Manager"},
