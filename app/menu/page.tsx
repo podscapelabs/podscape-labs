@@ -8,6 +8,7 @@ const items = [
   { href: "/ledger/my-collection", icon: "jar", title: "My Collection", copy: "Track, manage and care for your collection." },
   { href: "/shop", icon: "shop", title: "Shop", copy: "Supplies, enclosures and more." },
   { href: "/field-guide", icon: "book", title: "Guides & Resources", copy: "Care sheets, habitats and breeding." },
+  { href: "/fun-zone", icon: "community", title: "Fun Zone", copy: "Daily rewards, puzzles, quizzes and more." },
   { href: "/explore#vendor-directory", icon: "vendor", title: "Vendor Directory", copy: "Find trusted breeders and small businesses." },
   { href: "/explore#creative-network", icon: "creative", title: "Creative Network", copy: "Artists, makers and isopod-inspired creations." },
   { href: "https://www.podbound.net", icon: "podbound", title: "PodBound", copy: "The isopod tabletop card game." },
