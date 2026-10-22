@@ -10,7 +10,7 @@ import styles from "./article.module.css";
 function renderBody(body: string, id: string) {
   return body.split(/\n{2,}/).map((block, index) => {
     const lines = block.split("\n").map(line => line.trim()).filter(Boolean);
-    if (lines.length > 1 && lines.every(line => /^[-*•]\\s+/.test(line))) return <ul className={styles.bullets} key={`${id}-${index}`}>{lines.map((line, i) => <li key={i}>{line.replace(/^[-*•]\\s+/, "")}</li>)}</ul>;
+    if (lines.length > 1 && lines.every(line => /^[-*•]\s+/.test(line))) return <ul className={styles.bullets} key={`${id}-${index}`}>{lines.map((line, i) => <li key={i}>{line.replace(/^[-*•]\s+/, "")}</li>)}</ul>;
     if (lines.length > 1 && lines.every(line => line.includes(" | "))) return <div className={styles.reference} key={`${id}-${index}`}>{lines.map((line, i) => { const [heading, ...rest] = line.split(" | "); return <div key={i}><strong>{heading}</strong>{rest.join(" · ")}</div>; })}</div>;
     return <p key={`${id}-${index}`}>{block}</p>;
   });
