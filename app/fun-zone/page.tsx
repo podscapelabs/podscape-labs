@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 const activities = [
  {icon:"◈",title:"Word of the Week",detail:"Discover a new isopod term.",status:"Coming soon"},
  {icon:"?",title:"Species Quiz",detail:"Test what you know.",status:"Coming soon"},
- {icon:"⌕",title:"Word Search",detail:"Find hidden hobby terms.",status:"Coming soon"},
+ {icon:"⌕",title:"Word Search",detail:"Find hidden hobby terms.",status:"Play test",href:"/fun-zone/word-search"},
  {icon:"▦",title:"Crossword",detail:"A little puzzle break.",status:"Coming soon"}
 ];
 export default async function FunZonePage(){
@@ -20,7 +20,7 @@ export default async function FunZonePage(){
  <Link href={user?"/account/progress":"/account/login"} className={styles.balance}><span>✦ &nbsp;{user?Number(progress?.total_exp||0).toLocaleString("en-CA"):"—"} EXP</span><span>◉ &nbsp;{user?Number(progress?.pod_coins||0).toLocaleString("en-CA"):"—"} Pod Coins</span></Link></header>
  <section className={styles.wheel}><div><p className={styles.eyebrow}>DAILY REWARD · COMING SOON</p><h2>The Daily Pod Wheel</h2><p>A little daily surprise for PodScape members. One free spin a day. A little surprise is on its way.</p><span className={styles.pill}>Wheel opening soon</span></div><div className={styles.wheelGraphic} aria-hidden="true"><div className={styles.wheelCenter}>✦</div></div></section>
  <div className={styles.sectionHeading}><h2>Activities</h2><span>More activities on the way</span></div>
- <section className={styles.activities} aria-label="Fun Zone activities">{activities.map(a=><article className={styles.activity} key={a.title}><span className={styles.icon} aria-hidden="true">{a.icon}</span><h3>{a.title}</h3><p>{a.detail}</p><span className={styles.status}>{a.status}</span></article>)}</section>
+ <section className={styles.activities} aria-label="Fun Zone activities">{activities.map(a=><article className={styles.activity} key={a.title}><span className={styles.icon} aria-hidden="true">{a.icon}</span><h3>{a.title}</h3><p>{a.detail}</p>{"href" in a && a.href ? <Link className={styles.status} href={a.href}>Play now →</Link> : <span className={styles.status}>{a.status}</span>}</article>)}</section>
  <section className={styles.lower}><article className={styles.panel}><div className={styles.panelTop}><span className={styles.icon} aria-hidden="true">♧</span><div><h3>Monthly Milestones</h3><p>Complete activities and collect rewards at your own pace.</p></div></div><div className={styles.track}><span /></div><small>Activities and progress tracking coming soon</small></article></section>
  </div></main></PlatformShell>;
 }
