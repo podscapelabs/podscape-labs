@@ -13,3 +13,20 @@
  .side .tip,.side small{display:none}
  .board{width:100%;padding:4px;gap:1px}
 }
+
+/* Fullscreen-style mobile puzzle: no unnecessary page scrolling. */
+@media(max-width:720px){
+ .page{min-height:100dvh;padding:calc(10px + env(safe-area-inset-top,0px)) 0 calc(92px + env(safe-area-inset-bottom,0px));}
+ .wrap{width:min(100% - 16px,520px)}
+ .back{font-size:12px}
+ .eyebrow{margin:5px 0 2px;font-size:8px}
+ .page h1{font-size:26px;line-height:1.05;margin:0 0 4px}
+ .intro{font-size:10px;line-height:1.25;margin:0 0 7px}
+ .game{gap:7px}
+ .side{padding:7px 10px}
+ .progress{font-size:12px}
+ .progress button{padding:3px 9px;font-size:11px}
+ .words{margin:6px 0 0;gap:3px 6px;font-size:10px}
+ .board{padding:3px;gap:1px}
+ .cell{font-size:clamp(8px,2.3vw,13px)}
+}
