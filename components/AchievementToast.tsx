@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { createPortal } from "react-dom";
 import styles from "./AchievementToast.module.css";
 
 export type AchievementNotice = { id: string; title: string; description: string; exp: number; coins: number };
@@ -34,15 +35,15 @@ export function AchievementToast() {
     setDismissed(false);
   }, [dismissed]);
   if (!current) return null;
-  return <aside className={styles.toast} role="status" aria-live="polite" aria-atomic="true">
+  return createPortal(<aside className={styles.toast} role="status" aria-live="polite" aria-atomic="true">
     <div className={styles.icon} aria-hidden="true">✦</div>
     <div className={styles.content}>
       <div className={styles.eyebrow}>Achievement unlocked!</div>
       <strong>{current.title}</strong>
       <div className={styles.description}>{current.description}</div>
       <div className={styles.rewards}>+{current.exp} EXP <span aria-hidden="true">·</span> +{current.coins} Pod Coins</div>
-      <Link className={styles.link} href="/account" onClick={() => setDismissed(true)}>View achievements →</Link>
+      <Link className={styles.link} href="/account/progress" onClick={() => setDismissed(true)}>View achievements →</Link>
     </div>
     <button className={styles.close} type="button" aria-label="Dismiss achievement" onClick={() => setDismissed(true)}>×</button>
-  </aside>;
+  </aside>, document.body);
 }
