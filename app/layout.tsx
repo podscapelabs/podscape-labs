@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { siteContent } from "@/content/site";
 import "./globals.css";
+import { GlobalMobileNav } from "@/components/GlobalMobileNav";
 import { AchievementToast } from "@/components/AchievementToast";
 
 export const metadata: Metadata = {
@@ -34,7 +35,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body>{children}<AchievementToast /></body>
+      <body>{children}<AchievementToast /><GlobalMobileNav /></body>
     </html>
   );
 }
