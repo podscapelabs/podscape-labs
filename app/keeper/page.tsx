@@ -30,11 +30,11 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
   const totalPopulation = active.reduce((total, enclosure) => total + enclosure.quantity, 0);
   const heroRecord = speciesById.get(active[0]?.speciesId);
   const recent = [...active].sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt)).slice(0, 3);
-  const firstBinHref = active[0] ? `/keeper/${active[0].id}` : "/ledger/my-collection";
+  const firstBinHref = active[0] ? `/keeper/${active[0].id}` : "/keeper/collection";
   const tools: { href: string; icon: PodscapeIconName; label: string }[] = [
     { href: "/keeper/scan", icon: "scan", label: "Scan bin" },
     { href: firstBinHref, icon: "qr", label: "Create QR" },
-    { href: "/ledger/my-collection", icon: "bin", label: "Add bin" },
+    { href: "/keeper/collection", icon: "bin", label: "Add bin" },
     { href: "/keeper/scan", icon: "droplet", label: "Log care" },
     { href: "/keeper/schedule", icon: "calendar", label: "Schedule" },
     { href: firstBinHref, icon: "note", label: "Notes" },
@@ -49,7 +49,7 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
           <p>MANAGER</p>
           <h1>Dashboard</h1>
           <span>Quick access to your colony care and records.</span>
-          <Link href="/ledger/my-collection">View My Collection <b>→</b></Link>
+          <Link href="/keeper/collection">My Collection <b>→</b></Link>
         </div>
         <em className={styles.heroNote}>Small<br />creatures.<br />Big world.</em>
       </section>
@@ -61,7 +61,7 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
           <Link href="/account/login">Member sign in →</Link>
         </section> : unavailable ? <section className={styles.empty} role="alert"><h2>Manager is temporarily unavailable.</h2><p>The Keeper database connection could not be reached.</p></section> : <>
           <section className={styles.metrics} aria-label="Keeper overview">
-            <Link href="/ledger/my-collection"><PodscapeLineIcon name="leaf" /><strong>{uniqueSpecies}</strong><span>Species</span><b>›</b></Link>
+            <Link href="/keeper/collection"><PodscapeLineIcon name="leaf" /><strong>{uniqueSpecies}</strong><span>Species</span><b>›</b></Link>
             <Link href="#bins"><PodscapeLineIcon name="bin" /><strong>{active.length}</strong><span>Bins</span><b>›</b></Link>
             <Link href="#bins"><PodscapeLineIcon name="community" /><strong>{totalPopulation}</strong><span>Total count</span><b>›</b></Link>
           </section>
@@ -86,7 +86,7 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
           </section> : null}
 
           <section className={styles.section} id="bins">
-            <header><h2>My Bins</h2><Link href="/ledger/my-collection">Add bin <span>＋</span></Link></header>
+            <header><h2>My Bins</h2><Link href="/keeper/collection">Add bin <span>＋</span></Link></header>
             {active.length ? <div className={styles.bins}>{active.map((enclosure) => {
               const record = speciesById.get(enclosure.speciesId);
               return <Link href={`/keeper/${enclosure.id}`} key={enclosure.id}>
@@ -96,7 +96,7 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
                 <small>{record ? speciesDisplayName(record) : "Species"}</small>
                 <b>›</b>
               </Link>;
-            })}</div> : <div className={styles.emptyInline}><p>No active bins yet.</p><Link href="/ledger/my-collection">Choose a species to add your first bin →</Link></div>}
+            })}</div> : <div className={styles.emptyInline}><p>No active bins yet.</p><Link href="/keeper/collection">Choose a species to add your first bin →</Link></div>}
           </section>
 
           {archived.length ? <details className={styles.archived}><summary>Archived bins ({archived.length})</summary><div>{archived.map((enclosure) => <Link href={`/keeper/${enclosure.id}`} key={enclosure.id}>{enclosure.name} →</Link>)}</div></details> : null}
