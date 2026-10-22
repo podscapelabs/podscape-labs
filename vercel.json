@@ -2,7 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "git": {
     "deploymentEnabled": {
-      "feature/keeper-qr-quick-care": false
+      "feature/keeper-qr-quick-care": false,
+      "codex/platform-rebuild-v2": false
     }
   }
 }
