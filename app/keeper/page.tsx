@@ -33,7 +33,7 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
   const firstBinHref = active[0] ? `/keeper/${active[0].id}` : "/keeper/collection";
   const tools: { href: string; icon: PodscapeIconName; label: string }[] = [
     { href: "/keeper/scan", icon: "scan", label: "Scan bin" },
-    { href: firstBinHref, icon: "qr", label: "Create QR" },
+    { href: "/keeper/qr", icon: "qr", label: "Create QR" },
     { href: "/keeper/collection", icon: "bin", label: "Add bin" },
     { href: "/keeper/scan", icon: "droplet", label: "Log care" },
     { href: "/keeper/schedule", icon: "calendar", label: "Schedule" },
