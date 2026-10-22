@@ -9,6 +9,8 @@ export const metadata: Metadata = {
   description:
     "Podscape Labs is an independent Canadian studio creating original tools, games, and resources for the isopod hobby.",
   metadataBase: new URL("https://podscapelabs.com"),
+  applicationName: "PodScape Labs",
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "PodScape" },
   openGraph: {
     title: siteContent.brand.name,
     description:
