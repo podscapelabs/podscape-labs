@@ -1,1 +1,15 @@
 .page{background:#f2eee3;min-height:85vh;color:#263e2c;padding:24px 0 95px}.wrap{width:min(1000px,calc(100% - 24px));margin:auto}.back{color:#43654a;text-decoration:none;font-size:13px;font-weight:700}.eyebrow{font-size:10px;letter-spacing:.14em;font-weight:750;margin:20px 0 6px}.page h1{font:normal clamp(32px,5vw,48px) Georgia,serif;margin:0 0 8px}.intro{font-size:14px;line-height:1.5;max-width:640px;margin:0 0 18px}.game{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:18px;align-items:start}.board{display:grid;grid-template-columns:repeat(16,minmax(0,1fr));gap:2px;background:#d7dfcb;padding:8px;border-radius:15px;touch-action:none;user-select:none}.cell{aspect-ratio:1;min-width:0;padding:0;border:0;border-radius:3px;background:#fffaf0;color:#25422f;font-weight:700;font-size:clamp(8px,1.6vw,17px);cursor:pointer;touch-action:none}.cell.solved{background:#a7c79e}.cell.selected{background:#e8cb79}.side{background:#faf7ef;border:1px solid #dfdccb;border-radius:17px;padding:18px}.progress{display:flex;align-items:center;justify-content:space-between;gap:8px}.progress button{border:1px solid #b9c8b2;border-radius:20px;padding:7px 12px;background:#e7edde;color:#29432e;cursor:pointer}.words{display:grid;gap:10px;margin:20px 0;font-size:13px;font-weight:700;overflow-wrap:anywhere}.done{color:#64876b;text-decoration:line-through}.tip,.side small{color:#728075;font-size:12px;line-height:1.5}.win{color:#2c6b3e;font-weight:800;margin:14px 0}@media(max-width:720px){.game{grid-template-columns:1fr;gap:12px}.board{padding:5px;gap:1px;border-radius:10px}.cell{font-size:clamp(8px,2.3vw,13px);border-radius:2px}.side{padding:13px}.words{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 6px;margin:13px 0}.page{padding-top:15px}.intro{font-size:12px}}
+/* Keep the word bank visible before the grid on phones. */
+@media(max-width:720px){
+ .page{padding-top:10px}
+ .eyebrow{margin:10px 0 3px;font-size:9px}
+ .page h1{font-size:31px;margin-bottom:4px}
+ .intro{margin-bottom:10px;font-size:11px;line-height:1.35}
+ .game{display:flex;flex-direction:column;gap:10px}
+ .side{order:-1;width:100%;padding:10px 12px;border-radius:12px}
+ .progress{font-size:13px}
+ .progress button{padding:4px 10px;font-size:12px}
+ .words{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 8px;margin:9px 0 0;font-size:11px;line-height:1.2}
+ .side .tip,.side small{display:none}
+ .board{width:100%;padding:4px;gap:1px}
+}
