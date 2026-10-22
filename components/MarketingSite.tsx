@@ -2,16 +2,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { Header } from "./Header";
 import styles from "./MarketingHome.module.css";
+import { PodscapeLineIcon, type PodscapeIconName } from "./PodscapeLineIcon";
 import { isSpeciesRecordActive, speciesDisplayName, speciesScientificName } from "@/data/species";
 import { getSpeciesRecords } from "@/lib/species-store";
 
 const homeDestinations = [
-  { icon: "◇", label: "Explore Species", copy: "Discover and learn about isopods.", href: "/ledger", tone: "green" },
-  { icon: "▣", label: "My Collection", copy: "Track, manage and care for your isopods.", href: "/ledger/my-collection", tone: "sand" },
-  { icon: "▤", label: "Shop", copy: "Supplies, enclosures and more.", href: "/shop", tone: "clay" },
-  { icon: "▥", label: "Guides & Resources", copy: "Care sheets, habitats, breeding and more.", href: "/field-guide", tone: "sage" },
-  { icon: "◎", label: "Community", copy: "Share, learn and connect with keepers.", href: "/from-the-lab", tone: "moss" },
-] as const;
+  { icon: "leaf", label: "Explore Species", copy: "Discover and learn about isopods.", href: "/ledger", tone: "green" },
+  { icon: "jar", label: "My Collection", copy: "Track, manage and care for your isopods.", href: "/ledger/my-collection", tone: "sand" },
+  { icon: "shop", label: "Shop", copy: "Supplies, enclosures and more.", href: "/shop", tone: "clay" },
+  { icon: "book", label: "Guides & Resources", copy: "Care sheets, habitats, breeding and more.", href: "/field-guide", tone: "sage" },
+  { icon: "community", label: "Community", copy: "Share, learn and connect with keepers.", href: "/from-the-lab", tone: "moss" },
+] satisfies ReadonlyArray<{icon:PodscapeIconName;label:string;copy:string;href:string;tone:string}>;
 
 export async function MarketingSite() {
   const records = await getSpeciesRecords();
@@ -25,8 +26,8 @@ export async function MarketingSite() {
         {featured ? <Link className={styles.heroVisual} href={`/ledger/${featured.slug}`} aria-label={`Explore ${speciesDisplayName(featured)}`}><div className={styles.heroPhoto}><Image src={featured.image!} alt={featured.imageAlt||speciesDisplayName(featured)} fill sizes="(max-width: 720px) 62vw, 50vw" priority style={{objectPosition:`${featured.imagePositionX}% ${featured.imagePositionY}%`,transform:`scale(${featured.imageZoom})`}}/></div><span className={styles.heroNote}>Small<br/>creatures.<br/>Big world.</span><span className={styles.speciesTag}><em>{speciesScientificName(featured)}</em><strong>“{speciesDisplayName(featured)}”</strong></span></Link> : null}
       </div></section>
 
-      <section className={styles.homeMenu} aria-labelledby="home-menu-title"><div className="v2-container"><h2 id="home-menu-title" className="sr-only">Explore Podscape</h2><div className={styles.homeGrid}>{homeDestinations.map((item)=><Link href={item.href} className={`${styles.homeCard} ${styles[item.tone]}`} key={item.label}><span className={styles.cardIcon}>{item.icon}</span><span><strong>{item.label}</strong><small>{item.copy}</small></span><b aria-hidden="true">›</b></Link>)}</div></div></section>
+      <section className={styles.homeMenu} aria-labelledby="home-menu-title"><div className="v2-container"><div className={styles.homeHeading}><h2 id="home-menu-title">Explore Podscape</h2><Link href="/menu">All destinations →</Link></div><div className={styles.homeGrid}>{homeDestinations.map((item)=><Link href={item.href} className={`${styles.homeCard} ${styles[item.tone]}`} key={item.label}><span className={styles.cardIcon}><PodscapeLineIcon name={item.icon}/></span><span><strong>{item.label}</strong><small>{item.copy}</small></span><b aria-hidden="true">›</b></Link>)}</div></div></section>
     </main>
-    <nav className={styles.mobileNav} aria-label="Mobile shortcuts"><Link href="/admin/preview" className={styles.active}><span>◇</span>Explore</Link><Link href="/ledger"><span>▥</span>Ledger</Link><Link href="/keeper/scan" className={styles.scan}><span>▣</span>Scan</Link><Link href="/ledger/my-collection"><span>□</span>Manager</Link><Link href="/menu"><span>☰</span>Menu</Link></nav>
+    <nav className={styles.mobileNav} aria-label="Mobile shortcuts"><Link href="/admin/preview" className={styles.active}><span><PodscapeLineIcon name="home"/></span>Explore</Link><Link href="/ledger"><span><PodscapeLineIcon name="book"/></span>Ledger</Link><Link href="/keeper/scan" className={styles.scan}><span><PodscapeLineIcon name="scan"/></span>Scan</Link><Link href="/ledger/my-collection"><span><PodscapeLineIcon name="manager"/></span>Manager</Link><Link href="/menu"><span><PodscapeLineIcon name="menu"/></span>Menu</Link></nav>
   </div>;
 }
