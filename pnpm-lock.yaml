@@ -14,6 +14,9 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.112.4
         version: 2.112.4
+      jsqr:
+        specifier: 1.4.0
+        version: 1.4.0
       next:
         specifier: 15.5.9
         version: 15.5.9(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -1798,7 +1801,12 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
+  jsqr@1.4.0:
+    resolution: {integrity: sha512-dxLob7q65Xg2DvstYkRpkYtmKm2sPJ9oFhrhmudT1dZvNFFTlroai3AWSpLey/w5vMcLBXRgOJsbXpdN9HzU/A==}
+
 snapshots:
+
+  jsqr@1.4.0: {}
 
   '@emnapi/core@1.10.0':
     dependencies:
