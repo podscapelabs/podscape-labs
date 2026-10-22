@@ -22,12 +22,12 @@ export function KeeperQrCreator({bins,initialBinId}:{bins:Bin[];initialBinId:str
  function download(){if(!selected||!svg||!valid)return;const blob=new Blob([svg],{type:"image/svg+xml;charset=utf-8"});const link=document.createElement("a");const objectUrl=URL.createObjectURL(blob);link.href=objectUrl;link.download="podscape-"+selected.name.toLowerCase().replace(/[^a-z0-9]+/g,"-")+"-qr.svg";link.click();setTimeout(()=>URL.revokeObjectURL(objectUrl),1000);}
  return <div className={styles.root} style={{"--label-size":valid?dimension+"cm":"3cm"} as CSSProperties}>
   <header className={styles.heading}><p>MANAGER / BIN LABELS</p><h1>Create QR Code</h1><span>Print a scannable label for a bin you already manage.</span></header>
-  {bins.length===0?<div className={styles.empty}><p>You don't have any active bins yet.</p><Link href="/keeper/collection">Add a bin in Manager →</Link></div>:<>
+  {bins.length===0?<div className={styles.empty}><p>You don&apos;t have any active bins yet.</p><Link href="/keeper/collection">Add a bin in Manager →</Link></div>:<>
    <section className={styles.card}><div className={styles.step}><b>01</b><h2>Select a bin</h2></div>
     <label htmlFor="qr-bin">Your existing bins</label>
     <select id="qr-bin" value={binId} onChange={event=>setBinId(event.target.value)}>{bins.map(bin=><option key={bin.id} value={bin.id}>{bin.species} — {bin.name}{bin.label?" · "+bin.label:""}</option>)}</select>
     {selected?<p className={styles.binDetails}><strong>{selected.species}</strong><span>{selected.name} · {selected.label||"No label"}</span></p>:null}
-    <small>The QR links to this bin's unique record, even if you rename it later.</small>
+    <small>The QR links to this bin&apos;s unique record, even if you rename it later.</small>
    </section>
    <section className={styles.card}><div className={styles.step}><b>02</b><h2>Preview & size</h2></div>
     <div className={styles.preview}>{dataUri?<div className={styles.previewLabel}><img src={dataUri} alt="Scannable QR code preview for the selected bin"/><strong>{selected?.name}</strong><span>{selected?.species}</span></div>:<p>Generating preview…</p>}</div>
