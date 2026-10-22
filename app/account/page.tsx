@@ -4,6 +4,7 @@ import { CustomerAccountForm } from "@/components/CustomerAccountForm";
 import { signOutCustomer } from "./actions";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import styles from "./account-dashboard.module.css";
+import { AppearancePreference } from "@/components/AppearancePreference";
 
 export default async function CustomerAccountPage({ searchParams }: { searchParams: Promise<{ verified?: string }> }) {
   const db = await customerSupabase();
@@ -42,7 +43,7 @@ export default async function CustomerAccountPage({ searchParams }: { searchPara
       <div className={styles.accordions}>
         <details><summary><span className={styles.symbol}>♧</span><span><strong>Rewards &amp; Benefits</strong><small>Discounts, perks and future unlocks.</small></span><span className={styles.chevron}>⌄</span></summary><div className={styles.panel}><p>Keeper EXP and member rewards are being developed. Discount thresholds and eligibility will be announced when the program launches.</p></div></details>
         <details><summary><span className={styles.symbol}>◷</span><span><strong>Activity History</strong><small>Your care logs, guides and more.</small></span><span className={styles.chevron}>⌄</span></summary><div className={styles.panel}><p>For now, your colony care records are available in Manager.</p><Link href="/keeper">Open Manager →</Link></div></details>
-        <details><summary><span className={styles.symbol}>☷</span><span><strong>Preferences</strong><small>Appearance and notifications.</small></span><span className={styles.chevron}>⌄</span></summary><div className={styles.panel}><p>Additional member preferences will appear here as they become available.</p></div></details>
+        <details><summary><span className={styles.symbol}>☷</span><span><strong>Preferences</strong><small>Appearance and notifications.</small></span><span className={styles.chevron}>⌄</span></summary><div className={styles.panel}><AppearancePreference/><p>Notification preferences will be available later.</p></div></details>
         <details id="profile-settings"><summary><span className={styles.symbol}>♢</span><span><strong>Account &amp; Security</strong><small>Profile, email, password and privacy.</small></span><span className={styles.chevron}>⌄</span></summary><div className={styles.panel}><p className={styles.label}>Display name</p><CustomerAccountForm kind="profile" initialName={profile?.display_name || ""}/><p className={styles.label}>Email</p><p>{user.email}</p><Link href="/account/change-password">Change password →</Link><Link href="/account/forgot-password">Password recovery →</Link><form action={signOutCustomer}><button type="submit" className={styles.signout}>Sign out</button></form></div></details>
       </div>
     </div>
