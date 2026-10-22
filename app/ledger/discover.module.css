@@ -25,3 +25,22 @@
 .featureCopy a{padding:8px 12px}
 @media(min-width:700px){.content :global(.v2-filter-bar){flex-direction:column;align-items:stretch}.content :global(.v2-filter-bar) .collapsibleFilters{width:100%;flex:none}}
 @media(max-width:520px){.heroInner{padding:15px 0 16px}.title{font-size:2.6rem}.description{font-size:12px}.feature{min-height:133px}.featureCopy{max-width:74%;padding:14px}.featureCopy h2{font-size:22px}.featureCopy p{font-size:11px}}
+
+/* Second pass: species take visual priority on mobile. */
+@media(max-width:699px){
+.heroInner{padding-top:12px;padding-bottom:13px}
+.heroInner::after{width:55px;height:66px;opacity:.12}
+.eyebrow{font-size:9px;letter-spacing:.12em;margin-bottom:4px}
+.title{font-size:clamp(2.25rem,10vw,2.65rem)}
+.description{font-size:12px;line-height:1.4;margin-top:4px;max-width:32ch}
+.content{padding-top:10px}
+.content :global(nav[aria-label="Leaf Ledger views"]){margin-bottom:9px}
+.content :global(nav[aria-label="Leaf Ledger views"] a){min-height:39px}
+.content :global(.v2-filter-bar .searchInput){min-height:44px;border-radius:11px}
+.content :global(.v2-results-meta){min-height:32px}
+.content :global(.v2-species-grid){gap:9px}
+.feature{min-height:119px;margin:2px 0 5px}
+.featureCopy{padding:12px 14px}
+.featureCopy h2{font-size:20px}
+.featureCopy p{margin-bottom:7px}
+}
