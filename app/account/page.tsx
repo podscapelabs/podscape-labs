@@ -5,6 +5,7 @@ import { signOutCustomer } from "./actions";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import styles from "./account-dashboard.module.css";
 import { AppearancePreference } from "@/components/AppearancePreference";
+import { isAdminAuthenticated } from "@/lib/admin-auth";
 
 export default async function CustomerAccountPage({ searchParams }: { searchParams: Promise<{ verified?: string }> }) {
   const db = await customerSupabase();
@@ -19,6 +20,7 @@ export default async function CustomerAccountPage({ searchParams }: { searchPara
   const levelEnd = 100 * level ** 2;
   const progressPercent = Math.max(0,Math.min(100,Math.round(100 * (totalExp - levelStart) / (levelEnd - levelStart))));
   const { verified } = await searchParams;
+  const isOwner = await isAdminAuthenticated();
   const displayName = profile?.display_name || "Keeper";
   const joined = new Date(profile?.created_at || user.created_at).toLocaleDateString("en-CA",{month:"long",year:"numeric"});
   return <main className={styles.page}>
@@ -41,6 +43,7 @@ export default async function CustomerAccountPage({ searchParams }: { searchPara
       </section>
       <section className={styles.activity}><div className={styles.activityHeading}><h2>Recent Activity</h2></div><p>Activity history will appear here as you explore PodScape, complete activities and care for your colonies.</p></section>
       <div className={styles.accordions}>
+        {isOwner ? <details><summary><span className={styles.symbol}>✦</span><span><strong>Owner Tools</strong><small>Private content desks and studio controls.</small></span><span className={styles.chevron}>⌄</span></summary><div className={styles.panel}><div style={{display:"grid",gap:"12px"}}><Link href="/admin">Owner studio →</Link><Link href="/admin/species">Species desk →</Link><Link href="/admin/guides">Guide desk →</Link><Link href="/admin/lab">Lab desk →</Link><Link href="/admin/products">Product desk →</Link><Link href="/keeper">Manager dashboard →</Link></div></div></details> : null}
         <details><summary><span className={styles.symbol}>♧</span><span><strong>Rewards &amp; Benefits</strong><small>Discounts, perks and future unlocks.</small></span><span className={styles.chevron}>⌄</span></summary><div className={styles.panel}><p>Keeper EXP and member rewards are being developed. Discount thresholds and eligibility will be announced when the program launches.</p></div></details>
         <details><summary><span className={styles.symbol}>◷</span><span><strong>Activity History</strong><small>Your care logs, guides and more.</small></span><span className={styles.chevron}>⌄</span></summary><div className={styles.panel}><p>For now, your colony care records are available in Manager.</p><Link href="/keeper">Open Manager →</Link></div></details>
         <details><summary><span className={styles.symbol}>☷</span><span><strong>Preferences</strong><small>Appearance and notifications.</small></span><span className={styles.chevron}>⌄</span></summary><div className={styles.panel}><AppearancePreference/><p>Notification preferences will be available later.</p></div></details>
