@@ -2,7 +2,8 @@ export type PodscapeIconName = "leaf"|"jar"|"shop"|"book"|"community"|"vendor"|"
 
 export function PodscapeLineIcon({name}:{name:PodscapeIconName}){
  const common={viewBox:"0 0 32 32",fill:"none",stroke:"currentColor",strokeWidth:1.65,strokeLinecap:"round" as const,strokeLinejoin:"round" as const,"aria-hidden":true};
- if(name==="leaf"||name==="home")return <svg {...common}><path d="M26 5C15 6 7 12 7 21c0 3 2 5 5 5 9 0 14-10 14-21Z"/><path d="M6 28c4-7 9-12 17-18M12 22c1-3 1-6 1-9M16 18c3 0 5 1 7 2"/></svg>;
+ if(name==="home")return <svg {...common}><path d="m4 15 12-10 12 10M7 13v14h18V13M13 27v-9h6v9"/></svg>;
+ if(name==="leaf")return <svg {...common}><path d="M26 5C15 6 7 12 7 21c0 3 2 5 5 5 9 0 14-10 14-21Z"/><path d="M6 28c4-7 9-12 17-18M12 22c1-3 1-6 1-9M16 18c3 0 5 1 7 2"/></svg>;
  if(name==="jar"||name==="manager")return <svg {...common}><path d="M10 4h12v4H10zM9 9h14l1 17H8L9 9Z"/><path d="M12 18c3-4 6-5 9-4-1 5-4 7-9 7M16 15v7"/></svg>;
  if(name==="shop")return <svg {...common}><path d="M7 12h18l-2 15H9L7 12Z"/><path d="M12 14V9a4 4 0 0 1 8 0v5"/></svg>;
  if(name==="book")return <svg {...common}><path d="M4 7c5-1 9 0 12 3v17c-3-3-7-4-12-3V7ZM28 7c-5-1-9 0-12 3v17c3-3 7-4 12-3V7Z"/><path d="M8 12h5M8 16h5M19 12h5M19 16h5"/></svg>;
