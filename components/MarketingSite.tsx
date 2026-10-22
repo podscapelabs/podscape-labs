@@ -9,7 +9,6 @@ import { customerSupabase } from "@/lib/customer-auth/server";
 import styles from "./PodscapeHome.module.css";
 
 const shortcuts: {label:string;href:string;icon:PodscapeIconName;tone:string}[]=[
- {label:"Species",href:"/ledger",icon:"leaf",tone:"sage"},
  {label:"Ledger",href:"/ledger",icon:"book",tone:"sage"},
  {label:"Shop",href:"/shop",icon:"shop",tone:"sand"},
  {label:"Fun Zone",href:"/fun-zone",icon:"creative",tone:"rose"},
