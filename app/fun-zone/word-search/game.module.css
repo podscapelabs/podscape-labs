@@ -30,3 +30,7 @@
  .board{padding:3px;gap:1px}
  .cell{font-size:clamp(8px,2.3vw,13px)}
 }
+
+/* End the game section directly after the grid; the site footer follows. */
+.page{min-height:0;padding-bottom:24px}
+@media(max-width:720px){.page{min-height:0;padding-bottom:20px}}
