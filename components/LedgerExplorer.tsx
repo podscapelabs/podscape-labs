@@ -5,18 +5,21 @@ import { LedgerSpeciesCard } from "./LedgerSpeciesCard";
 import { CollectionSpeciesRow } from "./CollectionSpeciesRow";
 import collectionStyles from "./CollectionRows.module.css";
 import styles from "./LedgerLayout.module.css";
+import spotlight from "@/app/ledger/discover.module.css";
+import Link from "next/link";
 import type { ColonyStatus } from "@/data/collection";
 import { speciesDisplayName, speciesScientificName, type SpeciesRecord } from "@/data/species";
 
 type SortMode = "catalogue" | "common" | "scientific" | "recent";
 
-export function LedgerExplorer({ records, collectedIds = [], signedIn = false, mode = "catalogue", addedAtById = {}, collectionDetailsById = {} }: {
+export function LedgerExplorer({ records, collectedIds = [], signedIn = false, mode = "catalogue", addedAtById = {}, collectionDetailsById = {}, featured }: {
   records: SpeciesRecord[];
   collectedIds?: string[];
   signedIn?: boolean;
   mode?: "catalogue" | "collection";
   addedAtById?: Record<string, string>;
   collectionDetailsById?: Record<string, { quantity: number; colonyStatus: ColonyStatus; binCount?: number }>;
+  featured?: { slug: string; name: string; summary: string; image: string | null };
 }) {
   const [query, setQuery] = useState("");
   const [genus, setGenus] = useState("all");
@@ -79,6 +82,10 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
         </label>
       </div>
     </div>
+    {mode === "catalogue" && featured && !filtersActive ? <aside className={spotlight.feature} aria-label="Featured species">
+      {featured.image ? <img className={spotlight.featurePhoto} src={featured.image} alt="" loading="lazy" /> : <span className={spotlight.featureFallback} aria-hidden="true">❧</span>}
+      <div className={spotlight.featureCopy}><small>❧ Featured species</small><h2>{featured.name}</h2><p>{featured.summary || "Explore this species in the Leaf Ledger."}</p><Link href={`/ledger/${featured.slug}`}>View species →</Link></div>
+    </aside> : null}
     <div className={`v2-results-meta ${styles.resultMeta}`}>
       <span id="ledger-directory-title">{results.length} {results.length === 1 ? "record" : "records"}</span>
       <div className={styles.metaActions}>
