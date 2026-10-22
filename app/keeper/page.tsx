@@ -61,9 +61,9 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
           <Link href="/account/login">Member sign in →</Link>
         </section> : unavailable ? <section className={styles.empty} role="alert"><h2>Manager is temporarily unavailable.</h2><p>The Keeper database connection could not be reached.</p></section> : <>
           <section className={styles.metrics} aria-label="Keeper overview">
-            <Link href="#colonies"><PodscapeLineIcon name="leaf" /><strong>{uniqueSpecies}</strong><span>Species</span><b>›</b></Link>
-            <Link href="#colonies"><PodscapeLineIcon name="bin" /><strong>{active.length}</strong><span>Bins</span><b>›</b></Link>
-            <Link href="#colonies"><PodscapeLineIcon name="community" /><strong>{totalPopulation}</strong><span>Total count</span><b>›</b></Link>
+            <Link href="/keeper/collection"><PodscapeLineIcon name="leaf" /><strong>{uniqueSpecies}</strong><span>Species</span><b>›</b></Link>
+            <Link href="/keeper/collection"><PodscapeLineIcon name="bin" /><strong>{active.length}</strong><span>Bins</span><b>›</b></Link>
+            <Link href="/keeper/collection"><PodscapeLineIcon name="community" /><strong>{totalPopulation}</strong><span>Total count</span><b>›</b></Link>
           </section>
 
           <section className={styles.section}>
@@ -83,6 +83,20 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
                 <em>{enclosure.quantity} recorded</em><b>›</b>
               </Link>;
             })}</div> : <div className={styles.emptyInline}><p>No active colonies yet.</p><Link href="/keeper/collection">Explore your collection →</Link></div>}
+          </section>
+
+          <section className={styles.section} id="bins">
+            <header><h2>My Bins</h2><Link href="/keeper/collection">View all <span>→</span></Link></header>
+            {active.length ? <div className={styles.bins}>{active.map(enclosure => {
+              const record = speciesById.get(enclosure.speciesId);
+              return <Link href={`/keeper/${enclosure.id}`} key={enclosure.id}>
+                <span className={styles.binPhoto}>{record?.image ? <Image src={record.image} alt="" fill sizes="130px" style={{objectFit:"cover",objectPosition:`${record.imagePositionX}% ${record.imagePositionY}%`}} /> : <PodscapeLineIcon name="jar" />}</span>
+                <span className={styles.count}><strong>{enclosure.quantity}</strong> count</span>
+                <strong>{enclosure.name}</strong>
+                <small>{record ? speciesDisplayName(record) : "Species record"} · {enclosure.status.replaceAll("-", " ")}</small>
+                <b>›</b>
+              </Link>;
+            })}</div> : <div className={styles.emptyInline}><p>No active bins yet.</p><Link href="/keeper/collection">Browse your colonies →</Link></div>}
           </section>
 
           {archived.length ? <details className={styles.archived}><summary>Archived bins ({archived.length})</summary><div>{archived.map((enclosure) => <Link href={`/keeper/${enclosure.id}`} key={enclosure.id}>{enclosure.name} →</Link>)}</div></details> : null}
