@@ -11,6 +11,12 @@ export default async function CustomerAccountPage({ searchParams }: { searchPara
   const { data: { user } } = await db.auth.getUser();
   if (!user) redirect("/account/login");
   const { data: profile } = await db.from("customer_profiles").select("display_name,created_at").eq("id",user.id).maybeSingle();
+  const { data: progress, error: progressError } = await db.from("member_progress").select("total_exp,pod_coins").eq("user_id",user.id).maybeSingle();
+  const totalExp = Number(progress?.total_exp || 0);
+  const level = Math.floor(Math.sqrt(totalExp / 100)) + 1;
+  const levelStart = 100 * (level - 1) ** 2;
+  const levelEnd = 100 * level ** 2;
+  const progressPercent = Math.max(0,Math.min(100,Math.round(100 * (totalExp - levelStart) / (levelEnd - levelStart))));
   const { verified } = await searchParams;
   const displayName = profile?.display_name || "Keeper";
   const joined = new Date(profile?.created_at || user.created_at).toLocaleDateString("en-CA",{month:"long",year:"numeric"});
@@ -23,11 +29,14 @@ export default async function CustomerAccountPage({ searchParams }: { searchPara
         <div className={styles.profileText}><h2>{displayName}</h2><p>PodScape member</p><small>Member since {joined}</small></div>
         <a href="#profile-settings" className={styles.edit}>Edit Profile</a>
       </section>
-      <section className={styles.progress} aria-label="Keeper progress">
-        <div className={styles.progressHeading}><span>✧</span><h2>Keeper Progress</h2><small>Coming soon</small></div>
-        <p>Discover, learn and grow with PodScape.</p>
-        <div className={styles.bar} aria-label="EXP progression is coming soon"><span /></div>
-        <div className={styles.progressFoot}><span>EXP tracking is in development</span><span>Rewards to follow</span></div>
+      <section className={styles.progress} aria-label="PodScape progress">
+        <div className={styles.progressHeading}><span>✧</span><h2>My Progress</h2><small>Level {level}</small></div>
+        <p>Explore, learn and participate across PodScape. Your progress stays with you.</p>
+        <div className={styles.progressFoot}><strong>{totalExp.toLocaleString("en-CA")} EXP</strong><strong>{Number(progress?.pod_coins || 0).toLocaleString("en-CA")} Pod Coins</strong></div>
+        <div className={styles.bar} role="progressbar" aria-label="Progress to next level" aria-valuemin={levelStart} aria-valuemax={levelEnd} aria-valuenow={totalExp}><span style={{width:progressPercent+"%"}} /></div>
+        <div className={styles.progressFoot}><span>Level {level}</span><span>{(levelEnd-totalExp).toLocaleString("en-CA")} EXP to Level {level+1}</span></div>
+        {progressError ? <p>Progress data will appear once the new progression database is enabled.</p> : null}
+        <p><Link href="/account/progress">View quests and milestones →</Link></p>
       </section>
       <section className={styles.activity}><div className={styles.activityHeading}><h2>Recent Activity</h2></div><p>Activity history will appear here as you explore PodScape, complete activities and care for your colonies.</p></section>
       <div className={styles.accordions}>
