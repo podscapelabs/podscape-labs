@@ -18,12 +18,12 @@ const destinations = [
   { icon: "◇", label: "Leaf Ledger", copy: "Discover species", href: "/ledger" },
   { icon: "▣", label: "My Collection", copy: "Track & manage", href: "/ledger/my-collection" },
   { icon: "▤", label: "Shop", copy: "Supplies & more", href: "/shop" },
+  { icon: "▥", label: "Guides", copy: "Learn & grow", href: "/field-guide" },
+  { icon: "◎", label: "Community", copy: "Share & connect", href: "/from-the-lab" },
   { icon: "⌂", label: "Vendors", copy: "Find breeders", href: "/explore#vendor-directory" },
   { icon: "◌", label: "Creative Network", copy: "Artists & makers", href: "/explore#creative-network" },
-  { icon: "◎", label: "Community", copy: "Share & connect", href: "/from-the-lab" },
   { icon: "●", label: "Podlings", copy: "Your companion", href: "/explore" },
   { icon: "▧", label: "PodBound", copy: "The card game", href: "https://www.podbound.net" },
-  { icon: "▥", label: "Guides", copy: "Learn & grow", href: "/field-guide" },
   { icon: "△", label: "From the Lab", copy: "Projects & updates", href: "/from-the-lab" },
 ] as const;
 
