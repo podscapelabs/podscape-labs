@@ -1,3 +1,6 @@
+"use client";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { PodscapeLineIcon, type PodscapeIconName } from "./PodscapeLineIcon";
 import styles from "./KeeperMobileNav.module.css";
@@ -11,9 +14,12 @@ const items: { href: string; icon: PodscapeIconName; label: string; primary?: bo
 ];
 
 export function KeeperMobileNav({ active }: { active: "collection" | "scan" | "keeper" }) {
-  return <nav className={styles.nav} aria-label="Keeper navigation">
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return createPortal(<nav className={styles.nav} aria-label="Keeper navigation">
     {items.map((item) => { const isActive = active === item.label.toLowerCase() || (active === "collection" && item.label === "Ledger"); return <Link href={item.href} key={item.label} className={`${styles.item} ${item.primary ? styles.primary : ""} ${isActive ? styles.active : ""}`}>
       <span><PodscapeLineIcon name={item.icon} /></span><small>{item.label}</small>
     </Link>; })}
-  </nav>;
+  </nav>, document.body);
 }
