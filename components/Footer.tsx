@@ -14,13 +14,7 @@ export function Footer() {
             <strong>Podscape Labs</strong>
             <p>Games, tools, and resources for the isopod hobby.</p>
           </div>
-          <nav className={styles.links} aria-label="Footer navigation">
-            <Link href="/ledger">Leaf Ledger</Link>
-            <Link href="/field-guide">Field Guide</Link>
-            <a href="https://www.podbound.net" target="_blank" rel="noopener noreferrer">PodBound</a>
-            <Link href="/from-the-lab">From the Lab</Link>
-            <Link href="/explore#about">About</Link>
-          </nav>
+          <nav className={styles.links} aria-label="Legal and contact"><Link href="/explore#about">About</Link><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link><Link href="/contact">Contact</Link></nav>
         </div>
         <div className={styles.bottom}>
           <span>© {new Date().getFullYear()} Podscape Labs</span>
