@@ -48,7 +48,7 @@ export default function GenusWordSearch(){
  return <main className={styles.page}><div className={styles.wrap}>
  <Link href="/fun-zone" className={styles.back}>← Fun Zone</Link>
  <p className={styles.eyebrow}>WORD SEARCH · TAXONOMY · EASY</p><h1>Genus Explorer</h1>
- <p className={styles.intro}>Find eight isopod genera hidden horizontally, vertically, or diagonally. Tap the first and last letter of a word, or drag across its letters.</p>
+ <p className={styles.intro}>Find all eight genera. Tap the first and last letters, or swipe across a word.</p>
  <div className={styles.game}>
  <div className={styles.board} ref={board} onPointerMove={e=>{const p=cellAt(e.clientX,e.clientY);if(p)move(p);}} onPointerUp={e=>release(cellAt(e.clientX,e.clientY))} onPointerCancel={cancel}>
  {puzzle.grid.map((row,r)=>row.map((letter,c)=>{const id=r+"-"+c;const solved=found.some(w=>puzzle.locations[w].includes(id));return <button key={id} type="button" data-cell data-r={r} data-c={c} onPointerDown={e=>{e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);press({r,c});}} className={`${styles.cell} ${solved?styles.solved:""} ${selected.includes(id)?styles.selected:""}`} aria-label={`Row ${r+1} column ${c+1}, ${letter}`}>{letter}</button>}))}
