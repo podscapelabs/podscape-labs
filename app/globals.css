@@ -1161,3 +1161,8 @@ h1, h2, h3 { text-wrap: balance; }
   .admin-loading-track span { width: 100%; animation: none; opacity: .55; }
   .v2-site *, .v2-site *::before, .v2-site *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }
+
+/* Account is available in the shared header at mobile and desktop widths. */
+.v2-header-tools .v2-account-button{display:grid;border:1px solid var(--border);border-radius:12px;width:44px;height:44px;margin-left:3px;background:var(--surface);}
+.v2-header-tools .v2-account-button svg{width:23px;height:23px;}
+.v2-header-tools .v2-account-button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
