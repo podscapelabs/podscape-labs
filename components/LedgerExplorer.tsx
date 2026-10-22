@@ -16,7 +16,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
   signedIn?: boolean;
   mode?: "catalogue" | "collection";
   addedAtById?: Record<string, string>;
-  collectionDetailsById?: Record<string, { quantity: number; colonyStatus: ColonyStatus }>;
+  collectionDetailsById?: Record<string, { quantity: number; colonyStatus: ColonyStatus; binCount?: number }>;
 }) {
   const [query, setQuery] = useState("");
   const [genus, setGenus] = useState("all");

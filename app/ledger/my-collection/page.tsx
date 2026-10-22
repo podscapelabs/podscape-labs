@@ -10,8 +10,6 @@ import { LedgerPageIntro } from "@/components/LedgerPageIntro";
 import layout from "@/components/LedgerLayout.module.css";
 import { getMemberCollectionState } from "@/lib/member-collection";
 import { listEnclosures } from "@/lib/keeper";
-import { KeeperCollectionHub } from "@/components/KeeperCollectionHub";
-import { speciesDisplayName, speciesScientificName } from "@/data/species";
 import { getSpeciesRecords } from "@/lib/species-store";
 import { KeeperMobileNav } from "@/components/KeeperMobileNav";
 
@@ -28,11 +26,12 @@ export default async function MyCollectionPage() {
     const colonies = enclosures.filter((enclosure) => enclosure.speciesId === entry.speciesId && !enclosure.isArchived);
     const primary = colonies.find((colony) => colony.isPrimary) || colonies[0];
     return [entry.speciesId, {
-      quantity: colonies.reduce((total, colony) => total + colony.quantity, 0) || entry.quantity,
+      quantity: colonies.length ? colonies.reduce((total, colony) => total + colony.quantity, 0) : entry.quantity,
+      binCount: colonies.length,
       colonyStatus: (primary?.status || entry.colonyStatus) as typeof entry.colonyStatus,
     }];
   }));
-  const generaCount = new Set(inCollection.map((record) => record.genus).filter(Boolean)).size;
+  const activeBins = enclosures.filter((enclosure) => !enclosure.isArchived);
 
   return <PlatformShell>
     <LedgerPageIntro mode="collection" />
@@ -47,11 +46,17 @@ export default async function MyCollectionPage() {
         <p>Browse a species record and choose “Add to My Collection” to save it here.</p>
         <Link href="/ledger">Browse Leaf Ledger →</Link>
       </div> : <>
-        <KeeperCollectionHub bins={enclosures.filter(e=>!e.isArchived).map(e=>{const species=records.find(r=>r.id===e.speciesId);return {id:e.id,speciesId:e.speciesId,speciesName:species?speciesDisplayName(species):"Species",scientificName:species?speciesScientificName(species):"",speciesSlug:species?.slug||"",speciesImage:species?.image||null,name:e.name,label:e.label,quantity:e.quantity,status:e.status,isPrimary:e.isPrimary};})}/>
-        <section className={collectionStyles.overview} aria-label="Collection overview">
-          <div><strong>{inCollection.length}</strong><span>Species</span></div>
-          <div><strong>{generaCount}</strong><span>Genera</span></div>
-        </section>
+        <div className={collectionStyles.quickHeader}>
+          <section className={collectionStyles.overview} aria-label="Collection overview">
+            <div><strong>{inCollection.length}</strong><span>Species</span></div>
+            <div><strong>{activeBins.length}</strong><span>Active bins</span></div>
+          </section>
+          <nav className={collectionStyles.shortcuts} aria-label="Keeper shortcuts">
+            <Link href="/keeper/scan">▣ Scan bin</Link>
+            <Link href="/keeper">Manage bins</Link>
+            <Link href="/keeper/schedule">Care schedule</Link>
+          </nav>
+        </div>
         <LedgerExplorer records={inCollection} collectedIds={member.ids} signedIn mode="collection" addedAtById={addedAtById} collectionDetailsById={collectionDetailsById} />
       </>}
     </div></section>
