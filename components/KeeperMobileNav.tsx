@@ -1,18 +1,19 @@
 import Link from "next/link";
+import { PodscapeLineIcon, type PodscapeIconName } from "./PodscapeLineIcon";
 import styles from "./KeeperMobileNav.module.css";
 
-const items = [
-  { href: "/admin/preview", icon: "⌂", label: "Home" },
-  { href: "/ledger/my-collection", icon: "◇", label: "Collection" },
-  { href: "/keeper/scan", icon: "▣", label: "Scan", primary: true },
-  { href: "/ledger", icon: "▤", label: "Ledger" },
-  { href: "/account", icon: "○", label: "Account" },
-] as const;
+const items: { href: string; icon: PodscapeIconName; label: string; primary?: boolean }[] = [
+  { href: "/admin/preview", icon: "leaf", label: "Explore" },
+  { href: "/ledger", icon: "book", label: "Ledger" },
+  { href: "/keeper/scan", icon: "scan", label: "Scan", primary: true },
+  { href: "/keeper", icon: "manager", label: "Manager" },
+  { href: "/menu", icon: "menu", label: "Menu" },
+];
 
 export function KeeperMobileNav({ active }: { active: "collection" | "scan" | "keeper" }) {
   return <nav className={styles.nav} aria-label="Keeper navigation">
-    {items.map((item) => { const isActive = active === item.label.toLowerCase() || (active === "keeper" && item.label === "Collection"); return <Link href={item.href} key={item.label} className={`${styles.item} ${"primary" in item && item.primary ? styles.primary : ""} ${isActive ? styles.active : ""}`}>
-      <span aria-hidden="true">{item.icon}</span><small>{item.label}</small>
+    {items.map((item) => { const isActive = active === item.label.toLowerCase() || (active === "collection" && item.label === "Ledger"); return <Link href={item.href} key={item.label} className={`${styles.item} ${item.primary ? styles.primary : ""} ${isActive ? styles.active : ""}`}>
+      <span><PodscapeLineIcon name={item.icon} /></span><small>{item.label}</small>
     </Link>; })}
   </nav>;
 }
