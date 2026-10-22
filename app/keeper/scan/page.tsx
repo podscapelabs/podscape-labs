@@ -18,5 +18,5 @@ export default async function ScanPage({searchParams}:{searchParams:Promise<{bin
  const species = await getSpeciesRecords();
  const bins = enclosures.map(e=>{const record=species.find(s=>s.id===e.speciesId);return{id:e.id,name:e.name,label:e.label,quantity:e.quantity,species:record?.commonName||"Unlinked species",image:record?.image||null};});
  const requested = (await searchParams).bin || "";
- return <PlatformShell><main className="v2-container" style={{padding:"24px 16px 100px"}}><KeeperScanner bins={bins} initialBinId={requested}/></main><KeeperMobileNav active="scan"/></PlatformShell>;
+ return <PlatformShell><main className="v2-container scan-page-active" style={{padding:"12px 16px 104px"}}><KeeperScanner bins={bins} initialBinId={requested}/></main><KeeperMobileNav active="scan"/></PlatformShell>;
 }
