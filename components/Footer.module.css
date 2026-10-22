@@ -76,3 +76,6 @@
   .links { gap: 1px 8px; }
   .links a { font-size: .69rem; }
 }
+
+/* Compact footer: main navigation lives in the app toolbar. */
+.inner{padding-block:18px 15px}.main{gap:10px}.links{display:flex;flex-wrap:wrap;gap:2px 18px}.links a{min-height:30px;font-size:.72rem}.bottom{margin-top:10px;padding-top:9px}@media(min-width:700px){.inner{padding-block:20px 15px}.main{grid-template-columns:1fr auto;gap:25px}.links{display:flex;gap:18px}.bottom{margin-top:12px}}
