@@ -8,6 +8,7 @@ export const dynamic = "force-dynamic";
 
 const ownerLinks = [
   { label: "Manager dashboard", href: "/keeper" },
+  { label: "Fun Zone", href: "/fun-zone" },
   { label: "Ledger desk", href: "/admin/species" },
   { label: "Guide desk", href: "/admin/guides" },
   { label: "Lab desk", href: "/admin/lab" },
