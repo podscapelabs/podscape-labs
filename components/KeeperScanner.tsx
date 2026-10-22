@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import jsQR from "jsqr";
 import { logKeeperEvent } from "@/app/keeper/actions";
 import styles from "./KeeperScanner.module.css";
 type Bin = { id:string; name:string; label:string; species:string; quantity:number; image:string|null };
@@ -16,21 +17,36 @@ function readId(value:string):string|null {
 const tasks=[{label:"Misted",kind:"maintenance",note:"Misted"},{label:"Fed",kind:"feeding",note:"Fed"},{label:"Spot cleaned",kind:"maintenance",note:"Spot cleaned"},{label:"Leaf litter",kind:"maintenance",note:"Leaf litter added"}] as const;
 export function KeeperScanner({bins,initialBinId=""}:{bins:Bin[];initialBinId?:string}){
  const video=useRef<HTMLVideoElement>(null);const stream=useRef<MediaStream|null>(null);const lock=useRef(false);
+ const canvas=useRef<HTMLCanvasElement|null>(null);
  const saving=useRef(false);
  const [selected,setSelected]=useState<Bin|null>(()=>bins.find(b=>b.id===initialBinId)||null);const [state,setState]=useState<"idle"|"scanning"|"saved">("idle");const [error,setError]=useState("");const [choice,setChoice]=useState("");const [pending,start]=useTransition();
  const [sessionCount,setSessionCount]=useState(0);const [customNote,setCustomNote]=useState("");const [customDate,setCustomDate]=useState("");const [manual,setManual]=useState(initialBinId);const [lastSaved,setLastSaved]=useState<{bin:Bin;task:string}|null>(null);
- const stop=()=>{stream.current?.getTracks().forEach(t=>t.stop());stream.current=null;};
+ const stop=()=>{stream.current?.getTracks().forEach(t=>t.stop());stream.current=null;canvas.current=null;};
  function match(value:string){const id=readId(value);const found=bins.find(b=>b.id.toLowerCase()===id?.toLowerCase());if(found){lock.current=true;stop();setSelected(found);setState("idle");setCustomNote("");setCustomDate("");setError("");return true;}setError("That code does not match an active bin in your collection.");return false;}
  useEffect(()=>()=>stop(),[]);
  useEffect(()=>{if(state!=="scanning")return;let live=true;let timer:ReturnType<typeof setInterval>|undefined;
  async function begin(){try{
  const ctor=(window as unknown as {BarcodeDetector?:QRConstructor}).BarcodeDetector;
- if(!ctor){setError("This browser does not support camera QR detection. Use your phone camera to open a bin link, or select a bin below.");setState("idle");return;}
  const media=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});
  if(!live){media.getTracks().forEach(t=>t.stop());return;}stream.current=media;
  if(!video.current){stop();return;}video.current.srcObject=media;await video.current.play();
- const detector=new ctor({formats:["qr_code"]});let busy=false;
- timer=setInterval(async()=>{if(busy||lock.current||!video.current||video.current.readyState<2)return;busy=true;try{const codes=await detector.detect(video.current);if(live&&codes.length)match(codes[0].rawValue);}catch{}finally{busy=false;}},300);
+ const detector=ctor?new ctor({formats:["qr_code"]}):null;
+ if(!detector) canvas.current=document.createElement("canvas");
+ let busy=false;
+ timer=setInterval(async()=>{if(busy||lock.current||!video.current||video.current.readyState<2)return;busy=true;try{
+   let value:string|undefined;
+   if(detector){const codes=await detector.detect(video.current);value=codes[0]?.rawValue;}
+   else {
+     const frame=canvas.current;const source=video.current;
+     if(frame&&source.videoWidth&&source.videoHeight){
+       const scale=Math.min(1,720/source.videoWidth);
+       frame.width=Math.round(source.videoWidth*scale);frame.height=Math.round(source.videoHeight*scale);
+       const context=frame.getContext("2d",{willReadFrequently:true});
+       if(context){context.drawImage(source,0,0,frame.width,frame.height);const pixels=context.getImageData(0,0,frame.width,frame.height);value=jsQR(pixels.data,pixels.width,pixels.height,{inversionAttempts:"attemptBoth"})?.data;}
+     }
+   }
+   if(live&&value)match(value);
+ }catch{}finally{busy=false;}},300);
  }catch{setError("Camera unavailable. Check permissions or choose a bin manually.");setState("idle");}}
  begin();return()=>{live=false;if(timer)clearInterval(timer);stop();};
  // eslint-disable-next-line react-hooks/exhaustive-deps
