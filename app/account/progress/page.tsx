@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import styles from "../account-dashboard.module.css";
+import { TestAchievementButton } from "@/components/TestAchievementButton";
 
 export const dynamic = "force-dynamic";
 const quests = [
@@ -33,6 +34,7 @@ export default async function ProgressPage() {
     <p><strong>+50 EXP · +25 Pod Coins</strong></p>
     {fieldObserver ? <p>Earned {new Date(fieldObserver.unlocked_at).toLocaleDateString("en-CA",{year:"numeric",month:"long",day:"numeric"})}</p> : <Link href="/ledger">Explore the Ledger →</Link>}
   </article>
+  {process.env.VERCEL_ENV !== "production" ? <div style={{marginTop:18}}><p style={{fontSize:12}}>Preview-only animation test. No EXP or coins will be awarded.</p><TestAchievementButton /></div> : null}
   {achievementsError ? <p>Achievement history is temporarily unavailable.</p> : null}
   </section>
  </div></main>;
