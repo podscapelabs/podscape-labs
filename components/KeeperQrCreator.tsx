@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import QRCode from "qrcode";
 import styles from "./KeeperQrCreator.module.css";
@@ -20,7 +20,7 @@ export function KeeperQrCreator({bins,initialBinId}:{bins:Bin[];initialBinId:str
  useEffect(()=>{if(!url){setSvg("");return;}let cancelled=false;QRCode.toString(url,{type:"svg",errorCorrectionLevel:"H",margin:4,width:720,color:{dark:"#142c20",light:"#ffffff"}}).then(value=>{if(!cancelled){setSvg(value);setError("");}}).catch(()=>{if(!cancelled)setError("Unable to generate QR code.");});return()=>{cancelled=true;};},[url]);
  const dataUri = useMemo(()=>svg?"data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg):"",[svg]);
  function download(){if(!selected||!svg||!valid)return;const blob=new Blob([svg],{type:"image/svg+xml;charset=utf-8"});const link=document.createElement("a");const objectUrl=URL.createObjectURL(blob);link.href=objectUrl;link.download="podscape-"+selected.name.toLowerCase().replace(/[^a-z0-9]+/g,"-")+"-qr.svg";link.click();setTimeout(()=>URL.revokeObjectURL(objectUrl),1000);}
- return <div className={styles.root} style={{"--label-size":valid?dimension+"cm":"3cm"} as React.CSSProperties}>
+ return <div className={styles.root} style={{"--label-size":valid?dimension+"cm":"3cm"} as CSSProperties}>
   <header className={styles.heading}><p>MANAGER / BIN LABELS</p><h1>Create QR Code</h1><span>Print a scannable label for a bin you already manage.</span></header>
   {bins.length===0?<div className={styles.empty}><p>You don't have any active bins yet.</p><Link href="/keeper/collection">Add a bin in Manager →</Link></div>:<>
    <section className={styles.card}><div className={styles.step}><b>01</b><h2>Select a bin</h2></div>
