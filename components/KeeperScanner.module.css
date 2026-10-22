@@ -17,3 +17,18 @@
 
 /* Compact scanner viewport, independent of Safari's expanding toolbars. */
 .wrap:has(.camera){max-width:720px;margin-inline:auto}.wrap:has(.camera) .camera{height:clamp(260px,48svh,430px);min-height:0;max-width:720px;margin:0;border-radius:18px;padding:0}.wrap:has(.camera) .brackets{width:min(56%,260px);top:50%;left:50%;transform:translate(-50%,-50%);border-width:4px;border-radius:22px}.scanBelow{text-align:center;padding:14px 8px 0}.scanBelow p{color:var(--text-secondary);font-size:.86rem;margin:0 0 12px}.scanBelow button{min-height:46px;padding:10px 18px;border-radius:24px;border:1px solid var(--border);background:var(--surface);color:var(--text-primary);font-weight:700;cursor:pointer}@media(max-width:500px){.wrap:has(.camera){margin-inline:0}.wrap:has(.camera) .camera{height:clamp(250px,46svh,390px);min-height:0;border-radius:16px}.wrap:has(.camera) .brackets{top:50%;width:min(58%,240px)}.scanBelow{padding-bottom:8px}}
+
+/* Focused mobile scan utility: compact viewfinder and no duplicate site footer. */
+:global(body:has(.scan-page-active) footer){display:none}
+.wrap:has(.camera){max-width:560px}
+.wrap:has(.camera) .camera{height:clamp(230px,37svh,330px);border-radius:16px;background:#101b14}
+.wrap:has(.camera) .brackets{width:min(55%,205px);height:auto;aspect-ratio:1;top:50%;left:50%;transform:translate(-50%,-50%);border:0;border-radius:0;box-shadow:none}
+.brackets span{position:absolute;width:35px;height:35px;border-color:#c4e3ae;border-style:solid;border-width:0}
+.brackets span:nth-child(1){top:0;left:0;border-top-width:3px;border-left-width:3px;border-top-left-radius:13px}
+.brackets span:nth-child(2){top:0;right:0;border-top-width:3px;border-right-width:3px;border-top-right-radius:13px}
+.brackets span:nth-child(3){bottom:0;left:0;border-bottom-width:3px;border-left-width:3px;border-bottom-left-radius:13px}
+.brackets span:nth-child(4){bottom:0;right:0;border-bottom-width:3px;border-right-width:3px;border-bottom-right-radius:13px}
+.scanBelow{padding:12px 0 0;text-align:center}
+.scanBelow p{font-size:.82rem;margin:0 0 8px}
+.scanBelow button{min-height:32px;border:0;background:transparent;border-radius:0;padding:4px 8px;color:var(--accent);font-size:.84rem;font-weight:650;text-decoration:underline;text-underline-offset:4px}
+@media(max-width:500px){.wrap:has(.camera) .camera{height:clamp(215px,34svh,300px);border-radius:13px}.wrap:has(.camera) .brackets{width:min(53%,185px)}.scanBelow{padding-top:10px}}
