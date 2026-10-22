@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { CollectionButton } from "@/components/CollectionButton";
 import { Breadcrumbs, PlatformShell } from "@/components/PlatformShell";
 import { SpecimenLeaf } from "@/components/SpecimenLeaf";
+import { SpeciesDiscoveryTracker } from "@/components/SpeciesDiscoveryTracker";
 import styles from "@/components/SpeciesProfile.module.css";
 import { speciesDisplayName, speciesGenus, speciesRecordLabel, speciesScientificName } from "@/data/species";
 import { getMemberCollectionState } from "@/lib/member-collection";
@@ -37,6 +38,7 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
     <section className={styles.page}>
       <div className="v2-container">
         <Breadcrumbs items={[{ label: "Leaf Ledger", href: "/ledger" }, { label: displayName }]} />
+        {member.signedIn && record.kind === "species" ? <SpeciesDiscoveryTracker speciesId={record.id} /> : null}
 
         <header className={styles.hero}>
           <div className={styles.intro}>
