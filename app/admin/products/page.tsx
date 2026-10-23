@@ -9,7 +9,7 @@ import { getSpeciesRecords } from "@/lib/species-store";
 
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getProductRecords } from "@/lib/product-store";
-import { createProductRecord, toggleProductArchive } from "./actions";
+import { createProductRecord, duplicateProductRecord, toggleProductArchive } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +31,7 @@ export default async function ProductDeskPage({ searchParams }: { searchParams: 
 {params.created ? <p className="admin-save-message is-success">Blank product created. Open a card to add details.</p> : null}
 {params.pulled ? <p className="admin-save-message is-success">Ledger details pulled into this product. Review the copied information before publishing.</p> : null}
 {params.error ? <p className="admin-save-message is-error">{params.error}</p> : null}
-<ProductDeskWorkspace product={selected} ledgerChoices={ledgerChoices}/>
+<ProductDeskWorkspace product={selected} ledgerChoices={ledgerChoices}/><form action={duplicateProductRecord} className={styles.duplicateAction}><input type="hidden" name="id" value={selected.id}/><button className="button button-outline" type="submit">Duplicate as new draft</button></form>
 <details className={styles.archiveFold}><summary>Archive or restore product</summary><form className="admin-archive-form" action={toggleProductArchive}><input type="hidden" name="id" value={selected.id} /><div><strong>{selected.archivedAt ? "Restore this product" : "Archive this product"}</strong><p>{selected.archivedAt ? "Restoring returns it to the active Product Desk." : "Archiving hides the listing from Shop without deleting its details."}</p></div><button className="button button-outline" type="submit">{selected.archivedAt ? "Restore product" : "Archive product"}</button></form></details>
 </section> : <section className="admin-record-editor admin-empty-desk"><div><p className="admin-kicker">Product catalogue</p><h2>No products yet.</h2><p>Create the first blank product from the left-hand desk. Nothing will be purchasable until Shopify is connected.</p></div></section>}</div></main></OwnerDeskShell>;
 }
