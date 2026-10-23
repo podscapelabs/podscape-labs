@@ -24,7 +24,7 @@ export default async function ProductDeskPage({ searchParams }: { searchParams: 
   const visibleRecords = archivedView ? archivedRecords : activeRecords;
   const selected = params.record ? records.find((record) => record.id === params.record) : undefined;
   return <OwnerDeskShell><main className={`admin-shell admin-ledger-desk ${styles.desk}`}><header className="admin-dashboard-head admin-ledger-head"><div><p className="eyebrow">Manager / Shop</p><h1>Shop Manager</h1><p>Products, inventory and publishing in one workspace.</p></div><div className="admin-dashboard-actions"><Link className="button button-outline" href="/owner-studio">Dashboard</Link><Link className="button button-primary" href="/shop" target="_blank">Open Shop</Link></div></header><div className={`admin-ledger-layout ${selected ? styles.editLayout : styles.overviewLayout}`}>{!selected ? <aside className="admin-record-list" id="studio-create">
-<ShopManagerList products={records} selectedId={selected?.id}/>
+<ShopManagerList products={records}/>
 {!archivedView ? <><details className="owner-quick-create"><summary>Create from Leaf Ledger <span aria-hidden="true">⌄</span></summary><ProductLedgerQuickStart species={ledgerChoices}/></details><form action={createProductRecord}><button className="button button-outline" type="submit">+ New blank product</button></form></> : null}
 </aside> : null}{selected ? <section key={selected.id} id="product-editor" className="admin-record-editor"><Link href="/admin/products" className={styles.backLink}>← All products</Link>
 {params.saved ? <p className="admin-save-message is-success">Product saved. The Shop and search index now use this version.</p> : null}
