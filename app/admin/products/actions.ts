@@ -3,7 +3,7 @@
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { productCategories, type ProductAvailability, type ProductRecord, type ProductStatus } from "@/data/products";
+import { productCategories, type ProductAvailability, type ProductRecord, type ProductStatus, type ProductOptionType, type ProductVariant } from "@/data/products";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { appendProductRecord, getProductRecords, replaceProductRecord, saveProductPhoto } from "@/lib/product-store";
 import { getSpeciesRecords } from "@/lib/species-store";
@@ -68,16 +68,43 @@ export async function saveProductRecord(formData: FormData) {
   const slug = requestedSlug || slugify(title) || current.slug;
   const price = Number(field(formData, "price", 20));
   const priceCents = Number.isFinite(price) ? Math.max(0, Math.round(price * 100)) : current.priceCents;
+  const optionType=field(formData,"optionType",12) as ProductOptionType || "none";
+  if (!["none","count","size"].includes(optionType)) studioRedirect(id,"error","Choose valid selling options",view);
+  let variants: ProductVariant[] = [];
+  if (optionType !== "none") {
+    let raw: unknown;
+    try { raw=JSON.parse(field(formData,"variantsJson",12000)); } catch { studioRedirect(id,"error","Invalid product option data",view); }
+    if (!Array.isArray(raw) || raw.length>30) studioRedirect(id,"error","Choose up to 30 selling options",view);
+    const labels=new Set<string>();const counts=new Set<number>();
+    variants=raw.map((value:unknown,index:number)=>{
+      if (!value||typeof value!=="object") studioRedirect(id,"error","Invalid option",view);
+      const row=value as Record<string,unknown>;
+      const label=String(row.label||"").trim().slice(0,60);
+      const amount=Number(row.priceCents);
+      const count=Number(row.count);
+      if (!label||!Number.isSafeInteger(amount)||amount<0||amount>100000000) studioRedirect(id,"error",`Enter a valid label and price for option ${index+1}`,view);
+      if (labels.has(label.toLowerCase())) studioRedirect(id,"error","Option labels must be unique",view);
+      labels.add(label.toLowerCase());
+      if(optionType==="count"){
+        if(!Number.isSafeInteger(count)||count<1||count>100000) studioRedirect(id,"error","Enter a valid item count",view);
+        if(counts.has(count)) studioRedirect(id,"error","Each colony count must be unique",view);
+        counts.add(count);
+      }
+      return {id:String(row.id||`option-${index}`).slice(0,100),label,priceCents:amount,...(optionType==="count"?{count}:{})};
+    });
+    if(status==="published"&&variants.length===0) studioRedirect(id,"error","Add at least one selling option before publishing",view);
+  }
+  const effectivePrice=variants.length?Math.min(...variants.map(v=>v.priceCents)):priceCents;
   if (!title) studioRedirect(id, "error", "A product title is required", view);
   if (!productCategories.includes(category as (typeof productCategories)[number])) studioRedirect(id, "error", "Choose a valid product category", view);
   if (!["draft", "published"].includes(status)) studioRedirect(id, "error", "Invalid publication status", view);
   if (!["coming-soon", "in-stock", "sold-out"].includes(availability)) studioRedirect(id, "error", "Invalid availability", view);
-  if (status === "published" && (!field(formData, "summary", 600) || priceCents <= 0)) studioRedirect(id, "error", "Published products need a summary and a price", view);
+  if (status === "published" && (!field(formData, "summary", 600) || effectivePrice <= 0)) studioRedirect(id, "error", "Published products need a summary and a price", view);
   let image = current.image;
   if (formData.get("removePhoto") === "yes") image = null;
   const photo = formData.get("photo");
   try { if (photo instanceof File && photo.size > 0) image = await saveProductPhoto(id, photo); } catch (error) { studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to save product photo", view); }
-  const nextRecord: ProductRecord = { ...current, ledgerSpeciesId: linkedSpecies?.id || null, slug, title, category, summary: field(formData, "summary", 600), description: field(formData, "description", 8000), priceCents, status, availability, featured: formData.get("featured") === "yes", image, imageAlt: field(formData, "imageAlt", 240), imagePositionX: boundedNumber(formData, "imagePositionX", 0, 100, current.imagePositionX), imagePositionY: boundedNumber(formData, "imagePositionY", 0, 100, current.imagePositionY), imageZoom: boundedNumber(formData, "imageZoom", 1, 2, current.imageZoom), tags: field(formData, "tags", 1000).split(",").map((tag) => tag.trim()).filter(Boolean), materials: field(formData, "materials", 2000), shippingNote: field(formData, "shippingNote", 2000), updatedAt: new Date().toISOString() };
+  const nextRecord: ProductRecord = { ...current, ledgerSpeciesId: linkedSpecies?.id || null, slug, title, category, summary: field(formData, "summary", 600), description: field(formData, "description", 8000), priceCents, optionType, variants, status, availability, featured: formData.get("featured") === "yes", image, imageAlt: field(formData, "imageAlt", 240), imagePositionX: boundedNumber(formData, "imagePositionX", 0, 100, current.imagePositionX), imagePositionY: boundedNumber(formData, "imagePositionY", 0, 100, current.imagePositionY), imageZoom: boundedNumber(formData, "imageZoom", 1, 2, current.imageZoom), tags: field(formData, "tags", 1000).split(",").map((tag) => tag.trim()).filter(Boolean), materials: field(formData, "materials", 2000), shippingNote: field(formData, "shippingNote", 2000), updatedAt: new Date().toISOString() };
   try { await replaceProductRecord(nextRecord); } catch (error) { studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to save product", view); }
   revalidatePath("/shop"); revalidatePath(`/shop/${current.slug}`); revalidatePath(`/shop/${nextRecord.slug}`); revalidatePath("/search");
   studioRedirect(id, "saved", "1", view);
