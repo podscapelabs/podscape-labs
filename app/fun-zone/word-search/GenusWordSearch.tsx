@@ -46,7 +46,7 @@ export default function GenusWordSearch(){
  };
  const cancel=()=>{gesture.current=null;setStart(null);setEnd(null);};
  return <main className={styles.page}><div className={styles.wrap}>
- <Link href="/fun-zone" className={styles.back}>← Fun Zone</Link>
+ <Link href="/fun-zone/word-search" className={styles.back}>← Word Search Library</Link>
  <p className={styles.eyebrow}>WORD SEARCH · TAXONOMY · EASY</p><h1>Genus Explorer</h1>
  <p className={styles.intro}>Find all eight genera. Tap the first and last letters, or swipe across a word.</p>
  <div className={styles.game}>
