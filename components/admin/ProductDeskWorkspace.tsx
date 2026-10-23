@@ -67,6 +67,9 @@ export function ProductDeskWorkspace({product,ledgerChoices}:{product:ProductRec
      <div className={styles.two}><label>Publication<select name="status" defaultValue={product.status}><option value="draft">Draft</option><option value="published">Published</option></select></label><label>Availability<select name="availability" defaultValue={product.availability}><option value="coming-soon">Coming soon</option><option value="in-stock">In stock</option><option value="sold-out">Sold out</option></select></label></div>
      <label className={styles.check}><input type="checkbox" name="featured" value="yes" defaultChecked={product.featured}/> Feature in Shop</label>
      <label>URL slug<input name="slug" defaultValue={product.slug}/></label>
+     <label>Single-item SKU<input name="sku" maxLength={64} placeholder="Optional" defaultValue={product.sku||""}/></label>
+     <div className={styles.two}><label>Single-item stock (blank = untracked)<input name="stockQuantity" type="number" min="0" step="1" placeholder="Not tracked" defaultValue={product.stockQuantity??""}/></label><label>Low stock threshold<input name="lowStockThreshold" type="number" min="0" step="1" defaultValue={product.lowStockThreshold??3}/></label></div>
+     <p className={styles.note}>For packs or sizes, manage inventory and SKUs separately under Pricing. Inventory tracking is optional; checkout remains disabled.</p>
      <label>Materials / contents<textarea name="materials" rows={2} defaultValue={product.materials}/></label>
      <label>Shipping note<textarea name="shippingNote" rows={2} defaultValue={product.shippingNote}/></label>
     </div>)}
