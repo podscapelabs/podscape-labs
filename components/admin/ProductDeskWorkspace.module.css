@@ -1,3 +1,49 @@
 .workspace{display:grid;gap:12px;min-width:0}.top{display:flex;align-items:center;gap:11px;border:1px solid var(--border);border-radius:17px;background:var(--surface);padding:12px;min-width:0}.picture{position:relative;display:grid;place-items:center;width:85px;height:85px;flex:none;overflow:hidden;border:1px solid var(--border);border-radius:13px;background:var(--surface-secondary);color:var(--text-secondary);font-size:12px}.picture img{object-fit:cover}.topCopy{min-width:0;flex:1;display:grid;gap:4px}.topCopy strong{font:600 clamp(20px,3vw,28px)/1.1 var(--display);overflow-wrap:anywhere}.topCopy small{font-size:11px;color:var(--text-secondary)}.topCopy span{font-size:11px;font-weight:700;color:var(--accent)}.preview{flex:none;padding:10px;border:1px solid var(--border);border-radius:999px;background:var(--surface-secondary);text-decoration:none;color:var(--text-primary);font-size:11px;font-weight:700}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}.card{min-width:0;border:1px solid var(--border);background:var(--surface);border-radius:15px;overflow:hidden}.card.open{grid-column:1/-1;border-color:var(--accent)}.cardHead{display:flex;align-items:center;gap:10px;padding:14px 12px;width:100%;border:0;background:transparent;color:var(--text-primary);text-align:left;cursor:pointer;min-height:93px}.cardHead:hover{background:var(--surface-secondary)}.icon{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:12px;color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--surface-secondary));font-size:23px}.cardText{display:grid;gap:6px;flex:1;min-width:0}.cardText strong{font:600 17px/1.15 var(--display)}.cardText small{font-size:11px;color:var(--text-secondary);line-height:1.35;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.chevron{font-size:22px;color:var(--text-secondary)}.panelBody{display:none;padding:0 15px 15px;border-top:1px solid var(--border)}.panelVisible{display:block}.fields{display:grid;gap:13px;padding-top:14px}.fields label{display:grid;gap:6px;font-size:12px;font-weight:700;color:var(--text-secondary);min-width:0}.fields input:not([type=checkbox]),.fields select,.fields textarea{display:block;width:100%;min-width:0;box-sizing:border-box;min-height:44px;padding:10px 12px;background:var(--surface-secondary);color:var(--text-primary);border:1px solid var(--border);border-radius:10px;font:400 14px/1.4 var(--body)}.fields textarea{resize:vertical;min-height:64px}.two{display:grid;grid-template-columns:1fr 1fr;gap:9px}.fields .check{display:flex;align-items:center;gap:9px;color:var(--text-primary);font-weight:600}.check input{width:18px;height:18px;accent-color:var(--accent)}.note{font-size:11px;line-height:1.5;color:var(--text-secondary);margin:0}.linked{display:grid;gap:4px;padding:11px 12px;border:1px solid var(--border);border-radius:11px;background:var(--surface-secondary)}.linked strong{font:600 17px var(--display)}.linked small{font-size:11px;color:var(--text-secondary)}.pull{border:1px solid var(--accent);border-radius:10px;min-height:43px;background:var(--accent);color:var(--background);font-size:12px;font-weight:800;cursor:pointer;padding:10px}.pull:disabled{opacity:.5;cursor:not-allowed}.panelActions{margin-top:15px;border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:flex-end;gap:8px}.panelActions button{min-height:42px;border-radius:999px;padding:10px 16px;font-size:12px;font-weight:750;cursor:pointer}.close{background:var(--surface-secondary);border:1px solid var(--border);color:var(--text-primary)}.savePanel{background:var(--accent);border:1px solid var(--accent);color:var(--background)}.footer{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:5;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:16px;background:var(--surface);box-shadow:0 -6px 18px rgb(0 0 0 / 4%)}.footer span{font-size:11px;color:var(--text-secondary)}.footer button{min-height:45px;min-width:145px;border-radius:999px;background:var(--accent);color:var(--background);border:1px solid var(--accent);font-size:12px;font-weight:800;cursor:pointer}.workspace button:focus-visible,.workspace a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 @media(max-width:750px){.picture{width:67px;height:67px}.cardHead{min-height:83px;padding:11px 9px;gap:7px}.icon{width:34px;height:34px;font-size:20px}.cardText strong{font-size:15px}.cardText small{font-size:10px}.chevron{font-size:19px}.panelBody{padding:0 12px 13px}}
 @media(max-width:390px){.top{gap:7px;padding:9px}.picture{width:58px;height:58px}.topCopy strong{font-size:19px}.preview{font-size:10px;padding:8px 6px}.cards{gap:7px}.cardHead{min-height:86px}.icon{width:28px;height:28px;font-size:18px}.cardText strong{font-size:14px}.footer{bottom:calc(81px + env(safe-area-inset-bottom,0px))}.footer span{font-size:10px}.footer button{min-width:130px}}
+
+/* Approved Product Desk reference: compact full-width Ledger, price + packs, writing, two small utility cards. */
+.workspace{gap:10px}
+.cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;align-items:start}
+.card:nth-child(1),.card:nth-child(2),.card:nth-child(4){grid-column:1/-1}
+.card:nth-child(1){order:1}
+.card:nth-child(2){order:2}
+.card:nth-child(4){order:3}
+.card:nth-child(3){order:4}
+.card:nth-child(5){order:5}
+.card.open{grid-column:1/-1}
+.card{border-radius:16px}
+.cardHead{min-height:60px;padding:11px 13px;gap:10px}
+.icon{width:37px;height:37px;border-radius:10px;font-size:20px}
+.cardText strong{font-size:18px}
+.cardText small{font-size:11px}
+.panelBody{padding:0 13px 12px}
+.fields{gap:9px;padding-top:11px}
+.panelActions{margin-top:10px;padding-top:9px}
+.top{min-height:106px;padding:12px;gap:13px}
+.picture{width:96px;height:96px}
+.topCopy strong{font-size:26px}
+.pricingInline{display:grid;grid-template-columns:minmax(145px,220px) minmax(0,1fr);gap:14px;align-items:start}
+.variantInline{border-left:1px solid var(--border);padding-left:13px;min-width:0}
+.card:nth-child(4) .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.card:nth-child(4) .fields label:last-child{grid-column:1/-1}
+.card:nth-child(4) .fields textarea{min-height:45px}
+.card:nth-child(4) .fields label:nth-child(3){grid-column:1/-1}
+.card:nth-child(4) .fields label:nth-child(4){grid-column:1/-1}
+.footer{position:sticky;bottom:calc(90px + env(safe-area-inset-bottom,0px));justify-content:flex-end;padding:8px 12px;border-radius:14px}
+.footer button{min-height:42px}
+@media(max-width:750px){
+ .workspace{gap:8px}.cards{gap:8px}
+ .top{min-height:92px;gap:9px;padding:10px}
+ .picture{width:80px;height:80px}
+ .topCopy strong{font-size:23px}
+ .cardHead{min-height:57px;padding:10px;gap:8px}
+ .icon{width:33px;height:33px;font-size:18px}
+ .cardText strong{font-size:17px}
+ .panelBody{padding:0 10px 10px}
+ .pricingInline{grid-template-columns:1fr;gap:8px}
+ .variantInline{border-left:0;border-top:1px solid var(--border);padding:9px 0 0}
+ .card:nth-child(4) .fields{grid-template-columns:1fr 1fr}
+ .card:nth-child(4) .fields label:nth-child(3),.card:nth-child(4) .fields label:nth-child(4){grid-column:1/-1}
+}
+@media(max-width:390px){.picture{width:65px;height:65px}.topCopy strong{font-size:20px}.cardText strong{font-size:15px}.cardHead{min-height:61px}.cardText small{font-size:10px}.preview{padding:8px 6px}}
