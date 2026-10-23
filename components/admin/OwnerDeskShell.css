@@ -1,0 +1,78 @@
+/* Owner desks V2: shared, additive styling over legacy admin markup.
+   Kept scoped so account login and public pages are unaffected. */
+.owner-desk.v2-site{--desk-bg:var(--background);--desk-panel:var(--surface);--desk-panel-hi:var(--surface-raised);--desk-edge:var(--border);--desk-text:var(--text-primary);--desk-muted:var(--text-secondary);--desk-primary:var(--ds-primary-bg);--desk-primary-text:var(--ds-primary-fg)}
+.owner-desk .admin-ledger-desk{min-height:100svh;box-sizing:border-box;background:var(--desk-bg);color:var(--desk-text);padding:clamp(14px,3vw,28px) clamp(12px,3vw,30px) var(--ds-bottom-safe-space)}
+.owner-desk .admin-dashboard-head{width:min(100%,1180px);display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:0 auto 18px;padding:0}
+.owner-desk .admin-dashboard-head>div:first-child{min-width:0;flex:1}
+.owner-desk .admin-dashboard-head .eyebrow{color:var(--accent);font-size:10px;letter-spacing:.13em;margin:0 0 7px;font-weight:800}
+.owner-desk .admin-dashboard-head h1{color:var(--desk-text);font-family:var(--display);font-weight:500;font-size:clamp(2rem,5vw,3.2rem);line-height:1.08;letter-spacing:-.035em;margin:0}
+.owner-desk .admin-dashboard-head p:last-child{font-size:12px;max-width:57ch;line-height:1.5;color:var(--desk-muted);margin:7px 0 0}
+.owner-desk .admin-dashboard-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.owner-desk .button{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:9px 14px;border-radius:999px;font-weight:750;font-size:12px;line-height:1.2;letter-spacing:0;text-transform:none;white-space:normal;text-decoration:none;cursor:pointer}
+.owner-desk .button-primary{background:var(--desk-primary);color:var(--desk-primary-text);border:1px solid var(--desk-primary)}
+.owner-desk .button-outline{background:var(--desk-panel);color:var(--desk-text);border:1px solid var(--border-strong)}
+.owner-desk .admin-ledger-layout{display:grid;grid-template-columns:minmax(235px,285px) minmax(0,1fr);gap:14px;width:min(100%,1180px);margin:auto;align-items:start}
+.owner-desk .admin-record-list,.owner-desk .admin-record-editor{min-width:0;max-width:100%;background:var(--desk-panel);border:1px solid var(--desk-edge);border-radius:18px;overflow:hidden}
+.owner-desk .admin-record-list{position:sticky;top:12px;max-height:calc(100svh - 24px);overflow-y:auto}
+.owner-desk .admin-record-list>div:first-child{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;border-bottom:1px solid var(--desk-edge)}
+.owner-desk .admin-record-list>div:first-child span{font-size:11px;color:var(--desk-muted);letter-spacing:.08em}
+.owner-desk .admin-record-list>div:first-child strong{font:500 23px/1 var(--display);color:var(--desk-text)}
+.owner-desk .admin-record-views{display:grid;grid-template-columns:repeat(2,1fr);padding:0!important;border-bottom:1px solid var(--desk-edge)}
+.owner-desk .admin-record-views a{padding:13px 9px;text-align:center;font-size:11px;color:var(--desk-muted);font-weight:750;letter-spacing:0}
+.owner-desk .admin-record-views a.is-active{background:var(--surface-secondary);color:var(--desk-text)}
+.owner-desk .admin-record-list nav a{padding:12px 15px;gap:4px;border-bottom:1px solid var(--desk-edge);color:var(--desk-text);text-decoration:none}
+.owner-desk .admin-record-list nav a.is-active{background:var(--surface-secondary);color:var(--desk-text);box-shadow:inset 3px 0 var(--accent)}
+.owner-desk .admin-record-list nav a.is-active small,.owner-desk .admin-record-list nav a.is-active span,.owner-desk .admin-record-list nav a.is-active em{color:var(--desk-muted)}
+.owner-desk .admin-record-list nav b{font:500 17px/1.2 var(--display);color:var(--desk-text);overflow-wrap:anywhere}
+.owner-desk .admin-record-list nav small,.owner-desk .admin-record-list nav span{font-size:10px;color:var(--desk-muted);letter-spacing:.015em}
+.owner-desk .admin-record-list nav em{font-size:12px;color:var(--desk-muted)}
+.owner-desk .admin-record-list form{padding:12px}
+.owner-desk .admin-record-editor-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px;background:var(--desk-panel-hi);border-bottom:1px solid var(--desk-edge)}
+.owner-desk .admin-record-editor-head>div:first-child{min-width:0;flex:1}
+.owner-desk .admin-record-editor-head h2{font:500 clamp(1.6rem,3vw,2.5rem)/1.09 var(--display);letter-spacing:-.025em;color:var(--desk-text);margin:5px 0}
+.owner-desk .admin-record-editor-head .admin-kicker{font-size:10px;letter-spacing:0;line-height:1.4;color:var(--desk-muted);overflow-wrap:anywhere}
+.owner-desk .admin-record-editor-head p:last-child{color:var(--desk-muted);font-size:11px;line-height:1.45;margin:5px 0}
+.owner-desk .admin-product-monogram,.owner-desk .admin-guide-monogram{height:54px;width:54px;flex:none;display:grid;place-items:center;border-radius:14px;border:1px solid var(--desk-edge);background:var(--surface-secondary);color:var(--accent);font:700 10px/1.2 inherit;letter-spacing:.08em}
+.owner-desk .admin-record-editor-head .specimen-leaf{max-width:90px;width:90px;flex:none}
+.owner-desk .admin-species-form fieldset{display:grid;gap:12px;padding:18px 20px;margin:0;border:0;border-bottom:1px solid var(--desk-edge);min-width:0}
+.owner-desk .admin-species-form legend{color:var(--accent);font-size:11px;font-weight:800;letter-spacing:.085em;margin:0 0 4px;padding:0}
+.owner-desk .admin-form-grid{gap:10px;min-width:0}
+.owner-desk .admin-form-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.owner-desk .admin-form-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.owner-desk .admin-species-form label{min-width:0;display:grid;gap:6px}
+.owner-desk .admin-species-form label>span{color:var(--desk-muted);font-size:11px;font-weight:700;letter-spacing:0;text-transform:none}
+.owner-desk .admin-species-form input:not([type=checkbox]):not([type=hidden]),.owner-desk .admin-species-form select,.owner-desk .admin-species-form textarea{box-sizing:border-box;width:100%;min-width:0;min-height:44px;border:1px solid var(--desk-edge);border-radius:11px;background:var(--desk-panel-hi);color:var(--desk-text);font-size:14px;padding:10px 12px}
+.owner-desk .admin-species-form textarea{line-height:1.5;resize:vertical}
+.owner-desk .admin-species-form .admin-check-control{display:flex;align-items:center;gap:10px;font-size:12px}
+.owner-desk .admin-species-form .admin-check-control input[type=checkbox]{min-width:18px;width:18px;height:18px;accent-color:var(--accent)}
+.owner-desk .admin-form-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;background:var(--desk-panel-hi)}
+.owner-desk .admin-form-footer p{font-size:11px;line-height:1.4;color:var(--desk-muted);margin:0;max-width:55ch}
+.owner-desk .admin-archive-form{display:flex;align-items:center;gap:14px;justify-content:space-between;margin:14px;padding:14px;border:1px solid var(--desk-edge);background:var(--surface-secondary);border-radius:13px}
+.owner-desk .admin-archive-form strong{font:500 18px var(--display)}
+.owner-desk .admin-archive-form p{font-size:11px;line-height:1.5;color:var(--desk-muted);margin:5px 0 0}
+.owner-desk .admin-save-message{margin:12px 17px 0;padding:10px 12px;border-radius:10px}
+.owner-desk .admin-product-photo-preview{border-radius:13px;max-width:100%}
+.owner-desk .admin-guide-sections section{border:1px solid var(--desk-edge);border-radius:13px;padding:12px;background:var(--desk-panel-hi)}
+.owner-desk :is(a,button,input,select,textarea,summary):focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+@media(max-width:760px){
+ .owner-desk .admin-ledger-desk{padding:12px 12px var(--ds-bottom-safe-space)}
+ .owner-desk .admin-dashboard-head{align-items:flex-start;gap:10px;margin-bottom:14px}
+ .owner-desk .admin-dashboard-actions{width:100%;justify-content:flex-start}
+ .owner-desk .admin-dashboard-head h1{font-size:clamp(30px,9vw,40px)}
+ .owner-desk .admin-ledger-layout{display:flex;flex-direction:column;gap:12px}
+ .owner-desk .admin-record-list{width:100%;position:static;max-height:none;overflow:visible}
+ .owner-desk .admin-record-list nav{display:flex;flex-direction:row;gap:8px;overflow-x:auto;max-width:100%;padding:10px 12px;scroll-snap-type:x proximity}
+ .owner-desk .admin-record-list nav a{flex:none;box-sizing:border-box;width:min(185px,67vw);border:1px solid var(--desk-edge);border-radius:11px;padding:10px;scroll-snap-align:start}
+ .owner-desk .admin-record-list nav a.is-active{box-shadow:inset 0 3px var(--accent)}
+ .owner-desk .admin-record-list form{padding:10px 12px}
+ .owner-desk .admin-record-editor{width:100%}
+ .owner-desk .admin-record-editor-head{padding:14px}
+ .owner-desk .admin-record-editor-head h2{font-size:clamp(25px,7vw,34px)}
+ .owner-desk .admin-species-form fieldset{padding:15px 14px;gap:11px}
+ .owner-desk .admin-form-grid.three{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .owner-desk .admin-form-footer{padding:13px 14px;align-items:stretch;flex-direction:column}
+ .owner-desk .admin-form-footer .button{width:100%}
+ .owner-desk .admin-archive-form{flex-direction:column;align-items:stretch;margin:12px}
+ .owner-desk .admin-archive-form .button{width:100%}
+}
+@media(max-width:390px){.owner-desk .admin-form-grid.two,.owner-desk .admin-form-grid.three{grid-template-columns:1fr}}
