@@ -3,6 +3,8 @@ export type ProductAvailability = "coming-soon" | "in-stock" | "sold-out";
 
 export type ProductRecord = {
   id: string;
+  /** Stable ID of source Leaf Ledger species, when linked. */
+  ledgerSpeciesId?: string | null;
   slug: string;
   title: string;
   category: string;
