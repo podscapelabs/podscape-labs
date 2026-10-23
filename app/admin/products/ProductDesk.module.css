@@ -208,3 +208,32 @@
  .desk :global(.admin-species-form .admin-form-footer button){width:100%}
 }
 @media(max-width:390px){.heroPhoto{width:62px;height:62px}.previewButton{padding:6px}.desk :global(.admin-record-editor-head .heroDetails h2){font-size:1.2rem}}
+
+/* Approved reference: one continuous workspace, selector as a slim utility, not a giant section. */
+.desk{max-width:980px;width:min(980px,calc(100% - 24px));padding-top:12px}
+.desk :global(.admin-dashboard-head){border:0;margin:0 0 8px;padding:4px 2px 8px;gap:8px}
+.desk :global(.admin-dashboard-head h1){font-size:clamp(2rem,5vw,2.65rem);margin:2px 0 3px}
+.desk :global(.admin-dashboard-head p:not(.eyebrow)){font-size:12px}
+.desk :global(.admin-ledger-layout){display:flex;flex-direction:column;gap:9px}
+.desk :global(.admin-record-list){width:100%;display:flex;align-items:center;flex-wrap:wrap;gap:7px;padding:9px 10px;border-radius:12px;box-sizing:border-box}
+.desk :global(.admin-record-list > div:first-child){gap:6px;min-height:37px;padding:0}
+.desk :global(.admin-record-list > div:first-child strong){font-size:17px}
+.desk :global(.admin-record-views){display:flex;gap:5px}
+.desk :global(.admin-record-views a){min-height:36px;padding:6px 10px}
+.recordBrowser{min-width:185px;flex:1;border-radius:9px}
+.recordBrowser>summary{min-height:36px;padding:8px 10px}
+.desk :global(.owner-quick-create){min-width:145px}
+.desk :global(.owner-quick-create summary){min-height:36px;padding:8px 0}
+.desk :global(.admin-record-list > form .button){min-height:37px;padding:7px 11px}
+.desk :global(.admin-record-editor){width:100%;min-width:0;border:0;background:transparent;overflow:visible}
+@media(max-width:680px){
+ .desk :global(.admin-dashboard-head){display:block;margin-bottom:8px}
+ .desk :global(.admin-dashboard-actions){display:none}
+ .desk :global(.admin-record-list){display:grid;grid-template-columns:1fr auto;gap:7px;padding:9px}
+ .desk :global(.admin-record-list > div:first-child){font-size:11px}
+ .desk :global(.admin-record-views a){font-size:10px;min-height:33px}
+ .recordBrowser{grid-column:1/-1;min-width:0}
+ .desk :global(.owner-quick-create){grid-column:1/-1}
+ .desk :global(.admin-record-list > form){grid-column:1/-1}
+ .desk :global(.admin-record-list > form .button){min-height:38px}
+}
