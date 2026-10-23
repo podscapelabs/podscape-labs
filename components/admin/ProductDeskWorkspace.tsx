@@ -1,6 +1,7 @@
 "use client";
 import {useEffect,useState} from "react";
 import Image from "next/image";
+import {PodscapeLineIcon,type PodscapeIconName} from "@/components/PodscapeLineIcon";
 import type {ProductRecord} from "@/data/products";
 import {productCategories,formatProductPrice} from "@/data/products";
 import {saveProductRecord,pullProductDetailsFromLedger} from "@/app/admin/products/actions";
@@ -10,11 +11,11 @@ import {ProductPhotoEditor} from "@/components/ProductPhotoEditor";
 import styles from "./ProductDeskWorkspace.module.css";
 
 type LedgerChoice={id:string;name:string;scientificName:string;catalogueNumber:string;identityStatus:string};
-type Panel="ledger"|"pricing"|"packs"|"photos"|"copy"|"publish";
-const panelName:Record<Panel,string>={ledger:"Leaf Ledger",pricing:"Pricing",packs:"Packs & sizes",photos:"Photos",copy:"Listing copy",publish:"Publish settings"};
+type Panel="ledger"|"pricing"|"photos"|"copy"|"publish";
+const panelName:Record<Panel,string>={ledger:"Leaf Ledger",pricing:"Pricing",photos:"Photos",copy:"Listing copy",publish:"Publish settings"};
 
 export function ProductDeskWorkspace({product,ledgerChoices}:{product:ProductRecord;ledgerChoices:LedgerChoice[]}){
- const [opened,setOpened]=useState<Panel[]>(["pricing","copy","publish"]);
+ const [opened,setOpened]=useState<Panel[]>(["pricing","copy"]);
  const [dirty,setDirty]=useState(false);
  useEffect(()=>{
   if(!dirty)return;
@@ -31,13 +32,13 @@ export function ProductDeskWorkspace({product,ledgerChoices}:{product:ProductRec
   const open=opened.includes(panel);
   return <section className={`${styles.card} ${open?styles.open:""}`} key={panel}>
    <button type="button" className={styles.cardHead} aria-expanded={open} onClick={()=>toggle(panel)}>
-    <span className={styles.icon} aria-hidden="true">{({ledger:"♧",pricing:"◇",packs:"▦",photos:"▧",copy:"≡",publish:"⚙"} as Record<Panel,string>)[panel]}</span>
+    <span className={styles.icon} aria-hidden="true">{<PodscapeLineIcon name={({ledger:"leaf",pricing:"shop",photos:"creative",copy:"note",publish:"manager"} as Record<Panel,PodscapeIconName>)[panel]}/>}</span>
     <span className={styles.cardText}><strong>{panelName[panel]}</strong><small>{summary}</small></span>
     <span className={styles.chevron} aria-hidden="true">{open?"−":"›"}</span>
    </button>
    <div className={`${styles.panelBody} ${open?styles.panelVisible:""}`} aria-hidden={!open}>
     {body}
-    <div className={styles.panelActions}><button type="button" className={styles.close} onClick={()=>toggle(panel)}>Close</button><button type="submit" className={styles.savePanel}>Save product</button></div>
+    
    </div>
   </section>;
  };
@@ -74,18 +75,18 @@ export function ProductDeskWorkspace({product,ledgerChoices}:{product:ProductRec
     </div>)}
    {card("copy",product.summary||"Name, summary & description",
     <div className={styles.fields}><label>Product title<input name="title" required defaultValue={product.title}/></label><label>Short summary<textarea name="summary" rows={2} defaultValue={product.summary}/></label><label>Full description<textarea name="description" rows={4} defaultValue={product.description}/></label><label>Tags<input name="tags" defaultValue={product.tags.join(", ")}/></label></div>)}
-   {card("publish",`${category} · ${product.status}`,
+   {card("publish",`Category, inventory & publication`,
     <div className={styles.fields}>
      <label>Shop category<select name="category" value={category} onChange={e=>setCategory(e.target.value)}>{productCategories.map(cat=><option key={cat} value={cat}>{cat}</option>)}</select></label>
      <div className={styles.two}><label>Publication<select name="status" defaultValue={product.status}><option value="draft">Draft</option><option value="published">Published</option></select></label><label>Availability<select name="availability" defaultValue={product.availability}><option value="coming-soon">Coming soon</option><option value="in-stock">In stock</option><option value="sold-out">Sold out</option></select></label></div>
      <label className={styles.check}><input type="checkbox" name="featured" value="yes" defaultChecked={product.featured}/> Feature in Shop</label>
-     <label>URL slug<input name="slug" defaultValue={product.slug}/></label>
+     <details className={styles.advanced}><summary>Advanced product details</summary><label>URL slug<input name="slug" defaultValue={product.slug}/></label>
      <label>Single-item SKU<input name="sku" maxLength={64} placeholder="Optional" defaultValue={product.sku||""}/></label>
      <div className={styles.two}><label>Single-item stock (blank = untracked)<input name="stockQuantity" type="number" min="0" step="1" placeholder="Not tracked" defaultValue={product.stockQuantity??""}/></label><label>Low stock threshold<input name="lowStockThreshold" type="number" min="0" step="1" defaultValue={product.lowStockThreshold??3}/></label></div>
      <p className={styles.note}>For packs or sizes, manage inventory and SKUs separately under Pricing. Inventory tracking is optional; checkout remains disabled.</p>
      {product.stockHistory?.length ? <details><summary>Recent inventory changes ({product.stockHistory.length})</summary><ul>{product.stockHistory.slice(0,8).map((entry,index)=><li key={`${entry.at}-${index}`}>{new Date(entry.at).toLocaleDateString("en-CA")} · {entry.label}: {entry.before??"Untracked"} → {entry.after??"Untracked"}</li>)}</ul></details> : null}
      <label>Materials / contents<textarea name="materials" rows={2} defaultValue={product.materials}/></label>
-     <label>Shipping note<textarea name="shippingNote" rows={2} defaultValue={product.shippingNote}/></label>
+     <label>Shipping note<textarea name="shippingNote" rows={2} defaultValue={product.shippingNote}/></label></details>
     </div>)}
   </div>
   <div className={styles.footer}><span role="status">{dirty?"Unsaved changes · save before leaving":"Shop preview · checkout disabled"}</span><button type="submit">Save product</button></div>
