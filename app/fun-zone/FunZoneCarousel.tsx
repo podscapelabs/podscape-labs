@@ -4,8 +4,8 @@ import Link from "next/link";
 import styles from "./fun-zone.module.css";
 const slides = [
  {eyebrow:"FEATURED PLAY TEST",title:"Word Search",description:"Find hidden isopod terms in a botanical word puzzle.",href:"/fun-zone/word-search",action:"Play word search →",status:"Available to try"},
- {eyebrow:"COMING SOON · LOGIC",title:"Colony Connections",description:"Sixteen isopod terms. Four hidden connections. Can you find them all?",status:"In development"},
- {eyebrow:"COMING SOON · KNOWLEDGE",title:"Species Detective",description:"Put your species knowledge to the test with clues and identification puzzles.",status:"In development"}
+ {eyebrow:"PLAYABLE SAMPLE · LOGIC",title:"Colony Connections",description:"Sixteen isopod terms. Four hidden connections. Can you find them all?",href:"/fun-zone/colony-connections",action:"Play sample →",status:"Ready to try"},
+ {eyebrow:"PLAYABLE SAMPLE · KNOWLEDGE",title:"Species Detective",description:"Put your species knowledge to the test with clues and identification puzzles.",href:"/fun-zone/species-detective",action:"Play sample →",status:"Ready to try"}
 ] as const;
 export function FunZoneCarousel({signedIn,exp,coins}:{signedIn:boolean;exp:number;coins:number}){
  const [slide,setSlide]=useState(0);
