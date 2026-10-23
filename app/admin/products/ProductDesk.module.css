@@ -114,3 +114,5 @@
  .desk :global(.admin-form-grid.three){grid-template-columns:repeat(2,minmax(0,1fr))}
  .desk :global(.admin-form-grid.three)>:last-child{grid-column:1/-1}
 }
+
+.previewActions{display:flex;flex-direction:column;align-items:flex-end;gap:6px}.previewButton{font-size:11px;text-decoration:none;color:var(--accent);font-weight:750;white-space:nowrap}.previewButton:focus-visible{outline:2px solid var(--accent);outline-offset:2px}@media(max-width:420px){.previewActions{gap:5px}.previewButton{font-size:10px}}
