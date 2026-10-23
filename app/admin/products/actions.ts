@@ -119,6 +119,26 @@ export async function saveProductRecord(formData: FormData) {
   studioRedirect(id, "saved", "1", view);
 }
 
+/** Duplicate into a draft. Never duplicate committed stock or SKU identifiers. */
+export async function duplicateProductRecord(formData: FormData) {
+  if (!(await isAdminAuthenticated())) redirect("/admin");
+  const id = field(formData, "id", 100);
+  const source = (await getProductRecords()).find(record => record.id === id);
+  if (!source) studioRedirect(id,"error","Product not found");
+  const newId = `product-${randomUUID()}`;
+  const next: ProductRecord = {
+    ...source, id:newId, slug:`draft-${newId.slice(-8)}`,
+    title:`${source.title} (copy)`.slice(0,180),status:"draft",featured:false,
+    sku:"",stockQuantity:null,archivedAt:null,
+    variants:source.variants?.map(v=>({...v,id:randomUUID(),sku:"",stockQuantity:null})),
+    updatedAt:new Date().toISOString()
+  };
+  try { await appendProductRecord(next); } catch(error) {
+    studioRedirect(id,"error",error instanceof Error?error.message:"Unable to duplicate product");
+  }
+  studioRedirect(newId,"created");
+}
+
 /** Explicit import: copy curated Ledger information; do not alter prices, variants, publication or custom photos. */
 export async function pullProductDetailsFromLedger(formData: FormData) {
   if (!(await isAdminAuthenticated())) redirect("/admin");
