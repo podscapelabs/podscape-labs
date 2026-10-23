@@ -31,6 +31,11 @@ export function GuideSectionsEditor({ initialSections, bodyPlaceholder = "Write 
       <label><span>Section heading</span><input value={section.heading} onChange={(event) => updateSection(index, "heading", event.target.value)} placeholder="A clear, useful heading" /></label>
       <label><span>Section body</span><textarea value={section.body} onChange={(event) => updateSection(index, "body", event.target.value)} rows={8} placeholder={bodyPlaceholder} /></label>
     </section>)}
-    <button className="button button-outline" type="button" onClick={() => setSections((current) => [...current, newSection()])}>{addLabel}</button>
+    <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:8,margin:"12px 0"}}>
+      <button className="button button-outline" type="button" onClick={() => setSections((current) => [...current, newSection()])}>{addLabel}</button>
+      <button className="button button-outline" type="button" onClick={() => setSections(current=>[...current,{...newSection(),heading:"Materials and setup"}])}>+ Setup section</button>
+      <button className="button button-outline" type="button" onClick={() => setSections(current=>[...current,{...newSection(),heading:"Care and maintenance"}])}>+ Care section</button>
+      <button className="button button-outline" type="button" onClick={() => setSections(current=>[...current,{...newSection(),heading:"Common questions"}])}>+ FAQ section</button>
+    </div>
   </div>;
 }
