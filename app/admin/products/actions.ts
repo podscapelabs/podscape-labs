@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { productCategories, type ProductAvailability, type ProductRecord, type ProductStatus } from "@/data/products";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { appendProductRecord, getProductRecords, replaceProductRecord, saveProductPhoto } from "@/lib/product-store";
+import { getSpeciesRecords } from "@/lib/species-store";
 
 function field(formData: FormData, name: string, limit = 4000) { return String(formData.get(name) || "").trim().slice(0, limit); }
 function slugify(value: string) { return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80); }
@@ -21,6 +22,34 @@ export async function createProductRecord() {
   studioRedirect(id, "created");
 }
 
+/** Create a draft product from a validated Ledger record; never copy its photo or publish. */
+export async function createProductFromLedger(formData: FormData) {
+  if (!(await isAdminAuthenticated())) redirect("/admin");
+  const speciesId = field(formData, "speciesId", 100);
+  const species = (await getSpeciesRecords()).find(record =>
+    record.id === speciesId && record.kind === "species" && !record.archivedAt &&
+    Boolean(record.commonName.trim())
+  );
+  if (!species) redirect("/admin/products?error=Choose+a+valid+active+Ledger+species");
+  const id = `product-${randomUUID()}`;
+  const tags = [...new Set([species.genus, species.species, species.morph, ...species.tags]
+    .map(value => value.trim()).filter(Boolean))].slice(0, 20);
+  const record: ProductRecord = {
+    id, ledgerSpeciesId: species.id, slug: `draft-${id.slice(-8)}`,
+    title: species.commonName.trim().slice(0, 180),
+    category: "Isopods & Springtails",
+    summary: species.summary.slice(0, 600),
+    description: "", priceCents: 0, currency: "CAD", status: "draft",
+    availability: "coming-soon", featured: false,
+    image: null, imageAlt: "", imagePositionX: 50, imagePositionY: 50, imageZoom: 1,
+    tags, materials: "", shippingNote: "", archivedAt: null,
+    updatedAt: new Date().toISOString()
+  };
+  await appendProductRecord(record);
+  revalidatePath("/shop");
+  studioRedirect(id, "created");
+}
+
 export async function saveProductRecord(formData: FormData) {
   if (!(await isAdminAuthenticated())) redirect("/admin");
   const id = field(formData, "id", 100);
@@ -28,6 +57,9 @@ export async function saveProductRecord(formData: FormData) {
   const current = records.find((record) => record.id === id);
   if (!current) studioRedirect(id, "error", "Product not found");
   const view = current.archivedAt ? "archived" : "active";
+  const requestedSpeciesId = field(formData, "ledgerSpeciesId", 100);
+  const linkedSpecies = requestedSpeciesId ? (await getSpeciesRecords()).find(record => record.id === requestedSpeciesId && record.kind === "species" && !record.archivedAt) : null;
+  if (requestedSpeciesId && !linkedSpecies) studioRedirect(id, "error", "Choose a valid active Ledger species", view);
   const title = field(formData, "title", 180);
   const status = field(formData, "status", 20) as ProductStatus;
   const availability = field(formData, "availability", 30) as ProductAvailability;
@@ -45,7 +77,7 @@ export async function saveProductRecord(formData: FormData) {
   if (formData.get("removePhoto") === "yes") image = null;
   const photo = formData.get("photo");
   try { if (photo instanceof File && photo.size > 0) image = await saveProductPhoto(id, photo); } catch (error) { studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to save product photo", view); }
-  const nextRecord: ProductRecord = { ...current, slug, title, category, summary: field(formData, "summary", 600), description: field(formData, "description", 8000), priceCents, status, availability, featured: formData.get("featured") === "yes", image, imageAlt: field(formData, "imageAlt", 240), imagePositionX: boundedNumber(formData, "imagePositionX", 0, 100, current.imagePositionX), imagePositionY: boundedNumber(formData, "imagePositionY", 0, 100, current.imagePositionY), imageZoom: boundedNumber(formData, "imageZoom", 1, 2, current.imageZoom), tags: field(formData, "tags", 1000).split(",").map((tag) => tag.trim()).filter(Boolean), materials: field(formData, "materials", 2000), shippingNote: field(formData, "shippingNote", 2000), updatedAt: new Date().toISOString() };
+  const nextRecord: ProductRecord = { ...current, ledgerSpeciesId: linkedSpecies?.id || null, slug, title, category, summary: field(formData, "summary", 600), description: field(formData, "description", 8000), priceCents, status, availability, featured: formData.get("featured") === "yes", image, imageAlt: field(formData, "imageAlt", 240), imagePositionX: boundedNumber(formData, "imagePositionX", 0, 100, current.imagePositionX), imagePositionY: boundedNumber(formData, "imagePositionY", 0, 100, current.imagePositionY), imageZoom: boundedNumber(formData, "imageZoom", 1, 2, current.imageZoom), tags: field(formData, "tags", 1000).split(",").map((tag) => tag.trim()).filter(Boolean), materials: field(formData, "materials", 2000), shippingNote: field(formData, "shippingNote", 2000), updatedAt: new Date().toISOString() };
   try { await replaceProductRecord(nextRecord); } catch (error) { studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to save product", view); }
   revalidatePath("/shop"); revalidatePath(`/shop/${current.slug}`); revalidatePath(`/shop/${nextRecord.slug}`); revalidatePath("/search");
   studioRedirect(id, "saved", "1", view);
