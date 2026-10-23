@@ -21,7 +21,7 @@ export function ShopManagerList({products,selectedId}:{products:ProductRecord[];
  }).sort((a,b)=>sort==="name"?a.title.localeCompare(b.title):sort==="price"?((a.variants?.[0]?.priceCents??a.priceCents)-(b.variants?.[0]?.priceCents??b.priceCents)):new Date(b.updatedAt).getTime()-new Date(a.updatedAt).getTime()),[products,view,category,query,sort]);
  const tabs: {key:View;label:string;count:number}[]=[{key:"all",label:"All",count:counts.all-counts.archived},{key:"published",label:"Published",count:counts.published},{key:"draft",label:"Drafts",count:counts.draft},{key:"low",label:"Low stock",count:counts.low},{key:"archived",label:"Archived",count:counts.archived}];
  return <div className={styles.manager}>
-  <div className={styles.head}><strong>Shop products</strong><span>{products.length} records</span></div>
+  <div className={styles.head}><strong>Product overview</strong><span>{products.length} records</span></div>
   <div className={styles.stats}><span>{counts.published} published</span><span>{counts.draft} drafts</span><span>{counts.low} need stock review</span></div>
   <label className={styles.search}><span>Find a product</span><input type="search" placeholder="Search name, SKU, category…" value={query} onChange={e=>setQuery(e.target.value)}/></label>
   <div className={styles.tabs} role="group" aria-label="Filter by status">{tabs.map(tab=><button type="button" key={tab.key} aria-pressed={view===tab.key} onClick={()=>setView(tab.key)}>{tab.label} <span>{tab.count}</span></button>)}</div>
