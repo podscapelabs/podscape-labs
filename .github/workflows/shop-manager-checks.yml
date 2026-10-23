@@ -1,0 +1,32 @@
+name: Shop Manager checks
+on:
+  push:
+    branches:
+      - codex/platform-rebuild-v2
+  pull_request:
+    paths:
+      - "app/admin/products/**"
+      - "components/admin/**"
+      - "data/products.ts"
+      - "lib/product-store.ts"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/shop-manager-checks.yml"
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm build
