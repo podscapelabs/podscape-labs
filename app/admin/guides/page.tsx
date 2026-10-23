@@ -1,3 +1,4 @@
+import {OwnerDeskShell} from "@/components/admin/OwnerDeskShell";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { GuideSectionsEditor } from "@/components/GuideSectionsEditor";
@@ -21,8 +22,8 @@ export default async function GuideDeskPage({ searchParams }: { searchParams: Pr
   const visibleRecords = archivedView ? archivedRecords : activeRecords;
   const selected = visibleRecords.find((record) => record.id === params.record) || visibleRecords[0];
 
-  return <main className="admin-shell admin-ledger-desk">
-    <header className="admin-dashboard-head admin-ledger-head"><div><p className="eyebrow">Field Guide · Owner studio</p><h1>Editorial desk</h1><p>Write, review, and connect practical resources without publishing incomplete husbandry guidance.</p></div><div className="admin-dashboard-actions"><Link className="button button-outline" href="/admin">Owner studio</Link><Link className="button button-primary" href="/field-guide" target="_blank">Open Field Guide</Link></div></header>
+  return <OwnerDeskShell><main className="admin-shell admin-ledger-desk">
+    <header className="admin-dashboard-head admin-ledger-head"><div><p className="eyebrow">Field Guide · Owner studio</p><h1>Editorial desk</h1><p>Write, review, and connect practical resources without publishing incomplete husbandry guidance.</p></div><div className="admin-dashboard-actions"><Link className="button button-outline" href="/owner-studio">Owner studio</Link><Link className="button button-primary" href="/field-guide" target="_blank">Open Field Guide</Link></div></header>
     <div className="admin-ledger-layout">
       <aside className="admin-record-list" id="studio-create"><div><span>{archivedView ? "Archived guides" : "Active guides"}</span><strong>{visibleRecords.length}</strong></div><div className="admin-record-views"><Link className={!archivedView ? "is-active" : ""} href="/admin/guides">Active · {activeRecords.length}</Link><Link className={archivedView ? "is-active" : ""} href="/admin/guides?view=archived">Archived · {archivedRecords.length}</Link></div><nav aria-label="Field Guide records">{visibleRecords.map((guide) => <Link className={guide.id === selected?.id ? "is-active" : ""} href={`/admin/guides?view=${archivedView ? "archived" : "active"}&record=${guide.id}`} key={guide.id}><small>{guide.category}</small><b>{guide.title}</b><em>{guide.summary || "Summary pending"}</em><span>{guide.archivedAt ? "Archived" : guide.status}</span></Link>)}</nav>{!archivedView ? <form action={createGuideRecord}><button className="button button-outline" type="submit">+ New blank guide</button></form> : null}</aside>
       {selected ? <section className="admin-record-editor"><header className="admin-record-editor-head admin-guide-editor-head"><div><p className="admin-kicker">Permanent ID · {selected.id}</p><h2>{selected.title}</h2><p>{selected.category} · {selected.status} · Last saved {new Date(selected.updatedAt).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" })}</p></div><div className="admin-guide-monogram" aria-hidden="true">FG</div></header>{params.saved ? <p className="admin-save-message is-success">Guide saved. The Field Guide and search index now use this version.</p> : null}{params.created ? <p className="admin-save-message is-success">Blank guide created. Its permanent ID will not change.</p> : null}{params.error ? <p className="admin-save-message is-error">{params.error}</p> : null}
@@ -30,5 +31,5 @@ export default async function GuideDeskPage({ searchParams }: { searchParams: Pr
         <form className="admin-archive-form" action={toggleGuideArchive}><input type="hidden" name="id" value={selected.id} /><div><strong>{selected.archivedAt ? "Restore this guide" : "Archive this guide"}</strong><p>{selected.archivedAt ? "Restoring returns it to the editorial desk and Field Guide preview." : "Archiving hides it from the Field Guide and search without deleting its writing."}</p></div><button className="button button-outline" type="submit">{selected.archivedAt ? "Restore guide" : "Archive guide"}</button></form>
       </section> : <section className="admin-record-editor"><p>No guide records exist in this view.</p></section>}
     </div>
-  </main>;
+  </main></OwnerDeskShell>;
 }
