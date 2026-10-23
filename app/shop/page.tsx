@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PlatformShell } from "@/components/PlatformShell";
@@ -22,16 +23,20 @@ const categories = [
   { label: "Books & Journals", icon: "▤" },
   { label: "Field Tools", icon: "⚒" },
 ];
-export default async function ShopPage() {
+export default async function ShopPage({searchParams}:{searchParams:Promise<{category?:string}>}) {
+  const {category}=await searchParams;
   const products = (await getProductRecords()).filter(isProductActive).filter((p) => p.status === "published");
-  const featured = [...products].sort((a,b) => Number(b.featured) - Number(a.featured)).slice(0, 4);
+  const featured = [...products].filter(p=>p.featured).slice(0,4);
+  const selectedCategory = categories.some(item=>item.label===category) ? category : undefined;
+  const catalogue = selectedCategory ? products.filter(p=>p.category===selectedCategory) : products;
   return <PlatformShell><main className={styles.page}><div className={styles.wrap}>
     <section className={styles.hero} aria-labelledby="shop-title"><span className={styles.ornament} aria-hidden="true">❧</span><div className={styles.heroCopy}><p className={styles.eyebrow}>Welcome to the shop</p><h1 id="shop-title">The PodScape Shop</h1><p>Curated goods, supplies and creative finds for the curious keeper.</p></div></section>
     <Link className={styles.search} href="/search" aria-label="Search PodScape products"><span aria-hidden="true">⌕</span> Search the shop and beyond →</Link>
     <nav className={styles.paths} aria-label="Shop discovery"><>{paths.map((item) => <Link className={styles.path} href={item.href} key={item.label}><span className={styles.pathIcon} aria-hidden="true">{item.icon}</span><strong>{item.label}</strong></Link>)}</></nav>
     <section className={styles.section} id="collections"><div className={styles.heading}><h2>Curated for keepers</h2></div><div className={styles.feature}><div><small>From the PodScape collection</small><h2>Habitat essentials</h2><p>Thoughtful finds for building a thriving little world.</p><Link href="#categories">Explore categories →</Link></div></div></section>
-    <section className={styles.section} id="categories"><div className={styles.heading}><h2>Shop by category</h2></div><div className={styles.categories}>{categories.map((item) => <Link className={styles.category} href="#products" key={item.label}><span aria-hidden="true">{item.icon}</span><strong>{item.label}</strong></Link>)}</div></section>
-    <section className={styles.section} id="products"><div className={styles.heading}><h2>Featured products</h2><Link href="#products">Browse products →</Link></div>{featured.length ? <div className={styles.products}>{featured.map((p) => <Link href={`/shop/${p.slug}`} className={styles.product} key={p.id}><div className={styles.photo}>{p.image ? <img src={p.image} alt={p.imageAlt || p.title} /> : <span>Photograph coming soon</span>}</div><div className={styles.productBody}><small>{p.category}</small><strong>{p.title}</strong><b>{formatProductPrice(p)}</b></div></Link>)}</div> : <p className={styles.empty}>Our first collections are taking shape. Check back soon for new discoveries.</p>}</section>
+    <section className={styles.section} id="categories"><div className={styles.heading}><h2>Shop by category</h2></div><div className={styles.categories}>{categories.map((item) => <Link className={`${styles.category} ${selectedCategory===item.label?styles.selectedCategory:""}`} href={`/shop?category=${encodeURIComponent(item.label)}#products`} key={item.label}><span aria-hidden="true">{item.icon}</span><strong>{item.label}</strong></Link>)}</div></section>
+    {featured.length > 0 ? <section className={styles.section} id="featured"><div className={styles.heading}><h2>Featured products</h2><Link href="#products">Browse all products →</Link></div><div className={styles.products}>{featured.map(p=><Link href={`/shop/${p.slug}`} className={styles.product} key={p.id}><div className={styles.photo}>{p.image?<img src={p.image} alt={p.imageAlt||p.title}/>:<span>Photograph coming soon</span>}</div><div className={styles.productBody}><small>{p.category}</small><strong>{p.title}</strong><b>{formatProductPrice(p)}</b></div></Link>)}</div></section> : null}
+    <section className={styles.section} id="products"><div className={styles.heading}><h2>{selectedCategory || "All products"} <span className={styles.productCount}>({catalogue.length})</span></h2>{selectedCategory?<Link href="/shop#products">Clear filter →</Link>:<span className={styles.browseNote}>PodScape catalogue</span>}</div>{catalogue.length ? <div className={styles.products}>{catalogue.map(p=><Link href={`/shop/${p.slug}`} className={styles.product} key={p.id}><div className={styles.photo}>{p.image?<img src={p.image} alt={p.imageAlt||p.title}/>:<span>Photograph coming soon</span>}</div><div className={styles.productBody}><small>{p.category}</small><strong>{p.title}</strong><b>{formatProductPrice(p)}</b><span className={styles.productAction}>View product →</span></div></Link>)}</div>:<p className={styles.empty}>{selectedCategory?"No published products in this category yet.":"No published products yet. Publish a product from Owner Studio to show it here."}</p>}</section>
     <section className={styles.section} id="community"><div className={styles.community}><small>More than a storefront</small><h2>Made by the community.</h2><p>PodScape is growing into a place to discover independent breeders, artists and makers. Vendor shopping and fulfillment options are planned for a future phase.</p></div></section>
   </div></main></PlatformShell>;
 }
