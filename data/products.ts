@@ -4,6 +4,8 @@ export type ProductAvailability = "coming-soon" | "in-stock" | "sold-out";
 export type ProductVariant = { id: string; label: string; priceCents: number; count?: number; sku?: string; stockQuantity?: number | null; lowStockThreshold?: number };
 export type ProductOptionType = "none" | "count" | "size";
 
+export type StockAdjustment = { at: string; sku: string; label: string; before: number | null; after: number | null };
+
 export type ProductRecord = {
   id: string;
   /** Stable ID of source Leaf Ledger species, when linked. */
@@ -21,6 +23,8 @@ export type ProductRecord = {
   /** Optional purchase choices; legacy products have no variants. */
   optionType?: ProductOptionType;
   variants?: ProductVariant[];
+  /** Recent inventory edits, newest first; maintained by the product save action. */
+  stockHistory?: StockAdjustment[];
   currency: "CAD";
   status: ProductStatus;
   availability: ProductAvailability;
