@@ -113,7 +113,16 @@ export async function saveProductRecord(formData: FormData) {
   if (formData.get("removePhoto") === "yes") image = null;
   const photo = formData.get("photo");
   try { if (photo instanceof File && photo.size > 0) image = await saveProductPhoto(id, photo); } catch (error) { studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to save product photo", view); }
-  const nextRecord: ProductRecord = { ...current, ledgerSpeciesId: linkedSpecies?.id || null, slug, title, category, summary: field(formData, "summary", 600), description: field(formData, "description", 8000), priceCents, sku:field(formData,"sku",64), stockQuantity, lowStockThreshold, optionType, variants, status, availability, featured: formData.get("featured") === "yes", image, imageAlt: field(formData, "imageAlt", 240), imagePositionX: boundedNumber(formData, "imagePositionX", 0, 100, current.imagePositionX), imagePositionY: boundedNumber(formData, "imagePositionY", 0, 100, current.imagePositionY), imageZoom: boundedNumber(formData, "imageZoom", 1, 2, current.imageZoom), tags: field(formData, "tags", 1000).split(",").map((tag) => tag.trim()).filter(Boolean), materials: field(formData, "materials", 2000), shippingNote: field(formData, "shippingNote", 2000), updatedAt: new Date().toISOString() };
+  const stockChanges: NonNullable<ProductRecord["stockHistory"]> = [];
+  const trackStock = (label: string, sku: string, before: number | null | undefined, after: number | null | undefined) => {
+    if ((before ?? null) !== (after ?? null)) stockChanges.push({at:new Date().toISOString(),label,sku,before:before??null,after:after??null});
+  };
+  if (optionType === "none") trackStock("Single item",field(formData,"sku",64),current.stockQuantity,stockQuantity);
+  if (optionType !== "none") for (const variant of variants) {
+    const previous = current.variants?.find(value=>value.id===variant.id);
+    trackStock(variant.label,variant.sku||"",previous?.stockQuantity,variant.stockQuantity);
+  }
+  const nextRecord: ProductRecord = { ...current, stockHistory:[...stockChanges,...(current.stockHistory||[])].slice(0,100), ledgerSpeciesId: linkedSpecies?.id || null, slug, title, category, summary: field(formData, "summary", 600), description: field(formData, "description", 8000), priceCents, sku:field(formData,"sku",64), stockQuantity, lowStockThreshold, optionType, variants, status, availability, featured: formData.get("featured") === "yes", image, imageAlt: field(formData, "imageAlt", 240), imagePositionX: boundedNumber(formData, "imagePositionX", 0, 100, current.imagePositionX), imagePositionY: boundedNumber(formData, "imagePositionY", 0, 100, current.imagePositionY), imageZoom: boundedNumber(formData, "imageZoom", 1, 2, current.imageZoom), tags: field(formData, "tags", 1000).split(",").map((tag) => tag.trim()).filter(Boolean), materials: field(formData, "materials", 2000), shippingNote: field(formData, "shippingNote", 2000), updatedAt: new Date().toISOString() };
   try { await replaceProductRecord(nextRecord); } catch (error) { studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to save product", view); }
   revalidatePath("/shop"); revalidatePath(`/shop/${current.slug}`); revalidatePath(`/shop/${nextRecord.slug}`); revalidatePath("/search");
   studioRedirect(id, "saved", "1", view);
