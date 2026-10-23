@@ -11,18 +11,17 @@ import styles from "./ProductDeskWorkspace.module.css";
 
 type LedgerChoice={id:string;name:string;scientificName:string;catalogueNumber:string;identityStatus:string};
 type Panel="ledger"|"pricing"|"packs"|"photos"|"copy"|"publish";
-const panels:Panel[]=["ledger","pricing","packs","photos","copy","publish"];
 const panelName:Record<Panel,string>={ledger:"Leaf Ledger",pricing:"Pricing",packs:"Packs & sizes",photos:"Photos",copy:"Listing copy",publish:"Publish settings"};
 
 export function ProductDeskWorkspace({product,ledgerChoices}:{product:ProductRecord;ledgerChoices:LedgerChoice[]}){
- const [active,setActive]=useState<Panel|null>(null);
+ const [opened,setOpened]=useState<Panel[]>(["ledger","pricing","copy"]);
  const [category,setCategory]=useState(product.category);
  const [linkedId,setLinkedId]=useState(product.ledgerSpeciesId||"");
  const linked=ledgerChoices.find(record=>record.id===linkedId);
  const linkedSupported=category==="Isopods & Springtails";
- const toggle=(panel:Panel)=>setActive(current=>current===panel?null:panel);
+ const toggle=(panel:Panel)=>setOpened(current=>current.includes(panel)?current.filter(p=>p!==panel):[...current,panel]);
  const card=(panel:Panel,summary:string,body:React.ReactNode)=>{
-  const open=active===panel;
+  const open=opened.includes(panel);
   return <section className={`${styles.card} ${open?styles.open:""}`} key={panel}>
    <button type="button" className={styles.cardHead} aria-expanded={open} onClick={()=>toggle(panel)}>
     <span className={styles.icon} aria-hidden="true">{({ledger:"♧",pricing:"◇",packs:"▦",photos:"▧",copy:"≡",publish:"⚙"} as Record<Panel,string>)[panel]}</span>
@@ -31,7 +30,7 @@ export function ProductDeskWorkspace({product,ledgerChoices}:{product:ProductRec
    </button>
    <div className={`${styles.panelBody} ${open?styles.panelVisible:""}`} aria-hidden={!open}>
     {body}
-    <div className={styles.panelActions}><button type="button" className={styles.close} onClick={()=>setActive(null)}>Close</button><button type="submit" className={styles.savePanel}>Save product</button></div>
+    <div className={styles.panelActions}><button type="button" className={styles.close} onClick={()=>toggle(panel)}>Close</button><button type="submit" className={styles.savePanel}>Save product</button></div>
    </div>
   </section>;
  };
@@ -45,17 +44,16 @@ export function ProductDeskWorkspace({product,ledgerChoices}:{product:ProductRec
   <div className={styles.cards}>
    {card("ledger",!linkedSupported?"Optional for species listings":linked?`${linked.name} · ${linked.catalogueNumber}`:"No species linked",
     <div className={styles.fields}>
-     {!linkedSupported?<p className={styles.note}>Leaf Ledger import is optional and only applies to Isopods & Springtails. Other categories remain independent.</p>:<>
+     {!linkedSupported?<><input type="hidden" name="ledgerSpeciesId" value=""/><p className={styles.note}>Leaf Ledger import is optional and only applies to Isopods & Springtails. Other categories remain independent.</p></>:<>
       <label>Species record<select name="ledgerSpeciesId" value={linkedId} onChange={e=>setLinkedId(e.target.value)}><option value="">Choose a Ledger species</option>{ledgerChoices.map(s=><option key={s.id} value={s.id}>{s.name} · {s.catalogueNumber}</option>)}</select></label>
       {linked?<div className={styles.linked}><strong>{linked.name}</strong><small>{linked.scientificName} · {linked.catalogueNumber}</small></div>:null}
       <button type="submit" className={styles.pull} formAction={pullProductDetailsFromLedger} disabled={!linkedId}>Pull details from Ledger ↓</button>
       <p className={styles.note}>Pull copies the species name, available summary, care description, tags and a photo if your product has none. It does not change pricing or publication. Save other unsaved edits before pulling.</p>
      </>}
     </div>)}
-   {card("pricing",formatProductPrice(product),
-    <div className={styles.fields}><ProductPriceQuickPick key={product.id} initial={(product.priceCents/100).toFixed(2)}/><p className={styles.note}>For packs or size options, set each option’s price under Packs &amp; sizes.</p></div>)}
-   {card("packs",product.variants?.length?`${product.variants.length} options`:"Single item",
-    <div className={styles.fields}><ProductVariantsEditor key={product.id} initialType={product.optionType||"none"} initialVariants={product.variants||[]} basePrice={product.priceCents}/></div>)}
+
+   {card("pricing",product.variants?.length?`${formatProductPrice(product)} · ${product.variants.length} options`:formatProductPrice(product),
+    <div className={styles.fields}><div className={styles.pricingInline}><ProductPriceQuickPick key={product.id} initial={(product.priceCents/100).toFixed(2)}/><div className={styles.variantInline}><ProductVariantsEditor key={product.id} initialType={product.optionType||"none"} initialVariants={product.variants||[]} basePrice={product.priceCents}/></div></div></div>)}
    {card("photos",product.image?"Product photo added":"Add or adjust photos",
     <div className={styles.fields}><ProductPhotoEditor key={product.id} image={product.image} imagePositionX={product.imagePositionX} imagePositionY={product.imagePositionY} imageZoom={product.imageZoom}/>
      {product.image?<label className={styles.check}><input type="checkbox" name="removePhoto" value="yes"/> Remove existing photo</label>:null}
@@ -73,6 +71,6 @@ export function ProductDeskWorkspace({product,ledgerChoices}:{product:ProductRec
      <label>Shipping note<textarea name="shippingNote" rows={2} defaultValue={product.shippingNote}/></label>
     </div>)}
   </div>
-  <div className={styles.footer}><span>Shop preview · checkout disabled</span><button type="submit">Save changes</button></div>
+  <div className={styles.footer}><span>Shop preview · checkout disabled</span><button type="submit">Save product</button></div>
  </form>;
 }
