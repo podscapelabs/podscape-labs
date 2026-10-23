@@ -1,7 +1,7 @@
 export type ProductStatus = "draft" | "published";
 export type ProductAvailability = "coming-soon" | "in-stock" | "sold-out";
 
-export type ProductVariant = { id: string; label: string; priceCents: number; count?: number };
+export type ProductVariant = { id: string; label: string; priceCents: number; count?: number; sku?: string; stockQuantity?: number | null; lowStockThreshold?: number };
 export type ProductOptionType = "none" | "count" | "size";
 
 export type ProductRecord = {
@@ -14,6 +14,10 @@ export type ProductRecord = {
   summary: string;
   description: string;
   priceCents: number;
+  /** Null means inventory is not tracked. Existing listings retain that behavior. */
+  stockQuantity?: number | null;
+  lowStockThreshold?: number;
+  sku?: string;
   /** Optional purchase choices; legacy products have no variants. */
   optionType?: ProductOptionType;
   variants?: ProductVariant[];
@@ -58,4 +62,14 @@ export function productAvailabilityLabel(availability: ProductAvailability) {
   if (availability === "in-stock") return "Ready when checkout launches";
   if (availability === "sold-out") return "Sold out";
   return "Coming soon";
+}
+
+/** Stock is informational until checkout and fulfillment are implemented. */
+export function productStockStatus(product: ProductRecord): "untracked" | "in-stock" | "low-stock" | "out-of-stock" {
+  const quantities = product.variants?.length ? product.variants.map(v => v.stockQuantity) : [product.stockQuantity];
+  const tracked = quantities.filter((value): value is number => typeof value === "number" && Number.isFinite(value));
+  if (!tracked.length) return "untracked";
+  if (tracked.every(value => value <= 0)) return "out-of-stock";
+  const thresholds = product.variants?.length ? product.variants.map(v => v.lowStockThreshold ?? 3) : [product.lowStockThreshold ?? 3];
+  return quantities.some((value, i) => typeof value === "number" && value <= thresholds[i]) ? "low-stock" : "in-stock";
 }
