@@ -3,8 +3,8 @@ import {useState} from "react";
 import type {ProductOptionType,ProductVariant} from "@/data/products";
 import styles from "./ProductVariantsEditor.module.css";
 
-type Editable={id:string;label:string;price:string;count:string};
-const toEditable=(v:ProductVariant):Editable=>({id:v.id,label:v.label,price:(v.priceCents/100).toFixed(2),count:v.count?.toString()||""});
+type Editable={id:string;label:string;price:string;count:string;sku:string;stock:string;threshold:string};
+const toEditable=(v:ProductVariant):Editable=>({id:v.id,label:v.label,price:(v.priceCents/100).toFixed(2),count:v.count?.toString()||"",sku:v.sku||"",stock:v.stockQuantity?.toString()??"",threshold:(v.lowStockThreshold??3).toString()});
 export function ProductVariantsEditor({initialType,initialVariants,basePrice}:{initialType:ProductOptionType;initialVariants:ProductVariant[];basePrice:number}){
  const [kind,setKind]=useState<ProductOptionType>(initialType);
  const [rows,setRows]=useState<Editable[]>(initialVariants.map(toEditable));
@@ -12,14 +12,14 @@ export function ProductVariantsEditor({initialType,initialVariants,basePrice}:{i
  const add=(count?:number,label?:string)=>{
   const name=label||(count?count+" count":"");
   if(rows.some(row=>kind==="count"&&Number(row.count)===count||kind==="size"&&row.label===name))return;
-  setRows(current=>[...current,{id:crypto.randomUUID(),label:name,count:count?.toString()||"",price:(basePrice/100).toFixed(2)}]);
+  setRows(current=>[...current,{id:crypto.randomUUID(),label:name,count:count?.toString()||"",price:(basePrice/100).toFixed(2),sku:"",stock:"",threshold:"3"}]);
  };
  const choose=(next:ProductOptionType)=>{
   setKind(next);
   if(next!==kind) setRows([]);
  };
  const edit=(id:string,field:keyof Editable,value:string)=>setRows(current=>current.map(row=>row.id===id?{...row,[field]:value}:row));
- const serialized=JSON.stringify(rows.map(row=>({id:row.id,label:row.label.trim(),count:kind==="count"?Number(row.count):undefined,priceCents:Math.round(Number(row.price)*100)})));
+ const serialized=JSON.stringify(rows.map(row=>({id:row.id,label:row.label.trim(),count:kind==="count"?Number(row.count):undefined,priceCents:Math.round(Number(row.price)*100),sku:row.sku.trim(),stockQuantity:row.stock===""?null:Number(row.stock),lowStockThreshold:Number(row.threshold)})));
  return <div className={styles.root}>
   <strong className={styles.heading}>Sell as</strong>
   <div className={styles.mode} role="group" aria-label="Product selling format">
@@ -32,6 +32,9 @@ export function ProductVariantsEditor({initialType,initialVariants,basePrice}:{i
   {kind!=="none"?<div className={styles.rows}>{rows.length===0?<p className={styles.empty}>Choose options above to set their individual prices.</p>:rows.map((row,index)=><div key={row.id} className={styles.variant}>
    <label><span>{kind==="count"?"Pack":"Size / style"}</span>{kind==="count"?<input type="number" min="1" max="100000" inputMode="numeric" aria-label={"Pack count "+(index+1)} value={row.count} onChange={e=>setRows(current=>current.map(item=>item.id===row.id?{...item,count:e.target.value,label:e.target.value+" count"}:item))}/>:<input type="text" maxLength={60} value={row.label} onChange={e=>edit(row.id,"label",e.target.value)}/>}</label>
    <label><span>Price · CAD</span><input type="number" min="0" step=".01" value={row.price} onChange={e=>edit(row.id,"price",e.target.value)}/></label>
+   <label><span>SKU</span><input type="text" maxLength={64} placeholder="Optional" value={row.sku} onChange={e=>edit(row.id,"sku",e.target.value)}/></label>
+   <label><span>Stock (blank = untracked)</span><input type="number" min="0" step="1" placeholder="Not tracked" value={row.stock} onChange={e=>edit(row.id,"stock",e.target.value)}/></label>
+   <label><span>Low stock at</span><input type="number" min="0" step="1" value={row.threshold} onChange={e=>edit(row.id,"threshold",e.target.value)}/></label>
    <button type="button" className={styles.remove} aria-label={"Remove option "+(index+1)} onClick={()=>setRows(current=>current.filter(item=>item.id!==row.id))}>×</button>
   </div>)}</div>:null}
  </div>;
