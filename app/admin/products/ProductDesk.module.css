@@ -139,3 +139,72 @@
  .desk :global(.admin-record-editor-head h2){font-size:1.5rem}
  .desk :global(.admin-species-form .admin-form-footer){bottom:calc(82px + env(safe-area-inset-bottom,0px))}
 }
+
+/* Reference-aligned product workspace. Keeps the existing V2 shared tokens. */
+.desk :global(.admin-ledger-layout){grid-template-columns:minmax(210px,255px) minmax(0,1fr);gap:14px}
+.desk :global(.admin-record-editor){border:0;background:transparent;overflow:visible}
+.desk :global(.admin-record-editor-head){display:flex;align-items:center;gap:14px;border:1px solid var(--border);border-radius:18px;padding:13px;background:var(--surface);margin-bottom:12px}
+.heroPhoto{position:relative;display:grid;place-items:center;flex:none;width:94px;height:94px;border-radius:12px;overflow:hidden;background:var(--surface-secondary);border:1px solid var(--border)}
+.heroPhoto img{object-fit:cover}
+.heroPhoto span{font-size:12px;color:var(--text-secondary)}
+.heroDetails{flex:1;min-width:0}
+.heroDetails :global(.admin-kicker){display:none}
+.desk :global(.heroDetails h2){font-size:clamp(1.55rem,3vw,2.2rem);font-weight:600;margin:0 0 5px}
+.heroDetails p{font-size:11px;line-height:1.45;color:var(--text-secondary);margin:0}
+.previewActions{gap:10px;justify-content:center}
+.previewButton{border:1px solid var(--border);padding:9px 12px;border-radius:999px;background:var(--surface-secondary)}
+.desk :global(.admin-species-form){padding:0;gap:12px}
+.ledgerPanel,.pricingPanel,.copyPanel,.advancedPanel{border:1px solid var(--border);border-radius:17px;background:var(--surface);min-width:0}
+.ledgerPanel{padding:12px 14px;background:var(--surface)}
+.ledgerPanel>summary{display:grid;gap:3px;min-height:32px;cursor:pointer;list-style:none;margin:0}
+.ledgerPanel>summary::-webkit-details-marker{display:none}
+.ledgerPanel>summary span{font:600 18px/1.2 var(--display);color:var(--text-primary)}
+.ledgerPanel>summary small{font-size:11px;color:var(--text-secondary)}
+.ledgerPanel>label{margin:12px 0 5px!important}
+.ledgerPanel .fieldHelp{margin:3px 0 0}
+.desk :global(.admin-species-form .pricingPanel){display:grid;gap:12px;padding:16px;border:1px solid var(--border);background:var(--surface)}
+.desk :global(.admin-species-form .pricingPanel legend){font:600 18px var(--display);letter-spacing:-.01em;padding:0 6px}
+.statusRow{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.desk :global(.admin-species-form .pricingPanel .statusRow label){min-width:0}
+.desk :global(.admin-species-form .pricingPanel .statusRow select){font-size:12px;min-height:42px}
+.priceGrid{max-width:340px}
+.variantsArea{border-top:1px solid var(--border);padding-top:12px}
+.copyPanel{padding:12px 14px}
+.desk :global(.admin-species-form .copyPanel fieldset){display:grid;grid-template-columns:1fr 1fr;gap:12px;border:0;padding:0;background:transparent}
+.desk :global(.admin-species-form .copyPanel legend){font:600 18px var(--display);margin-bottom:8px}
+.desk :global(.admin-species-form .copyPanel fieldset label:last-child){grid-column:1/-1}
+.secondaryGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.secondaryGrid .fold{min-width:0}
+.secondaryGrid .fold>summary{display:grid;align-content:center;justify-content:stretch;gap:5px;min-height:75px;padding:12px 14px}
+.secondaryGrid .fold>summary span{font-size:18px}
+.secondaryGrid .fold>summary small{font-size:10px;text-align:left;max-width:100%}
+.advancedPanel{padding:0 14px}
+.advancedPanel>summary{cursor:pointer;list-style:none;min-height:48px;display:flex;align-items:center;font-size:12px;font-weight:750;color:var(--text-secondary)}
+.advancedPanel>summary::-webkit-details-marker{display:none}
+.desk :global(.admin-species-form .advancedPanel fieldset){border:0;padding:0 0 15px;background:transparent}
+.desk :global(.admin-species-form .admin-form-footer){margin:0;border:1px solid var(--border);border-radius:14px;background:var(--surface);padding:10px 12px}
+.desk :global(.admin-save-message){margin:0 0 12px}
+@media(max-width:850px){
+ .desk :global(.admin-ledger-layout){grid-template-columns:1fr}
+ .desk :global(.admin-record-list){gap:8px}
+ .desk :global(.admin-record-list nav[aria-label="Product records"]){max-height:150px}
+}
+@media(max-width:680px){
+ .desk :global(.admin-species-form){padding:0;gap:10px}
+ .desk :global(.admin-record-editor-head){padding:10px;gap:10px;margin-bottom:11px}
+ .heroPhoto{width:76px;height:76px}
+ .desk :global(.admin-record-editor-head .heroDetails h2){font-size:1.4rem}
+ .heroDetails p{font-size:10px}
+ .previewActions{gap:6px;flex:none}
+ .previewButton{font-size:10px;padding:7px 9px}
+ .editorStatus{font-size:10px;padding:5px 9px}
+ .ledgerPanel,.desk :global(.admin-species-form .pricingPanel),.copyPanel{padding:12px}
+ .desk :global(.admin-species-form .copyPanel fieldset){grid-template-columns:1fr 1fr;gap:8px}
+ .desk :global(.admin-species-form .copyPanel fieldset label:last-child){grid-column:1/-1}
+ .secondaryGrid{grid-template-columns:1fr 1fr;gap:8px}
+ .secondaryGrid .fold>summary{min-height:69px;padding:10px}
+ .secondaryGrid .fold>summary span{font-size:16px}
+ .desk :global(.admin-species-form .admin-form-footer){position:sticky;bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:4;padding:8px}
+ .desk :global(.admin-species-form .admin-form-footer button){width:100%}
+}
+@media(max-width:390px){.heroPhoto{width:62px;height:62px}.previewButton{padding:6px}.desk :global(.admin-record-editor-head .heroDetails h2){font-size:1.2rem}}
