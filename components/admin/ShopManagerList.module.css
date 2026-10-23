@@ -6,3 +6,26 @@
 .resultCount{font-size:11px;color:var(--text-secondary);line-height:1.35}
 .item:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media(max-width:680px){.manager{gap:9px}.head strong{font-size:16px}.stats{gap:5px}.stats span{padding:5px 8px}.filters{gap:6px}.items:not(.expanded){max-height:210px}.item{padding:11px 10px;min-height:58px}.mobileExpand{width:100%}}
+
+/* Explicit grid prevents the parent admin selectors from forcing a horizontal row. */
+.manager{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:12px!important;width:100%;max-width:100%;min-width:0}
+.head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.stats{display:flex;flex-wrap:wrap;gap:6px}
+.stats span{white-space:normal;overflow-wrap:normal;font-size:11px}
+.search,.filters{width:100%;min-width:0}
+.search input,.filters select{max-width:100%}
+.tabs{display:flex;flex-wrap:wrap;overflow:visible}
+.items{max-height:none;overflow:visible;display:grid;gap:8px}
+.item{min-height:66px;padding:12px 14px}
+.main strong{font-size:14px}
+.meta strong{font-size:13px}
+.mobileExpand{display:none!important}
+@media(max-width:680px){
+ .manager{gap:11px!important}
+ .head strong{font-size:20px}
+ .tabs{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin;padding-bottom:5px}
+ .tabs button{flex:none}
+ .filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .items:not(.expanded),.items.expanded{max-height:none;overflow:visible}
+ .item{min-height:64px;padding:12px 10px}
+}
