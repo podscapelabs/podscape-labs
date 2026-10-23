@@ -1,6 +1,9 @@
 export type ProductStatus = "draft" | "published";
 export type ProductAvailability = "coming-soon" | "in-stock" | "sold-out";
 
+export type ProductVariant = { id: string; label: string; priceCents: number; count?: number };
+export type ProductOptionType = "none" | "count" | "size";
+
 export type ProductRecord = {
   id: string;
   /** Stable ID of source Leaf Ledger species, when linked. */
@@ -11,6 +14,9 @@ export type ProductRecord = {
   summary: string;
   description: string;
   priceCents: number;
+  /** Optional purchase choices; legacy products have no variants. */
+  optionType?: ProductOptionType;
+  variants?: ProductVariant[];
   currency: "CAD";
   status: ProductStatus;
   availability: ProductAvailability;
@@ -42,7 +48,10 @@ export function isProductActive(product: ProductRecord) {
 }
 
 export function formatProductPrice(product: ProductRecord) {
-  return new Intl.NumberFormat("en-CA", { style: "currency", currency: product.currency }).format(product.priceCents / 100);
+  const prices = product.variants?.length ? product.variants.map(option => option.priceCents) : [product.priceCents];
+  const startingAt = prices.length > 1 && new Set(prices).size > 1;
+  const value = new Intl.NumberFormat("en-CA", { style: "currency", currency: product.currency }).format(Math.min(...prices) / 100);
+  return startingAt ? `From ${value}` : value;
 }
 
 export function productAvailabilityLabel(availability: ProductAvailability) {
