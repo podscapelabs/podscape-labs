@@ -67,7 +67,9 @@ export async function saveProductRecord(formData: FormData) {
   const requestedSlug = slugify(field(formData, "slug", 100));
   const slug = requestedSlug || slugify(title) || current.slug;
   const price = Number(field(formData, "price", 20));
-  const priceCents = Number.isFinite(price) ? Math.max(0, Math.round(price * 100)) : current.priceCents;
+  if (!Number.isFinite(price) || price < 0 || price > 1000000) studioRedirect(id,"error","Enter a valid nonnegative product price",view);
+  const priceCents = Math.round(price * 100);
+  if (records.some(record => record.id !== id && record.slug.toLowerCase() === slug.toLowerCase())) studioRedirect(id,"error","Another product already uses this URL slug",view);
   const optionType=field(formData,"optionType",12) as ProductOptionType || "none";
   if (!["none","count","size"].includes(optionType)) studioRedirect(id,"error","Choose valid selling options",view);
   const stockText = field(formData,"stockQuantity",20);
