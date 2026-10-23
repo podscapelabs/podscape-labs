@@ -138,7 +138,7 @@ export async function duplicateProductRecord(formData: FormData) {
   const next: ProductRecord = {
     ...source, id:newId, slug:`draft-${newId.slice(-8)}`,
     title:`${source.title} (copy)`.slice(0,180),status:"draft",featured:false,
-    sku:"",stockQuantity:null,archivedAt:null,
+    sku:"",stockQuantity:null,stockHistory:[],archivedAt:null,
     variants:source.variants?.map(v=>({...v,id:randomUUID(),sku:"",stockQuantity:null})),
     updatedAt:new Date().toISOString()
   };
