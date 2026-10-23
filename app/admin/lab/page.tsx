@@ -1,3 +1,4 @@
+import {OwnerDeskShell} from "@/components/admin/OwnerDeskShell";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { GuideSectionsEditor } from "@/components/GuideSectionsEditor";
@@ -18,8 +19,8 @@ export default async function LabDeskPage({ searchParams }: { searchParams: Prom
   const visibleRecords = archivedView ? archivedRecords : activeRecords;
   const selected = visibleRecords.find((record) => record.id === params.record) || visibleRecords[0];
 
-  return <main className="admin-shell admin-ledger-desk">
-    <header className="admin-dashboard-head admin-ledger-head"><div><p className="eyebrow">From the Lab · Owner studio</p><h1>Studio notebook</h1><p>Write project updates, research notes, and behind-the-scenes articles for the Podscape journal.</p></div><div className="admin-dashboard-actions"><Link className="button button-outline" href="/admin">Owner studio</Link><Link className="button button-primary" href="/from-the-lab" target="_blank">Open From the Lab</Link></div></header>
+  return <OwnerDeskShell><main className="admin-shell admin-ledger-desk">
+    <header className="admin-dashboard-head admin-ledger-head"><div><p className="eyebrow">From the Lab · Owner studio</p><h1>Studio notebook</h1><p>Write project updates, research notes, and behind-the-scenes articles for the Podscape journal.</p></div><div className="admin-dashboard-actions"><Link className="button button-outline" href="/owner-studio">Owner studio</Link><Link className="button button-primary" href="/from-the-lab" target="_blank">Open From the Lab</Link></div></header>
     <div className="admin-ledger-layout">
       <aside className="admin-record-list" id="studio-create"><div><span>{archivedView ? "Archived notes" : "Active notes"}</span><strong>{visibleRecords.length}</strong></div><div className="admin-record-views"><Link className={!archivedView ? "is-active" : ""} href="/admin/lab">Active · {activeRecords.length}</Link><Link className={archivedView ? "is-active" : ""} href="/admin/lab?view=archived">Archived · {archivedRecords.length}</Link></div><nav aria-label="From the Lab records">{visibleRecords.map((record) => <Link className={record.id === selected?.id ? "is-active" : ""} href={`/admin/lab?view=${archivedView ? "archived" : "active"}&record=${record.id}`} key={record.id}><small>{record.category}</small><b>{record.title}</b><em>{record.summary || "Summary pending"}</em><span>{record.archivedAt ? "Archived" : `${record.status} · ${labRecordDate(record)}`}</span></Link>)}</nav>{!archivedView ? <form action={createLabRecord}><button className="button button-outline" type="submit">+ New studio note</button></form> : null}</aside>
       {selected ? <section className="admin-record-editor"><header className="admin-record-editor-head admin-guide-editor-head"><div><p className="admin-kicker">Permanent ID · {selected.id}</p><h2>{selected.title}</h2><p>{selected.category} · {selected.status} · Last saved {new Date(selected.updatedAt).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" })}</p></div><div className="admin-guide-monogram" aria-hidden="true">LAB</div></header>{params.saved ? <p className="admin-save-message is-success">Studio note saved. The journal, homepage, and search now use this version.</p> : null}{params.created ? <p className="admin-save-message is-success">Blank studio note created. Add the article details below.</p> : null}{params.error ? <p className="admin-save-message is-error">{params.error}</p> : null}
@@ -27,5 +28,5 @@ export default async function LabDeskPage({ searchParams }: { searchParams: Prom
         <form className="admin-archive-form" action={toggleLabArchive}><input type="hidden" name="id" value={selected.id} /><div><strong>{selected.archivedAt ? "Restore this studio note" : "Archive this studio note"}</strong><p>{selected.archivedAt ? "Restoring returns it to the notebook and journal preview." : "Archiving hides it without deleting the article."}</p></div><button className="button button-outline" type="submit">{selected.archivedAt ? "Restore note" : "Archive note"}</button></form>
       </section> : <section className="admin-record-editor admin-empty-desk"><div><p className="admin-kicker">Studio journal</p><h2>No notes yet.</h2><p>Create the first studio note from the left-hand desk. Nothing will be published until you choose Published.</p></div></section>}
     </div>
-  </main>;
+  </main></OwnerDeskShell>;
 }
