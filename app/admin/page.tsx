@@ -1,14 +1,10 @@
 import Link from "next/link";
+import {redirect} from "next/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Image from "next/image";
 import { AdminLoginForm } from "@/components/AdminLoginForm";
 import { isAdminAuthenticated, isAdminConfigured } from "@/lib/admin-auth";
 import { isAccountLoginConfigured } from "@/lib/supabase-auth";
-import { OwnerDashboard } from "@/components/admin/OwnerDashboard";
-import { getSpeciesRecords } from "@/lib/species-store";
-import { getProductRecords } from "@/lib/product-store";
-import { getGuideRecords } from "@/lib/guide-store";
-import { getLabRecords } from "@/lib/lab-store";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +37,5 @@ export default async function AdminPage() {
     );
   }
 
-  const [species,products,guides,lab] = await Promise.all([getSpeciesRecords(),getProductRecords(),getGuideRecords(),getLabRecords()]);
-  return <OwnerDashboard species={species} products={products} guides={guides} lab={lab}/>;
+  redirect("/owner-studio");
 }
