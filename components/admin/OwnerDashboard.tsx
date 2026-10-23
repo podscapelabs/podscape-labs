@@ -24,9 +24,9 @@ export function OwnerDashboard({species,guides,products,lab}:{
   ...lab.filter(x=>!x.archivedAt).map(x=>({id:x.id,title:x.title,kind:"Studio note",href:"/admin/lab?record="+encodeURIComponent(x.id),status:x.status,updatedAt:x.updatedAt}))
  ].sort((a,b)=>Date.parse(b.updatedAt)-Date.parse(a.updatedAt)).slice(0,7);
  const draftCount=areas.reduce((n,a)=>n+a.drafts,0);
- return <main className={styles.page}>
+ return <div className={styles.page}>
   <div className={styles.inner}>
-   <header className={styles.header}><div><p className={styles.eyebrow}>PODSCAPE LABS / PRIVATE WORKSPACE</p><h1>Owner Studio <span aria-hidden="true">❧</span></h1><p>Everything you need to create, edit and publish—without digging through the site.</p></div><div className={styles.headerActions}><ThemeToggle/><Link href="/admin/preview" className={styles.quietLink}>Site preview ↗</Link><form action={signOutAdmin}><button type="submit" className={styles.quietLink}>Sign out</button></form></div></header>
+   <header className={styles.header}><div><p className={styles.eyebrow}>PODSCAPE LABS / PRIVATE WORKSPACE</p><h1>Owner Studio <span aria-hidden="true">❧</span></h1><p>Everything you need to create, edit and publish—without digging through the site.</p></div><div className={styles.headerActions}><ThemeToggle/><Link href="/app" className={styles.quietLink}>Back to PodScape ↗</Link><form action={signOutAdmin}><button type="submit" className={styles.quietLink}>Sign out</button></form></div></header>
    <section className={styles.quick}><div className={styles.sectionTitle}><div><p className={styles.eyebrow}>QUICK ACCESS</p><h2>Make something new</h2></div></div><div className={styles.quickGrid}>
     <Link href="/admin/species#studio-create" className={styles.quickCard}><span>❧</span><strong>Species</strong><small>Leaf Ledger →</small></Link>
     <Link href="/admin/products#studio-create" className={styles.quickCard}><span>▤</span><strong>Product</strong><small>From Ledger or blank →</small></Link>
@@ -37,5 +37,5 @@ export function OwnerDashboard({species,guides,products,lab}:{
    <section className={styles.section}><div className={styles.sectionTitle}><div><p className={styles.eyebrow}>PICK UP WHERE YOU LEFT OFF</p><h2>Recently edited</h2></div></div><div className={styles.recentList}>{recent.length?recent.map(x=><Link href={x.href} key={x.kind+x.id} className={styles.recent}><span className={styles.recentText}><strong>{x.title}</strong><small>{x.kind} · {new Date(x.updatedAt).toLocaleDateString("en-CA",{month:"short",day:"numeric",year:"numeric"})}</small></span><span className={styles.status} data-status={x.status}>{x.status}</span><span className={styles.arrow}>→</span></Link>):<p className={styles.empty}>No records yet. Create your first species, product or guide above.</p>}</div></section>
    <section className={styles.bottomLinks}><Link href="/admin/design-system">Design system ↗</Link><Link href="/admin/preview">Full site preview ↗</Link><Link href="/admin/reset-password">Account security ↗</Link></section>
   </div>
- </main>;
+ </div>;
 }
