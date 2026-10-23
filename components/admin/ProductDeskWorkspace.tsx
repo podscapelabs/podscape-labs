@@ -83,6 +83,7 @@ export function ProductDeskWorkspace({product,ledgerChoices}:{product:ProductRec
      <label>Single-item SKU<input name="sku" maxLength={64} placeholder="Optional" defaultValue={product.sku||""}/></label>
      <div className={styles.two}><label>Single-item stock (blank = untracked)<input name="stockQuantity" type="number" min="0" step="1" placeholder="Not tracked" defaultValue={product.stockQuantity??""}/></label><label>Low stock threshold<input name="lowStockThreshold" type="number" min="0" step="1" defaultValue={product.lowStockThreshold??3}/></label></div>
      <p className={styles.note}>For packs or sizes, manage inventory and SKUs separately under Pricing. Inventory tracking is optional; checkout remains disabled.</p>
+     {product.stockHistory?.length ? <details><summary>Recent inventory changes ({product.stockHistory.length})</summary><ul>{product.stockHistory.slice(0,8).map((entry,index)=><li key={`${entry.at}-${index}`}>{new Date(entry.at).toLocaleDateString("en-CA")} · {entry.label}: {entry.before??"Untracked"} → {entry.after??"Untracked"}</li>)}</ul></details> : null}
      <label>Materials / contents<textarea name="materials" rows={2} defaultValue={product.materials}/></label>
      <label>Shipping note<textarea name="shippingNote" rows={2} defaultValue={product.shippingNote}/></label>
     </div>)}
