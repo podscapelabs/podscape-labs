@@ -12,8 +12,9 @@ const items: {href:string;icon:PodscapeIconName;label:string;primary?:boolean}[]
 ];
 export function GlobalMobileNav(){
  const pathname=usePathname();
- const excluded=pathname==="/"||pathname==="/admin"||pathname.startsWith("/admin/")&&pathname!=="/admin/preview"||pathname.startsWith("/account/login")||pathname.startsWith("/account/register")||pathname.startsWith("/account/reset")||pathname.startsWith("/auth/");
+ const isOwnerDesk=["/admin/species","/admin/products","/admin/guides","/admin/lab"].some(prefix=>pathname===prefix||pathname.startsWith(prefix+"/"));
+ const excluded=pathname==="/"||pathname==="/admin"||(pathname.startsWith("/admin/")&&pathname!=="/admin/preview"&&!isOwnerDesk)||pathname.startsWith("/account/login")||pathname.startsWith("/account/register")||pathname.startsWith("/account/reset")||pathname.startsWith("/auth/");
  if(excluded)return null;
- const active=pathname.startsWith("/keeper/scan")?"Scan":pathname.startsWith("/keeper")?"Manager":pathname.startsWith("/shop")?"Shop":pathname==="/menu"||pathname.startsWith("/fun-zone")||pathname.startsWith("/field-guide")||pathname.startsWith("/ledger")||pathname.startsWith("/explore")?"Menu":"Home";
+ const active=pathname.startsWith("/keeper/scan")?"Scan":pathname.startsWith("/keeper")?"Manager":pathname.startsWith("/shop")?"Shop":pathname==="/menu"||pathname.startsWith("/fun-zone")||pathname.startsWith("/field-guide")||pathname.startsWith("/ledger")||pathname.startsWith("/explore")||pathname==="/owner-studio"||isOwnerDesk?"Menu":"Home";
  return <nav className={styles.nav} aria-label="PodScape mobile navigation">{items.map(item=><Link href={item.href} key={item.label} aria-current={active===item.label?"page":undefined} className={`${styles.item} ${item.primary?styles.primary:""} ${active===item.label?styles.active:""}`}><span><PodscapeLineIcon name={item.icon}/></span><small>{item.label}</small></Link>)}</nav>;
 }
