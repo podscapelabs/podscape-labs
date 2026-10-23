@@ -6,7 +6,6 @@ import { customerSupabase } from "@/lib/customer-auth/server";
 import styles from "./account-dashboard.module.css";
 import { AppearancePreference } from "@/components/AppearancePreference";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { PodscapeUtilityHeader, PodscapeActionLink, PodscapeButton, PodscapeStatusBadge } from "@/components/design-system/PodscapeUI";
 
 export default async function CustomerAccountPage({ searchParams }: { searchParams: Promise<{ verified?: string }> }) {
   const db = await customerSupabase();
@@ -26,7 +25,7 @@ export default async function CustomerAccountPage({ searchParams }: { searchPara
   const joined = new Date(profile?.created_at || user.created_at).toLocaleDateString("en-CA",{month:"long",year:"numeric"});
   return <main className={styles.page}>
     <div className={styles.inner}>
-      <PodscapeUtilityHeader eyebrow="PODSCAPE LABS · MEMBER SPACE" title="My Account" description="Your profile, progress and preferences." id="account-heading" />
+      <header className={styles.hero}><p className={styles.eyebrow}>PODSCAPE LABS · MEMBER SPACE</p><h1>My Account</h1><p>Your profile, progress and preferences.</p></header>
       {verified==="1" ? <p role="status" className={styles.notice}>Email confirmed. Welcome to PodScape.</p> : null}
       <section className={styles.profile}>
         <span className={styles.avatar} aria-hidden="true">✦</span>
@@ -34,13 +33,13 @@ export default async function CustomerAccountPage({ searchParams }: { searchPara
         <a href="#profile-settings" className={styles.edit}>Edit Profile</a>
       </section>
       <section className={styles.progress} aria-label="PodScape progress">
-        <div className={styles.progressHeading}><span>✧</span><h2>My Progress</h2><PodscapeStatusBadge tone="info">Level {level}</PodscapeStatusBadge></div>
+        <div className={styles.progressHeading}><span>✧</span><h2>My Progress</h2><small>Level {level}</small></div>
         <p>Explore, learn and participate across PodScape. Your progress stays with you.</p>
         <div className={styles.progressFoot}><strong>{totalExp.toLocaleString("en-CA")} EXP</strong><strong>{Number(progress?.pod_coins || 0).toLocaleString("en-CA")} Pod Coins</strong></div>
         <div className={styles.bar} role="progressbar" aria-label="Progress to next level" aria-valuemin={levelStart} aria-valuemax={levelEnd} aria-valuenow={totalExp}><span style={{width:progressPercent+"%"}} /></div>
         <div className={styles.progressFoot}><span>Level {level}</span><span>{(levelEnd-totalExp).toLocaleString("en-CA")} EXP to Level {level+1}</span></div>
         {progressError ? <p>Progress data will appear once the new progression database is enabled.</p> : null}
-        <p><PodscapeActionLink href="/account/progress" variant="secondary" density="compact">View quests and milestones →</PodscapeActionLink></p>
+        <p><Link href="/account/progress">View quests and milestones →</Link></p>
       </section>
       <section className={styles.activity}><div className={styles.activityHeading}><h2>Recent Activity</h2></div><p>Activity history will appear here as you explore PodScape, complete activities and care for your colonies.</p></section>
       <div className={styles.accordions}>
@@ -48,7 +47,7 @@ export default async function CustomerAccountPage({ searchParams }: { searchPara
         <details><summary><span className={styles.symbol}>♧</span><span><strong>Rewards &amp; Benefits</strong><small>Discounts, perks and future unlocks.</small></span><span className={styles.chevron}>⌄</span></summary><div className={styles.panel}><p>Keeper EXP and member rewards are being developed. Discount thresholds and eligibility will be announced when the program launches.</p></div></details>
         <details><summary><span className={styles.symbol}>◷</span><span><strong>Activity History</strong><small>Your care logs, guides and more.</small></span><span className={styles.chevron}>⌄</span></summary><div className={styles.panel}><p>For now, your colony care records are available in Manager.</p><Link href="/keeper">Open Manager →</Link></div></details>
         <details><summary><span className={styles.symbol}>☷</span><span><strong>Preferences</strong><small>Appearance and notifications.</small></span><span className={styles.chevron}>⌄</span></summary><div className={styles.panel}><AppearancePreference/><p>Notification preferences will be available later.</p></div></details>
-        <details id="profile-settings"><summary><span className={styles.symbol}>♢</span><span><strong>Personal Information</strong><small>Name, email and account security.</small></span><span className={styles.chevron}>⌄</span></summary><div className={styles.panel}><p className={styles.label}>Name</p><CustomerAccountForm kind="profile" initialName={profile?.display_name || ""}/><p className={styles.label}>Email</p><p>{user.email}</p><p>Shipping addresses will be managed separately when checkout is available.</p><h3>Account security</h3><Link href="/account/change-password">Change password →</Link><Link href="/account/forgot-password">Password recovery →</Link><form action={signOutCustomer}><PodscapeButton type="submit" variant="secondary" density="compact">Sign out</PodscapeButton></form></div></details>
+        <details id="profile-settings"><summary><span className={styles.symbol}>♢</span><span><strong>Personal Information</strong><small>Name, email and account security.</small></span><span className={styles.chevron}>⌄</span></summary><div className={styles.panel}><p className={styles.label}>Name</p><CustomerAccountForm kind="profile" initialName={profile?.display_name || ""}/><p className={styles.label}>Email</p><p>{user.email}</p><p>Shipping addresses will be managed separately when checkout is available.</p><h3>Account security</h3><Link href="/account/change-password">Change password →</Link><Link href="/account/forgot-password">Password recovery →</Link><form action={signOutCustomer}><button type="submit" className={styles.signout}>Sign out</button></form></div></details>
       </div>
     </div>
 
