@@ -33,7 +33,7 @@ export function ProductVariantsEditor({initialType,initialVariants,basePrice}:{
     {kind==="count"?<><button type="button" onClick={()=>add(8,"8 count")}>+ 8 count</button><button type="button" onClick={()=>add(12,"12 count")}>+ 12 count</button></>:<>{["S","M","L","XL"].map(size=><button type="button" key={size} onClick={()=>add(undefined,size)}>+ {size}</button>)}</>}
     <button type="button" onClick={()=>add()}>+ Custom</button>
    </div>
-   <p className={styles.helper}>The standard price field remains as the fallback; customers will see the selected option's price in the Shop preview.</p>
+   <p className={styles.helper}>The standard price field remains as the fallback; customers will see the selected option price in the Shop preview.</p>
   </>:<p className={styles.helper}>Suitable for one-size products without selectable counts or sizes.</p>}
  </div>;
 }
