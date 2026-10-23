@@ -110,6 +110,34 @@ export async function saveProductRecord(formData: FormData) {
   studioRedirect(id, "saved", "1", view);
 }
 
+/** Explicit import: copy curated Ledger information; do not alter prices, variants, publication or custom photos. */
+export async function pullProductDetailsFromLedger(formData: FormData) {
+  if (!(await isAdminAuthenticated())) redirect("/admin");
+  const id = field(formData, "id", 100);
+  const speciesId = field(formData, "ledgerSpeciesId", 100);
+  const product = (await getProductRecords()).find(record => record.id === id);
+  if (!product) studioRedirect(id, "error", "Product not found");
+  const view = product.archivedAt ? "archived" : "active";
+  if (product.category !== "Isopods & Springtails") studioRedirect(id, "error", "Ledger imports are for isopod and springtail products", view);
+  const species = (await getSpeciesRecords()).find(record => record.id === speciesId && record.kind === "species" && !record.archivedAt);
+  if (!species) studioRedirect(id, "error", "Select an active Ledger species first", view);
+  const tags = [...new Set([species.genus, species.species, species.morph, ...species.tags].map(tag => tag.trim()).filter(Boolean))].slice(0, 25);
+  const nextRecord: ProductRecord = {
+    ...product, ledgerSpeciesId: species.id,
+    title: species.commonName || product.title,
+    summary: species.summary || product.summary,
+    description: species.about || product.description,
+    tags: tags.length ? tags : product.tags,
+    image: product.image || species.image,
+    imageAlt: product.image ? product.imageAlt : (species.imageAlt || species.commonName),
+    updatedAt: new Date().toISOString(),
+  };
+  try { await replaceProductRecord(nextRecord); }
+  catch(error) { studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to pull Ledger details", view); }
+  revalidatePath("/shop"); revalidatePath(`/shop/${product.slug}`); revalidatePath("/search");
+  redirect(`/admin/products?${new URLSearchParams({record:id,view,pulled:"1"}).toString()}`);
+}
+
 export async function toggleProductArchive(formData: FormData) {
   if (!(await isAdminAuthenticated())) redirect("/admin");
   const id = field(formData, "id", 100);
