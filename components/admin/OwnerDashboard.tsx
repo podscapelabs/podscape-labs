@@ -14,7 +14,7 @@ export function OwnerDashboard({species,guides,products,lab}:{
  species:SpeciesRecord[];guides:GuideRecord[];products:ProductRecord[];lab:LabSummary[];
 }){
  const desks:Desk[]=[
-  {name:"Product Desk",description:"Listings, pricing and photos",href:"/admin/products",icon:"shop",tone:"green"},
+  {name:"Shop Manager",description:"Products, pricing, stock and listings",href:"/admin/products",icon:"shop",tone:"green"},
   {name:"Species Desk",description:"Ledger identities and care",href:"/admin/species",icon:"leaf",tone:"rose"},
   {name:"Guide Desk",description:"Write, edit and publish",href:"/admin/guides",icon:"book",tone:"green"},
   {name:"Lab Desk",description:"Project updates and notes",href:"/admin/lab",icon:"note",tone:"sand"}
@@ -58,7 +58,7 @@ export function OwnerDashboard({species,guides,products,lab}:{
    <nav className={styles.shortcutGrid} aria-label="Owner tools">
     <Link href="/admin/products#studio-create"><span className={styles.shortcutIcon}><PodscapeLineIcon name="leaf"/></span><span><strong>Use Ledger Entry</strong><small>Start a product using species data</small></span><b>→</b></Link>
     <Link href="/admin/guides#studio-create"><span className={styles.shortcutIcon}><PodscapeLineIcon name="book"/></span><span><strong>Guide Templates</strong><small>Start with a section structure</small></span><b>→</b></Link>
-    <Link href="/admin/products"><span className={styles.shortcutIcon}><PodscapeLineIcon name="shop"/></span><span><strong>Edit Products</strong><small>Adjust pricing and listings</small></span><b>→</b></Link>
+    <Link href="/admin/products"><span className={styles.shortcutIcon}><PodscapeLineIcon name="shop"/></span><span><strong>Open Shop Manager</strong><small>Manage products, inventory and prices</small></span><b>→</b></Link>
    </nav>
   </section>
   <section className={styles.section} aria-labelledby="owner-overview-title"><div className={styles.sectionHead}><h2 id="owner-overview-title">At a Glance</h2></div><div className={styles.statGrid}>
