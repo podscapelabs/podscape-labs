@@ -70,6 +70,11 @@ export async function saveProductRecord(formData: FormData) {
   const priceCents = Number.isFinite(price) ? Math.max(0, Math.round(price * 100)) : current.priceCents;
   const optionType=field(formData,"optionType",12) as ProductOptionType || "none";
   if (!["none","count","size"].includes(optionType)) studioRedirect(id,"error","Choose valid selling options",view);
+  const stockText = field(formData,"stockQuantity",20);
+  const stockQuantity = stockText === "" ? null : Number(stockText);
+  const lowStockThreshold = Number(field(formData,"lowStockThreshold",20) || "3");
+  if (stockQuantity !== null && (!Number.isSafeInteger(stockQuantity) || stockQuantity < 0 || stockQuantity > 100000000)) studioRedirect(id,"error","Enter a valid nonnegative stock quantity",view);
+  if (!Number.isSafeInteger(lowStockThreshold) || lowStockThreshold < 0 || lowStockThreshold > 100000000) studioRedirect(id,"error","Enter a valid low-stock threshold",view);
   let variants: ProductVariant[] = [];
   if (optionType !== "none") {
     let raw: unknown;
@@ -90,7 +95,11 @@ export async function saveProductRecord(formData: FormData) {
         if(counts.has(count)) studioRedirect(id,"error","Each colony count must be unique",view);
         counts.add(count);
       }
-      return {id:String(row.id||`option-${index}`).slice(0,100),label,priceCents:amount,...(optionType==="count"?{count}:{})};
+      const stock = row.stockQuantity === null || row.stockQuantity === undefined || row.stockQuantity === "" ? null : Number(row.stockQuantity);
+      const threshold = Number(row.lowStockThreshold ?? 3);
+      if (stock !== null && (!Number.isSafeInteger(stock) || stock < 0 || stock > 100000000)) studioRedirect(id,"error",`Invalid stock for option ${index+1}`,view);
+      if (!Number.isSafeInteger(threshold) || threshold < 0 || threshold > 100000000) studioRedirect(id,"error",`Invalid low-stock threshold for option ${index+1}`,view);
+      return {id:String(row.id||`option-${index}`).slice(0,100),label,priceCents:amount,sku:String(row.sku||"").trim().slice(0,64),stockQuantity:stock,lowStockThreshold:threshold,...(optionType==="count"?{count}:{})};
     });
     if(status==="published"&&variants.length===0) studioRedirect(id,"error","Add at least one selling option before publishing",view);
   }
@@ -104,7 +113,7 @@ export async function saveProductRecord(formData: FormData) {
   if (formData.get("removePhoto") === "yes") image = null;
   const photo = formData.get("photo");
   try { if (photo instanceof File && photo.size > 0) image = await saveProductPhoto(id, photo); } catch (error) { studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to save product photo", view); }
-  const nextRecord: ProductRecord = { ...current, ledgerSpeciesId: linkedSpecies?.id || null, slug, title, category, summary: field(formData, "summary", 600), description: field(formData, "description", 8000), priceCents, optionType, variants, status, availability, featured: formData.get("featured") === "yes", image, imageAlt: field(formData, "imageAlt", 240), imagePositionX: boundedNumber(formData, "imagePositionX", 0, 100, current.imagePositionX), imagePositionY: boundedNumber(formData, "imagePositionY", 0, 100, current.imagePositionY), imageZoom: boundedNumber(formData, "imageZoom", 1, 2, current.imageZoom), tags: field(formData, "tags", 1000).split(",").map((tag) => tag.trim()).filter(Boolean), materials: field(formData, "materials", 2000), shippingNote: field(formData, "shippingNote", 2000), updatedAt: new Date().toISOString() };
+  const nextRecord: ProductRecord = { ...current, ledgerSpeciesId: linkedSpecies?.id || null, slug, title, category, summary: field(formData, "summary", 600), description: field(formData, "description", 8000), priceCents, sku:field(formData,"sku",64), stockQuantity, lowStockThreshold, optionType, variants, status, availability, featured: formData.get("featured") === "yes", image, imageAlt: field(formData, "imageAlt", 240), imagePositionX: boundedNumber(formData, "imagePositionX", 0, 100, current.imagePositionX), imagePositionY: boundedNumber(formData, "imagePositionY", 0, 100, current.imagePositionY), imageZoom: boundedNumber(formData, "imageZoom", 1, 2, current.imageZoom), tags: field(formData, "tags", 1000).split(",").map((tag) => tag.trim()).filter(Boolean), materials: field(formData, "materials", 2000), shippingNote: field(formData, "shippingNote", 2000), updatedAt: new Date().toISOString() };
   try { await replaceProductRecord(nextRecord); } catch (error) { studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to save product", view); }
   revalidatePath("/shop"); revalidatePath(`/shop/${current.slug}`); revalidatePath(`/shop/${nextRecord.slug}`); revalidatePath("/search");
   studioRedirect(id, "saved", "1", view);
