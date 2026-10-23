@@ -4,8 +4,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ProductLedgerQuickStart } from "@/components/admin/ProductLedgerQuickStart";
 import { ProductDeskWorkspace } from "@/components/admin/ProductDeskWorkspace";
+import { ShopManagerList } from "@/components/admin/ShopManagerList";
 import { getSpeciesRecords } from "@/lib/species-store";
-import { formatProductPrice, productAvailabilityLabel } from "@/data/products";
+
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getProductRecords } from "@/lib/product-store";
 import { createProductRecord, toggleProductArchive } from "./actions";
@@ -22,7 +23,10 @@ export default async function ProductDeskPage({ searchParams }: { searchParams: 
   const archivedRecords = records.filter((record) => Boolean(record.archivedAt));
   const visibleRecords = archivedView ? archivedRecords : activeRecords;
   const selected = visibleRecords.find((record) => record.id === params.record) || visibleRecords[0];
-  return <OwnerDeskShell><main className={`admin-shell admin-ledger-desk ${styles.desk}`}><header className="admin-dashboard-head admin-ledger-head"><div><p className="eyebrow">Manager / Shop</p><h1>Product Desk</h1><p>Create and manage shop listings quickly.</p></div><div className="admin-dashboard-actions"><Link className="button button-outline" href="/owner-studio">Owner studio</Link><Link className="button button-primary" href="/shop" target="_blank">Open Shop</Link></div></header><div className="admin-ledger-layout"><aside className="admin-record-list" id="studio-create"><div><span>{archivedView ? "Archived products" : "Active products"}</span><strong>{visibleRecords.length}</strong></div><div className="admin-record-views"><Link className={!archivedView ? "is-active" : ""} href="/admin/products">Active · {activeRecords.length}</Link><Link className={archivedView ? "is-active" : ""} href="/admin/products?view=archived">Archived · {archivedRecords.length}</Link></div><details className={styles.recordBrowser}><summary>Browse products <span>▾</span></summary><nav aria-label="Product records">{visibleRecords.map((product) => <Link className={product.id === selected?.id ? "is-active" : ""} href={`/admin/products?view=${archivedView ? "archived" : "active"}&record=${product.id}`} key={product.id}><small>{product.category}</small><b>{product.title}</b><em>{formatProductPrice(product)}</em><span>{product.archivedAt ? "Archived" : `${product.status} · ${productAvailabilityLabel(product.availability)}`}</span></Link>)}</nav></details>{!archivedView ? <><details className="owner-quick-create"><summary>Create from Leaf Ledger <span aria-hidden="true">⌄</span></summary><ProductLedgerQuickStart species={ledgerChoices}/></details><form action={createProductRecord}><button className="button button-outline" type="submit">+ New blank product</button></form></> : null}</aside>{selected ? <section key={selected.id} className="admin-record-editor">
+  return <OwnerDeskShell><main className={`admin-shell admin-ledger-desk ${styles.desk}`}><header className="admin-dashboard-head admin-ledger-head"><div><p className="eyebrow">Manager / Shop</p><h1>Product Desk</h1><p>Create and manage shop listings quickly.</p></div><div className="admin-dashboard-actions"><Link className="button button-outline" href="/owner-studio">Owner studio</Link><Link className="button button-primary" href="/shop" target="_blank">Open Shop</Link></div></header><div className="admin-ledger-layout"><aside className="admin-record-list" id="studio-create">
+<ShopManagerList products={records} selectedId={selected?.id}/>
+{!archivedView ? <><details className="owner-quick-create"><summary>Create from Leaf Ledger <span aria-hidden="true">⌄</span></summary><ProductLedgerQuickStart species={ledgerChoices}/></details><form action={createProductRecord}><button className="button button-outline" type="submit">+ New blank product</button></form></> : null}
+</aside>{selected ? <section key={selected.id} className="admin-record-editor">
 {params.saved ? <p className="admin-save-message is-success">Product saved. The Shop and search index now use this version.</p> : null}
 {params.created ? <p className="admin-save-message is-success">Blank product created. Open a card to add details.</p> : null}
 {params.pulled ? <p className="admin-save-message is-success">Ledger details pulled into this product. Review the copied information before publishing.</p> : null}
