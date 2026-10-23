@@ -125,7 +125,7 @@
 .desk :global(.admin-species-form .quickForm>label:nth-of-type(2) textarea){min-height:68px}
 .desk :global(.admin-species-form .quickForm>.admin-form-grid){gap:9px}
 .desk :global(.admin-species-form .quickForm .priceGrid){gap:5px}
-.desk :global(.admin-species-form .quickForm .priceGrid :global(.pills)){display:none}
+
 .desk :global(.admin-record-editor-head){padding:14px 18px}
 .desk :global(.admin-save-message){padding:10px 12px;font-size:12px}
 .desk :global(.admin-species-form .quickForm .admin-check-control){margin-top:3px}
