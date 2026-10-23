@@ -5,35 +5,34 @@ import styles from "./ProductVariantsEditor.module.css";
 
 type Editable={id:string;label:string;price:string;count:string};
 const toEditable=(v:ProductVariant):Editable=>({id:v.id,label:v.label,price:(v.priceCents/100).toFixed(2),count:v.count?.toString()||""});
-export function ProductVariantsEditor({initialType,initialVariants,basePrice}:{
- initialType:ProductOptionType;initialVariants:ProductVariant[];basePrice:number
-}){
+export function ProductVariantsEditor({initialType,initialVariants,basePrice}:{initialType:ProductOptionType;initialVariants:ProductVariant[];basePrice:number}){
  const [kind,setKind]=useState<ProductOptionType>(initialType);
  const [rows,setRows]=useState<Editable[]>(initialVariants.map(toEditable));
- const add=(count?:number,label?:string)=>setRows(current=>[...current,{id:crypto.randomUUID(),label:label||(count?String(count):""),count:count?.toString()||"",price:(basePrice/100).toFixed(2)}]);
+ const [custom,setCustom]=useState("");
+ const add=(count?:number,label?:string)=>{
+  const name=label||(count?count+" count":"");
+  if(rows.some(row=>kind==="count"&&Number(row.count)===count||kind==="size"&&row.label===name))return;
+  setRows(current=>[...current,{id:crypto.randomUUID(),label:name,count:count?.toString()||"",price:(basePrice/100).toFixed(2)}]);
+ };
+ const choose=(next:ProductOptionType)=>{
+  setKind(next);
+  if(next!==kind) setRows([]);
+ };
  const edit=(id:string,field:keyof Editable,value:string)=>setRows(current=>current.map(row=>row.id===id?{...row,[field]:value}:row));
  const serialized=JSON.stringify(rows.map(row=>({id:row.id,label:row.label.trim(),count:kind==="count"?Number(row.count):undefined,priceCents:Math.round(Number(row.price)*100)})));
  return <div className={styles.root}>
-  <label htmlFor="product-option-type">Selling options</label>
-  <select id="product-option-type" name="optionType" value={kind} onChange={event=>setKind(event.target.value as ProductOptionType)}>
-    <option value="none">Single product · no options</option>
-    <option value="count">Colony count · 8, 12, etc.</option>
-    <option value="size">Size or style · S, M, L, etc.</option>
-  </select>
+  <strong className={styles.heading}>Sell as</strong>
+  <div className={styles.mode} role="group" aria-label="Product selling format">
+   {([{value:"none",label:"Single item"},{value:"count",label:"Colony packs"},{value:"size",label:"Sizes / styles"}] as const).map(option=><button key={option.value} type="button" aria-pressed={kind===option.value} onClick={()=>choose(option.value)}>{option.label}</button>)}
+  </div>
+  <input type="hidden" name="optionType" value={kind}/>
   <input type="hidden" name="variantsJson" value={serialized}/>
-  {kind!=="none"?<>
-   <p className={styles.helper}>{kind==="count"?"Each count is a separate selectable pack with its own price.":"Use sizes or styles for apparel and other products. Each can have its own price."}</p>
-   {rows.length===0?<p className={styles.empty}>Add at least one option before publishing.</p>:null}
-   <div className={styles.rows}>{rows.map((row,index)=><div className={styles.variant} key={row.id}>
-     {kind==="count"?<label><span>Count</span><input inputMode="numeric" type="number" min="1" max="100000" value={row.count} onChange={e=>{edit(row.id,"count",e.target.value);edit(row.id,"label",e.target.value?e.target.value+" count":"")}} required/></label>:<label><span>Size / style</span><input type="text" maxLength={60} value={row.label} onChange={e=>edit(row.id,"label",e.target.value)} placeholder="e.g. Medium" required/></label>}
-     <label><span>Price (CAD)</span><input type="number" min="0" step=".01" value={row.price} onChange={e=>edit(row.id,"price",e.target.value)} required/></label>
-     <button type="button" className={styles.remove} aria-label={`Remove option ${index+1}`} onClick={()=>setRows(current=>current.filter(item=>item.id!==row.id))}>×</button>
-    </div>)}</div>
-   <div className={styles.quick}>
-    {kind==="count"?<><button type="button" onClick={()=>add(8,"8 count")}>+ 8 count</button><button type="button" onClick={()=>add(12,"12 count")}>+ 12 count</button></>:<>{["S","M","L","XL"].map(size=><button type="button" key={size} onClick={()=>add(undefined,size)}>+ {size}</button>)}</>}
-    <button type="button" onClick={()=>add()}>+ Custom</button>
-   </div>
-   <p className={styles.helper}>The standard price field remains as the fallback; customers will see the selected option price in the Shop preview.</p>
-  </>:<p className={styles.helper}>Suitable for one-size products without selectable counts or sizes.</p>}
+  {kind==="count"?<div className={styles.presets}><span>Add pack</span><button type="button" onClick={()=>add(8)}>+ 8</button><button type="button" onClick={()=>add(10)}>+ 10</button><button type="button" onClick={()=>add(12)}>+ 12</button><div className={styles.custom}><input aria-label="Custom colony count" type="number" inputMode="numeric" min="1" max="100000" placeholder="Other" value={custom} onChange={event=>setCustom(event.target.value)}/><button type="button" onClick={()=>{const n=Number(custom);if(Number.isSafeInteger(n)&&n>0&&n<=100000){add(n);setCustom("");}}}>Add</button></div></div>:null}
+  {kind==="size"?<div className={styles.presets}><span>Add size</span>{["S","M","L","XL"].map(label=><button type="button" key={label} onClick={()=>add(undefined,label)}>+ {label}</button>)}<button type="button" onClick={()=>add(undefined,"Custom")}>+ Other</button></div>:null}
+  {kind!=="none"?<div className={styles.rows}>{rows.length===0?<p className={styles.empty}>Choose options above to set their individual prices.</p>:rows.map((row,index)=><div key={row.id} className={styles.variant}>
+   <label><span>{kind==="count"?"Pack":"Size / style"}</span>{kind==="count"?<input type="number" min="1" max="100000" inputMode="numeric" aria-label={"Pack count "+(index+1)} value={row.count} onChange={e=>setRows(current=>current.map(item=>item.id===row.id?{...item,count:e.target.value,label:e.target.value+" count"}:item))}/>:<input type="text" maxLength={60} value={row.label} onChange={e=>edit(row.id,"label",e.target.value)}/>}</label>
+   <label><span>Price · CAD</span><input type="number" min="0" step=".01" value={row.price} onChange={e=>edit(row.id,"price",e.target.value)}/></label>
+   <button type="button" className={styles.remove} aria-label={"Remove option "+(index+1)} onClick={()=>setRows(current=>current.filter(item=>item.id!==row.id))}>×</button>
+  </div>)}</div>:null}
  </div>;
 }
