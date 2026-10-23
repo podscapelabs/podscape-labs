@@ -76,3 +76,11 @@
  .owner-desk .admin-archive-form .button{width:100%}
 }
 @media(max-width:390px){.owner-desk .admin-form-grid.two,.owner-desk .admin-form-grid.three{grid-template-columns:1fr}}
+
+.owner-desk .owner-quick-create{margin:10px 12px;border:1px solid var(--desk-edge);border-radius:12px;background:var(--desk-panel-hi);overflow:hidden}
+.owner-desk .owner-quick-create summary{display:flex;align-items:center;justify-content:space-between;gap:9px;min-height:46px;padding:11px 13px;cursor:pointer;font-size:12px;font-weight:800;color:var(--desk-text);list-style:none}
+.owner-desk .owner-quick-create summary::-webkit-details-marker{display:none}
+.owner-desk .owner-quick-create[open] summary{border-bottom:1px solid var(--desk-edge)}
+.owner-desk .owner-quick-create>form{margin:10px;padding:10px;background:var(--desk-panel);border:1px solid var(--desk-edge);border-radius:11px;box-shadow:none}
+.owner-desk .owner-quick-create input,.owner-desk .owner-quick-create select{background:var(--desk-panel-hi);border:1px solid var(--desk-edge);color:var(--desk-text)}
+.owner-desk .owner-quick-create button[type=submit]:not(:disabled){background:var(--desk-primary);color:var(--desk-primary-text)}
