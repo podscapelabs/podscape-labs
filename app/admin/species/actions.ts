@@ -30,7 +30,8 @@ export async function createSpeciesRecord() {
   if (!(await isAdminAuthenticated())) redirect("/admin");
   const records = await getSpeciesRecords();
   const id = `species-${randomUUID()}`;
-  const sequence = records.filter((record) => record.kind === "species").length + 1;
+  const existingNumbers = records.filter(record => record.kind === "species").map(record => /^PL-SP-(\d+)$/i.exec(record.catalogueNumber)?.[1]).filter((value): value is string => Boolean(value)).map(Number);
+  const sequence = Math.max(0, ...existingNumbers, records.filter(record => record.kind === "species").length) + 1;
   const record: SpeciesRecord = {
     id,
     slug: `draft-${id.slice(-8)}`,
@@ -42,7 +43,7 @@ export async function createSpeciesRecord() {
     genus: "",
     species: "",
     morph: "",
-    catalogueNumber: `LL-${String(sequence).padStart(3, "0")}`,
+    catalogueNumber: `PL-SP-${String(sequence).padStart(2, "0")}`,
     image: null,
     imageAlt: "",
     imagePositionX: 50,
@@ -113,7 +114,7 @@ export async function saveSpeciesRecord(formData: FormData) {
     genus: field(formData, "genus", 100),
     species: field(formData, "species", 100),
     morph: field(formData, "morph", 120),
-    catalogueNumber: field(formData, "catalogueNumber", 40) || current.catalogueNumber,
+    catalogueNumber: current.catalogueNumber,
     image,
     imageAlt: field(formData, "imageAlt", 240),
     imagePositionX: boundedNumber(formData, "imagePositionX", 0, 100, current.imagePositionX),
