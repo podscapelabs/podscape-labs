@@ -1,2 +1,51 @@
-.nav{display:none}
-@media(max-width:720px){.nav{position:fixed;z-index:60;left:12px;right:12px;bottom:max(9px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);align-items:end;max-width:540px;margin:auto;padding:8px 7px 7px;border:1px solid #d7cfbd;background:#faf6ecf2;box-shadow:0 8px 30px #26351f26;backdrop-filter:blur(18px);border-radius:28px}.item{display:grid;place-items:center;gap:3px;min-height:43px;color:#263f2e;text-decoration:none}.item span{display:grid;place-items:center;width:24px;height:24px}.item svg{width:23px;height:23px}.item small{font-size:.57rem;letter-spacing:.01em}.active{color:#2f6a3e}.active small{font-weight:800}.primary{align-self:center;width:58px;height:58px;min-height:58px;margin:-22px auto 0;border-radius:22px;background:#2f6540;color:#fff;border:3px solid #f7f2e7;box-shadow:0 4px 15px #172d1d45}.primary span{width:29px;height:29px}.primary svg{width:28px;height:28px}.primary small{font-weight:800}}
+.nav { display: none; }
+
+@media (max-width: 720px) {
+  .nav {
+    position: fixed;
+    z-index: 60;
+    right: 12px;
+    bottom: max(9px, env(safe-area-inset-bottom));
+    left: 12px;
+    display: grid;
+    max-width: 540px;
+    margin: auto;
+    padding: 8px 7px 7px;
+    grid-template-columns: repeat(5, 1fr);
+    align-items: flex-end;
+    border: 1px solid var(--border, var(--line));
+    border-radius: 28px;
+    background: color-mix(in srgb, var(--surface, var(--paper)) 92%, transparent);
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(18px) saturate(120%);
+  }
+  .item {
+    display: grid;
+    min-height: 43px;
+    place-items: center;
+    gap: 3px;
+    color: var(--text-secondary, var(--muted));
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .item span { display: grid; width: 24px; height: 24px; place-items: center; }
+  .item svg { width: 23px; height: 23px; }
+  .item small { font-size: .57rem; letter-spacing: .01em; }
+  .active { color: var(--accent, var(--forest)); }
+  .active small { font-weight: 800; }
+  .primary {
+    width: 58px;
+    height: 58px;
+    min-height: 58px;
+    margin: -22px auto 0;
+    align-self: center;
+    border: 3px solid var(--surface, var(--paper));
+    border-radius: 22px;
+    background: var(--accent, var(--forest));
+    color: var(--background, var(--paper-strong));
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--accent, var(--forest)) 35%, transparent);
+  }
+  .primary span { width: 29px; height: 29px; }
+  .primary svg { width: 28px; height: 28px; }
+  .primary small { font-weight: 800; }
+}

@@ -16,6 +16,10 @@
   --white: #fffdf5;
   --header: rgba(248, 244, 232, .91);
   --shadow: 0 24px 70px rgba(32, 43, 34, .12);
+  --shadow-soft: 0 10px 32px rgba(32, 43, 34, .09);
+  --radius-small: 12px;
+  --radius-medium: 18px;
+  --radius-large: 26px;
   --max-width: 1440px;
   --serif: Georgia, "Times New Roman", serif;
   --sans: Arial, Helvetica, sans-serif;
@@ -39,6 +43,7 @@
   --white: #f9f4e6;
   --header: rgba(18, 35, 26, .92);
   --shadow: 0 24px 70px rgba(0, 0, 0, .28);
+  --shadow-soft: 0 10px 32px rgba(0, 0, 0, .22);
 }
 
 * { box-sizing: border-box; }
@@ -98,9 +103,10 @@ h1, h2, h3 { text-wrap: balance; }
 .nav-links a { display: inline-flex; min-height: 44px; align-items: center; color: var(--muted); font-size: .7rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
 .nav-links a:hover { color: var(--ink); }
 .header-actions { display: flex; align-items: center; justify-self: end; gap: 8px; }
-.theme-toggle { position: relative; width: 44px; height: 44px; flex: 0 0 44px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: transparent; cursor: pointer; }
+.theme-toggle { position: relative; width: 44px; height: 44px; flex: 0 0 44px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: transparent; cursor: pointer; transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease; }
 .theme-toggle:hover { background: var(--paper-strong); }
-.theme-icon { position: absolute; inset: 0; display: grid; place-items: center; }
+.theme-toggle:active { transform: scale(.94); }
+.theme-icon { position: absolute; inset: 0; display: grid; place-items: center; transition: opacity 180ms ease, transform 180ms ease; }
 .theme-icon svg { width: 17px; height: 17px; }
 .theme-icon-moon { opacity: 0; transform: rotate(-25deg); }
 [data-theme="dark"] .theme-icon-sun { opacity: 0; transform: rotate(25deg); }
@@ -572,6 +578,10 @@ h1, h2, h3 { text-wrap: balance; }
   --creative: #9f4f32;
   --directory: #7e6828;
   --lab: #b46c0c;
+  --radius-small: 12px;
+  --radius-medium: 18px;
+  --radius-large: 26px;
+  --shadow-soft: 0 10px 32px rgba(32,43,34,.09);
   --display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   min-height: 100vh;
   background: var(--background);
@@ -602,6 +612,7 @@ h1, h2, h3 { text-wrap: balance; }
   --creative: #c9795d;
   --directory: #b39a4a;
   --lab: #df9a2d;
+  --shadow-soft: 0 10px 32px rgba(0,0,0,.25);
 }
 
 .v2-site *, .v2-site *::before, .v2-site *::after { box-sizing: border-box; }
@@ -619,7 +630,7 @@ h1, h2, h3 { text-wrap: balance; }
 .v2-button svg { width: 15px; height: 15px; }
 
 /* Navigation */
-.v2-header { position: sticky; z-index: 60; top: 0; border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--background) 93%, transparent); backdrop-filter: blur(14px); }
+.v2-header { position: sticky; z-index: 60; top: 0; border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--background) 91%, transparent); box-shadow: 0 1px 0 color-mix(in srgb, var(--surface-raised) 45%, transparent); backdrop-filter: blur(18px) saturate(115%); }
 .v2-header-inner { display: grid; min-height: 78px; grid-template-columns: 1fr auto; align-items: center; gap: 18px; }
 .v2-brand { display: inline-flex; width: 177px; min-height: 48px; flex-direction: column; justify-content: center; }
 .v2-brand img { width: 165px; height: auto; }
@@ -634,7 +645,8 @@ h1, h2, h3 { text-wrap: balance; }
 .v2-icon-button:disabled { cursor: not-allowed; opacity: .42; }
 .v2-search-button { display: grid; }
 .v2-icon-button svg { width: 20px; height: 20px; }
-.v2-header .theme-toggle { width: 42px; height: 42px; border: 0; border-radius: 0; }
+.v2-header .theme-toggle { width: 42px; height: 42px; border: 1px solid transparent; border-radius: var(--radius-small); }
+.v2-header .theme-toggle:hover { border-color: var(--border); background: var(--surface); }
 .v2-podbound-cta { display: none; min-height: 43px; align-items: center; gap: 8px; padding: 0 16px; border: 1px solid var(--accent); font-size: .65rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
 .v2-podbound-cta:hover { background: var(--accent); color: var(--surface-raised); }
 .v2-mobile-menu { position: relative; }
@@ -1166,5 +1178,19 @@ h1, h2, h3 { text-wrap: balance; }
 .v2-header-tools .v2-account-button{display:grid;border:1px solid var(--border);border-radius:12px;width:44px;height:44px;margin-left:3px;background:var(--surface);}
 .v2-header-tools .v2-account-button svg{width:23px;height:23px;}
 .v2-header-tools .v2-account-button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+
+/* Cohesion pass: shared interaction and account appearance controls. */
+.v2-site :where(input, select, textarea) {
+  border-radius: var(--radius-small);
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+}
+.v2-site :where(input, select, textarea):focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 13%, transparent);
+  outline: 0;
+}
+.v2-site :where(button, a) { -webkit-tap-highlight-color: transparent; }
+.v2-site :where(.v2-button, .v2-mobile-menu summary) { border-radius: var(--radius-small); }
+
 
 @media(max-width:720px){body:has(nav[aria-label="PodScape mobile navigation"]){padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}}

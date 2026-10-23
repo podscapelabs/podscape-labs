@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
@@ -25,13 +25,12 @@ export function ManagerColonies({ records, bins, collectedIds }: {
   const careLevels = [...new Set(entries.map(record => record.careLevel).filter(Boolean))].sort();
   const lowered = query.trim().toLowerCase();
   const matching = (name: string) => name.toLowerCase().includes(lowered);
-  const visibleSpecies = useMemo(() => entries.filter(record =>
+  const visibleSpecies = entries.filter(record =>
     (genus === "all" || record.genus === genus) &&
     (care === "all" || record.careLevel === care) &&
     (!lowered || matching([speciesDisplayName(record), speciesScientificName(record), record.catalogueNumber].join(" ")))
   ).sort((a,b) => sort === "name" ? speciesDisplayName(a).localeCompare(speciesDisplayName(b)) : sort === "count" ?
-    bins.filter(bin=>bin.speciesId===b.id).reduce((s,bin)=>s+bin.quantity,0) - bins.filter(bin=>bin.speciesId===a.id).reduce((s,bin)=>s+bin.quantity,0) : 0),
-    [records, bins, collectedIds, genus, care, sort, lowered]);
+    bins.filter(bin=>bin.speciesId===b.id).reduce((s,bin)=>s+bin.quantity,0) - bins.filter(bin=>bin.speciesId===a.id).reduce((s,bin)=>s+bin.quantity,0) : 0);
   const visibleBins = bins.filter(bin => {
     const record = speciesMap.get(bin.speciesId);
     return !lowered || matching([bin.name, bin.label, record ? speciesDisplayName(record) : ""].join(" "));

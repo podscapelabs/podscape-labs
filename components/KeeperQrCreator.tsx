@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @next/next/no-img-element -- Generated SVG data URLs must remain exact and printable. */
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import QRCode from "qrcode";
