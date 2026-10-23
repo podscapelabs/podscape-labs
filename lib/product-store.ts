@@ -44,8 +44,8 @@ export async function getProductRecords() {
     await seedCloudRecords(localRecords);
     return localRecords;
   } catch (error) {
-    console.warn("Product cloud read failed; using the bundled catalogue.", error);
-    return getLocalProductRecords();
+    console.error("Product cloud read failed.", error);
+    throw new Error("Product catalogue is temporarily unavailable. No product data was changed.");
   }
 }
 
@@ -67,6 +67,7 @@ export async function replaceProductRecord(nextRecord: ProductRecord) {
     if (error) throw new Error(`Unable to save product record: ${error.message}`);
     return;
   }
+  if (process.env.NODE_ENV === "production") throw new Error("Product changes require configured cloud storage in production.");
   records[index] = nextRecord;
   await writeFile(recordsPath, `${JSON.stringify(records, null, 2)}\n`, "utf8");
 }
@@ -78,6 +79,7 @@ export async function appendProductRecord(record: ProductRecord) {
     if (error) throw new Error(`Unable to create product record: ${error.message}`);
     return;
   }
+  if (process.env.NODE_ENV === "production") throw new Error("Product creation requires configured cloud storage in production.");
   const records = await getLocalProductRecords();
   records.push(record);
   await writeFile(recordsPath, `${JSON.stringify(records, null, 2)}\n`, "utf8");
@@ -97,6 +99,7 @@ export async function saveProductPhoto(recordId: string, photo: File) {
     if (error) throw new Error(`Unable to upload product photo: ${error.message}`);
     return supabase.storage.from("product-photos").getPublicUrl(objectPath).data.publicUrl;
   }
+  if (process.env.NODE_ENV === "production") throw new Error("Product photo uploads require configured cloud storage in production.");
   await mkdir(photoDirectory, { recursive: true });
   await writeFile(path.join(photoDirectory, filename), Buffer.from(await photo.arrayBuffer()));
   return `/assets/photos/products/${filename}`;
