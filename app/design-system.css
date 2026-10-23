@@ -1,0 +1,65 @@
+/* PodScape Design System V1: additive tokens. Existing page variables are preserved.
+   New components consume --ds-* tokens; migrate page-by-page after visual review. */
+.v2-site {
+  --ds-bg: var(--background);
+  --ds-surface: var(--surface);
+  --ds-surface-raised: var(--surface-raised);
+  --ds-surface-subtle: var(--surface-secondary);
+  --ds-text: var(--text-primary);
+  --ds-text-muted: var(--text-secondary);
+  --ds-border: var(--border);
+  --ds-border-strong: var(--border-strong);
+  --ds-primary-bg: #314f1d;
+  --ds-primary-fg: #fffaf0;
+  --ds-primary-hover: #203711;
+  --ds-danger: #a33e32;
+  --ds-danger-soft: #f8e9e4;
+  --ds-danger-text: #762d25;
+  --ds-success-soft: #e4edda;
+  --ds-success-text: #2b552e;
+  --ds-warning-soft: #f8edce;
+  --ds-warning-text: #755018;
+  --ds-info-soft: #e1edf0;
+  --ds-info-text: #215e72;
+  --ds-neutral-soft: var(--surface-secondary);
+  --ds-neutral-text: var(--text-secondary);
+  --ds-font-display: var(--display);
+  --ds-font-body: inherit;
+  --ds-radius-sm: 10px;
+  --ds-radius-md: 16px;
+  --ds-radius-lg: 22px;
+  --ds-radius-pill: 999px;
+  --ds-gap-1: 4px;
+  --ds-gap-2: 8px;
+  --ds-gap-3: 12px;
+  --ds-gap-4: 16px;
+  --ds-gap-5: 20px;
+  --ds-gap-6: 24px;
+  --ds-content-gutter: clamp(15px, 4vw, 28px);
+  --ds-control-height: 46px;
+  --ds-control-height-compact: 44px;
+  --ds-shadow-card: 0 5px 18px rgb(20 37 23 / 5%);
+  --ds-focus: var(--focus);
+  --ds-bottom-safe-space: calc(104px + env(safe-area-inset-bottom, 0px));
+}
+:root[data-theme="dark"] .v2-site {
+  --ds-primary-bg: #a9bf83;
+  --ds-primary-fg: #091a13;
+  --ds-primary-hover: #c3d6a3;
+  --ds-danger: #ed9b8b;
+  --ds-danger-soft: #392019;
+  --ds-danger-text: #f8b8ad;
+  --ds-success-soft: #1b3824;
+  --ds-success-text: #b3dda9;
+  --ds-warning-soft: #3d311a;
+  --ds-warning-text: #f1d28f;
+  --ds-info-soft: #172f37;
+  --ds-info-text: #9bd7e4;
+  --ds-shadow-card: 0 5px 18px rgb(0 0 0 / 18%);
+}
+@media (min-width: 721px) {
+  .v2-site { --ds-bottom-safe-space: 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v2-site { scroll-behavior: auto; }
+}
