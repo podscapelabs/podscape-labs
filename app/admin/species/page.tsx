@@ -1,3 +1,4 @@
+import {OwnerDeskShell} from "@/components/admin/OwnerDeskShell";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AdminPhotoEditor } from "@/components/AdminPhotoEditor";
@@ -24,10 +25,10 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
   const visibleRecords = archivedView ? archivedRecords : activeRecords;
   const selected = visibleRecords.find((record) => record.id === params.record) || visibleRecords[0];
 
-  return <main className="admin-shell admin-ledger-desk">
+  return <OwnerDeskShell><main className="admin-shell admin-ledger-desk">
     <header className="admin-dashboard-head admin-ledger-head">
       <div><p className="eyebrow">Leaf Ledger · Owner studio</p><h1>Ledger desk</h1><p>Prepare species records without publishing unverified identities or husbandry details.</p></div>
-      <div className="admin-dashboard-actions"><Link className="button button-outline" href="/admin">Owner studio</Link><Link className="button button-primary" href="/ledger" target="_blank">Open Leaf Ledger</Link></div>
+      <div className="admin-dashboard-actions"><Link className="button button-outline" href="/owner-studio">Owner studio</Link><Link className="button button-primary" href="/ledger" target="_blank">Open Leaf Ledger</Link></div>
     </header>
 
     <div className="admin-ledger-layout">
@@ -55,5 +56,5 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
         <form className="admin-archive-form" action={toggleSpeciesArchive}><input type="hidden" name="id" value={selected.id} /><div><strong>{selected.archivedAt ? "Restore this record" : "Archive this record"}</strong><p>{selected.archivedAt ? "Restoring returns it to the active Ledger desk and private preview." : "Archiving hides it from the Ledger and search without deleting its data or photograph."}</p></div><button className="button button-outline" type="submit">{selected.archivedAt ? "Restore record" : "Archive record"}</button></form>
       </section> : <section className="admin-record-editor"><p>No species records exist yet.</p></section>}
     </div>
-  </main>;
+  </main></OwnerDeskShell>;
 }
