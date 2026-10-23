@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { siteContent } from "@/content/site";
 import "./globals.css";
+import "./design-system.css";
 import { GlobalMobileNav } from "@/components/GlobalMobileNav";
 import { AchievementToast } from "@/components/AchievementToast";
 
