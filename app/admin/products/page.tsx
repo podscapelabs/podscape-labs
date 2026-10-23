@@ -22,11 +22,11 @@ export default async function ProductDeskPage({ searchParams }: { searchParams: 
   const activeRecords = records.filter((record) => !record.archivedAt);
   const archivedRecords = records.filter((record) => Boolean(record.archivedAt));
   const visibleRecords = archivedView ? archivedRecords : activeRecords;
-  const selected = visibleRecords.find((record) => record.id === params.record) || (params.record ? undefined : visibleRecords[0]);
+  const selected = params.record ? records.find((record) => record.id === params.record) : visibleRecords[0];
   return <OwnerDeskShell><main className={`admin-shell admin-ledger-desk ${styles.desk}`}><header className="admin-dashboard-head admin-ledger-head"><div><p className="eyebrow">Manager / Shop</p><h1>Shop Manager</h1><p>Products, inventory and publishing in one workspace.</p></div><div className="admin-dashboard-actions"><Link className="button button-outline" href="/owner-studio">Dashboard</Link><Link className="button button-primary" href="/shop" target="_blank">Open Shop</Link></div></header><div className="admin-ledger-layout"><aside className="admin-record-list" id="studio-create">
 <ShopManagerList products={records} selectedId={selected?.id}/>
 {!archivedView ? <><details className="owner-quick-create"><summary>Create from Leaf Ledger <span aria-hidden="true">⌄</span></summary><ProductLedgerQuickStart species={ledgerChoices}/></details><form action={createProductRecord}><button className="button button-outline" type="submit">+ New blank product</button></form></> : null}
-</aside>{selected ? <section key={selected.id} className="admin-record-editor">
+</aside>{selected ? <section key={selected.id} id="product-editor" className="admin-record-editor">
 {params.saved ? <p className="admin-save-message is-success">Product saved. The Shop and search index now use this version.</p> : null}
 {params.created ? <p className="admin-save-message is-success">Blank product created. Open a card to add details.</p> : null}
 {params.pulled ? <p className="admin-save-message is-success">Ledger details pulled into this product. Review the copied information before publishing.</p> : null}
