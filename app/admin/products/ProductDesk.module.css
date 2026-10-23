@@ -59,3 +59,58 @@
 .desk :global(.admin-species-form input:focus-visible),.desk :global(.admin-species-form select:focus-visible),.desk :global(.admin-species-form textarea:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
 @media(max-width:850px){.desk :global(.admin-ledger-layout){grid-template-columns:minmax(190px,35%) minmax(0,1fr)}.desk :global(.admin-form-grid.three){grid-template-columns:1fr 1fr}}
 @media(max-width:680px){.desk{width:calc(100% - 24px);padding-top:14px}.desk :global(.admin-dashboard-head){align-items:flex-start;flex-direction:column;gap:12px}.desk :global(.admin-dashboard-actions){width:100%}.desk :global(.admin-dashboard-actions a){flex:1}.desk :global(.admin-ledger-layout){grid-template-columns:minmax(0,1fr);gap:12px}.desk :global(.admin-record-list){padding:12px}.desk :global(.admin-record-list nav[aria-label="Product records"]){max-height:210px}.desk :global(.admin-record-list nav[aria-label="Product records"] a){min-height:63px}.desk :global(.admin-record-editor-head){padding:15px}.desk :global(.admin-species-form){padding:13px;gap:12px}.desk :global(.admin-species-form fieldset){padding:11px}.desk :global(.admin-form-grid.two),.desk :global(.admin-form-grid.three){grid-template-columns:minmax(0,1fr)}.desk :global(.admin-form-footer){align-items:stretch;flex-direction:column}.desk :global(.admin-form-footer button){width:100%}.desk :global(.admin-archive-form){align-items:stretch;flex-direction:column}.desk :global(.admin-archive-form button){width:100%}}
+
+
+/* Compact member-style owner controls; all data fields remain part of the save form. */
+.recordBrowser{border:1px solid var(--desk-line);border-radius:11px;background:var(--surface-secondary);overflow:hidden}
+.recordBrowser>summary{display:flex;align-items:center;justify-content:space-between;min-height:44px;padding:10px 12px;font-size:12px;font-weight:750;cursor:pointer;list-style:none}
+.recordBrowser>summary::-webkit-details-marker{display:none}
+.recordBrowser>summary span{color:var(--desk-muted)}
+.recordBrowser>nav{margin:0 7px 8px!important}
+.fieldHelp{color:var(--desk-muted);font-size:11px;line-height:1.45;margin:0}
+.extraControl,.slugDetails{min-width:0;border:1px solid var(--desk-line);border-radius:11px;background:var(--surface-secondary);padding:0 11px}
+.extraControl>summary,.slugDetails>summary{display:flex;align-items:center;min-height:44px;font-size:12px;font-weight:750;cursor:pointer}
+.extraControl[open],.slugDetails[open]{padding-bottom:11px}
+.priceGrid{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.fold{border:1px solid var(--desk-line);border-radius:13px;background:var(--desk-paper);overflow:hidden}
+.fold>summary{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:57px;padding:10px 14px;cursor:pointer;list-style:none}
+.fold>summary::-webkit-details-marker{display:none}
+.fold>summary span{font:600 17px/1.2 var(--display);color:var(--desk-ink)}
+.fold>summary small{font-size:11px;color:var(--desk-muted);text-align:right}
+.fold[open]>summary{border-bottom:1px solid var(--desk-line)}
+.desk :global(.admin-species-form .fold fieldset){border:0;border-radius:0;background:transparent}
+.desk :global(.admin-species-form .fold legend){font-size:13px}
+.desk :global(.admin-product-photo-editor){display:grid;grid-template-columns:minmax(0,180px) minmax(0,1fr);gap:12px;align-items:start;min-width:0}
+.desk :global(.admin-product-photo-preview){width:100%;max-width:180px;aspect-ratio:1;min-height:0;border-radius:12px;overflow:hidden}
+.desk :global(.admin-photo-controls){min-width:0;display:grid;gap:10px}
+.desk :global(.admin-photo-controls .admin-photo-drop){min-height:76px;border-radius:11px;padding:13px}
+.desk :global(.admin-photo-controls .admin-photo-drop span){font-size:13px}
+.desk :global(.admin-photo-controls label){min-width:0}
+.desk :global(.admin-photo-controls input[type="range"]){padding:0;min-height:34px;width:100%}
+.desk :global(.admin-photo-controls output){font-size:11px}
+.desk :global(.admin-species-form .admin-form-footer){background:var(--desk-paper);padding:11px 0 3px}
+.desk :global(.admin-species-form .admin-form-footer .button-primary){min-width:156px;border-radius:999px}
+.archiveFold{margin:0 14px 14px;border:1px solid var(--desk-line);border-radius:12px;background:var(--surface-secondary)}
+.archiveFold>summary{display:flex;align-items:center;min-height:44px;padding:11px 14px;font-size:12px;font-weight:700;color:var(--desk-muted);cursor:pointer}
+.desk :global(.archiveFold .admin-archive-form){padding:12px 14px;border-top:1px solid var(--desk-line)}
+.desk :global(.admin-product-editor-head .admin-kicker){text-transform:uppercase}
+@media(min-width:681px){.recordBrowser>summary{display:none}.recordBrowser>nav{max-height:230px!important}.recordBrowser:not([open])>nav{display:grid}}
+@media(max-width:680px){
+ .desk :global(.admin-dashboard-head){margin-bottom:12px}
+ .desk :global(.admin-dashboard-head h1){font-size:2rem}
+ .desk :global(.admin-dashboard-head p:not(.eyebrow)){font-size:12px}
+ .desk :global(.admin-record-list){gap:8px}
+ .desk :global(.admin-record-list nav[aria-label="Product records"]){max-height:135px}
+ .desk :global(.admin-record-list nav[aria-label="Product records"] a){min-height:52px;padding:8px}
+ .desk :global(.admin-record-editor-head h2){font-size:1.65rem}
+ .desk :global(.admin-species-form .admin-form-footer){position:sticky;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:3;border-top:1px solid var(--desk-line);box-shadow:0 -5px 15px rgb(0 0 0 / 4%);padding:10px;border-radius:13px}
+ .desk :global(.admin-species-form .admin-form-footer p){display:none}
+ .desk :global(.admin-product-photo-editor){grid-template-columns:minmax(0,1fr)}
+ .desk :global(.admin-product-photo-preview){width:min(100%,240px);max-width:240px;margin-inline:auto;aspect-ratio:1.2}
+ .fold>summary{min-height:55px}
+ .fold>summary small{max-width:48%;font-size:10px}
+ .desk :global(.admin-species-form textarea){min-height:60px}
+ .desk :global(.admin-species-form textarea[name="description"]){min-height:130px}
+ .desk :global(.admin-form-grid.three){grid-template-columns:repeat(2,minmax(0,1fr))}
+ .desk :global(.admin-form-grid.three)>:last-child{grid-column:1/-1}
+}
