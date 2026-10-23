@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import Image from "next/image";
 import { AdminLoginForm } from "@/components/AdminLoginForm";
 import { isAdminAuthenticated, isAdminConfigured } from "@/lib/admin-auth";
