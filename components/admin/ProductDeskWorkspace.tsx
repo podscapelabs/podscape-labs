@@ -1,5 +1,5 @@
 "use client";
-import {useState} from "react";
+import {useEffect,useState} from "react";
 import Image from "next/image";
 import type {ProductRecord} from "@/data/products";
 import {productCategories,formatProductPrice} from "@/data/products";
@@ -14,7 +14,14 @@ type Panel="ledger"|"pricing"|"packs"|"photos"|"copy"|"publish";
 const panelName:Record<Panel,string>={ledger:"Leaf Ledger",pricing:"Pricing",packs:"Packs & sizes",photos:"Photos",copy:"Listing copy",publish:"Publish settings"};
 
 export function ProductDeskWorkspace({product,ledgerChoices}:{product:ProductRecord;ledgerChoices:LedgerChoice[]}){
- const [opened,setOpened]=useState<Panel[]>(["ledger","pricing","copy"]);
+ const [opened,setOpened]=useState<Panel[]>(["pricing","copy","publish"]);
+ const [dirty,setDirty]=useState(false);
+ useEffect(()=>{
+  if(!dirty)return;
+  const warn=(event:BeforeUnloadEvent)=>{event.preventDefault();event.returnValue="";};
+  window.addEventListener("beforeunload",warn);
+  return ()=>window.removeEventListener("beforeunload",warn);
+ },[dirty]);
  const [category,setCategory]=useState(product.category);
  const [linkedId,setLinkedId]=useState(product.ledgerSpeciesId||"");
  const linked=ledgerChoices.find(record=>record.id===linkedId);
@@ -34,7 +41,13 @@ export function ProductDeskWorkspace({product,ledgerChoices}:{product:ProductRec
    </div>
   </section>;
  };
- return <form className={styles.workspace} action={saveProductRecord}>
+ return <form className={styles.workspace} action={saveProductRecord} onChange={()=>setDirty(true)} onSubmitCapture={(event)=>{
+  const submitter=(event.nativeEvent as SubmitEvent).submitter as HTMLButtonElement|null;
+  if(submitter?.formAction && submitter.formAction.includes("pullProductDetailsFromLedger") && dirty){
+   if(!window.confirm("Pulling Ledger details will replace some listing fields. Save your current changes first. Continue?")){event.preventDefault();return;}
+  }
+  setDirty(false);
+ }}>
   <input type="hidden" name="id" value={product.id}/>
   <div className={styles.top}>
    <div className={styles.picture}>{product.image?<Image src={product.image} alt={product.imageAlt||product.title} fill sizes="96px" unoptimized/>:<span>Photo</span>}</div>
@@ -74,6 +87,6 @@ export function ProductDeskWorkspace({product,ledgerChoices}:{product:ProductRec
      <label>Shipping note<textarea name="shippingNote" rows={2} defaultValue={product.shippingNote}/></label>
     </div>)}
   </div>
-  <div className={styles.footer}><span>Shop preview · checkout disabled</span><button type="submit">Save product</button></div>
+  <div className={styles.footer}><span role="status">{dirty?"Unsaved changes · save before leaving":"Shop preview · checkout disabled"}</span><button type="submit">Save product</button></div>
  </form>;
 }
