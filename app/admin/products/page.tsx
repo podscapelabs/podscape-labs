@@ -1,21 +1,77 @@
 import Link from "next/link";
+import Image from "next/image";
 import { redirect } from "next/navigation";
-import { ProductPhotoEditor } from "@/components/ProductPhotoEditor";
-import { formatProductPrice, productAvailabilityLabel, productCategories } from "@/data/products";
+import { formatProductPrice, isProductLowStock, productCategories, productStockQuantity } from "@/data/products";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getProductRecords } from "@/lib/product-store";
-import { createProductRecord, saveProductRecord, toggleProductArchive } from "./actions";
+import { createProductRecord } from "./actions";
+import styles from "./products.module.css";
 
 export const dynamic = "force-dynamic";
 
-export default async function ProductDeskPage({ searchParams }: { searchParams: Promise<{ record?: string; view?: string; saved?: string; created?: string; error?: string }> }) {
+type ProductDeskParams = { q?: string; category?: string; status?: string };
+
+export default async function ProductDeskPage({ searchParams }: { searchParams: Promise<ProductDeskParams> }) {
   if (!(await isAdminAuthenticated())) redirect("/admin");
   const params = await searchParams;
   const records = await getProductRecords();
-  const archivedView = params.view === "archived";
-  const activeRecords = records.filter((record) => !record.archivedAt);
-  const archivedRecords = records.filter((record) => Boolean(record.archivedAt));
-  const visibleRecords = archivedView ? archivedRecords : activeRecords;
-  const selected = visibleRecords.find((record) => record.id === params.record) || visibleRecords[0];
-  return <main className="admin-shell admin-ledger-desk"><header className="admin-dashboard-head admin-ledger-head"><div><p className="eyebrow">Shop · Owner studio</p><h1>Product desk</h1><p>Prepare products and photographs now; Shopify checkout can be connected when the catalogue is ready.</p></div><div className="admin-dashboard-actions"><Link className="button button-outline" href="/admin">Owner studio</Link><Link className="button button-primary" href="/shop" target="_blank">Open Shop</Link></div></header><div className="admin-ledger-layout"><aside className="admin-record-list"><div><span>{archivedView ? "Archived products" : "Active products"}</span><strong>{visibleRecords.length}</strong></div><div className="admin-record-views"><Link className={!archivedView ? "is-active" : ""} href="/admin/products">Active · {activeRecords.length}</Link><Link className={archivedView ? "is-active" : ""} href="/admin/products?view=archived">Archived · {archivedRecords.length}</Link></div><nav aria-label="Product records">{visibleRecords.map((product) => <Link className={product.id === selected?.id ? "is-active" : ""} href={`/admin/products?view=${archivedView ? "archived" : "active"}&record=${product.id}`} key={product.id}><small>{product.category}</small><b>{product.title}</b><em>{formatProductPrice(product)}</em><span>{product.archivedAt ? "Archived" : `${product.status} · ${productAvailabilityLabel(product.availability)}`}</span></Link>)}</nav>{!archivedView ? <form action={createProductRecord}><button className="button button-outline" type="submit">+ New blank product</button></form> : null}</aside>{selected ? <section className="admin-record-editor"><header className="admin-record-editor-head admin-product-editor-head"><div><p className="admin-kicker">Permanent ID · {selected.id}</p><h2>{selected.title}</h2><p>{selected.category} · {selected.status} · Last saved {new Date(selected.updatedAt).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" })}</p></div><div className="admin-product-monogram" aria-hidden="true">SHOP</div></header>{params.saved ? <p className="admin-save-message is-success">Product saved. The Shop and search index now use this version.</p> : null}{params.created ? <p className="admin-save-message is-success">Blank product created. Add its details and photography below.</p> : null}{params.error ? <p className="admin-save-message is-error">{params.error}</p> : null}<form className="admin-species-form" action={saveProductRecord}><input type="hidden" name="id" value={selected.id} /><fieldset><legend>Product control</legend><div className="admin-form-grid three"><label><span>Category</span><select name="category" defaultValue={selected.category}>{productCategories.map((category) => <option value={category} key={category}>{category}</option>)}</select></label><label><span>Publication</span><select name="status" defaultValue={selected.status}><option value="draft">Draft</option><option value="published">Published</option></select></label><label><span>Availability</span><select name="availability" defaultValue={selected.availability}><option value="coming-soon">Coming soon</option><option value="in-stock">In stock</option><option value="sold-out">Sold out</option></select></label></div><div className="admin-form-grid two"><label><span>URL slug</span><input name="slug" defaultValue={selected.slug} /></label><label><span>Price · CAD</span><input name="price" type="number" min="0" step="0.01" defaultValue={(selected.priceCents / 100).toFixed(2)} /></label></div><label className="admin-check-control"><input name="featured" type="checkbox" value="yes" defaultChecked={selected.featured} /><span>Feature this product in the Shop</span></label></fieldset><fieldset><legend>Product writing</legend><label><span>Product title</span><input name="title" defaultValue={selected.title} /></label><label><span>Short summary</span><textarea name="summary" defaultValue={selected.summary} rows={3} /></label><label><span>Full description</span><textarea name="description" defaultValue={selected.description} rows={8} /></label><label><span>Tags · comma separated</span><input name="tags" defaultValue={selected.tags.join(", ")} /></label></fieldset><fieldset><legend>Photography</legend><ProductPhotoEditor image={selected.image} imagePositionX={selected.imagePositionX} imagePositionY={selected.imagePositionY} imageZoom={selected.imageZoom} />{selected.image ? <label className="admin-check-control"><input name="removePhoto" type="checkbox" value="yes" /><span>Remove this photograph when saving</span></label> : null}<label><span>Accessible image description</span><input name="imageAlt" defaultValue={selected.imageAlt} /></label></fieldset><fieldset><legend>Product details</legend><label><span>Materials or contents</span><textarea name="materials" defaultValue={selected.materials} rows={4} /></label><label><span>Shipping note</span><textarea name="shippingNote" defaultValue={selected.shippingNote} rows={4} placeholder="Optional. Product-specific size, handling, or dispatch note." /></label></fieldset><div className="admin-form-footer"><p>Checkout is intentionally disabled. Published records appear in the private Shop preview but cannot collect payment until Shopify is connected.</p><button className="button button-primary" type="submit">Save product</button></div></form><form className="admin-archive-form" action={toggleProductArchive}><input type="hidden" name="id" value={selected.id} /><div><strong>{selected.archivedAt ? "Restore this product" : "Archive this product"}</strong><p>{selected.archivedAt ? "Restoring returns it to the active product desk and Shop preview." : "Archiving hides it from the Shop and search without deleting its writing or photography."}</p></div><button className="button button-outline" type="submit">{selected.archivedAt ? "Restore product" : "Archive product"}</button></form></section> : <section className="admin-record-editor admin-empty-desk"><div><p className="admin-kicker">Product catalogue</p><h2>No products yet.</h2><p>Create the first blank product from the left-hand desk. Nothing will be purchasable until Shopify is connected.</p></div></section>}</div></main>;
+  const query = (params.q || "").trim().toLocaleLowerCase("en-CA");
+  const category = productCategories.includes(params.category as (typeof productCategories)[number]) ? params.category : "all";
+  const status = ["all", "published", "draft", "archived", "low-stock"].includes(params.status || "") ? params.status : "all";
+  const visibleRecords = records
+    .filter((product) => !query || [product.title, product.category, product.sku, ...(product.variants || []).map((variant) => variant.sku), ...product.tags].join(" ").toLocaleLowerCase("en-CA").includes(query))
+    .filter((product) => category === "all" || product.category === category)
+    .filter((product) => {
+      if (status === "archived") return Boolean(product.archivedAt);
+      if (status === "published") return !product.archivedAt && product.status === "published";
+      if (status === "draft") return !product.archivedAt && product.status === "draft";
+      if (status === "low-stock") return !product.archivedAt && isProductLowStock(product);
+      return !product.archivedAt;
+    });
+  const publishedCount = records.filter((product) => !product.archivedAt && product.status === "published").length;
+  const draftCount = records.filter((product) => !product.archivedAt && product.status === "draft").length;
+  const lowStockCount = records.filter((product) => !product.archivedAt && isProductLowStock(product)).length;
+
+  return (
+    <main className={`admin-shell ${styles.shell}`}>
+      <header className={styles.header}>
+        <Link className={styles.back} href="/admin" aria-label="Return to Owner Studio">←</Link>
+        <div className={styles.heading}><p className="eyebrow">Owner studio · Shop</p><h1>Shop Manager</h1><p>Products, inventory and listings.</p></div>
+        <form className={styles.create} action={createProductRecord}><button type="submit"><span aria-hidden="true">＋</span> Create product</button></form>
+      </header>
+      <section className={styles.stats} aria-label="Shop summary">
+        <Link href="/admin/products?status=all"><strong>{records.filter((product) => !product.archivedAt).length}</strong><span>Products</span></Link>
+        <Link href="/admin/products?status=published"><strong>{publishedCount}</strong><span>Published</span></Link>
+        <Link href="/admin/products?status=draft"><strong>{draftCount}</strong><span>Drafts</span></Link>
+        <Link className={lowStockCount ? styles.attention : ""} href="/admin/products?status=low-stock"><strong>{lowStockCount}</strong><span>Low stock</span></Link>
+      </section>
+      <section className={styles.catalogue} aria-labelledby="catalogue-title">
+        <div className={styles.catalogueHead}><div><p className="admin-kicker">Catalogue</p><h2 id="catalogue-title">Products</h2></div><Link href="/shop" target="_blank">Shop preview ↗</Link></div>
+        <form className={styles.filters} action="/admin/products" method="get">
+          <label className={styles.search}><span className="sr-only">Search products</span><span aria-hidden="true">⌕</span><input type="search" name="q" defaultValue={params.q} placeholder="Search products, SKUs or tags…" /></label>
+          <input type="hidden" name="category" value={category} />
+          <label><span className="sr-only">Status</span><select name="status" defaultValue={status}><option value="all">Active products</option><option value="published">Published</option><option value="draft">Draft</option><option value="low-stock">Low stock</option><option value="archived">Archived</option></select></label>
+          <button className={styles.filterButton} type="submit" aria-label="Apply product filters">↳</button>
+        </form>
+        <nav className={styles.categoryChips} aria-label="Product categories">
+          <Link className={category === "all" ? styles.activeChip : ""} href={`/admin/products?${new URLSearchParams({ ...(params.q ? { q: params.q } : {}), status: status || "all" }).toString()}`}>All</Link>
+          {productCategories.map((item) => <Link className={category === item ? styles.activeChip : ""} href={`/admin/products?${new URLSearchParams({ ...(params.q ? { q: params.q } : {}), category: item, status: status || "all" }).toString()}`} key={item}>{item}</Link>)}
+        </nav>
+        <div className={styles.tableHead} aria-hidden="true"><span>Product</span><span>Status</span><span>Inventory</span><span>Price</span><span /></div>
+        <div className={styles.productList}>
+          {visibleRecords.map((product) => {
+            const lowStock = isProductLowStock(product);
+            return <Link className={styles.productRow} href={`/admin/products/${encodeURIComponent(product.id)}`} key={product.id}>
+              <div className={styles.identity}><span className={styles.thumb}>{product.image ? <Image src={product.image} alt="" fill sizes="58px" unoptimized /> : <b aria-hidden="true">❧</b>}</span><span><strong>{product.title}</strong><small>{product.category}{(product.variants?.filter((variant) => variant.isActive).length || 0) > 1 ? ` · ${product.variants?.filter((variant) => variant.isActive).length} variants` : product.sku ? ` · ${product.sku}` : ""}</small></span></div>
+              <span className={`${styles.status} ${product.archivedAt ? styles.archived : product.status === "published" ? styles.published : styles.draft}`}>{product.archivedAt ? "Archived" : product.status}</span>
+              <span className={lowStock ? styles.stockLow : styles.stock}>{product.availability === "in-stock" ? `${productStockQuantity(product)} in stock` : product.availability.replace("-", " ")}</span>
+              <strong className={styles.price}>{formatProductPrice(product)}</strong><span className={styles.open} aria-hidden="true">›</span>
+            </Link>;
+          })}
+          {visibleRecords.length === 0 ? <div className={styles.empty}><span aria-hidden="true">❧</span><h3>No products found.</h3><p>Adjust the filters or create a new product draft.</p></div> : null}
+        </div>
+      </section>
+      <p className={styles.checkoutNote}>Checkout remains disabled. Publishing controls catalogue visibility only until payment processing is connected.</p>
+    </main>
+  );
 }

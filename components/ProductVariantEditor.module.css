@@ -1,0 +1,20 @@
+.editor { display: grid; gap: 10px; }
+.heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.heading strong { color: var(--ink); font-family: var(--serif); font-size: 1.03rem; font-weight: 400; }
+.heading p { margin: 3px 0 0; color: var(--muted); font-size: .62rem; }
+.heading button { flex: 0 0 auto; min-height: 36px; padding: 0 11px; border: 1px solid var(--forest); border-radius: 9px; background: var(--forest); color: var(--paper); font: inherit; font-size: .57rem; font-weight: 800; cursor: pointer; }
+.variant { min-width: 0; margin: 0; padding: 12px; border: 1px solid var(--line); border-radius: 11px; background: var(--paper-strong); }
+.variant legend { display: flex; max-width: 100%; align-items: center; gap: 8px; padding: 0 5px; color: var(--ink); font-family: var(--serif); font-size: .86rem; }
+.variantState { padding: 3px 6px; border-radius: 999px; background: color-mix(in srgb, var(--forest) 11%, var(--paper)); color: var(--forest); font-family: var(--sans); font-size: .45rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.inactive { opacity: .65; }
+.inactive .variantState { background: color-mix(in srgb, var(--clay) 11%, var(--paper)); color: var(--clay); }
+.fields { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; align-items: end; }
+.fields label { display: grid; min-width: 0; gap: 4px; color: var(--muted); font-size: .5rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+.fields input:not([type="checkbox"]) { width: 100%; min-width: 0; min-height: 37px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); font: inherit; font-size: .72rem; }
+.fields input:disabled { opacity: .55; }
+.fields .check { display: flex; min-height: 37px; align-items: center; gap: 7px; color: var(--ink); font-size: .59rem; letter-spacing: 0; text-transform: none; }
+.fields .check input { accent-color: var(--forest); }
+.toggle { min-height: 37px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--muted); font: inherit; font-size: .53rem; font-weight: 800; cursor: pointer; }
+.toggle:disabled { opacity: .45; cursor: not-allowed; }
+@media (max-width: 650px) { .fields { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 420px) { .heading { align-items: flex-start; flex-direction: column; } .heading button { width: 100%; } .fields { gap: 8px; } }
