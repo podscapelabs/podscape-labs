@@ -111,6 +111,63 @@ export async function replaceProductRecord(
   await writeFile(recordsPath, `${JSON.stringify(records, null, 2)}\n`, "utf8");
 }
 
+
+/**
+ * Permanently remove one shop product and its normalized catalogue data.
+ * The normalized inventory audit has a restrictive FK, so remove those
+ * adjustments before deleting the parent product. Never modify Ledger records.
+ */
+export async function deleteProductRecordPermanently(id: string) {
+  const supabase = getWritableSupabaseAdmin();
+  if (!supabase) throw new Error("Permanent deletion requires a writable database connection.");
+
+  const { data: legacy, error: legacyError } = await supabase
+    .from("product_records").select("id,slug").eq("id", id).maybeSingle();
+  if (legacyError) throw new Error(`Unable to locate product: ${legacyError.message}`);
+  if (!legacy) throw new Error("This product no longer exists.");
+
+  const { data: shop, error: shopError } = await supabase
+    .from("shop_products").select("id").eq("legacy_product_id", id).maybeSingle();
+  if (shopError) throw new Error(`Unable to locate linked inventory: ${shopError.message}`);
+
+  if (shop) {
+    const { data: variants, error: variantsError } = await supabase
+      .from("shop_product_variants").select("id").eq("product_id", shop.id);
+    if (variantsError) throw new Error(`Unable to locate product variants: ${variantsError.message}`);
+
+    const variantIds = (variants || []).map((variant) => variant.id);
+    if (variantIds.length) {
+      const { error: adjustmentsError } = await supabase.from("shop_inventory_adjustments")
+        .delete().in("variant_id", variantIds);
+      if (adjustmentsError) throw new Error(`Unable to remove product inventory history: ${adjustmentsError.message}`);
+    }
+    // Product variants and image catalogue rows cascade from shop_products.
+    const { error: shopDeleteError } = await supabase.from("shop_products")
+      .delete().eq("id", shop.id);
+    if (shopDeleteError) throw new Error(`Unable to remove shop listing: ${shopDeleteError.message}`);
+  }
+
+  const { error: legacyDeleteError } = await supabase.from("product_records")
+    .delete().eq("id", id);
+  if (legacyDeleteError) throw new Error(`Unable to remove product record: ${legacyDeleteError.message}`);
+
+  // Product image uploads use a directory dedicated to this product ID.
+  // Storage cleanup is best-effort and cannot restore a deleted DB record.
+  const { data: photos, error: listError } = await supabase.storage.from("product-photos")
+    .list(id, { limit: 100 });
+  if (listError) {
+    console.warn("Product record deleted, but photo cleanup could not be listed.", listError);
+  } else if (photos?.length) {
+    const objectPaths = photos.filter((photo) => !!photo.name && photo.id)
+      .map((photo) => `${id}/${photo.name}`);
+    if (objectPaths.length) {
+      const { error: photoError } = await supabase.storage.from("product-photos").remove(objectPaths);
+      if (photoError) console.warn("Product record deleted, but photo cleanup failed.", photoError);
+    }
+  }
+  return legacy.slug as string;
+}
+
 export async function getProductManagementData(record: ProductRecord): Promise<{
   variants: ProductVariantRecord[];
   adjustments: ProductInventoryAdjustment[];
