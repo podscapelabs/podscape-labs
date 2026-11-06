@@ -1,0 +1,25 @@
+/* Leaf Ledger desk — match Shop Manager's compact, keeper-first workspace. */
+.editor { border-radius: 14px; overflow: hidden; }
+.editingNotice { margin: 0; padding: 12px clamp(18px,4vw,42px); background: color-mix(in srgb, var(--forest) 7%, var(--paper)); color: var(--forest); font-size: .73rem; }
+.editingNotice strong { font-weight: 800; }
+.sectionNav { display: flex; gap: 8px; overflow-x: auto; padding: 12px clamp(18px,4vw,42px); border-bottom: 1px solid var(--line); scrollbar-width: thin; }
+.sectionNav a { flex: 0 0 auto; padding: 10px 14px; border: 1px solid var(--line); border-radius: 99px; background: var(--paper); color: var(--forest); text-decoration: none; font-size: .7rem; font-weight: 800; }
+.sectionNav a:focus-visible, .optionalSection summary:focus-visible { outline: 3px solid var(--forest); outline-offset: 2px; }
+.speciesForm fieldset[id], .optionalSection[id] { scroll-margin-top: 90px; }
+.optionalSection { border-bottom: 1px solid var(--line); }
+.optionalSection > summary { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding: 20px clamp(18px,4vw,42px); list-style: none; color: var(--ink); font-family: var(--serif); font-size: 1.17rem; cursor: pointer; }
+.optionalSection > summary::-webkit-details-marker { display: none; }
+.optionalSection > summary::after { content: "⌄"; color: var(--forest); font-family: sans-serif; font-size: 1.1rem; }
+.optionalSection[open] > summary::after { transform: rotate(180deg); }
+.optionalSection summary small { flex: 1 1 100%; color: var(--muted); font-family: sans-serif; font-size: .65rem; }
+.speciesForm .optionalSection fieldset { padding-top: 8px; border-bottom: 0; }
+.mobilePicker { display: none; }
+@media (max-width: 859px) {
+  .mobilePicker { display: grid !important; align-items: stretch !important; gap: 10px; padding: 16px; border-bottom: 1px solid var(--line); }
+  .mobilePicker label { color: var(--muted); font-size: .67rem; font-weight: 800; text-transform: uppercase; }
+  .mobilePicker select { width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper-strong); color: var(--ink); font: inherit; }
+  .mobilePicker button { width: 100%; min-height: 43px; }
+  .recordLinks { display: none !important; }
+  .editor .admin-record-editor-head { padding: 20px; }
+  .speciesForm fieldset { padding: 20px 16px; }
+}
