@@ -46,7 +46,7 @@ export async function saveProductRecord(formData: FormData) {
   const speciesName = linkedSpecies?.commonName || linkedSpecies?.morph || title;
   const rawVariants = parseProductVariants(field(formData, "variants", 30000));
   // Reserve every existing SKU from other products, including archived variants.
-  const reserved = new Set(records.filter(item => item.id !== id).flatMap(item => [item.sku || "", ...(item.variants || []).map(v => v.sku)].filter(Boolean).map(value => value.toUpperCase()));
+  const reserved = new Set(records.filter(item => item.id !== id).flatMap(item => [item.sku || "", ...(item.variants || []).map(v => v.sku)]).filter(Boolean).map(value => value.toUpperCase()));
   // Protect manually assigned SKUs in this product before generating anything.
   for (const variant of rawVariants) {
     if (variant.sku && !isLegacyGeneratedSku(variant.sku)) {
