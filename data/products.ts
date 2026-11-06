@@ -56,6 +56,10 @@ export type ProductRecord = {
   seoTitle?: string;
   seoDescription?: string;
   speciesRecordId?: string | null;
+  scientificName?: string;
+  genus?: string;
+  species?: string;
+  morph?: string;
   variants?: ProductVariantRecord[];
   archivedAt?: string | null;
   updatedAt: string;
