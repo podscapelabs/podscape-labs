@@ -7,9 +7,9 @@ import { productCategories, type ProductAvailability, type ProductRecord, type P
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { appendProductRecord, deleteProductRecordPermanently, getProductRecords, replaceProductRecord, saveProductPhoto } from "@/lib/product-store";
 import { getSpeciesRecords } from "@/lib/species-store";
+import { productSlug, productSku, productSuggestedTags, uniqueProductSlug } from "@/lib/product-identifiers";
 
 function field(formData: FormData, name: string, limit = 4000) { return String(formData.get(name) || "").trim().slice(0, limit); }
-function slugify(value: string) { return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80); }
 function boundedNumber(formData: FormData, name: string, minimum: number, maximum: number, fallback: number) { const value = Number(formData.get(name)); return Number.isFinite(value) ? Math.min(maximum, Math.max(minimum, value)) : fallback; }
 function studioRedirect(record: string, key: "saved" | "created" | "error", message = "1"): never {
   redirect(`/admin/products/${encodeURIComponent(record)}?${new URLSearchParams({ [key]: message }).toString()}`);
@@ -34,9 +34,20 @@ export async function saveProductRecord(formData: FormData) {
   const status = field(formData, "status", 20) as ProductStatus;
   const availability = field(formData, "availability", 30) as ProductAvailability;
   const category = field(formData, "category", 80);
-  const requestedSlug = slugify(field(formData, "slug", 100));
-  const slug = requestedSlug || slugify(title) || current.slug;
-  const parsedVariants = parseProductVariants(field(formData, "variants", 30000));
+  const requestedSlug = productSlug(field(formData, "slug", 100));
+  const autoSlug = !requestedSlug || current.slug.startsWith("draft-product-");
+  const slug = autoSlug && (!requestedSlug || requestedSlug === current.slug)
+    ? uniqueProductSlug(title, id, records)
+    : requestedSlug;
+  const parsedVariants = parseProductVariants(field(formData, "variants", 30000)).map((variant, index) => ({
+    ...variant, sku: (variant.sku || productSku(id, category, variant.title, index)).toUpperCase(),
+  }));
+  const allSkus = new Set<string>();
+  for (const variant of parsedVariants) {
+    if (allSkus.has(variant.sku)) studioRedirect(id, "error", "Two variants have the same SKU. Give each option a unique name or SKU.");
+    allSkus.add(variant.sku);
+  }
+  if (records.some((item) => item.id !== id && (item.variants || []).some((variant) => variant.sku && allSkus.has(variant.sku.toUpperCase())))) studioRedirect(id, "error", "A SKU is already assigned to another product.");
   const activeVariants = parsedVariants.filter((variant) => variant.isActive);
   const primaryVariant = activeVariants[0];
   const priceCents = primaryVariant?.priceCents ?? current.priceCents;
@@ -59,7 +70,7 @@ export async function saveProductRecord(formData: FormData) {
   if (requestedSpeciesId && !linkedSpecies) studioRedirect(id, "error", "Choose a valid Leaf Ledger species");
   const adjustmentReason = field(formData, "inventoryAdjustmentReason", 20) as "manual" | "return" | "damage" | "correction";
   if (!["manual", "return", "damage", "correction"].includes(adjustmentReason)) studioRedirect(id, "error", "Choose a valid inventory adjustment reason");
-  const nextRecord: ProductRecord = { ...current, slug, title, category, summary: field(formData, "summary", 600), description: field(formData, "description", 8000), priceCents, status, availability, featured: formData.get("featured") === "yes", image, imageAlt: field(formData, "imageAlt", 240), imagePositionX: boundedNumber(formData, "imagePositionX", 0, 100, current.imagePositionX), imagePositionY: boundedNumber(formData, "imagePositionY", 0, 100, current.imagePositionY), imageZoom: boundedNumber(formData, "imageZoom", 1, 2, current.imageZoom), tags: field(formData, "tags", 1000).split(",").map((tag) => tag.trim()).filter(Boolean), materials: field(formData, "materials", 2000), shippingNote: field(formData, "shippingNote", 2000), sku: primaryVariant.sku, stockQuantity: primaryVariant.inventoryTracked ? primaryVariant.inventoryQuantity : 0, lowStockThreshold: primaryVariant.lowStockThreshold, compareAtPriceCents: primaryVariant.compareAtPriceCents, variants: parsedVariants, productType: field(formData, "productType", 20) === "digital" ? "digital" : "physical", weightGrams: weightValue && Number.isFinite(weightGrams) && weightGrams >= 0 ? weightGrams : null, allowBackorders: formData.get("allowBackorders") === "yes", requiresShipping: formData.get("productType") !== "digital" && formData.get("requiresShipping") === "yes", seoTitle: field(formData, "seoTitle", 180), seoDescription: field(formData, "seoDescription", 320), speciesRecordId: requestedSpeciesId, scientificName: linkedSpecies?.scientificName || "", genus: linkedSpecies?.genus || "", species: linkedSpecies?.species || "", morph: linkedSpecies?.morph || "", updatedAt: new Date().toISOString() };
+  const nextRecord: ProductRecord = { ...current, slug, title, category, summary: field(formData, "summary", 600), description: field(formData, "description", 8000), priceCents, status, availability, featured: formData.get("featured") === "yes", image, imageAlt: field(formData, "imageAlt", 240), imagePositionX: boundedNumber(formData, "imagePositionX", 0, 100, current.imagePositionX), imagePositionY: boundedNumber(formData, "imagePositionY", 0, 100, current.imagePositionY), imageZoom: boundedNumber(formData, "imageZoom", 1, 2, current.imageZoom), tags: (() => { const raw = field(formData, "tags", 1000); const supplied = raw.split(",").map((tag) => tag.trim().toLowerCase().replace(/\\s+/g, "-")).filter(Boolean); return [...new Set(supplied.length ? supplied : productSuggestedTags(category, title, linkedSpecies || undefined))].slice(0, 30); })(), materials: field(formData, "materials", 2000), shippingNote: field(formData, "shippingNote", 2000), sku: primaryVariant.sku, stockQuantity: primaryVariant.inventoryTracked ? primaryVariant.inventoryQuantity : 0, lowStockThreshold: primaryVariant.lowStockThreshold, compareAtPriceCents: primaryVariant.compareAtPriceCents, variants: parsedVariants, productType: field(formData, "productType", 20) === "digital" ? "digital" : "physical", weightGrams: weightValue && Number.isFinite(weightGrams) && weightGrams >= 0 ? weightGrams : null, allowBackorders: formData.get("allowBackorders") === "yes", requiresShipping: formData.get("productType") !== "digital" && formData.get("requiresShipping") === "yes", seoTitle: field(formData, "seoTitle", 180), seoDescription: field(formData, "seoDescription", 320), speciesRecordId: requestedSpeciesId, scientificName: linkedSpecies?.scientificName || "", genus: linkedSpecies?.genus || "", species: linkedSpecies?.species || "", morph: linkedSpecies?.morph || "", updatedAt: new Date().toISOString() };
   try { await replaceProductRecord(nextRecord, adjustmentReason, field(formData, "inventoryAdjustmentNote", 1000)); } catch (error) { studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to save product"); }
   revalidatePath("/shop"); revalidatePath(`/shop/${current.slug}`); revalidatePath(`/shop/${nextRecord.slug}`); revalidatePath("/search");
   studioRedirect(id, "saved");
