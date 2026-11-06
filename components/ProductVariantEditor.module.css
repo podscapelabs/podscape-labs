@@ -18,3 +18,15 @@
 .toggle:disabled { opacity: .45; cursor: not-allowed; }
 @media (max-width: 650px) { .fields { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 420px) { .heading { align-items: flex-start; flex-direction: column; } .heading button { width: 100%; } .fields { gap: 8px; } }
+
+/* Compact, touch-friendly inventory controls. */
+.fields .check input[type="checkbox"] { width: 20px; height: 20px; min-width: 20px; flex: 0 0 20px; margin: 0; accent-color: var(--forest); }
+.fields .check { align-self: end; min-height: 42px; }
+.fields label { line-height: 1.3; }
+.fields input:not([type="checkbox"]) { min-height: 44px; }
+@media (max-width: 650px) {
+  .variant { padding: 12px 10px; }
+  .fields { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .fields .check { align-items: center; font-size: .68rem; }
+  .toggle { min-height: 44px; }
+}
