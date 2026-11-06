@@ -6,7 +6,7 @@ import Link from "next/link";
 import styles from "./progress.module.css";
 
 type Achievement = {
-  key: string; title: string; description: string; exp: number; coins: number;
+  key: string; title: string; description: string; exp: number; coins: number; icon: string; href: string;
   unlockedAt?: string | null; status: "available" | "planned";
 };
 
@@ -18,10 +18,10 @@ const activities = [
 ];
 
 export default function ProgressDashboard({
-  exp, coins, level, levelStart, levelEnd, achievements, error,
+  exp, coins, level, levelStart, levelEnd, achievements, error, discoveries, collectionSpecies,
 }: {
   exp: number; coins: number; level: number; levelStart: number; levelEnd: number;
-  achievements: Achievement[]; error: boolean;
+  achievements: Achievement[]; error: boolean; discoveries: number; collectionSpecies: number;
 }) {
   const [view, setView] = useState<"achievements" | "explore" | "stats">("achievements");
   const [filter, setFilter] = useState<"all" | "unlocked" | "locked">("all");
@@ -71,21 +71,21 @@ export default function ProgressDashboard({
       <div className={styles.achievementGrid}>
         {shown.map(a => <button type="button" key={a.key} className={styles.achievementTile} data-earned={Boolean(a.unlockedAt)} onClick={()=>setSelected(a.key)} aria-label={a.title + (a.unlockedAt ? ", unlocked" : a.status === "planned" ? ", coming later" : ", not yet unlocked") + ". View details."}>
           <span className={styles.medallion} data-earned={Boolean(a.unlockedAt)} aria-hidden="true">
-            <span className={styles.medallionRing}>{a.key==="field_observer"?"⌕":a.key==="care_journal"?"▤":"❧"}</span>
+            <span className={styles.medallionRing}>{a.icon}</span>
             {!a.unlockedAt ? <span className={styles.lockMark}>◇</span> : null}
           </span>
           <span className={styles.tileCopy}><span className={styles.tileStatus}>{a.unlockedAt ? "✓ Unlocked" : a.status === "planned" ? "Coming later" : "Locked"}</span>
             <strong>{a.title}</strong><span className={styles.tileDescription}>{a.description}</span>
-            {a.status==="available" ? <span className={styles.tileReward}>+{a.exp} EXP · +{a.coins} Pod Coins</span> : <span className={styles.tileRewardMuted}>Rewards not finalized</span>}</span>
+            {a.status==="available" ? <span className={styles.tileReward}>+{a.exp} EXP{a.coins ? ` · +${a.coins} Pod Coins (legacy)` : ""}</span> : <span className={styles.tileRewardMuted}>Rewards not finalized</span>}</span>
         </button>)}
       </div>
       {!shown.length ? <p className={styles.empty}>No achievements in this view yet.</p> : null}
-      <p className={styles.caption}>More milestones will appear as they are finalized and connected to real activity tracking.</p>
+      <p className={styles.caption}>Early-access achievements unlock automatically from recorded species discoveries and collection entries. Each achievement pays EXP once; new milestones do not award Pod Coins.</p>
     </section> : null}
 
     {view === "explore" ? <section className={styles.explore} aria-labelledby="explore-title"><div className={styles.sectionHeading}><h2 id="explore-title">Explore PodScape</h2><span>Find something new</span></div><p className={styles.caption}>These are suggested destinations, not EXP-earning quests yet.</p><div className={styles.exploreGrid}>{activities.map(a=><Link href={a.href} className={styles.exploreTile} key={a.href}><span className={styles.exploreIcon} aria-hidden="true">{a.icon}</span><strong>{a.title}</strong><small>{a.description}</small><span className={styles.exploreArrow} aria-hidden="true">↗</span></Link>)}</div></section> : null}
 
-    {view === "stats" ? <section className={styles.stats} aria-labelledby="stats-title"><div className={styles.sectionHeading}><h2 id="stats-title">Your Journey</h2><span>Member overview</span></div><div className={styles.statsGrid}><div><small>Current level</small><strong>{level}</strong></div><div><small>Lifetime EXP</small><strong>{exp.toLocaleString("en-CA")}</strong></div><div><small>Pod Coins</small><strong>{coins.toLocaleString("en-CA")}</strong></div><div><small>Recorded achievements</small><strong>{error ? "—" : unlockedCount}</strong></div></div><p className={styles.caption}>EXP is permanent. Pod Coin redemption and additional reward milestones are still being developed.</p></section> : null}
+    {view === "stats" ? <section className={styles.stats} aria-labelledby="stats-title"><div className={styles.sectionHeading}><h2 id="stats-title">Your Journey</h2><span>Member overview</span></div><div className={styles.statsGrid}><div><small>Current level</small><strong>{level}</strong></div><div><small>Lifetime EXP</small><strong>{exp.toLocaleString("en-CA")}</strong></div><div><small>Pod Coins</small><strong>{coins.toLocaleString("en-CA")}</strong></div><div><small>Recorded achievements</small><strong>{error ? "—" : unlockedCount}</strong></div><div><small>Species discovered</small><strong>{discoveries}</strong></div><div><small>Species collected</small><strong>{collectionSpecies}</strong></div></div><p className={styles.caption}>EXP is permanent. Pod Coin redemption and additional reward milestones are still being developed.</p></section> : null}
 
     {view === "achievements" ? <section className={styles.explore} aria-labelledby="explore-next"><div className={styles.sectionHeading}><h2 id="explore-next">Explore & Learn</h2><span>Ideas for your next visit</span></div><div className={styles.exploreGrid}>{activities.map(a=><Link href={a.href} className={styles.exploreTile} key={a.href}><span className={styles.exploreIcon} aria-hidden="true">{a.icon}</span><strong>{a.title}</strong><small>{a.description}</small><span className={styles.exploreArrow} aria-hidden="true">↗</span></Link>)}</div><p className={styles.caption}>Suggestions only: activities here do not automatically award EXP or Pod Coins yet.</p></section> : null}
     <p className={styles.footerNote}>Your EXP stays with you. Future Pod Coin rewards and eligibility will be announced as the program develops.</p>
@@ -96,9 +96,9 @@ export default function ProgressDashboard({
     <div className={styles.modalEmblem} aria-hidden="true">{selectedAchievement.unlockedAt ? "✦" : "❧"}</div>
     <span className={styles.tileStatus}>{selectedAchievement.unlockedAt?"✓ Unlocked":selectedAchievement.status==="planned"?"Coming later":"Not yet unlocked"}</span>
     <h2 id="achievement-detail-title">{selectedAchievement.title}</h2><p>{selectedAchievement.description}</p>
-    {selectedAchievement.status==="available" ? <strong className={styles.modalReward}>+{selectedAchievement.exp} EXP · +{selectedAchievement.coins} Pod Coins</strong> : <p>Milestone and rewards are still being designed.</p>}
+    {selectedAchievement.status==="available" ? <strong className={styles.modalReward}>+{selectedAchievement.exp} EXP{selectedAchievement.coins ? ` · +${selectedAchievement.coins} Pod Coins (legacy reward)` : ""}</strong> : <p>Milestone and rewards are still being designed.</p>}
     {selectedAchievement.unlockedAt ? <p>Earned {new Date(selectedAchievement.unlockedAt).toLocaleDateString("en-CA",{year:"numeric",month:"long",day:"numeric"})}</p> : null}
-    {selectedAchievement.status==="available"&&!selectedAchievement.unlockedAt ? <Link href="/ledger" onClick={()=>setSelected(null)}>Explore the Ledger →</Link> : null}
+    {selectedAchievement.status==="available"&&!selectedAchievement.unlockedAt ? <Link href={selectedAchievement.href} onClick={()=>setSelected(null)}>Keep exploring →</Link> : null}
   </div></div> : null}
   </main>;
 }
