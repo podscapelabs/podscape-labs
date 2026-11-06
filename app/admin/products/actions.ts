@@ -104,20 +104,19 @@ export async function toggleProductArchive(formData: FormData) {
   redirect(`/admin/products/${encodeURIComponent(id)}?saved=1`);
 }
 
-export async function deleteProductRecord(formData: FormData) {
-  if (!(await isAdminAuthenticated())) redirect("/admin");
+export async function deleteProductRecord(formData: FormData): Promise<{ ok: boolean; error?: string }> {
+  if (!(await isAdminAuthenticated())) return { ok: false, error: "Your owner session has expired. Sign in again before deleting." };
   const id = field(formData, "id", 100);
   if (!id || field(formData, "confirmation", 20) !== "DELETE") {
-    studioRedirect(id, "error", "Type DELETE to permanently remove this product.");
+    return { ok: false, error: "Type DELETE to permanently remove this product." };
   }
   try {
-    const slug = await deleteProductRecordPermanently(id);
-    revalidatePath("/shop");
-    revalidatePath(`/shop/${slug}`);
-    revalidatePath("/admin/products");
-    revalidatePath("/search");
+    await deleteProductRecordPermanently(id);
+    // The product detail route no longer exists after deletion. Returning a
+    // result lets the client navigate straight to the catalogue rather than
+    // triggering a server-action redirect/refresh on the deleted detail page.
+    return { ok: true };
   } catch (error) {
-    studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to delete product");
+    return { ok: false, error: error instanceof Error ? error.message : "Unable to delete product" };
   }
-  redirect("/admin/products?deleted=1");
 }
