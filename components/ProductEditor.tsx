@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { saveProductRecord, toggleProductArchive } from "@/app/admin/products/actions";
+import { deleteProductRecord, saveProductRecord, toggleProductArchive } from "@/app/admin/products/actions";
 import { ProductPhotoEditor } from "@/components/ProductPhotoEditor";
 import { ProductVariantEditor } from "@/components/ProductVariantEditor";
 import { productCategories, type ProductInventoryAdjustment, type ProductRecord, type ProductVariantRecord } from "@/data/products";
@@ -12,6 +12,8 @@ export function ProductEditor({ product, speciesOptions, variants, adjustments, 
   const [linkedSpeciesId, setLinkedSpeciesId] = useState(product.speciesRecordId || "");
   const [title, setTitle] = useState(product.title);
   const [summary, setSummary] = useState(product.summary);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [deleteText, setDeleteText] = useState("");
   const selectedSpecies = speciesOptions.find((species) => species.id === linkedSpeciesId);
   function selectSpecies(id: string) {
     setLinkedSpeciesId(id);
@@ -86,6 +88,27 @@ export function ProductEditor({ product, speciesOptions, variants, adjustments, 
       <div><p className="admin-kicker">Audit trail</p><h2 id="inventory-history-title">Inventory history</h2><p>Stock changes are recorded when the product is saved.</p></div>
       {adjustments.length ? <ol>{adjustments.slice(0, 12).map((adjustment) => <li key={adjustment.id}><span className={adjustment.quantityDelta > 0 ? styles.increase : styles.decrease}>{adjustment.quantityDelta > 0 ? "+" : ""}{adjustment.quantityDelta}</span><span><strong>{adjustment.variantTitle}</strong><small>{adjustment.reason.replaceAll("-", " ")}{adjustment.note ? ` · ${adjustment.note}` : ""}</small></span><span className={styles.historyAfter}>{adjustment.quantityAfter} after</span><time dateTime={adjustment.createdAt}>{new Date(adjustment.createdAt).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" })}</time></li>)}</ol> : <p className={styles.historyEmpty}>{normalized ? "No stock changes recorded yet." : "Inventory history will appear here after the database migration is applied."}</p>}
     </section>
-    <form className={styles.archive} action={toggleProductArchive}><input type="hidden" name="id" value={product.id} /><div><strong>{product.archivedAt ? "Restore this product" : "Archive this product"}</strong><p>{product.archivedAt ? "Return it to the active catalogue." : "Hide it without deleting its data or inventory."}</p></div><button type="submit">{product.archivedAt ? "Restore" : "Archive"}</button></form>
+
+    <section className={styles.productActions} aria-label="Product management actions">
+      <form className={styles.archive} action={toggleProductArchive}>
+        <input type="hidden" name="id" value={product.id} />
+        <div><strong>{product.archivedAt ? "Restore this product" : "Archive this product"}</strong><p>{product.archivedAt ? "Return it to the active catalogue." : "Hide it without deleting its data or inventory."}</p></div>
+        <button type="submit">{product.archivedAt ? "Restore" : "Archive"}</button>
+      </form>
+      <div className={styles.deletePanel}>
+        <div><strong>Delete product permanently</strong><p>Remove this product and its shop inventory records. This cannot be undone; your Leaf Ledger species stays intact.</p></div>
+        {!confirmDeleteOpen ? <button type="button" className={styles.deleteTrigger} onClick={() => setConfirmDeleteOpen(true)}>Delete product</button> : null}
+        {confirmDeleteOpen ? <form action={deleteProductRecord} className={styles.deleteConfirm}>
+          <input type="hidden" name="id" value={product.id} />
+          <p>To permanently delete <strong>{product.title}</strong>, type <strong>DELETE</strong> below.</p>
+          <label htmlFor="delete-product-confirmation">Confirmation</label>
+          <input id="delete-product-confirmation" name="confirmation" value={deleteText} onChange={(event) => setDeleteText(event.target.value)} autoComplete="off" spellCheck={false} placeholder="DELETE" required />
+          <div className={styles.deleteButtons}>
+            <button type="button" className={styles.cancelDelete} onClick={() => { setConfirmDeleteOpen(false); setDeleteText(""); }}>Cancel</button>
+            <button type="submit" className={styles.deleteTrigger} disabled={deleteText !== "DELETE"}>Delete permanently</button>
+          </div>
+        </form> : null}
+      </div>
+    </section>
   </section>;
 }
