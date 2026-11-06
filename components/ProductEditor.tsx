@@ -27,40 +27,60 @@ export function ProductEditor({ product, speciesOptions, variants, adjustments, 
     {error ? <p className="admin-save-message is-error">{error}</p> : null}
     <form className={`admin-species-form ${styles.form}`} id="product-editor-form" action={saveProductRecord}>
       <input type="hidden" name="id" value={product.id} />
-      <fieldset className={styles.ledgerFirst}><legend><span aria-hidden="true">01</span> Start from Leaf Ledger</legend>
+      <nav className={styles.sectionNav} aria-label="Jump to product sections">
+        <a href="#product-ledger">01 Species</a>
+        <a href="#product-basics">02 Listing</a>
+        <a href="#product-stock">03 Inventory</a>
+        <a href="#product-photos">04 Photos</a>
+        <a href="#product-shipping">05 Shipping</a>
+        <a href="#product-publishing">06 Publish</a>
+      </nav>
+      <fieldset id="product-ledger" className={styles.ledgerFirst}><legend><span aria-hidden="true">01</span> Start from Leaf Ledger</legend>
         <p className={styles.ledgerIntro}>Selling isopods? Choose a species first. Its scientific name and morph will be saved with this product.</p>
         <label><span>Species / morph</span><select name="speciesRecordId" value={linkedSpeciesId} onChange={(event) => selectSpecies(event.target.value)}><option value="">No species — other merchandise</option>{speciesOptions.map((species) => <option key={species.id} value={species.id}>{species.commonName || species.scientificName || "Unassigned"}{species.scientificName ? ` · ${species.scientificName}` : ""}{species.morph && species.morph !== species.commonName ? ` · ${species.morph}` : ""}</option>)}</select></label>
         {selectedSpecies ? <div className={styles.ledgerPreview} aria-live="polite"><div><span>Scientific name</span><strong><i>{selectedSpecies.scientificName || "Not assigned"}</i></strong></div><div><span>Morph / locale</span><strong>{selectedSpecies.morph || "Not specified"}</strong></div><div><span>Genus / species</span><strong>{selectedSpecies.genus || "—"} / {selectedSpecies.species || "—"}</strong></div></div> : null}
         <button type="button" className={styles.autofill} disabled={!selectedSpecies} onClick={autofillFromLedger}>Autofill product name{!summary.trim() ? " & short description" : ""}</button>
         <p className={styles.ledgerHelp}>Autofill only replaces the product name; it adds the Ledger summary only when the description is empty. Scientific identity is synced securely from the Ledger when you save. Prices and inventory remain separate.</p>
       </fieldset>
-      <fieldset className={styles.basics}><legend><span aria-hidden="true">02</span> Basic information</legend>
+      <fieldset id="product-basics" className={styles.basics}><legend><span aria-hidden="true">02</span> Basic information</legend>
         <div className="admin-form-grid two"><label><span>Product name</span><input name="title" value={title} onChange={(event) => setTitle(event.target.value)} required maxLength={180} /></label><label><span>Category</span><select name="category" defaultValue={product.category}>{productCategories.map((category) => <option value={category} key={category}>{category}</option>)}</select></label></div>
         <label><span>Short description</span><textarea name="summary" value={summary} onChange={(event) => setSummary(event.target.value)} rows={3} maxLength={600} /></label>
-        <label><span>Full description</span><textarea name="description" defaultValue={product.description} rows={8} maxLength={8000} /></label>
+        <label><span>Full description</span><textarea name="description" defaultValue={product.description} rows={4} maxLength={8000} placeholder="Describe what is included, the species or product, and what buyers should know." /></label>
+        <details className={styles.advanced}>
+          <summary>Advanced listing options <span>URL & tags</span></summary>
         <div className="admin-form-grid two"><label><span>URL slug</span><input name="slug" defaultValue={product.slug} /></label><label><span>Tags · comma separated</span><input name="tags" defaultValue={product.tags.join(", ")} /></label></div>
+        </details>
       </fieldset>
-      <fieldset className={styles.images}><legend><span aria-hidden="true">03</span> Images</legend>
-        <ProductPhotoEditor image={product.image} imagePositionX={product.imagePositionX} imagePositionY={product.imagePositionY} imageZoom={product.imageZoom} />
-        {product.image ? <label className="admin-check-control"><input name="removePhoto" type="checkbox" value="yes" /><span>Remove this photograph when saving</span></label> : null}
-        <label><span>Accessible image description</span><input name="imageAlt" defaultValue={product.imageAlt} maxLength={240} /></label>
-      </fieldset>
-      <fieldset className={styles.inventory}><legend><span aria-hidden="true">04</span> Pricing & inventory</legend>
+      <fieldset id="product-stock" className={styles.inventory}><legend><span aria-hidden="true">03</span> Pricing & inventory</legend><p className={styles.sectionHint}>Set your pack sizes, prices and stock. You can add more variants whenever you need them.</p>
         <ProductVariantEditor initialVariants={variants} />
         <div className="admin-form-grid two"><label><span>Availability</span><select name="availability" defaultValue={product.availability}><option value="coming-soon">Coming soon</option><option value="in-stock">In stock</option><option value="sold-out">Sold out</option></select></label><label><span>Stock adjustment reason</span><select name="inventoryAdjustmentReason" defaultValue="manual"><option value="manual">Manual count</option><option value="return">Return</option><option value="damage">Damaged or removed</option><option value="correction">Correction</option></select></label></div>
         <label><span>Stock adjustment note · optional</span><input name="inventoryAdjustmentNote" maxLength={1000} placeholder="For example: received a new shipment" /></label>
         {!normalized ? <p className="admin-inline-note">The normalized inventory history becomes available after the additive Shop Manager database migration is applied. Existing product information remains intact.</p> : null}
       </fieldset>
-      <fieldset className={styles.details}><legend><span aria-hidden="true">05</span> Product details</legend>
+      <details id="product-photos" className={styles.collapsible} open={Boolean(product.image)}>
+        <summary><span className={styles.stepNumber}>04</span><span>Product photos <small>Upload and adjust images</small></span><span className={styles.chevron}>⌄</span></summary>
+        <fieldset className={styles.images} aria-label="Product photos">
+        <ProductPhotoEditor image={product.image} imagePositionX={product.imagePositionX} imagePositionY={product.imagePositionY} imageZoom={product.imageZoom} />
+        {product.image ? <label className="admin-check-control"><input name="removePhoto" type="checkbox" value="yes" /><span>Remove this photograph when saving</span></label> : null}
+        <label><span>Accessible image description</span><input name="imageAlt" defaultValue={product.imageAlt} maxLength={240} /></label>
+        </fieldset>
+      </details>
+      <fieldset id="product-shipping" className={styles.details}><legend><span aria-hidden="true">05</span> Shipping & product details</legend>
         <div className="admin-form-grid three"><label><span>Product type</span><select name="productType" defaultValue={product.productType || "physical"}><option value="physical">Physical</option><option value="digital">Digital</option></select></label><label><span>Weight · grams</span><input name="weightGrams" type="number" min="0" step="0.01" defaultValue={product.weightGrams ?? ""} placeholder="Optional" /></label></div>
+        <details className={styles.advanced}>
+          <summary>Additional product & shipping notes <span>Optional</span></summary>
         <label><span>Materials or contents</span><textarea name="materials" defaultValue={product.materials} rows={4} /></label><label><span>Shipping note</span><textarea name="shippingNote" defaultValue={product.shippingNote} rows={4} placeholder="Product-specific size, handling or dispatch note." /></label>
+        </details>
         <div className="admin-form-grid two"><label className="admin-check-control"><input name="requiresShipping" type="checkbox" value="yes" defaultChecked={product.requiresShipping ?? true} /><span>Requires shipping</span></label><label className="admin-check-control"><input name="allowBackorders" type="checkbox" value="yes" defaultChecked={product.allowBackorders ?? false} /><span>Allow backorders</span></label></div>
       </fieldset>
-      <fieldset className={styles.visibility}><legend><span aria-hidden="true">06</span> Visibility & search</legend>
+      <fieldset id="product-publishing" className={styles.visibility}><legend><span aria-hidden="true">06</span> Visibility & search</legend>
         <div className="admin-form-grid three"><label><span>Publication</span><select name="status" defaultValue={product.status}><option value="draft">Draft</option><option value="published">Published</option></select></label><label className="admin-check-control"><input name="featured" type="checkbox" value="yes" defaultChecked={product.featured} /><span>Featured product</span></label></div>
+        <details className={styles.advanced}>
+          <summary>Search engine preview & metadata <span>Optional</span></summary>
         <div className="admin-form-grid two"><label><span>Search title</span><input name="seoTitle" defaultValue={product.seoTitle || ""} maxLength={180} placeholder={product.title} /></label><label><span>Search description</span><textarea name="seoDescription" defaultValue={product.seoDescription || ""} maxLength={320} rows={3} placeholder={product.summary} /></label></div>
+        </details>
       </fieldset>
-      <div className={styles.saveBar}><p>Checkout remains disabled. Publishing controls catalogue visibility only.</p><button type="submit">Save product</button></div>
+      <div className={styles.saveBar}><p>Save your draft anytime. Publishing makes a listing visible, but checkout is still disabled.</p><button type="submit">Save product</button></div>
     </form>
     <section className={styles.history} aria-labelledby="inventory-history-title">
       <div><p className="admin-kicker">Audit trail</p><h2 id="inventory-history-title">Inventory history</h2><p>Stock changes are recorded when the product is saved.</p></div>
