@@ -46,7 +46,7 @@ export async function saveProductRecord(formData: FormData) {
     if (allSkus.has(variant.sku)) studioRedirect(id, "error", "Two variants have the same SKU. Give each option a unique name or SKU.");
     allSkus.add(variant.sku);
   }
-  if (records.some((item) => item.id !== id && (item.variants || []).some((variant) => variant.sku && allSkus.has(variant.sku.toUpperCase())))) studioRedirect(id, "error", "A SKU is already assigned to another product.");
+  if (records.some((item) => item.id !== id && ((item.sku && allSkus.has(item.sku.toUpperCase())) || (item.variants || []).some((variant) => variant.sku && allSkus.has(variant.sku.toUpperCase()))))) studioRedirect(id, "error", "A SKU is already assigned to another product.");
   const activeVariants = parsedVariants.filter((variant) => variant.isActive);
   const primaryVariant = activeVariants[0];
   const priceCents = primaryVariant?.priceCents ?? current.priceCents;
