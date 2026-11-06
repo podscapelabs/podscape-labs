@@ -80,3 +80,19 @@
   .advanced > .admin-form-grid { display: grid; grid-template-columns: 1fr; }
   .form textarea { min-height: 88px; }
 }
+
+/* Destructive product action sits beside Archive, but requires a separate confirmation. */
+.productActions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 12px; margin-top: 12px; }
+.productActions .archive { margin: 0; min-height: 100%; }
+.deletePanel { display: flex; flex-direction: column; justify-content: space-between; gap: 13px; min-width: 0; height: 100%; padding: 14px 16px; border: 1px solid color-mix(in srgb, var(--clay) 45%, var(--line)); border-radius: 15px; background: color-mix(in srgb, var(--clay) 5%, var(--paper)); }
+.deletePanel strong { color: var(--ink); font-family: var(--serif); font-size: 1.05rem; font-weight: 400; }
+.deletePanel p { margin: 4px 0 0; color: var(--muted); font-size: .67rem; line-height: 1.5; }
+.deleteTrigger { min-height: 42px; padding: 9px 14px; border: 1px solid var(--clay); border-radius: 10px; background: var(--clay); color: #fff; font: inherit; font-size: .68rem; font-weight: 800; cursor: pointer; }
+.deleteTrigger:disabled { opacity: .45; cursor: not-allowed; }
+.deleteConfirm { display: grid; gap: 10px; }
+.deleteConfirm p strong { font-family: inherit; font-size: inherit; font-weight: 800; }
+.deleteConfirm label { color: var(--ink); font-size: .65rem; font-weight: 700; }
+.deleteConfirm input { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); color: var(--ink); font: inherit; }
+.deleteButtons { display: flex; flex-wrap: wrap; gap: 8px; }
+.cancelDelete { min-height: 42px; padding: 9px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); color: var(--ink); font: inherit; font-size: .68rem; font-weight: 800; cursor: pointer; }
+@media (max-width: 700px) { .productActions { grid-template-columns: 1fr; } .productActions .archive { min-height: auto; } .deletePanel { gap: 12px; } }
