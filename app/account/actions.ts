@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireCustomerPreviewAccess } from "@/lib/customer-auth/access";
+import { isApprovedTesterEmail, requireCustomerPreviewAccess } from "@/lib/customer-auth/access";
+import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { customerAuthSiteUrl, customerSupabase } from "@/lib/customer-auth/server";
 import { clearCustomerRecoveryPermission, hasCustomerRecoveryPermission } from "@/lib/customer-auth/recovery";
 
@@ -29,7 +30,6 @@ function validNewPassword(password: string): boolean {
 }
 
 export async function signUpCustomer(_prev: CustomerFormState, form: FormData): Promise<CustomerFormState> {
-  await requireCustomerPreviewAccess();
   const db = await customerSupabase();
   const origin = customerAuthSiteUrl();
   if (!db || !origin) return { error: "Customer registration is not configured yet.", message: "" };
@@ -39,6 +39,7 @@ export async function signUpCustomer(_prev: CustomerFormState, form: FormData): 
   const confirmation = String(form.get("confirmPassword") || "");
   const displayName = stringField(form, "displayName", 60);
   if (!validEmail(email)) return { error: "Enter a valid email address.", message: "" };
+  if (!(await isApprovedTesterEmail(email)) && !(await isAdminAuthenticated())) return { error: "This email is not yet on the Early Access list. Ask the PodScape team to approve it first.", message: "" };
   if (!validNewPassword(password)) return { error: "Use a password of 12–128 characters.", message: "" };
   if (password !== confirmation) return { error: "Your passwords do not match.", message: "" };
 
@@ -63,19 +64,18 @@ export async function signUpCustomer(_prev: CustomerFormState, form: FormData): 
 }
 
 export async function signInCustomer(_prev: CustomerFormState, form: FormData): Promise<CustomerFormState> {
-  await requireCustomerPreviewAccess();
   const db = await customerSupabase();
   if (!db) return { error: "Customer sign-in is not configured yet.", message: "" };
   const email = emailFrom(form);
   const password = passwordFrom(form);
   if (!validEmail(email) || !password) return { error: "Enter your email and password.", message: "" };
-  const { error } = await db.auth.signInWithPassword({ email, password });
+  const { error, data } = await db.auth.signInWithPassword({ email, password });
   if (error) return { error: "Invalid credentials or unverified email. Please try again.", message: "" };
-  redirect("/account");
+  if (data.user?.app_metadata?.role === "owner" || await isApprovedTesterEmail(email)) redirect("/app");
+  redirect("/early-access");
 }
 
 export async function requestCustomerPasswordReset(_prev: CustomerFormState, form: FormData): Promise<CustomerFormState> {
-  await requireCustomerPreviewAccess();
   const db = await customerSupabase();
   const origin = customerAuthSiteUrl();
   if (!db || !origin) return { error: "Password recovery is not configured yet.", message: "" };
@@ -119,7 +119,6 @@ export async function updateCustomerProfile(_prev: CustomerFormState, form: Form
 }
 
 export async function signOutCustomer() {
-  await requireCustomerPreviewAccess();
   const db = await customerSupabase();
   if (db) await db.auth.signOut();
   await clearCustomerRecoveryPermission();
