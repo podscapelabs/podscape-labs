@@ -35,8 +35,7 @@ export async function saveProductRecord(formData: FormData) {
   const availability = field(formData, "availability", 30) as ProductAvailability;
   const category = field(formData, "category", 80);
   const requestedSlug = productSlug(field(formData, "slug", 100));
-  const autoSlug = !requestedSlug || current.slug === `draft-${id.slice(-8)}`;
-  const slug = autoSlug && (!requestedSlug || requestedSlug === current.slug)
+  const slug = field(formData, "slugMode", 20) === "auto" || !requestedSlug
     ? uniqueProductSlug(title, id, records)
     : requestedSlug;
   const parsedVariants = parseProductVariants(field(formData, "variants", 30000)).map((variant, index) => ({
