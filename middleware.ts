@@ -1,15 +1,43 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+const PRIVATE_AREAS = ["/app", "/menu", "/explore", "/ledger", "/poddex", "/keeper", "/fun-zone", "/shop", "/field-guide", "/from-the-lab", "/search", "/api/progress"];
+
+function isPrivateArea(pathname: string): boolean {
+  return PRIVATE_AREAS.some((area) => pathname === area || pathname.startsWith(area + "/"));
+}
+
+/** Allow the existing legacy owner session to review the platform without a member account. */
+async function hasLegacyOwnerSession(request: NextRequest): Promise<boolean> {
+  const secret = process.env.PODSCAPE_ADMIN_SECRET?.trim();
+  const password = process.env.PODSCAPE_ADMIN_PASSWORD?.trim();
+  const supplied = request.cookies.get("podscape-owner-session")?.value;
+  if (!secret || !password || !supplied) return false;
+  const bytes = new TextEncoder();
+  const key = await crypto.subtle.importKey("raw", bytes.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const sig = new Uint8Array(await crypto.subtle.sign("HMAC", key, bytes.encode("podscape-owner-preview-v1")));
+  const expected = "v1." + Array.from(sig).map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  if (expected.length !== supplied.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < expected.length; i++) mismatch |= expected.charCodeAt(i) ^ supplied.charCodeAt(i);
+  return mismatch === 0;
+}
+
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+  const protectedPage = isPrivateArea(pathname);
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
     || process.env.SUPABASE_PUBLISHABLE_KEY
     || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     || process.env.SUPABASE_ANON_KEY;
-  if (!url || !key) return NextResponse.next({ request });
 
   let response = NextResponse.next({ request });
+  if (!url || !key) {
+    if (protectedPage && !(await hasLegacyOwnerSession(request))) return NextResponse.redirect(new URL("/early-access", request.url));
+    return response;
+  }
+
   const supabase = createServerClient(url, key, {
     cookies: {
       getAll: () => request.cookies.getAll(),
@@ -21,10 +49,23 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  await supabase.auth.getUser();
-  return response;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!protectedPage) return response;
+  if (user?.app_metadata?.role === "owner" || await hasLegacyOwnerSession(request)) return response;
+
+  if (user?.email && user.email_confirmed_at) {
+    const { data, error } = await supabase.from("early_access_testers")
+      .select("active").eq("email", user.email.trim().toLowerCase()).eq("active", true).maybeSingle();
+    if (!error && data?.active) return response;
+  }
+
+  const destination = new URL("/early-access", request.url);
+  // Never redirect directly to arbitrary URLs. This route is informational.
+  const redirectResponse = NextResponse.redirect(destination);
+  for (const cookie of response.cookies.getAll()) redirectResponse.cookies.set(cookie);
+  return redirectResponse;
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff|woff2|css|js)$).*)"],
 };

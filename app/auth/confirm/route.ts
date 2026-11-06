@@ -1,6 +1,7 @@
 import { type EmailOtpType } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 import { setCustomerRecoveryPermission } from "@/lib/customer-auth/recovery";
+import { isApprovedTesterEmail } from "@/lib/customer-auth/access";
 import { customerAuthSiteUrl, customerSupabase } from "@/lib/customer-auth/server";
 
 export async function GET(request: NextRequest) {
@@ -25,5 +26,6 @@ export async function GET(request: NextRequest) {
     }
     return NextResponse.redirect(`${appUrl}/account/reset-password`);
   }
-  return NextResponse.redirect(`${appUrl}/account?verified=1`);
+  const permitted = data.user?.app_metadata?.role === "owner" || Boolean(data.user?.email && await isApprovedTesterEmail(data.user.email));
+  return NextResponse.redirect(`${appUrl}${permitted ? "/app" : "/early-access"}`);
 }

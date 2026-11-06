@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import AdminPreviewPage from "@/app/admin/preview/page";
+import { MarketingSite } from "@/components/MarketingSite";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "PodScape",
+  title: "PodScape · Early Access",
   robots: { index: false, follow: false },
 };
 
-/** Root-level launch route keeps the installed web app's inferred scope at `/`. */
-export default AdminPreviewPage;
+/** Private, tester-authorized platform home. Middleware checks access first. */
+export default function AppPage() {
+  return <MarketingSite />;
+}
