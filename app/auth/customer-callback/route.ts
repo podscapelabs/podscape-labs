@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { setCustomerRecoveryPermission } from "@/lib/customer-auth/recovery";
+import { isApprovedTesterEmail } from "@/lib/customer-auth/access";
 import { customerAuthSiteUrl, customerSupabase } from "@/lib/customer-auth/server";
 
 /** Customer-auth fallback for Supabase email templates that redirect with a PKCE code. */
@@ -20,5 +21,7 @@ export async function GET(request: NextRequest) {
     }
     return NextResponse.redirect(`${origin}/account/reset-password`);
   }
-  return NextResponse.redirect(`${origin}/account?verified=1`);
+  const { data: { user } } = await db.auth.getUser();
+  const permitted = user?.app_metadata?.role === "owner" || Boolean(user?.email && await isApprovedTesterEmail(user.email));
+  return NextResponse.redirect(`${origin}${permitted ? "/app" : "/early-access"}`);
 }
