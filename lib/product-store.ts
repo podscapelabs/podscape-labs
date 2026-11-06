@@ -21,16 +21,6 @@ async function getLocalProductRecords() {
   return parsed;
 }
 
-async function seedCloudRecords(records: ProductRecord[]) {
-  const supabase = getWritableSupabaseAdmin();
-  if (!supabase || records.length === 0) return;
-  const { error } = await supabase.from("product_records").upsert(
-    records.map((record) => ({ id: record.id, slug: record.slug, record, updated_at: record.updatedAt })),
-    { onConflict: "id" },
-  );
-  if (error) throw new Error(`Unable to seed product records: ${error.message}`);
-}
-
 async function attachNormalizedVariants(records: ProductRecord[], supabase: NonNullable<ReturnType<typeof getSupabaseAdmin>>) {
   if (!records.length) return records;
   try {
@@ -74,10 +64,7 @@ export async function getProductRecords() {
     if (error) throw new Error(error.message);
     const records = (data || []).map((row) => row.record as unknown);
     if (!records.every(isProductRecord)) throw new Error("Cloud product records are not valid.");
-    if (records.length > 0) return attachNormalizedVariants(records, supabase);
-    const localRecords = await getLocalProductRecords();
-    await seedCloudRecords(localRecords);
-    return attachNormalizedVariants(localRecords, supabase);
+    return attachNormalizedVariants(records, supabase);
   } catch (error) {
     console.warn("Product cloud read failed; using the bundled catalogue.", error);
     return getLocalProductRecords();
