@@ -30,6 +30,13 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        source: "/account/progress",
+        headers: [
+          { key: "Cache-Control", value: "private, no-store, max-age=0, must-revalidate" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+      {
         source: "/admin/:path*",
         headers: [
           { key: "Cache-Control", value: "private, no-store, max-age=0" },
