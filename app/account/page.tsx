@@ -46,12 +46,17 @@ export default async function CustomerAccountPage({ searchParams }: { searchPara
   const latestBin=enclosures?.[0];
   let speciesImage: string|null=null;
   let speciesName="";
-  if(latestBin){
+  const speciesNames=new Map<string,string>();
+  if(latestBin || (collection && collection.length)){
     try{
-      const species=(await getSpeciesRecords()).find(s=>s.id===latestBin.species_id);
-      speciesImage=species?.image||null;
-      speciesName=species?.commonName||species?.scientificName||"";
-    }catch{ /* The dashboard still loads when the shared Ledger is unavailable. */ }
+      const records=await getSpeciesRecords();
+      for(const record of records) speciesNames.set(record.id,record.commonName||record.scientificName||"Species");
+      if(latestBin){
+        const species=records.find(s=>s.id===latestBin.species_id);
+        speciesImage=species?.image||null;
+        speciesName=species?.commonName||species?.scientificName||"";
+      }
+    }catch{ /* Member dashboard remains available if the public Ledger is unavailable. */ }
   }
   const activities:Activity[]=[];
   for(const a of achievements||[]){
@@ -59,7 +64,7 @@ export default async function CustomerAccountPage({ searchParams }: { searchPara
     if(definition)activities.push({key:"ach-"+a.achievement_key,icon:"✦",title:definition.title+" unlocked",description:"Achievement earned",at:a.unlocked_at,href:"/account/progress"});
   }
   for(const item of (collection||[]).slice(0,8)){
-    activities.push({key:"col-"+item.species_id,icon:"❧",title:"Species added to your collection",description:"Leaf Ledger collection",at:item.added_at,href:"/ledger"});
+    activities.push({key:"col-"+item.species_id,icon:"❧",title:(speciesNames.get(item.species_id)||"Species")+" added",description:"Added to your Leaf Ledger collection",at:item.added_at,href:"/ledger"});
   }
   activities.sort((a,b)=>Date.parse(b.at)-Date.parse(a.at));
   const {verified}=await searchParams;
