@@ -62,6 +62,7 @@ export function ProductEditor({ product, speciesOptions, variants, adjustments, 
     <form className={`admin-species-form ${styles.form}`} id="product-editor-form" action={saveProductRecord}>
       <input type="hidden" name="id" value={product.id} />
       <input type="hidden" name="tagsMode" value={tagsEdited ? "manual" : "suggested"} />
+      <input type="hidden" name="slugMode" value={newDraft && !slugEdited ? "auto" : "manual"} />
       <nav className={styles.sectionNav} aria-label="Jump to product sections">
         <a href="#product-ledger">01 Species</a>
         <a href="#product-basics">02 Listing</a>
