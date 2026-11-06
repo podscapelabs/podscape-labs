@@ -19,7 +19,7 @@ export default async function EarlyAccessPage() {
     <section className="admin-auth-card">
       <p className="eyebrow">PodScape Labs · Invitation only</p>
       <h1>Welcome to Early Access.</h1>
-      <p className="admin-intro">We're inviting a few friends to test PodScape before launch. Use your approved email to create an account and explore.</p>
+      <p className="admin-intro">We&apos;re inviting a few friends to test PodScape before launch. Use your approved email to create an account and explore.</p>
       {user ? <p>Your signed-in email is not currently approved for testing.</p> : <p>Have an invitation? Sign in or create your tester account.</p>}
       <div style={{display:"flex",gap:12,flexWrap:"wrap",marginTop:20}}>
         {user ? <Link className="button button-outline" href="/account">My account</Link> : <>
