@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { productCategories, type ProductAvailability, type ProductRecord, type ProductStatus, type ProductVariantRecord } from "@/data/products";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { appendProductRecord, getProductRecords, replaceProductRecord, saveProductPhoto } from "@/lib/product-store";
+import { appendProductRecord, deleteProductRecordPermanently, getProductRecords, replaceProductRecord, saveProductPhoto } from "@/lib/product-store";
 import { getSpeciesRecords } from "@/lib/species-store";
 
 function field(formData: FormData, name: string, limit = 4000) { return String(formData.get(name) || "").trim().slice(0, limit); }
@@ -102,4 +102,22 @@ export async function toggleProductArchive(formData: FormData) {
   try { await replaceProductRecord({ ...current, archivedAt: restoring ? null : new Date().toISOString(), updatedAt: new Date().toISOString() }); } catch (error) { studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to update archive"); }
   revalidatePath("/shop"); revalidatePath(`/shop/${current.slug}`); revalidatePath("/search");
   redirect(`/admin/products/${encodeURIComponent(id)}?saved=1`);
+}
+
+export async function deleteProductRecord(formData: FormData) {
+  if (!(await isAdminAuthenticated())) redirect("/admin");
+  const id = field(formData, "id", 100);
+  if (!id || field(formData, "confirmation", 20) !== "DELETE") {
+    studioRedirect(id, "error", "Type DELETE to permanently remove this product.");
+  }
+  try {
+    const slug = await deleteProductRecordPermanently(id);
+    revalidatePath("/shop");
+    revalidatePath(`/shop/${slug}`);
+    revalidatePath("/admin/products");
+    revalidatePath("/search");
+  } catch (error) {
+    studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to delete product");
+  }
+  redirect("/admin/products?deleted=1");
 }
