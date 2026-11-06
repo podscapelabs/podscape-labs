@@ -1,12 +1,24 @@
+"use client";
+import { useState } from "react";
 import { saveProductRecord, toggleProductArchive } from "@/app/admin/products/actions";
 import { ProductPhotoEditor } from "@/components/ProductPhotoEditor";
 import { ProductVariantEditor } from "@/components/ProductVariantEditor";
 import { productCategories, type ProductInventoryAdjustment, type ProductRecord, type ProductVariantRecord } from "@/data/products";
 import styles from "./ProductEditor.module.css";
 
-type SpeciesOption = { id: string; commonName: string; scientificName: string };
+type SpeciesOption = { id: string; commonName: string; scientificName: string; genus: string; species: string; morph: string };
 
 export function ProductEditor({ product, speciesOptions, variants, adjustments, normalized, saved, created, error }: { product: ProductRecord; speciesOptions: SpeciesOption[]; variants: ProductVariantRecord[]; adjustments: ProductInventoryAdjustment[]; normalized: boolean; saved: boolean; created: boolean; error?: string }) {
+  const [linkedSpeciesId, setLinkedSpeciesId] = useState(product.speciesRecordId || "");
+  const [title, setTitle] = useState(product.title);
+  const selectedSpecies = speciesOptions.find((species) => species.id === linkedSpeciesId);
+  function selectSpecies(id: string) {
+    const species = speciesOptions.find((item) => item.id === id);
+    setLinkedSpeciesId(id);
+    if (species && (title.trim() === "" || title === "Untitled product")) {
+      setTitle(species.commonName || species.scientificName || title);
+    }
+  }
   return <section className={styles.workspace}>
     {saved ? <p className="admin-save-message is-success">Product saved. The catalogue and shop preview now use this version.</p> : null}
     {created ? <p className="admin-save-message is-success">Draft created. Add the product details below.</p> : null}
@@ -14,7 +26,7 @@ export function ProductEditor({ product, speciesOptions, variants, adjustments, 
     <form className={`admin-species-form ${styles.form}`} id="product-editor-form" action={saveProductRecord}>
       <input type="hidden" name="id" value={product.id} />
       <fieldset className={styles.basics}><legend><span aria-hidden="true">01</span> Basic information</legend>
-        <div className="admin-form-grid two"><label><span>Product name</span><input name="title" defaultValue={product.title} required maxLength={180} /></label><label><span>Category</span><select name="category" defaultValue={product.category}>{productCategories.map((category) => <option value={category} key={category}>{category}</option>)}</select></label></div>
+        <div className="admin-form-grid two"><label><span>Product name</span><input name="title" value={title} onChange={(event) => setTitle(event.target.value)} required maxLength={180} /></label><label><span>Category</span><select name="category" defaultValue={product.category}>{productCategories.map((category) => <option value={category} key={category}>{category}</option>)}</select></label></div>
         <label><span>Short description</span><textarea name="summary" defaultValue={product.summary} rows={3} maxLength={600} /></label>
         <label><span>Full description</span><textarea name="description" defaultValue={product.description} rows={8} maxLength={8000} /></label>
         <div className="admin-form-grid two"><label><span>URL slug</span><input name="slug" defaultValue={product.slug} /></label><label><span>Tags · comma separated</span><input name="tags" defaultValue={product.tags.join(", ")} /></label></div>
@@ -31,8 +43,9 @@ export function ProductEditor({ product, speciesOptions, variants, adjustments, 
         {!normalized ? <p className="admin-inline-note">The normalized inventory history becomes available after the additive Shop Manager database migration is applied. Existing product information remains intact.</p> : null}
       </fieldset>
       <fieldset className={styles.details}><legend><span aria-hidden="true">04</span> Product details</legend>
-        <div className="admin-form-grid three"><label><span>Product type</span><select name="productType" defaultValue={product.productType || "physical"}><option value="physical">Physical</option><option value="digital">Digital</option></select></label><label><span>Weight · grams</span><input name="weightGrams" type="number" min="0" step="0.01" defaultValue={product.weightGrams ?? ""} placeholder="Optional" /></label><label><span>Leaf Ledger link · optional</span><select name="speciesRecordId" defaultValue={product.speciesRecordId || ""}><option value="">No linked species</option>{speciesOptions.map((species) => <option value={species.id} key={species.id}>{species.commonName || "Unassigned"}{species.scientificName ? ` · ${species.scientificName}` : ""}</option>)}</select></label></div>
-        <p className="admin-inline-note">Linking retrieves the species identity without copying or changing the Leaf Ledger record. Product pricing, stock and descriptions remain independent.</p>
+        <div className="admin-form-grid three"><label><span>Product type</span><select name="productType" defaultValue={product.productType || "physical"}><option value="physical">Physical</option><option value="digital">Digital</option></select></label><label><span>Weight · grams</span><input name="weightGrams" type="number" min="0" step="0.01" defaultValue={product.weightGrams ?? ""} placeholder="Optional" /></label><label><span>Leaf Ledger link · optional</span><select name="speciesRecordId" value={linkedSpeciesId} onChange={(event) => selectSpecies(event.target.value)}><option value="">No linked species</option>{speciesOptions.map((species) => <option value={species.id} key={species.id}>{species.commonName || "Unassigned"}{species.scientificName ? ` · ${species.scientificName}` : ""}</option>)}</select></label></div>
+        <p className="admin-inline-note">Selecting a Ledger species fills a new untitled product name and keeps its scientific identity linked. Existing custom titles, prices, stock and descriptions remain independent.</p>
+        {selectedSpecies ? <div className="admin-inline-note" aria-live="polite"><strong>Linked Ledger identity</strong><div>Scientific name: <i>{selectedSpecies.scientificName || "Not assigned"}</i></div><div>Genus: <i>{selectedSpecies.genus || "Unassigned"}</i> · Species: <i>{selectedSpecies.species || "Unassigned"}</i></div>{selectedSpecies.morph ? <div>Morph / locale: {selectedSpecies.morph}</div> : null}</div> : null}
         <label><span>Materials or contents</span><textarea name="materials" defaultValue={product.materials} rows={4} /></label><label><span>Shipping note</span><textarea name="shippingNote" defaultValue={product.shippingNote} rows={4} placeholder="Product-specific size, handling or dispatch note." /></label>
         <div className="admin-form-grid two"><label className="admin-check-control"><input name="requiresShipping" type="checkbox" value="yes" defaultChecked={product.requiresShipping ?? true} /><span>Requires shipping</span></label><label className="admin-check-control"><input name="allowBackorders" type="checkbox" value="yes" defaultChecked={product.allowBackorders ?? false} /><span>Allow backorders</span></label></div>
       </fieldset>
