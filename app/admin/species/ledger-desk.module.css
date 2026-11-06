@@ -23,3 +23,13 @@
   .editor .admin-record-editor-head { padding: 20px; }
   .speciesForm fieldset { padding: 20px 16px; }
 }
+
+/* Compact husbandry form on narrow screens; preserve readable tap targets. */
+.speciesForm select { min-height: 44px; width: 100%; }
+@media (max-width: 859px) {
+  .speciesForm #ledger-care { scroll-margin-top: 76px; }
+  .speciesForm #ledger-care fieldset { padding: 8px 16px 16px; }
+  .speciesForm #ledger-care .admin-form-grid { gap: 12px; }
+  .speciesForm #ledger-care textarea { min-height: 95px; }
+  .speciesForm .optionalSection > summary { padding: 14px 16px; }
+}
