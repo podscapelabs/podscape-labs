@@ -50,3 +50,33 @@
 @media (max-width: 600px) { .ledgerPreview { grid-template-columns: 1fr; } .ledgerPreview > div { padding: 10px 12px; } }
 
 @media (min-width: 920px) { .form .images { grid-row: auto; } }
+
+/* Product desk refinement: navigation and compact optional controls. */
+.sectionNav { display: flex; grid-column: 1 / -1; gap: 8px; overflow-x: auto; padding: 5px 0 9px; scrollbar-width: thin; }
+.sectionNav a { flex: 0 0 auto; padding: 10px 13px; border: 1px solid var(--line); border-radius: 999px; background: var(--paper); color: var(--forest); font-size: .72rem; font-weight: 700; white-space: nowrap; text-decoration: none; }
+.sectionNav a:focus-visible, .advanced summary:focus-visible, .collapsible summary:focus-visible { outline: 3px solid var(--forest); outline-offset: 3px; }
+.form fieldset[id], .collapsible[id] { scroll-margin-top: 96px; }
+.sectionHint { margin: 4px 0 15px; color: var(--muted); font-size: .74rem; line-height: 1.5; }
+.advanced { margin-top: 13px; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--forest) 3%, var(--paper)); }
+.advanced summary { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 13px 14px; color: var(--forest); font-size: .74rem; font-weight: 800; cursor: pointer; }
+.advanced summary span { color: var(--muted); font-size: .65rem; font-weight: 500; }
+.advanced[open] { padding-bottom: 14px; }
+.advanced[open] summary { border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+.advanced > label, .advanced > div { margin-inline: 14px; }
+.collapsible { grid-column: 1 / -1; border: 1px solid var(--line); border-radius: 15px; background: var(--paper); overflow: hidden; scroll-margin-top: 96px; }
+.collapsible > summary { display: flex; align-items: center; gap: 10px; padding: 18px 20px; color: var(--ink); font-family: var(--serif); font-size: 1.15rem; cursor: pointer; list-style: none; }
+.collapsible > summary::-webkit-details-marker { display: none; }
+.collapsible summary small { display: block; margin-top: 4px; color: var(--muted); font-family: var(--sans); font-size: .65rem; }
+.stepNumber { display: grid; width: 25px; height: 25px; flex: 0 0 25px; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--forest) 10%, var(--paper)); color: var(--forest); font-family: var(--sans); font-size: .51rem; font-weight: 800; }
+.chevron { margin-left: auto; font-family: var(--sans); transition: transform .16s; }
+.collapsible[open] .chevron { transform: rotate(180deg); }
+.form .collapsible .images { border: 0; border-top: 1px solid var(--line); border-radius: 0; margin: 0; background: transparent; }
+@media (min-width: 920px) {
+  .form .basics, .form .inventory, .form .details, .form .visibility, .form .ledgerFirst, .form .collapsible { grid-column: 1 / -1; grid-row: auto; }
+}
+@media (max-width: 600px) {
+  .collapsible > summary { padding: 17px 16px; }
+  .sectionNav { margin: 0 -2px; }
+  .advanced > .admin-form-grid { display: grid; grid-template-columns: 1fr; }
+  .form textarea { min-height: 88px; }
+}
