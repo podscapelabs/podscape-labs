@@ -18,7 +18,7 @@ export default async function ProductDeskPage({ searchParams }: { searchParams: 
   const query = (params.q || "").trim().toLocaleLowerCase("en-CA");
   const category = productCategories.includes(params.category as (typeof productCategories)[number]) ? params.category : "all";
   const status = ["all", "published", "draft", "archived", "low-stock"].includes(params.status || "") ? params.status : "all";
-  const sort = ["recent", "name", "stock"].includes(params.sort || "") ? params.sort : "recent";
+  const sort: string = ["recent", "name", "stock"].includes(params.sort || "") ? (params.sort || "recent") : "recent";
   const visibleRecords = records
     .filter((product) => !query || [product.title, product.scientificName, product.genus, product.species, product.morph, product.category, product.sku, ...(product.variants || []).map((variant) => variant.sku), ...product.tags].join(" ").toLocaleLowerCase("en-CA").includes(query))
     .filter((product) => category === "all" || product.category === category)
