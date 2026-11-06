@@ -48,3 +48,5 @@
 .autofill:disabled { opacity: .45; cursor: not-allowed; }
 .ledgerHelp { margin: 12px 0 0; color: var(--muted); font-size: .66rem; line-height: 1.55; }
 @media (max-width: 600px) { .ledgerPreview { grid-template-columns: 1fr; } .ledgerPreview > div { padding: 10px 12px; } }
+
+@media (min-width: 920px) { .form .images { grid-row: auto; } }
