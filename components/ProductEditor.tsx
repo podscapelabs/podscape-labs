@@ -14,6 +14,27 @@ export function ProductEditor({ product, speciesOptions, variants, adjustments, 
   const [summary, setSummary] = useState(product.summary);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [deleteText, setDeleteText] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+  async function handleDelete(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (deleting || deleteText !== "DELETE") return;
+    setDeleting(true);
+    setDeleteError("");
+    try {
+      const result = await deleteProductRecord(new FormData(event.currentTarget));
+      if (!result.ok) {
+        setDeleteError(result.error || "Product could not be deleted.");
+        setDeleting(false);
+        return;
+      }
+      // Full navigation avoids refreshing the product detail route after it was removed.
+      window.location.assign("/admin/products?deleted=1");
+    } catch {
+      setDeleteError("The delete request could not be completed. Return to Shop Manager to check whether the product is still listed.");
+      setDeleting(false);
+    }
+  }
   const selectedSpecies = speciesOptions.find((species) => species.id === linkedSpeciesId);
   function selectSpecies(id: string) {
     setLinkedSpeciesId(id);
@@ -98,14 +119,15 @@ export function ProductEditor({ product, speciesOptions, variants, adjustments, 
       <div className={styles.deletePanel}>
         <div><strong>Delete product permanently</strong><p>Remove this product and its shop inventory records. This cannot be undone; your Leaf Ledger species stays intact.</p></div>
         {!confirmDeleteOpen ? <button type="button" className={styles.deleteTrigger} onClick={() => setConfirmDeleteOpen(true)}>Delete product</button> : null}
-        {confirmDeleteOpen ? <form action={deleteProductRecord} className={styles.deleteConfirm}>
+        {confirmDeleteOpen ? <form onSubmit={handleDelete} className={styles.deleteConfirm}>
           <input type="hidden" name="id" value={product.id} />
           <p>To permanently delete <strong>{product.title}</strong>, type <strong>DELETE</strong> below.</p>
           <label htmlFor="delete-product-confirmation">Confirmation</label>
           <input id="delete-product-confirmation" name="confirmation" value={deleteText} onChange={(event) => setDeleteText(event.target.value)} autoComplete="off" spellCheck={false} placeholder="DELETE" required />
+          {deleteError ? <p className="admin-save-message is-error" role="alert">{deleteError}</p> : null}
           <div className={styles.deleteButtons}>
-            <button type="button" className={styles.cancelDelete} onClick={() => { setConfirmDeleteOpen(false); setDeleteText(""); }}>Cancel</button>
-            <button type="submit" className={styles.deleteTrigger} disabled={deleteText !== "DELETE"}>Delete permanently</button>
+            <button type="button" className={styles.cancelDelete} onClick={() => { setConfirmDeleteOpen(false); setDeleteText(""); setDeleteError(""); }} disabled={deleting}>Cancel</button>
+            <button type="submit" className={styles.deleteTrigger} disabled={deleteText !== "DELETE" || deleting}>{deleting ? "Deleting…" : "Delete permanently"}</button>
           </div>
         </form> : null}
       </div>
