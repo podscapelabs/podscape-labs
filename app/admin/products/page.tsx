@@ -9,7 +9,7 @@ import styles from "./products.module.css";
 
 export const dynamic = "force-dynamic";
 
-type ProductDeskParams = { q?: string; category?: string; status?: string; sort?: string };
+type ProductDeskParams = { q?: string; category?: string; status?: string; sort?: string; deleted?: string };
 
 export default async function ProductDeskPage({ searchParams }: { searchParams: Promise<ProductDeskParams> }) {
   if (!(await isAdminAuthenticated())) redirect("/admin");
@@ -41,6 +41,7 @@ export default async function ProductDeskPage({ searchParams }: { searchParams: 
         <div className={styles.heading}><p className="eyebrow">Owner studio · Shop</p><h1>Shop Manager</h1><p>Products, inventory and listings.</p></div>
         <form className={styles.create} action={createProductRecord}><button type="submit"><span aria-hidden="true">＋</span> Create product</button></form>
       </header>
+      {params.deleted === "1" ? <p className="admin-save-message is-success" role="status">Product deleted permanently. Your Leaf Ledger is unchanged.</p> : null}
       <section className={styles.stats} aria-label="Shop summary">
         <Link href="/admin/products?status=all"><strong>{records.filter((product) => !product.archivedAt).length}</strong><span>Products</span></Link>
         <Link href="/admin/products?status=published"><strong>{publishedCount}</strong><span>Published</span></Link>
