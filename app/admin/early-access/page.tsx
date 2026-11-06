@@ -17,7 +17,7 @@ export default async function EarlyAccessManager({ searchParams }: { searchParam
       <Link href="/admin" className="admin-back-link">← Owner Studio</Link>
       <p className="eyebrow" style={{marginTop:24}}>Owner Studio · Private testing</p>
       <h1 style={{fontFamily:"var(--serif)",fontSize:"clamp(2.2rem,6vw,3.7rem)",fontWeight:400}}>Early Access</h1>
-      <p style={{color:"var(--muted)",lineHeight:1.6}}>Approve a friend's email before they register. They can explore the platform with their own account; all editing tools remain owner-only.</p>
+      <p style={{color:"var(--muted)",lineHeight:1.6}}>Approve a friend&apos;s email before they register. They can explore the platform with their own account; all editing tools remain owner-only.</p>
     </header>
     {params.added ? <p className="admin-save-message is-success">Tester approved. You can share the Early Access link.</p> : null}
     {params.revoked ? <p className="admin-save-message is-success">Tester access revoked.</p> : null}
@@ -35,7 +35,7 @@ export default async function EarlyAccessManager({ searchParams }: { searchParam
     </section>
     <section style={{background:"var(--paper)",border:"1px solid var(--line)",borderRadius:16,padding:"clamp(18px,4vw,28px)"}}>
       <h2 style={{fontFamily:"var(--serif)",fontWeight:400,margin:"0 0 12px"}}>Approved testers ({testers.filter(t=>t.active).length})</h2>
-      {testers.length === 0 ? <p style={{color:"var(--muted)"}}>No testers yet. Add your first email when you're ready.</p> : null}
+      {testers.length === 0 ? <p style={{color:"var(--muted)"}}>No testers yet. Add your first email when you&apos;re ready.</p> : null}
       <div style={{display:"grid",gap:10}}>
         {testers.map(t=><div key={t.email} style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:10,padding:"13px 0",borderBottom:"1px solid var(--line)"}}>
           <div><strong style={{overflowWrap:"anywhere"}}>{t.email}</strong><p style={{fontSize:".7rem",color:"var(--muted)",margin:"3px 0 0"}}>{t.active ? "Active tester" : "Access revoked"}</p></div>
