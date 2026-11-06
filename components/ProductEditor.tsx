@@ -88,7 +88,7 @@ export function ProductEditor({ product, speciesOptions, variants, adjustments, 
         </details>
       </fieldset>
       <fieldset id="product-stock" className={styles.inventory}><legend><span aria-hidden="true">03</span> Pricing & inventory</legend><p className={styles.sectionHint}>Set your pack sizes, prices and stock. You can add more variants whenever you need them.</p>
-        <ProductVariantEditor initialVariants={variants} productId={product.id} category={category} />
+        <ProductVariantEditor initialVariants={variants} productId={product.id} category={category} speciesName={selectedSpecies?.commonName || selectedSpecies?.morph || title} />
         <div className="admin-form-grid two"><label><span>Availability</span><select name="availability" defaultValue={product.availability}><option value="coming-soon">Coming soon</option><option value="in-stock">In stock</option><option value="sold-out">Sold out</option></select></label><label><span>Stock adjustment reason</span><select name="inventoryAdjustmentReason" defaultValue="manual"><option value="manual">Manual count</option><option value="return">Return</option><option value="damage">Damaged or removed</option><option value="correction">Correction</option></select></label></div>
         <label><span>Stock adjustment note · optional</span><input name="inventoryAdjustmentNote" maxLength={1000} placeholder="For example: received a new shipment" /></label>
         {!normalized ? <p className="admin-inline-note">The normalized inventory history becomes available after the additive Shop Manager database migration is applied. Existing product information remains intact.</p> : null}
