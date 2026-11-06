@@ -7,7 +7,7 @@ import { productCategories, type ProductAvailability, type ProductRecord, type P
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { appendProductRecord, deleteProductRecordPermanently, getProductRecords, replaceProductRecord, saveProductPhoto } from "@/lib/product-store";
 import { getSpeciesRecords } from "@/lib/species-store";
-import { productSlug, productSku, productSuggestedTags, uniqueProductSlug } from "@/lib/product-identifiers";
+import { isLegacyGeneratedSku, productSlug, productSku, productSuggestedTags, uniqueProductSlug, uniqueSku } from "@/lib/product-identifiers";
 
 function field(formData: FormData, name: string, limit = 4000) { return String(formData.get(name) || "").trim().slice(0, limit); }
 function boundedNumber(formData: FormData, name: string, minimum: number, maximum: number, fallback: number) { const value = Number(formData.get(name)); return Number.isFinite(value) ? Math.min(maximum, Math.max(minimum, value)) : fallback; }
@@ -38,15 +38,29 @@ export async function saveProductRecord(formData: FormData) {
   const slug = field(formData, "slugMode", 20) === "auto" || !requestedSlug
     ? uniqueProductSlug(title, id, records)
     : requestedSlug;
-  const parsedVariants = parseProductVariants(field(formData, "variants", 30000)).map((variant, index) => ({
-    ...variant, sku: (variant.sku || productSku(id, category, variant.title, index)).toUpperCase(),
-  }));
-  const allSkus = new Set<string>();
-  for (const variant of parsedVariants) {
-    if (allSkus.has(variant.sku)) studioRedirect(id, "error", "Two variants have the same SKU. Give each option a unique name or SKU.");
-    allSkus.add(variant.sku);
+  const requestedSpeciesId = field(formData, "speciesRecordId", 100) || null;
+  const linkedSpecies = requestedSpeciesId
+    ? (await getSpeciesRecords()).find((record) => record.id === requestedSpeciesId && record.kind === "species" && !record.archivedAt)
+    : null;
+  if (requestedSpeciesId && !linkedSpecies) studioRedirect(id, "error", "Choose a valid Leaf Ledger species");
+  const speciesName = linkedSpecies?.commonName || linkedSpecies?.morph || title;
+  const rawVariants = parseProductVariants(field(formData, "variants", 30000));
+  // Reserve every existing SKU from other products, including archived variants.
+  const reserved = new Set(records.filter(item => item.id !== id).flatMap(item => [item.sku || "", ...(item.variants || []).map(v => v.sku)].filter(Boolean).map(value => value.toUpperCase()));
+  // Protect manually assigned SKUs in this product before generating anything.
+  for (const variant of rawVariants) {
+    if (variant.sku && !isLegacyGeneratedSku(variant.sku)) {
+      const normalized = variant.sku.toUpperCase();
+      if (reserved.has(normalized)) studioRedirect(id, "error", "SKU already assigned to another variant or product.");
+      reserved.add(normalized);
+    }
   }
-  if (records.some((item) => item.id !== id && ((item.sku && allSkus.has(item.sku.toUpperCase())) || (item.variants || []).some((variant) => variant.sku && allSkus.has(variant.sku.toUpperCase()))))) studioRedirect(id, "error", "A SKU is already assigned to another product.");
+  const parsedVariants = rawVariants.map((variant, index) => ({
+    ...variant,
+    sku: variant.sku && !isLegacyGeneratedSku(variant.sku)
+      ? variant.sku.toUpperCase()
+      : uniqueSku(productSku(id, category, variant.title, index, speciesName), reserved),
+  }));
   const activeVariants = parsedVariants.filter((variant) => variant.isActive);
   const primaryVariant = activeVariants[0];
   const priceCents = primaryVariant?.priceCents ?? current.priceCents;
@@ -62,11 +76,6 @@ export async function saveProductRecord(formData: FormData) {
   try { if (photo instanceof File && photo.size > 0) image = await saveProductPhoto(id, photo); } catch (error) { studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to save product photo"); }
   const weightValue = field(formData, "weightGrams", 20);
   const weightGrams = Number(weightValue);
-  const requestedSpeciesId = field(formData, "speciesRecordId", 100) || null;
-  const linkedSpecies = requestedSpeciesId
-    ? (await getSpeciesRecords()).find((record) => record.id === requestedSpeciesId && record.kind === "species" && !record.archivedAt)
-    : null;
-  if (requestedSpeciesId && !linkedSpecies) studioRedirect(id, "error", "Choose a valid Leaf Ledger species");
   const adjustmentReason = field(formData, "inventoryAdjustmentReason", 20) as "manual" | "return" | "damage" | "correction";
   if (!["manual", "return", "damage", "correction"].includes(adjustmentReason)) studioRedirect(id, "error", "Choose a valid inventory adjustment reason");
   const nextRecord: ProductRecord = { ...current, slug, title, category, summary: field(formData, "summary", 600), description: field(formData, "description", 8000), priceCents, status, availability, featured: formData.get("featured") === "yes", image, imageAlt: field(formData, "imageAlt", 240), imagePositionX: boundedNumber(formData, "imagePositionX", 0, 100, current.imagePositionX), imagePositionY: boundedNumber(formData, "imagePositionY", 0, 100, current.imagePositionY), imageZoom: boundedNumber(formData, "imageZoom", 1, 2, current.imageZoom), tags: (() => { const raw = field(formData, "tags", 1000); const supplied = raw.split(",").map((tag) => tag.trim().toLowerCase().replace(/\s+/g, "-")).filter(Boolean); return [...new Set(supplied.length || field(formData, "tagsMode", 20) === "manual" ? supplied : productSuggestedTags(category, title, linkedSpecies || undefined))].slice(0, 30); })(), materials: field(formData, "materials", 2000), shippingNote: field(formData, "shippingNote", 2000), sku: primaryVariant.sku, stockQuantity: primaryVariant.inventoryTracked ? primaryVariant.inventoryQuantity : 0, lowStockThreshold: primaryVariant.lowStockThreshold, compareAtPriceCents: primaryVariant.compareAtPriceCents, variants: parsedVariants, productType: field(formData, "productType", 20) === "digital" ? "digital" : "physical", weightGrams: weightValue && Number.isFinite(weightGrams) && weightGrams >= 0 ? weightGrams : null, allowBackorders: formData.get("allowBackorders") === "yes", requiresShipping: formData.get("productType") !== "digital" && formData.get("requiresShipping") === "yes", seoTitle: field(formData, "seoTitle", 180), seoDescription: field(formData, "seoDescription", 320), speciesRecordId: requestedSpeciesId, scientificName: linkedSpecies?.scientificName || "", genus: linkedSpecies?.genus || "", species: linkedSpecies?.species || "", morph: linkedSpecies?.morph || "", updatedAt: new Date().toISOString() };
