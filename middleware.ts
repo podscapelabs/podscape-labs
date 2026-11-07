@@ -40,7 +40,7 @@ export async function middleware(request: NextRequest) {
 
   let response = NextResponse.next({ request });
   if (!url || !key) {
-    if (protectedPage && !(await hasLegacyOwnerSession(request))) return NextResponse.redirect(new URL("/early-access", request.url));
+    if (protectedPage && !(await hasLegacyOwnerSession(request))) return NextResponse.redirect(new URL("/#member-access", request.url));
     return response;
   }
 
