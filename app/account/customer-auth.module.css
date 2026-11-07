@@ -193,3 +193,15 @@
 .securitySection h3 { margin-top: 25px; }
 .securityActions { display: flex; flex-wrap: wrap; gap: 12px 30px; margin-top: 18px; }
 .securityActions .textLink { margin-top: 0; }
+
+
+/* Account entry polish: bring sign-in/sign-up in line with the platform's compact page rhythm. */
+.page{min-height:0;padding:clamp(22px,4vw,60px) 0 clamp(34px,6vw,70px)}
+.breadcrumb{padding-bottom:clamp(16px,3vw,28px);gap:9px}
+.breadcrumb a{display:inline-flex;align-items:center;min-height:38px}
+.grid{gap:clamp(18px,4vw,65px)}
+.intro h1,.accountHeading h1{font-size:clamp(2.5rem,6vw,5rem);line-height:1.08}
+.intro>p:not(.eyebrow),.accountHeading p{margin-top:16px;line-height:1.55}
+.plate{margin-top:clamp(20px,4vw,42px)}
+.submit{min-height:46px}
+@media(max-width:700px){.page{padding:16px 0 36px}.breadcrumb{padding-bottom:18px}.intro h1,.accountHeading h1{font-size:clamp(2.25rem,10vw,3.5rem)}}
