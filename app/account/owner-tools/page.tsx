@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Owner Tools | Podscape Labs", robots: { index: false, follow: false } };
 
 const desks = [
+  { title: "Spotlight Desk", label: "Homepage", description: "Curate the swipeable homepage highlights and their display order.", href: "/admin/spotlight", symbol: "✧" },
   { title: "Species Desk", label: "Leaf Ledger", description: "Manage species records, images and husbandry information.", href: "/admin/species", symbol: "❧" },
   { title: "Product Desk", label: "Shop", description: "Prepare listings, photography, pricing and publication.", href: "/admin/products", symbol: "▣" },
   { title: "Guide Desk", label: "Field Guide", description: "Write, refine and publish educational articles.", href: "/admin/guides", symbol: "▤" },
