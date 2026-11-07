@@ -482,3 +482,7 @@
   .recentRail .tileCopy small{font-size:.67rem;line-height:1.3;-webkit-line-clamp:2;line-clamp:2}
   .recentRail .tileArrow,.spotlightRail .tileArrow{right:8px;bottom:8px}
 }
+
+/* Home top spacing after removing the standalone Edit Home toolbar. */
+.main{padding-top:18px}
+@media(max-width:720px){.main{padding-top:14px}}
