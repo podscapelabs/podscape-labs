@@ -149,7 +149,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
           <button type="button" onClick={close}>Done</button>
         </div>
         <p>Add the widgets you love, remove the ones you don&apos;t. Changes are saved on this device.</p>
-        <div className={styles.widgetLibraryActions}><span>{layout.visible.length} of {available.length} widgets added</span><button type="button" onClick={()=>{close();setCanvasEditing(true)}}>Arrange Home ↗</button></div>
+        <div className={styles.widgetLibraryActions}><span>{layout.visible.length} of {available.length} widgets added</span><button type="button" onClick={()=>{close();setCanvasEditing(true)}}>Arrange Home</button></div>
           <div className={styles.widgetLibraryGroups}>
             {groups.map(group=><section key={group}>
               <h3>{group}</h3>
