@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 
 const PRIVATE_AREAS = ["/app", "/menu", "/explore", "/ledger", "/poddex", "/keeper", "/fun-zone", "/shop", "/field-guide", "/from-the-lab", "/search", "/api/progress"];
@@ -54,9 +55,17 @@ export async function middleware(request: NextRequest) {
   if (user?.app_metadata?.role === "owner" || await hasLegacyOwnerSession(request)) return response;
 
   if (user?.email && user.email_confirmed_at) {
-    const { data, error } = await supabase.from("early_access_testers")
-      .select("active").eq("email", user.email.trim().toLowerCase()).eq("active", true).maybeSingle();
-    if (!error && data?.active) return response;
+    // The invitation list is intentionally not readable by public/member roles.
+    // Check with a separate server-side service client; never expose this key to the browser.
+    const serviceKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (serviceKey) {
+      const admin = createClient(url, serviceKey, {
+        auth: { autoRefreshToken: false, persistSession: false },
+      });
+      const { data, error } = await admin.from("early_access_testers")
+        .select("active").eq("email", user.email.trim().toLowerCase()).eq("active", true).maybeSingle();
+      if (!error && data?.active) return response;
+    }
   }
 
   const destination = new URL("/early-access", request.url);
