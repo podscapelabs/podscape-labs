@@ -184,7 +184,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
         </div>
       </div>
     </div>}
-    {visible.map((id,index)=><WorkspaceEditBlock key={id} id={id} scope="home" label={isCore(id)?coreLabels[id]:definitions[id].name} index={index} count={visible.length} editing={canvasEditing} dragging={dragging===id} required={isCore(id)} onMove={move} onRemove={id=>{if(!isCore(id))remove(id)}} begin={beginDrag} move={moveDrag} stop={stopDrag}>
+    {visible.map((id,index)=><WorkspaceEditBlock key={id} id={id} scope="home" label={isCore(id)?coreLabels[id]:definitions[id].name} index={index} count={visible.length} editing={canvasEditing} dragging={dragging===id} required={isCore(id)} onMove={move} onRemove={id=>{if(!isCore(id))remove(id)}} begin={beginDrag} move={moveDrag} stop={stopDrag} onLongPress={()=>{setCanvasEditing(true);setEditing(false)}}>
       {(()=>{
       if(id==="greeting")return <div key={id} className={styles.homeBlock}>{greeting}</div>;
       if(id==="hero")return <div key={id} className={styles.homeBlock}>{hero}</div>;
