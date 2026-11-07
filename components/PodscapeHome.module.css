@@ -442,3 +442,21 @@
  .recentRail .tile{height:205px}
  .recentRail .tileCopy{min-height:0}
 }
+
+/* A single Home edit session owns the quick shortcuts, too. */
+.inlineShortcutPicker{
+ display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;
+ padding:10px 12px;margin:0 0 10px;
+ border:1px solid var(--line);border-radius:13px;background:var(--paper);
+}
+.inlineShortcutPicker>span{flex:1 1 100%;font-size:.72rem;color:var(--muted)}
+.inlineShortcutPicker label{flex:1 1 175px;display:grid;gap:5px;min-width:0;color:var(--forest);font-size:.69rem;font-weight:750}
+.inlineShortcutPicker select{width:100%;min-height:43px;padding:7px 10px;border:1px solid var(--line);border-radius:10px;background:var(--paper-strong);color:var(--ink);font-size:16px}
+.inlineShortcutPicker button{min-height:43px;padding:8px 11px;border:1px solid var(--line);border-radius:10px;background:var(--paper-strong);color:var(--forest);font-size:.7rem;font-weight:750;cursor:pointer}
+.homeCanvasEditing [data-workspace-block="shortcuts"] .shortcuts>.shortcut{touch-action:none;pointer-events:auto}
+.homeCanvasEditing [data-workspace-block="shortcuts"] .shortcuts{touch-action:none}
+@media(max-width:720px){
+ .inlineShortcutPicker{padding:9px 10px;gap:7px}
+ .inlineShortcutPicker>span{font-size:.66rem}
+ .inlineShortcutPicker button{font-size:.66rem}
+}
