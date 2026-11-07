@@ -1,7 +1,7 @@
 "use client";
 import {useRouter} from "next/navigation";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
-import {choiceById,navigationChoices,swapNavigationSlot} from "./navigation-customization";
+import {choiceById,navigationChoices,navigationGroups,swapNavigationSlot} from "./navigation-customization";
 import {useNavigationPreferences} from "./useNavigationPreferences";
 import {useShortcutEditor} from "./useShortcutEditor";
 import styles from "./PodscapeHome.module.css";
@@ -18,7 +18,7 @@ export function CustomizableHomeShortcuts(){
       <button type="button" className={styles.jiggleDone} onClick={done}>Done</button>
       <label className={styles.jigglePicker}>Replace {current?.label||"shortcut"}
         <select value={current?.id||""} onChange={event=>change(swapNavigationSlot(ids,selected,event.target.value))}>
-          {navigationChoices.map(item=><option key={item.id} value={item.id}>{item.label}{ids.includes(item.id)&&item.id!==current?.id?" (swap)":""}</option>)}
+          {navigationGroups.map(group=><optgroup label={group} key={group}>{navigationChoices.filter(item=>item.group===group).map(item=><option value={item.id} key={item.id}>{item.label}{item.planned?" (coming later)":""}{ids.includes(item.id)&&item.id!==current?.id?" (swap)":""}</option>)}</optgroup>)}
         </select>
       </label>
       <button type="button" className={styles.jiggleReset} onClick={()=>{reset();setSelected(0)}}>Reset shortcuts</button>
