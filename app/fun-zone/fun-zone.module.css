@@ -24,3 +24,20 @@
   min-width:134px;min-height:43px;padding:10px 15px;font-size:13px
  }
 }
+
+
+/* Fun Zone visual pass: no fixed blank tail, consistent cards and legible actions. */
+.page{min-height:0;padding-bottom:clamp(28px,6vw,64px)}
+.library{margin-top:clamp(18px,3vw,27px)}
+.puzzleGrid{align-items:stretch}
+.puzzleDetails{min-width:0}
+.sectionHeading{gap:10px}
+.carouselNext{width:44px;height:44px;flex:none}
+.carouselDots button{min-width:14px;min-height:14px}
+.playLink{min-height:44px}
+@media(max-width:680px){
+ .page{padding-bottom:34px}
+ .heading{gap:12px}
+ .sectionHeading{align-items:center}
+ .carouselNext{width:40px;height:40px}
+}
