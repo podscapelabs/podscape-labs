@@ -51,6 +51,8 @@ function readLayout():Layout{
 export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,hero,shortcuts,spotlight}:{recent:Tile[];colony:HomeColony;progress:HomeProgress;pinOptions:PinOption[];userId:string|null;greeting:ReactNode;hero:ReactNode;shortcuts:ReactNode;spotlight:ReactNode}){
   const [layout,setLayout]=useState<Layout>({order:defaultOrder,visible:defaultVisible});
   const [editing,setEditing]=useState(false);
+  const [canvasEditing,setCanvasEditing]=useState(false);
+  const canvasDrag=useRef<BlockId|null>(null);
   const [pins,setPins]=useState<HomePin[]>([]);
   const [tab,setTab]=useState<"library"|"arrange">("library");
   const [hydrated,setHydrated]=useState(false);
@@ -71,11 +73,12 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
     return ()=>window.removeEventListener("podscape-home-widgets-changed",refresh);
   },[]);
   useEffect(()=>{
-    const open=()=>{returnFocus.current=document.activeElement as HTMLElement;setTab("arrange");setEditing(true)};
+    const open=()=>{setCanvasEditing(true);setEditing(false)};
     window.addEventListener("podscape-edit-home",open);
     return ()=>window.removeEventListener("podscape-edit-home",open);
   },[]);
   const close=()=>{setEditing(false);requestAnimationFrame(()=>returnFocus.current?.focus())};
+  const finishCanvas=()=>{canvasDrag.current=null;setCanvasEditing(false)};
   useEffect(()=>{
     if(!editing)return;
     const previous=document.body.style.overflow;
@@ -117,6 +120,8 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
     update({...layout,order});
   };
   const visible=layout.order.filter(id=>isCore(id)||layout.visible.includes(id as WidgetId));
+  const startCanvasDrag=(id:BlockId,event:React.PointerEvent<HTMLButtonElement>)=>{if(event.pointerType==="mouse"&&event.button!==0)return;canvasDrag.current=id;event.currentTarget.setPointerCapture(event.pointerId)};
+  const moveCanvasDrag=(event:React.PointerEvent<HTMLButtonElement>)=>{if(!canvasDrag.current)return;const hit=document.elementFromPoint(event.clientX,event.clientY)?.closest("[data-home-block]");const target=hit?.getAttribute("data-home-block") as BlockId|null;if(target&&target!==canvasDrag.current&&visible.includes(target))reorder(canvasDrag.current,target)};
   const optionsByKey=new Map(pinOptions.map(item=>[pinKey(item),item]));
   const activePins=pins.flatMap(p=>{const option=optionsByKey.get(pinKey(p));return option?[option]:[]});
   const removePin=(pin:HomePin)=>{const next=pins.filter(p=>pinKey(p)!==pinKey(pin));writeHomePins(userId,next);setPins(next)};
@@ -128,7 +133,8 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
       <Link href={href}>{cta} →</Link>
     </section>
   );
-  return <section className={styles.widgetArea} aria-label="Your customizable homepage">
+  return <section className={`${styles.widgetArea} ${canvasEditing?styles.homeCanvasEditing:""}`} aria-label="Your customizable homepage">
+    {canvasEditing?<div className={styles.homeCanvasToolbar} role="toolbar" aria-label="Edit homepage layout"><div><strong>Arrange your Home</strong><small>Drag each block by its handle. Shortcuts stay together.</small></div><button type="button" onClick={()=>{finishCanvas();returnFocus.current=document.activeElement as HTMLElement;setTab("library");setEditing(true)}}>+ Widgets</button><button type="button" onClick={finishCanvas}>Done</button></div>:null}
     {editing&&<div className={styles.homeEditorOverlay} onPointerDown={event=>{if(event.target===event.currentTarget)close()}}>
       <div className={`${styles.widgetEditor} ${styles.widgetLibrary}`} id="podscape-home-widget-editor" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="widget-library-title">
         <div className={styles.homeEditorHead}>
@@ -189,7 +195,9 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
         </div>
       </div>
     </div>}
-    {visible.map(id=>{
+    {visible.map(id=><div key={id} data-home-block={id} className={`${styles.homeCanvasBlock} ${canvasEditing?styles.homeCanvasBlockActive:""}`}>
+      {canvasEditing?<div className={styles.homeCanvasBlockBar}><button type="button" className={styles.homeCanvasHandle} aria-label={`Drag ${isCore(id)?coreLabels[id]:definitions[id].name} to reorder`} onPointerDown={event=>startCanvasDrag(id,event)} onPointerMove={moveCanvasDrag} onPointerUp={()=>{canvasDrag.current=null}} onPointerCancel={()=>{canvasDrag.current=null}}><span aria-hidden="true">⠿</span> {isCore(id)?coreLabels[id]:definitions[id].name}</button><div><button type="button" aria-label={`Move ${isCore(id)?coreLabels[id]:definitions[id].name} up`} disabled={visible.indexOf(id)===0} onClick={()=>move(id,-1)}>↑</button><button type="button" aria-label={`Move ${isCore(id)?coreLabels[id]:definitions[id].name} down`} disabled={visible.indexOf(id)===visible.length-1} onClick={()=>move(id,1)}>↓</button>{!isCore(id)?<button type="button" aria-label={`Remove ${definitions[id].name}`} onClick={()=>remove(id)}>×</button>:null}</div></div>:null}
+      <div className={canvasEditing?styles.homeCanvasContentLocked:undefined}>{(()=>{
       if(id==="greeting")return <div key={id} className={styles.homeBlock}>{greeting}</div>;
       if(id==="hero")return <div key={id} className={styles.homeBlock}>{hero}</div>;
       if(id==="shortcuts")return <div key={id} className={styles.homeBlock}>{shortcuts}</div>;
@@ -218,7 +226,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
       if(id==="schedule")return compact(id,"calendar","CARE SCHEDULE","Keep your colonies on track","Open your existing Manager care schedule to see and organize care activities.","/keeper/schedule","View schedule");
       if(id==="guides")return compact(id,"book","FIELD GUIDE",guide?.title||"Explore field guides",guide?.description||"Care, husbandry and habitat resources.",guide?.href||"/field-guide",guide?"Read guide":"Browse guides");
       return compact(id,"community","COMMUNITY","Your community corner","Discover keepers, creators and what's growing around Podscape.","/community","Explore community");
-    })}
-    {hydrated?<div className={styles.addWidgetFooter}><button type="button" className={styles.addWidgetButton} onClick={()=>{returnFocus.current=document.activeElement as HTMLElement;setTab("library");setEditing(true)}}><span aria-hidden="true">＋</span> Add Widget</button></div>:null}
+    })()}</div></div>)}
+    {hydrated&&!canvasEditing?<div className={styles.addWidgetFooter}><button type="button" className={styles.addWidgetButton} onClick={()=>{returnFocus.current=document.activeElement as HTMLElement;setTab("library");setEditing(true)}}><span aria-hidden="true">＋</span> Add Widget</button></div>:null}
   </section>;
 }
