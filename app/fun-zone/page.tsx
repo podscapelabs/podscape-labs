@@ -13,7 +13,7 @@ export default async function FunZonePage(){
  const {data:{user}}=db?await db.auth.getUser():{data:{user:null}};
  const {data:progress}=user&&db?await db.from("member_progress").select("total_exp,pod_coins").eq("user_id",user.id).maybeSingle():{data:null};
  return <PlatformShell><main className={styles.page}><div className={styles.wrap}>
-  <header className={styles.heading}><div className={styles.heroCopy}><p className={styles.eyebrow}>PODSCAPE LABS / EXPLORE</p><h1>Fun Zone <span aria-hidden="true">✧</span></h1><p>Play, learn and explore. A little curiosity goes a long way.</p></div>
+  <header className={styles.heading}><div className={styles.heroCopy}><p className={styles.eyebrow}>PODSCAPE / PLAY</p><h1>Fun Zone <span aria-hidden="true">✧</span></h1><p>Your little corner for puzzles and play.</p></div>
    <Link href={user?"/account/progress":"/account/login"} className={styles.balance} aria-label="View my progress"><span>✦ &nbsp;{user?Number(progress?.total_exp||0).toLocaleString("en-CA"):"—"} EXP</span><span>◉ &nbsp;{user?Number(progress?.pod_coins||0).toLocaleString("en-CA"):"—"} Pod Coins</span></Link></header>
   <FunZoneCarousel signedIn={Boolean(user)} exp={Number(progress?.total_exp||0)} coins={Number(progress?.pod_coins||0)}/>
   <FunZoneLibrary/>
