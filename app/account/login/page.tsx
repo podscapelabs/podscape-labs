@@ -1,19 +1,12 @@
-import { redirect } from "next/navigation";
-import { isApprovedTesterEmail } from "@/lib/customer-auth/access";
 import { CustomerAccountForm } from "@/components/CustomerAccountForm";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import { CustomerAuthShell } from "../CustomerAuthShell";
 import styles from "../customer-auth.module.css";
 
+export const dynamic = "force-dynamic";
+
 export default async function CustomerLoginPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
   const db = await customerSupabase();
-  if (db) {
-    const { data: { user } } = await db.auth.getUser();
-    if (user?.app_metadata?.role === "owner" || (user?.email && await isApprovedTesterEmail(user.email))) {
-      redirect("/app");
-    }
-    // A stale or unapproved session should not trap visitors on Early Access.
-  }
   const { status } = await searchParams;
   return (
     <CustomerAuthShell index="AC / 001" eyebrow="Podscape Labs · Member access" title="Welcome back." intro="Your place to manage the colonies, references, and resources that matter to you.">
