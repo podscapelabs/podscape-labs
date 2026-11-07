@@ -34,7 +34,7 @@ export default function CommunityPage(){
     <a className="skip-link" href="#community-main">Skip to content</a>
     <Header/>
     <main className={styles.main} id="community-main">
-      <nav className={styles.crumb} aria-label="Breadcrumb"><Link href="/app">Podscape Home</Link><span aria-hidden="true">/</span><span>Community</span></nav>
+      
       <header className={styles.hero}>
         <div className={styles.heroText}>
           <p className={styles.eyebrow}>PODSCAPE / COMMUNITY</p>
