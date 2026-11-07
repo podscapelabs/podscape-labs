@@ -87,3 +87,6 @@
 .resetLink{justify-self:start;border:0;padding:4px 0;background:transparent;color:var(--accent,var(--forest));font-size:.7rem;font-weight:750;cursor:pointer}
 }
 @media(prefers-reduced-motion:reduce){.nav.editing>.item.jiggling{animation:none}}
+
+/* Long custom destination names must not push the five-icon toolbar out of shape. */
+@media(max-width:720px){.nav>.item{min-width:0}.nav>.item small{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;overflow-wrap:anywhere;max-width:100%;line-height:1.1;text-align:center}}
