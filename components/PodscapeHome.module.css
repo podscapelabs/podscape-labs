@@ -460,3 +460,32 @@
  .inlineShortcutPicker>span{font-size:.66rem}
  .inlineShortcutPicker button{font-size:.66rem}
 }
+
+/* Mobile editorial hierarchy: Spotlight is featured; Recent is a quick update feed.
+   Keep a peek of the next card so horizontal scrolling remains discoverable. */
+@media(max-width:720px){
+  .spotlightRail>.tile{
+    flex:0 0 min(69vw,248px);
+    height:184px;
+  }
+  .spotlightRail .tileVisual{flex:0 0 82px;height:82px}
+  .spotlightRail .tileCopy{padding:10px 29px 9px 10px;gap:3px}
+  .spotlightRail .tileCopy strong{font-size:1.03rem;line-height:1.12}
+  .spotlightRail .tileCopy small{font-size:.68rem;line-height:1.3;-webkit-line-clamp:2;line-clamp:2}
+  .recentRail>.tile{
+    flex:0 0 min(66vw,235px);
+    height:146px;
+  }
+  .recentRail .widgetRecentIcon{
+    flex:0 0 43px;
+    height:43px;
+    flex-direction:row;
+    gap:8px;
+  }
+  .recentRail .widgetRecentIcon svg{width:19px;height:19px}
+  .recentRail .widgetRecentIcon small{font-size:.55rem}
+  .recentRail .tileCopy{padding:9px 28px 8px 10px;gap:3px}
+  .recentRail .tileCopy strong{font-size:1rem;line-height:1.12}
+  .recentRail .tileCopy small{font-size:.67rem;line-height:1.3;-webkit-line-clamp:2;line-clamp:2}
+  .recentRail .tileArrow,.spotlightRail .tileArrow{right:8px;bottom:8px}
+}
