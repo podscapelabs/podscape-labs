@@ -1237,3 +1237,15 @@ h1, h2, h3 { text-wrap: balance; }
  .v2-site{scroll-behavior:auto}
  .v2-site :where(button,a,summary,input,select,textarea){transition-duration:.01ms!important}
 }
+
+/* Maintenance-page member entry: permanent, visible alternative to the early-access gate. */
+.construction-header-actions{display:flex;align-items:center;justify-content:flex-end;gap:clamp(9px,2vw,18px)}
+.construction-member-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:8px 16px;border:1px solid var(--line);border-radius:12px;color:var(--forest);font-size:.73rem;font-weight:800;letter-spacing:.02em}
+.construction-member-link:hover{border-color:var(--forest);background:var(--paper-strong)}
+.construction-member-link:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
+@media(max-width:520px){
+ .construction-header{gap:12px;padding-inline:15px}
+ .construction-header-actions{gap:8px}
+ .construction-member-link{padding:7px 10px;font-size:.69rem;text-align:center}
+ .construction-wordmark{max-width:43vw}
+}
