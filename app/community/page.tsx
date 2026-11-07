@@ -62,7 +62,7 @@ export default function CommunityPage(){
       </section>
       <section className={styles.section} aria-labelledby="socials-heading">
         <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>CONNECT WITH US</p><h2 id="socials-heading">Find Podscape beyond the portal.</h2></div></div>
-        <p className={styles.sectionDescription}>Follow along, say hello and join the little world we're growing together.</p>
+        <p className={styles.sectionDescription}>Follow along, say hello and join the little world we&apos;re growing together.</p>
         <div className={styles.exploreGrid}>{socials.map(item=><a className={styles.exploreCard} href={item.href} target="_blank" rel="noopener noreferrer" key={item.name}>
           <span className={styles.exploreIcon} aria-hidden="true"><PodscapeLineIcon name="community"/></span>
           <strong>{item.name}</strong><p>{item.copy}</p><span className={styles.cardLink}>Visit {item.name} <span aria-hidden="true">↗</span></span>
