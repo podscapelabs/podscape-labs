@@ -8,7 +8,6 @@ import { CreateEnclosure } from "@/components/KeeperWorkspace";
 import { KeeperMobileNav } from "@/components/KeeperMobileNav";
 import { PodscapeLineIcon, type PodscapeIconName } from "@/components/PodscapeLineIcon";
 import { getMemberCollectionState } from "@/lib/member-collection";
-import { customerSupabase } from "@/lib/customer-auth/server";
 import { listEnclosures } from "@/lib/keeper";
 import { getSpeciesRecords } from "@/lib/species-store";
 import { speciesDisplayName, speciesScientificName } from "@/data/species";
