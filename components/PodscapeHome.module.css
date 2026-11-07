@@ -220,3 +220,10 @@
 .widgetPinEmpty p{margin:0 0 9px;font-size:.78rem;line-height:1.5}
 .widgetPinEmpty a{color:var(--forest);font-size:.76rem;font-weight:800}
 @media(max-width:720px){.pinnedGrid{grid-template-columns:1fr;gap:8px}.pinnedCard{min-height:108px;padding:12px 40px 12px 12px;gap:9px}.pinnedIcon{width:40px;height:40px}.pinnedIcon svg{width:23px;height:23px}.pinnedCard>div strong{font-size:1.13rem}.pinnedCard>div p{font-size:.69rem}}
+
+/* Keep homepage navigation labels on one clean line at phone widths. */
+@media(max-width:720px){
+ .shortcuts{gap:5px}
+ .shortcuts>.shortcut{font-size:clamp(.58rem,2.35vw,.7rem);letter-spacing:-.015em}
+ .shortcuts>.shortcut>span:last-child{display:block;white-space:nowrap;overflow:hidden;text-overflow:clip;overflow-wrap:normal;line-clamp:unset;-webkit-line-clamp:unset;padding-inline:0}
+}
