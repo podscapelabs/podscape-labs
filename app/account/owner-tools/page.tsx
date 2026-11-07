@@ -26,7 +26,7 @@ export default async function OwnerToolsPage() {
         <div>
           <p className={styles.eyebrow}>PODSCAPE LABS / OWNER ACCESS</p>
           <h1>Owner Tools</h1>
-          <p>One place to manage the things you're building.</p>
+          <p>One place to manage the things you&apos;re building.</p>
         </div>
         <Link className={styles.back} href={user ? "/account" : "/app"}>← {user ? "My Podscape" : "Podscape Home"}</Link>
       </header>
