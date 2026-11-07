@@ -301,3 +301,6 @@
  .homeCanvasToolbar>button:nth-last-child(2){font-size:.62rem}
 }
 @media(prefers-reduced-motion:reduce){.homeCanvasEditing .homeCanvasBlockActive{animation:none}}
+
+/* Touch dragging requires preventing the browser's native pan gesture in edit mode. */
+.homeCanvasEditing .homeCanvasBlockActive,.homeCanvasEditing .homeCanvasBlockActive .homeCanvasBlockBar{touch-action:none}
