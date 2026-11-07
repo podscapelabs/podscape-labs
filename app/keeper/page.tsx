@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { PlatformShell } from "@/components/PlatformShell";
+import { ManagerWorkspace } from "@/components/ManagerWorkspace";
 import { CreateEnclosure } from "@/components/KeeperWorkspace";
 import { KeeperMobileNav } from "@/components/KeeperMobileNav";
 import { PodscapeLineIcon, type PodscapeIconName } from "@/components/PodscapeLineIcon";
@@ -57,20 +58,13 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
           <p>Sign in to manage bins, care records, and colony details.</p>
           <Link href="/account/login">Member sign in →</Link>
         </section> : unavailable ? <section className={styles.empty} role="alert"><h2>Manager is temporarily unavailable.</h2><p>The Keeper database connection could not be reached.</p></section> : <>
-          <section className={styles.metrics} aria-label="Keeper overview">
+          <ManagerWorkspace scope="local" stats={<>          <section className={styles.metrics} aria-label="Keeper overview">
             <Link href="/keeper/collection"><PodscapeLineIcon name="leaf" /><strong>{uniqueSpecies}</strong><span>Species</span><b>›</b></Link>
             <Link href="/keeper/collection"><PodscapeLineIcon name="bin" /><strong>{active.length}</strong><span>Bins</span><b>›</b></Link>
             <Link href="/keeper/collection"><PodscapeLineIcon name="community" /><strong>{totalPopulation}</strong><span>Recorded population</span><b>›</b></Link>
           </section>
 
-          <section className={styles.section}>
-            <header><h2>Quick Tools</h2></header>
-            <nav className={styles.tools} aria-label="Keeper quick tools">
-              {tools.map((tool) => <Link href={tool.href} key={tool.label}><span><PodscapeLineIcon name={tool.icon} /></span><small>{tool.label}</small></Link>)}
-            </nav>
-          </section>
-
-          <section className={styles.section}>
+</>} enclosures={<>          <section className={styles.section}>
             <header><h2>Your Enclosures</h2><Link href="/keeper/collection">View all <span>→</span></Link></header>
             {recent.length ? <div className={styles.attentionList}>{recent.map(enclosure => {
               const record=speciesById.get(enclosure.speciesId);
@@ -82,6 +76,7 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
             })}</div> : <div className={styles.emptyInline}><p>No active colonies yet.</p><Link href="/keeper/collection">Explore your collection →</Link></div>}
           </section>
 
+</>}/>
           {archived.length ? <details className={styles.archived}><summary>Archived bins ({archived.length})</summary><div>{archived.map((enclosure) => <Link href={`/keeper/${enclosure.id}`} key={enclosure.id}>{enclosure.name} →</Link>)}</div></details> : null}
           {selectedRecord ? <CreateEnclosure speciesId={selectedRecord.id} speciesName={`${speciesDisplayName(selectedRecord)} · ${speciesScientificName(selectedRecord)}`} /> : null}
         </>}
