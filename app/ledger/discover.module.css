@@ -44,3 +44,11 @@
 .featureCopy h2{font-size:20px}
 .featureCopy p{margin-bottom:7px}
 }
+
+
+/* Leaf Ledger: align discovery and collection navigation with app touch targets. */
+.page{padding-bottom:clamp(32px,6vw,65px)}
+.content :global(nav[aria-label="Leaf Ledger views"] a){min-height:44px}
+.content :global(nav[aria-label="Leaf Ledger views"] a:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
+.content :global(.v2-species-grid){align-items:stretch}
+@media(max-width:700px){.page{padding-bottom:34px}.content :global(nav[aria-label="Leaf Ledger views"] a){min-height:44px}}
