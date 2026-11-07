@@ -413,3 +413,32 @@
   .spotlightRail{gap:10px;scroll-padding-inline:2px;scroll-snap-type:x proximity}
   .spotlightRail>.tile{flex:0 0 min(76vw,270px);scroll-snap-align:start}
 }
+
+/* Recent & Noteworthy follows Spotlight's horizontal browsing pattern.
+   Published records are sorted by their latest saved edit on the server. */
+.recentRail{
+  display:flex;
+  gap:11px;
+  overflow-x:auto;
+  min-width:0;
+  padding:2px 2px 12px;
+  scroll-snap-type:x proximity;
+  scroll-padding-inline:2px;
+  scrollbar-width:thin;
+  overscroll-behavior-x:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.recentRail>.tile{
+  flex:0 0 calc((100% - 22px)/3);
+  min-width:0;
+  scroll-snap-align:start;
+}
+.recentRail:focus-visible{outline:2px solid var(--forest);outline-offset:3px;border-radius:10px}
+.homeCanvasBlock:not(.homeCanvasBlockActive) .recentRail{touch-action:pan-x pan-y}
+@media(max-width:720px){
+ .recentRail{gap:10px;padding-bottom:10px}
+ .recentRail>.tile{flex:0 0 min(76vw,270px)}
+ .recentRail .widgetRecentIcon{height:90px}
+ .recentRail .tile{height:205px}
+ .recentRail .tileCopy{min-height:0}
+}
