@@ -96,3 +96,7 @@
 .deleteButtons { display: flex; flex-wrap: wrap; gap: 8px; }
 .cancelDelete { min-height: 42px; padding: 9px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); color: var(--ink); font: inherit; font-size: .68rem; font-weight: 800; cursor: pointer; }
 @media (max-width: 700px) { .productActions { grid-template-columns: 1fr; } .productActions .archive { min-height: auto; } .deletePanel { gap: 12px; } }
+
+/* Product identifiers helper controls */
+.identifierHelp { display: block; margin-top: 6px; color: var(--muted); font-size: .67rem; line-height: 1.45; }
+.identifierButton { justify-self: start; width: fit-content; min-height: 32px; margin-top: 8px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--forest); font: inherit; font-size: .66rem; font-weight: 700; cursor: pointer; }

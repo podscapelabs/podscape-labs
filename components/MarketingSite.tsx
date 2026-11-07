@@ -2,26 +2,26 @@ import Image from "next/image";
 import Link from "next/link";
 import { Header } from "./Header";
 import { HomeGreeting } from "./HomeGreeting";
-import { PodscapeLineIcon, type PodscapeIconName } from "./PodscapeLineIcon";
+import { PodscapeLineIcon } from "./PodscapeLineIcon";
+import { CustomizableHomeShortcuts } from "./CustomizableHomeShortcuts";
+import { HomeWidgets, type HomeColony, type HomeProgress } from "./HomeWidgets";
+import type { PinOption } from "./home-pins";
+import { games as funZoneGames } from "@/lib/fun-zone-games";
+import { InstallPodscape } from "./InstallPodscape";
+import { ShortcutWelcomeTip } from "./ShortcutWelcomeTip";
+import { EditHomeButton } from "./EditHomeButton";
 import { getSpeciesRecords } from "@/lib/species-store";
 import { getProductRecords } from "@/lib/product-store";
 import { getGuideRecords } from "@/lib/guide-store";
 import { isSpeciesRecordActive, speciesDisplayName } from "@/data/species";
 import { customerSupabase } from "@/lib/customer-auth/server";
+import { getHomepageSpotlights } from "@/lib/podscape-spotlights";
 import styles from "./PodscapeHome.module.css";
 
-const shortcuts:{label:string;href:string;icon:PodscapeIconName;tone:string}[]=[
- {label:"Ledger",href:"/ledger",icon:"leaf",tone:"sage"},
- {label:"Shop",href:"/shop",icon:"shop",tone:"sand"},
- {label:"Fun Zone",href:"/fun-zone",icon:"creative",tone:"rose"},
- {label:"Community",href:"/from-the-lab",icon:"community",tone:"sage"},
- {label:"Guides",href:"/field-guide",icon:"book",tone:"sage"},
- {label:"PodBound",href:"/podbound",icon:"podbound",tone:"sand"}
-];
 type Tile={title:string;label:string;description:string;href:string;image?:string|null;alt?:string};
 function TileCard({item}:{item:Tile}){return <Link href={item.href} className={styles.tile}><div className={styles.tileVisual}>{item.image?<Image src={item.image} alt={item.alt||item.title} fill sizes="(max-width: 720px) 33vw, 300px"/>:<span className={styles.tilePlaceholder}><PodscapeLineIcon name={item.label==="GUIDE"?"book":item.label==="SHOP"?"shop":"podbound"}/></span>}<span className={styles.tileTag}>{item.label}</span></div><div className={styles.tileCopy}><strong>{item.title}</strong><small>{item.description}</small><span className={styles.tileArrow} aria-hidden="true">→</span></div></Link>}
 export async function MarketingSite(){
- const [records,products,guides]=await Promise.all([getSpeciesRecords(),getProductRecords(),getGuideRecords()]);
+ const [records,products,guides,spotlights]=await Promise.all([getSpeciesRecords(),getProductRecords(),getGuideRecords(),getHomepageSpotlights()]);
  const species=records.filter(r=>isSpeciesRecordActive(r)&&r.image).sort((a,b)=>Date.parse(b.updatedAt)-Date.parse(a.updatedAt));
  const product=products.filter(p=>!p.archivedAt&&p.status==="published"&&p.image).sort((a,b)=>Number(b.featured)-Number(a.featured)||Date.parse(b.updatedAt)-Date.parse(a.updatedAt))[0];
  const guide=guides.filter(g=>!g.archivedAt&&g.status==="published").sort((a,b)=>Date.parse(b.updatedAt)-Date.parse(a.updatedAt))[0];
@@ -30,21 +30,49 @@ export async function MarketingSite(){
  const {data:{user}}=db?await db.auth.getUser():{data:{user:null}};
  const {data:profile}=user&&db?await db.from("customer_profiles").select("display_name").eq("id",user.id).maybeSingle():{data:null};
  const name=(profile?.display_name||user?.user_metadata?.display_name||user?.user_metadata?.full_name||"").trim().split(/\s+/)[0]||undefined;
- const featured:Tile[]=[
- ...(hero?[{title:speciesDisplayName(hero),label:"SPECIES SPOTLIGHT",description:"Discover this species in the Ledger.",href:`/ledger/${hero.slug}`,image:hero.image,alt:hero.imageAlt}]:[]),
- ...(product?[{title:product.title,label:"SHOP FEATURE",description:product.summary||"Explore our latest shop addition.",href:`/shop/${product.slug}`,image:product.image,alt:product.imageAlt}]:[]),
- {title:"Play the Demo",label:"PODBOUND",description:"Explore our isopod card game.",href:"/podbound"}
+ let colony:HomeColony=null;
+ let ownedPins:PinOption[]=[];
+ let progress:HomeProgress=null;
+ if(user&&db){
+  const [colonyResult,progressResult,ownedResult]=await Promise.all([
+    db.from("keeper_enclosures").select("id,name,species_id,quantity").eq("user_id",user.id).eq("is_archived",false).order("updated_at",{ascending:false}).limit(1).maybeSingle(),
+    db.from("member_progress").select("total_exp").eq("user_id",user.id).maybeSingle(),
+    db.from("keeper_enclosures").select("id,name,species_id,quantity").eq("user_id",user.id).eq("is_archived",false)
+  ]);
+  if(colonyResult.data){
+    const entry=colonyResult.data;
+    const matched=records.find(record=>record.id===entry.species_id);
+    colony={id:entry.id,name:entry.name,quantity:entry.quantity||0,speciesName:matched?speciesDisplayName(matched):"Your colony"};
+  }
+  ownedPins=(ownedResult.data||[]).map(entry=>{
+    const matched=records.find(record=>record.id===entry.species_id);
+    return {kind:"colony" as const,id:entry.id,title:entry.name,description:(matched?speciesDisplayName(matched):"Colony")+" · "+(entry.quantity||0)+" recorded",href:"/keeper/"+entry.id};
+  });
+  if(progressResult.data){
+    const exp=Math.max(0,Number(progressResult.data.total_exp||0));
+    progress={level:Math.floor(Math.sqrt(exp/100))+1,exp};
+  }
+ }
+
+ const pinOptions:PinOption[]=[
+  ...records.filter(record=>isSpeciesRecordActive(record)&&record.kind==="species"&&record.status==="published").map(record=>({kind:"species" as const,id:record.slug,title:speciesDisplayName(record),description:record.summary||"Discover this species",href:"/ledger/"+record.slug})),
+  ...ownedPins,
+  ...funZoneGames.map(game=>({kind:"game" as const,id:game.key,title:game.title,description:game.subtitle,href:"/fun-zone/"+game.key})),
+  {kind:"game",id:"word-search",title:"Word Search",description:"Find hidden isopod terms",href:"/fun-zone/word-search"}
  ];
+ const featured:Tile[]=spotlights.map(item=>({title:item.title,label:item.label,description:item.description,href:item.href,image:item.image,alt:item.alt}));
  const recent:Tile[]=[
  ...(guide?[{title:guide.title,label:"GUIDE",description:guide.summary||"Learn something new.",href:`/field-guide/${guide.slug}`}]:[]),
  {title:"Explore the Fun Zone",label:"FUN ZONE",description:"Puzzles, games and activities.",href:"/fun-zone"},
- {title:"Meet the Community",label:"COMMUNITY",description:"Connect with fellow keepers.",href:"/from-the-lab"}
+ {title:"Meet the Community",label:"COMMUNITY",description:"Connect with fellow keepers.",href:"/community"}
  ];
  return <div className={styles.site}><a className="skip-link" href="#platform-main">Skip to content</a><Header/><main id="platform-main" className={styles.main}>
- <Link href="/account" className={styles.welcome}><span className={styles.welcomeMark}><PodscapeLineIcon name="leaf"/></span><HomeGreeting name={name}/><span className={styles.welcomeArrow}>→</span></Link>
+ <div className={styles.homeGreetingRow}><Link href="/account" className={styles.welcome}><span className={styles.welcomeMark}><PodscapeLineIcon name="leaf"/></span><HomeGreeting name={name}/><span className={styles.welcomeArrow}>→</span></Link><EditHomeButton/></div>
  <section className={styles.hero} aria-label="Discover PodScape">{hero&&<Image src={hero.image!} alt={hero.imageAlt||speciesDisplayName(hero)} fill priority sizes="(max-width: 720px) 100vw, 1100px" className={styles.heroImage}/>}<div className={styles.heroContent}><span className={styles.eyebrow}>EXPLORE PODSCAPE</span><h2>Small creatures.<br/>Big world.</h2><p>Discover species, care guides, community and more.</p></div></section>
- <nav className={styles.shortcuts} aria-label="Explore PodScape">{shortcuts.map(item=><Link href={item.href} className={`${styles.shortcut} ${styles[item.tone]}`} key={item.label}><span className={styles.shortcutIcon}><PodscapeLineIcon name={item.icon}/></span><span>{item.label}</span></Link>)}</nav>
- <section className={styles.section}><div className={styles.heading}><h2>Featured This Week</h2><Link href="/ledger">See all →</Link></div><div className={styles.tiles}>{featured.map(item=><TileCard item={item} key={item.href}/>)}</div></section>
- <section className={styles.section}><div className={styles.heading}><h2>Recent &amp; Noteworthy</h2><Link href="/menu">See all →</Link></div><div className={styles.tiles}>{recent.map(item=><TileCard item={item} key={item.href}/>)}</div></section>
+ <CustomizableHomeShortcuts/>
+ <ShortcutWelcomeTip/>
+ <InstallPodscape/>
+ <section className={styles.section} aria-label="Podscape Spotlight"><div className={styles.heading}><h2>Podscape Spotlight</h2><span className={styles.spotlightHint}>Swipe to explore <span aria-hidden="true">↔</span></span></div><div className={styles.spotlightRail} role="region" aria-roledescription="carousel" aria-label="Curated Podscape highlights" tabIndex={0}>{featured.map(item=><TileCard item={item} key={item.href}/>)}</div></section>
+ <HomeWidgets recent={recent} colony={colony} progress={progress} pinOptions={pinOptions} userId={user?.id||null}/>
  </main></div>;
 }

@@ -25,7 +25,7 @@ export function AdminLoginForm({ configured, accountLogin }: { configured: boole
       {state.error ? <p className="admin-form-error" role="alert">{state.error}</p> : null}
       {state.message ? <p className="admin-form-note" role="status">{state.message}</p> : null}
       <button className="button button-primary" type="submit" disabled={!configured || pending}>
-        {pending ? "Checking…" : "Open studio"}
+        {pending ? "Checking…" : "Open Owner Tools"}
       </button>
       {accountLogin ? <Link className="admin-forgot-link" href="/admin/forgot-password">Forgot your password?</Link> : null}
       {!configured ? (

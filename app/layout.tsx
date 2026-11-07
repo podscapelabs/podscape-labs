@@ -1,8 +1,15 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { siteContent } from "@/content/site";
 import "./globals.css";
 import { GlobalMobileNav } from "@/components/GlobalMobileNav";
 import { AchievementToast } from "@/components/AchievementToast";
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#eee8d8" },
+    { media: "(prefers-color-scheme: dark)", color: "#12231a" },
+  ],
+};
 
 export const metadata: Metadata = {
   title: `${siteContent.brand.shortName} | Tools, games, and resources for the isopod hobby`,

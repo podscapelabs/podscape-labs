@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { ProductVariantRecord } from "@/data/products";
+import { isLegacyGeneratedSku, productSku } from "@/lib/product-identifiers";
 import styles from "./ProductVariantEditor.module.css";
 
 function moneyInput(cents: number | null) {
@@ -14,8 +15,8 @@ function parseMoney(value: string) {
   return Number.isFinite(amount) && amount >= 0 ? Math.round(amount * 100) : null;
 }
 
-export function ProductVariantEditor({ initialVariants }: { initialVariants: ProductVariantRecord[] }) {
-  const [variants, setVariants] = useState(initialVariants.length ? initialVariants : [{ id: "", title: "Default", sku: "", priceCents: 0, compareAtPriceCents: null, inventoryTracked: true, inventoryQuantity: 0, lowStockThreshold: 5, isActive: true, sortOrder: 0 }]);
+export function ProductVariantEditor({ initialVariants, productId, category, speciesName }: { initialVariants: ProductVariantRecord[]; productId: string; category: string; speciesName: string }) {
+  const [variants, setVariants] = useState(initialVariants.length ? initialVariants.map(variant => ({ ...variant, sku: isLegacyGeneratedSku(variant.sku) ? "" : variant.sku })) : [{ id: "", title: "Default", sku: "", priceCents: 0, compareAtPriceCents: null, inventoryTracked: true, inventoryQuantity: 0, lowStockThreshold: 5, isActive: true, sortOrder: 0 }]);
   const [priceDrafts, setPriceDrafts] = useState(() => (initialVariants.length ? initialVariants : [{ priceCents: 0, compareAtPriceCents: null }]).map((variant) => moneyInput(variant.priceCents) || "0.00"));
   const [compareDrafts, setCompareDrafts] = useState(() => (initialVariants.length ? initialVariants : [{ priceCents: 0, compareAtPriceCents: null }]).map((variant) => moneyInput(variant.compareAtPriceCents)));
   const activeCount = variants.filter((variant) => variant.isActive).length;
@@ -37,12 +38,12 @@ export function ProductVariantEditor({ initialVariants }: { initialVariants: Pro
 
   return <div className={styles.editor}>
     <input type="hidden" name="variants" value={JSON.stringify(serializedVariants)} />
-    <div className={styles.heading}><div><strong>Variants</strong><p>Give each size or pack its own price, SKU and stock.</p></div><button type="button" onClick={addVariant}>＋ Add variant</button></div>
+    <div className={styles.heading}><div><strong>Variants</strong><p>Short, readable SKUs use your species and pack count. Example: PS-DC-12. You can override them.</p></div><button type="button" onClick={addVariant}>＋ Add variant</button></div>
     {variants.map((variant, index) => <fieldset className={`${styles.variant} ${!variant.isActive ? styles.inactive : ""}`} key={variant.id || `new-${index}`}>
       <legend><span>{variant.title || `Variant ${index + 1}`}</span><span className={styles.variantState}>{variant.isActive ? "Active" : "Archived"}</span></legend>
       <div className={styles.fields}>
         <label><span>Option name</span><input value={variant.title} onChange={(event) => update(index, { title: event.target.value })} maxLength={120} required /></label>
-        <label><span>SKU</span><input value={variant.sku} onChange={(event) => update(index, { sku: event.target.value })} maxLength={100} placeholder="Optional" /></label>
+        <label><span>SKU · auto-generated</span><input value={variant.sku} onChange={(event) => update(index, { sku: event.target.value })} maxLength={100} placeholder={productSku(productId, category, variant.title, index, speciesName)} autoCapitalize="characters" spellCheck={false} /><small className={styles.skuHint}>{variant.sku ? "Custom or saved SKU · preserved on rename" : `On save: ${productSku(productId, category, variant.title, index)}`}</small></label>
         <label><span>Price · CAD</span><input inputMode="decimal" type="number" min="0" step="0.01" value={priceDrafts[index] ?? "0.00"} onChange={(event) => setPriceDrafts((current) => current.map((value, variantIndex) => variantIndex === index ? event.target.value : value))} required /></label>
         <label><span>Compare-at price</span><input inputMode="decimal" type="number" min="0" step="0.01" value={compareDrafts[index] ?? ""} onChange={(event) => setCompareDrafts((current) => current.map((value, variantIndex) => variantIndex === index ? event.target.value : value))} placeholder="Optional" /></label>
         <label className={styles.check}><input type="checkbox" checked={variant.inventoryTracked} onChange={(event) => update(index, { inventoryTracked: event.target.checked })} /><span>Track inventory</span></label>

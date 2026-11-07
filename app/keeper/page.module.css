@@ -84,3 +84,52 @@
   .bins { margin-right: -12px; grid-template-columns: repeat(4,minmax(142px,1fr)); }
   .binPhoto { height: 105px; }
 }
+
+/* Manager workspace: tools and enclosures take priority over decorative hero content. */
+.hero{min-height:0;background:linear-gradient(115deg,var(--surface),color-mix(in srgb,var(--accent) 7%,var(--surface)))}
+.heroCopy{padding:32px 0 43px}
+.heroCopy h1{font-size:clamp(2.5rem,5vw,3.8rem);line-height:1.05}
+.heroCopy>span{max-width:500px;margin:8px 0 16px;font-family:inherit;font-size:.88rem;line-height:1.5}
+.heroCopy a{gap:13px;padding:10px 16px}
+.dashboard{margin-top:-19px}
+.metrics a{box-shadow:none}
+.metrics span{white-space:normal}
+.attentionList>a{min-height:73px}
+.attentionList a>span:nth-child(2){min-width:0}
+.attentionList strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:720px){
+ .hero{min-height:0}
+ .heroCopy{padding:24px 0 35px}
+ .heroCopy h1{font-size:2.45rem}
+ .heroCopy>span{max-width:310px;font-size:.81rem;margin:7px 0 14px}
+ .dashboard{margin-top:-14px}
+ .metrics a{grid-template-columns:24px minmax(0,1fr) 8px;gap:2px 5px;padding:9px 7px}
+ .metrics svg{width:24px;height:24px;padding:3px}
+ .metrics strong{font-size:1.18rem}
+ .metrics span{font-size:.52rem;line-height:1.2}
+ .attentionList>a{min-height:66px}
+}
+
+/* Personalized Manager: operational controls, not a second homepage. */
+.managerWorkspace{padding-bottom:10px}
+.managerWorkspaceHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:20px 0 4px;color:var(--text-secondary);font-size:.72rem;font-weight:750}
+.managerWorkspaceHeader button,.managerTextButton{border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--accent);padding:9px 13px;font:inherit;font-size:.7rem;font-weight:800;cursor:pointer}
+.managerTextButton{border:0;padding:6px 2px;background:transparent}
+.managerEditor{margin:12px 0;padding:15px;border:1px solid var(--border);border-radius:16px;background:var(--surface)}
+.managerEditor h3{margin:0;font-family:var(--display);font-size:1.25rem;font-weight:500}
+.managerEditor p{margin:6px 0 13px;color:var(--text-secondary);font-size:.7rem;line-height:1.5}
+.managerEditorRow{display:flex;align-items:center;gap:7px;padding:10px 0;border-bottom:1px solid var(--border)}
+.managerEditorRow label{display:flex;align-items:center;gap:10px;flex:1;font-size:.76rem;font-weight:700}
+.managerEditorRow input{accent-color:var(--accent);width:18px;height:18px}
+.managerEditorRow button,.managerEditorActions button,.managerPickerTitle button{padding:7px 11px;border:1px solid var(--border);border-radius:9px;background:var(--surface-secondary);color:var(--text-primary);cursor:pointer}
+.managerEditorRow button:disabled{opacity:.3;cursor:default}
+.managerEditorActions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
+.managerEditorActions button{font-size:.72rem;font-weight:700}
+.managerPickerTitle{display:flex;align-items:center;justify-content:space-between}
+.managerToolLibrary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.managerToolLibrary button{display:flex;align-items:center;gap:8px;min-height:48px;padding:9px;border:1px solid var(--border);border-radius:11px;background:var(--surface-secondary);color:var(--text-primary);text-align:left;font-size:.7rem;font-weight:700;cursor:pointer}
+.managerToolLibrary svg{width:23px;height:23px;flex:none;color:var(--accent)}
+.managerHint{margin:9px 0;color:var(--text-secondary);font-size:.7rem}
+.managerFallback{display:flex;flex-wrap:wrap;gap:15px;margin-top:25px;padding:14px 0;border-top:1px solid var(--border)}
+.managerFallback a{color:var(--accent);font-size:.72rem;font-weight:750}
+@media(max-width:720px){.managerWorkspaceHeader{margin-top:15px}.managerToolLibrary{gap:7px}.managerToolLibrary button{font-size:.67rem}.managerEditor{padding:12px}}

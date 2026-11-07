@@ -5,3 +5,12 @@
 @media(prefers-reduced-motion:reduce){.heroPhoto img{transform:none!important}}
 .homeHeading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:3px 0 16px}.homeHeading h2{margin:0;font-family:var(--display);font-size:1.65rem;font-weight:570}.homeHeading a{color:var(--accent);font-size:.64rem;font-weight:780}.cardIcon svg,.menuList i svg,.mobileNav svg{width:27px;height:27px}.mobileNav svg{width:21px;height:21px}.mobileNav .scan svg{width:25px;height:25px}.menuList i svg{width:26px;height:26px}.ownerBar.ownerBar{display:flex;min-height:42px;align-items:center;justify-content:space-between;gap:10px;padding:6px 15px}.ownerBar>span{font-size:.58rem}.ownerDesktopLinks{display:flex}.ownerMobileMenu{display:none}
 @media(max-width:650px){.homeHeading{margin-bottom:12px}.homeHeading h2{font-family:var(--sans);font-size:1.35rem;font-weight:780}.homeHeading a{font-size:.58rem}.ownerBar.ownerBar{min-height:38px;padding:4px 14px}.ownerBar .ownerDesktopLinks{display:none}.ownerMobileMenu{position:relative;display:block}.ownerMobileMenu summary{display:flex;min-height:30px;align-items:center;cursor:pointer;list-style:none;font-size:.58rem}.ownerMobileMenu summary::-webkit-details-marker{display:none}.ownerMobileMenu nav{position:absolute;z-index:100;right:0;top:32px;display:grid;width:210px;padding:7px;background:#11271d}.ownerMobileMenu nav a{padding:9px;color:#f1eddf;font-size:.65rem}}
+
+/* Shared feature catalogue: Menu and homepage shortcut picker use one list. */
+.menuGroup{max-width:650px;margin:25px 0 0}
+.menuGroup h2{margin:0 0 12px;color:var(--accent);font:400 clamp(1.3rem,3vw,1.7rem)/1.2 var(--display)}
+.menuGroup .menuList{max-width:none}
+.menuGroup .menuList>a{color:var(--text-primary);text-decoration:none}
+.menuGroup .menuList>a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.menuPlanned{display:inline-flex;vertical-align:middle;margin-left:9px;padding:3px 7px;border:1px solid var(--border);border-radius:99px;color:var(--text-secondary);font:600 .57rem/1 sans-serif;letter-spacing:.03em}
+@media(max-width:650px){.menuGroup{margin-top:23px}.menuGroup h2{font-size:1.35rem}}

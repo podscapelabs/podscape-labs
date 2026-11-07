@@ -28,6 +28,7 @@ export const guideCategories = [
   "Ventilation",
   "Feeding",
   "Colony Management",
+  "Species",
 ] as const;
 
 export function isGuideActive(guide: GuideRecord) {

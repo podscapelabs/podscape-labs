@@ -25,6 +25,8 @@ export type SpeciesRecord = {
   moisture: string;
   temperature: string;
   ventilation: string;
+  reproduction?: string;
+  activity?: string;
   substrate: string;
   feeding: string;
   about: string;

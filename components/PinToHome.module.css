@@ -1,0 +1,4 @@
+.button{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:42px;padding:9px 16px;border:1px solid var(--border,var(--line));border-radius:999px;background:var(--surface,var(--paper));color:var(--accent,var(--forest));font-size:.78rem;font-weight:750;cursor:pointer}
+.button:hover,.button:focus-visible{border-color:var(--accent,var(--forest))}
+.button[aria-pressed="true"]{background:color-mix(in srgb,var(--accent,var(--forest)) 10%,var(--surface,var(--paper)))}
+.button:disabled{opacity:.55}
