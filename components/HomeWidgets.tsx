@@ -71,7 +71,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
     return ()=>window.removeEventListener("podscape-home-widgets-changed",refresh);
   },[]);
   useEffect(()=>{
-    const open=()=>{returnFocus.current=document.activeElement as HTMLElement;setTab("library");setEditing(true)};
+    const open=()=>{returnFocus.current=document.activeElement as HTMLElement;setTab("arrange");setEditing(true)};
     window.addEventListener("podscape-edit-home",open);
     return ()=>window.removeEventListener("podscape-edit-home",open);
   },[]);
