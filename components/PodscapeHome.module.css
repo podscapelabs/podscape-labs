@@ -94,3 +94,18 @@
 .widgetRecentIcon svg{width:25px;height:25px}
 .widgetRecentIcon small{font-size:.5rem}
 }
+
+/* iOS-like edit mode: gentle movement replaces the large reorder controls. */
+@keyframes podscapeIconJiggle{0%,100%{transform:rotate(-1.25deg)}50%{transform:rotate(1.25deg)}}
+.shortcutEditing .shortcut.jiggling{animation:podscapeIconJiggle .22s ease-in-out infinite;transform-origin:50% 58%;touch-action:none;-webkit-touch-callout:none}
+.shortcutEditing .shortcutSelected{outline:2px solid var(--moss-light);outline-offset:2px;box-shadow:0 5px 14px color-mix(in srgb,var(--forest) 16%,transparent)}
+.jiggleToolbar{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px 14px;margin:11px 0 14px;padding:14px;border:1px solid var(--line);border-radius:17px;background:var(--paper)}
+.jiggleHint{display:grid;gap:3px;min-width:0;color:var(--ink)}
+.jiggleHint>strong{font:400 1.15rem/1.2 var(--serif)}
+.jiggleHint>small{font-size:.69rem;color:var(--muted);line-height:1.35}
+.jiggleDone{border:0;border-radius:12px;background:var(--forest);color:var(--paper);font-size:.75rem;font-weight:800;min-height:40px;padding:0 16px;cursor:pointer}
+.jigglePicker{display:grid;gap:6px;grid-column:1/-1;font-size:.72rem;color:var(--muted);font-weight:700}
+.jigglePicker select{min-height:43px;min-width:0;width:100%;border:1px solid var(--line);border-radius:10px;padding:8px 11px;background:var(--paper-strong);color:var(--ink);font-size:16px}
+.jiggleReset{justify-self:start;border:0;padding:4px 0;background:transparent;color:var(--forest);font-size:.71rem;font-weight:750;cursor:pointer}
+@media(max-width:720px){.jiggleToolbar{margin:10px 0;padding:11px;gap:9px}.jiggleHint>strong{font-size:1.05rem}.jiggleHint>small{font-size:.64rem}}
+@media(prefers-reduced-motion:reduce){.shortcutEditing .shortcut.jiggling{animation:none}}
