@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CollectionButton } from "@/components/CollectionButton";
+import { PinToHome } from "@/components/PinToHome";
+import { customerSupabase } from "@/lib/customer-auth/server";
 import { Breadcrumbs, PlatformShell } from "@/components/PlatformShell";
 import { SpecimenLeaf } from "@/components/SpecimenLeaf";
 import { SpeciesDiscoveryTracker } from "@/components/SpeciesDiscoveryTracker";
@@ -22,6 +24,8 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
   if (!record) notFound();
 
   const member = await getMemberCollectionState();
+  const db=await customerSupabase();
+  const {data:{user}}=db?await db.auth.getUser():{data:{user:null}};
   const collectionEntry = member.entries.find((entry) => entry.speciesId === record.id);
   const displayName = speciesDisplayName(record);
   const scientificName = speciesScientificName(record);
@@ -58,6 +62,7 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
             <h1>{displayName}</h1>
             <p className={styles.scientific}><em>{scientificName}</em></p>
             {record.summary ? <p className={styles.summary}>{record.summary}</p> : null}
+            {record.kind==="species"&&record.status==="published"?<PinToHome pin={{kind:"species",id:record.slug}} userId={user?.id||null}/>:null}
             <div className={styles.metadata} aria-label="Record information">
               <span>{speciesGenus(record)}</span><span>{speciesRecordLabel(record)}</span>
             </div>
