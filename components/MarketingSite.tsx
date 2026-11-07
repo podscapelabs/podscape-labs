@@ -69,9 +69,18 @@ export async function MarketingSite(){
   ...products.filter(p=>!p.archivedAt&&p.status==="published")
    .map(p=>({title:p.title,label:"SHOP",description:p.summary||"See what's new in the PodScape Shop.",href:"/shop/"+p.slug,image:p.image,alt:p.imageAlt,updatedAt:p.updatedAt}))
  ];
+ // Keep the most recently edited entry when the same named creation appears
+ // in multiple catalogues (for example, Dairy Cow in Shop and Leaf Ledger).
+ const recentTitles=new Set<string>();
  const recent:Tile[]=recentEntries
   .filter(item=>Number.isFinite(Date.parse(item.updatedAt||"")))
   .sort((a,b)=>Date.parse(b.updatedAt)-Date.parse(a.updatedAt)||a.href.localeCompare(b.href))
+  .filter(item=>{
+   const key=item.title.trim().replace(/\\s+/g," ").toLocaleLowerCase();
+   if(recentTitles.has(key))return false;
+   recentTitles.add(key);
+   return true;
+  })
   .slice(0,12)
   .map(({title,label,description,href,image,alt})=>({title,label,description,href,image,alt}));
  return <div className={styles.site}><a className="skip-link" href="#platform-main">Skip to content</a><Header/><main id="platform-main" className={styles.main}>
