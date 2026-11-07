@@ -314,3 +314,30 @@
  .homeCanvasEditing .homeCanvasDragging{transform:none;transition:none}
  .homeCanvasEditing .homeCanvasBlockActive{transition:none}
 }
+
+
+/* Unified Home/Manager editing polish: clear hierarchy, safe-area aware controls. */
+.homeCanvasToolbar{border-color:var(--line);border-radius:16px;background:var(--paper);gap:8px;padding:12px}
+.homeCanvasToolbar>div{min-width:140px}
+.homeCanvasToolbar>button{min-height:44px;border-radius:12px;white-space:normal;line-height:1.2}
+.homeCanvasToolbar>button:last-child{background:var(--forest);border-color:var(--forest);color:var(--paper-strong)}
+:root[data-theme="dark"] .homeCanvasToolbar>button:last-child{color:var(--forest-deep)}
+.homeCanvasBlockBar{gap:8px}
+.homeCanvasHandle{overflow-wrap:anywhere;min-height:44px;text-align:left}
+.homeCanvasBlockBar>div{display:flex;gap:6px;flex:none}
+.homeCanvasBlockBar>div>button{min-height:40px;min-width:40px}
+.homeCanvasBlockActive{outline-offset:2px}
+.homeCanvasDragging{box-shadow:var(--shadow-soft)}
+.homeEditorHead button{min-height:44px}
+:root[data-theme="dark"] .homeEditorHead button{color:var(--forest-deep)}
+.widgetGalleryCard{transition:border-color .16s ease,box-shadow .16s ease}
+.widgetGalleryCard:hover{border-color:var(--forest);box-shadow:var(--shadow-soft)}
+.addWidgetButton{min-height:46px}
+@media(max-width:720px){
+ .homeCanvasToolbar{top:calc(5px + env(safe-area-inset-top,0px));padding:10px;gap:7px}
+ .homeCanvasToolbar>button{min-height:44px;min-width:0;padding:9px 7px;font-size:.72rem}
+ .homeCanvasToolbar>button:nth-last-child(2){font-size:.68rem}
+ .homeCanvasBlockBar>div{gap:4px}
+ .homeCanvasBlockBar>div>button{min-width:40px;min-height:42px}
+ .homeCanvasHandle{font-size:.75rem}
+}
