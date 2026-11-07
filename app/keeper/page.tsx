@@ -7,6 +7,7 @@ import { CreateEnclosure } from "@/components/KeeperWorkspace";
 import { KeeperMobileNav } from "@/components/KeeperMobileNav";
 import { PodscapeLineIcon, type PodscapeIconName } from "@/components/PodscapeLineIcon";
 import { getMemberCollectionState } from "@/lib/member-collection";
+import { customerSupabase } from "@/lib/customer-auth/server";
 import { listEnclosures } from "@/lib/keeper";
 import { getSpeciesRecords } from "@/lib/species-store";
 import { speciesDisplayName, speciesScientificName } from "@/data/species";
@@ -17,6 +18,8 @@ export const metadata: Metadata = { title: "Manager | PodScape Labs", robots: { 
 
 export default async function KeeperIndex({ searchParams }: { searchParams: Promise<{ species?: string }> }) {
   const member = await getMemberCollectionState();
+  const authDb = member.signedIn ? await customerSupabase() : null;
+  const {data:{user:managerUser}} = authDb ? await authDb.auth.getUser() : {data:{user:null}};
   const species = member.signedIn ? await getSpeciesRecords() : [];
   let enclosures: Awaited<ReturnType<typeof listEnclosures>> = [];
   let unavailable = false;
@@ -58,7 +61,7 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
           <p>Sign in to manage bins, care records, and colony details.</p>
           <Link href="/account/login">Member sign in →</Link>
         </section> : unavailable ? <section className={styles.empty} role="alert"><h2>Manager is temporarily unavailable.</h2><p>The Keeper database connection could not be reached.</p></section> : <>
-          <ManagerWorkspace scope="local" stats={<>          <section className={styles.metrics} aria-label="Keeper overview">
+          <ManagerWorkspace scope={managerUser?.id||"guest"} stats={<>          <section className={styles.metrics} aria-label="Keeper overview">
             <Link href="/keeper/collection"><PodscapeLineIcon name="leaf" /><strong>{uniqueSpecies}</strong><span>Species</span><b>›</b></Link>
             <Link href="/keeper/collection"><PodscapeLineIcon name="bin" /><strong>{active.length}</strong><span>Bins</span><b>›</b></Link>
             <Link href="/keeper/collection"><PodscapeLineIcon name="community" /><strong>{totalPopulation}</strong><span>Recorded population</span><b>›</b></Link>
