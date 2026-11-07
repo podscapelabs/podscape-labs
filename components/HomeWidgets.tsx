@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect,useRef,useState,type ReactNode} from "react";
+import {useEffect,useRef,useState,type ReactNode,type PointerEvent as ReactPointerEvent} from "react";
 import Link from "next/link";
 import {PodscapeLineIcon,type PodscapeIconName} from "./PodscapeLineIcon";
 import {pinKey,readHomePins,writeHomePins,type HomePin,type PinOption} from "./home-pins";
@@ -120,8 +120,8 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
     update({...layout,order});
   };
   const visible=layout.order.filter(id=>isCore(id)||layout.visible.includes(id as WidgetId));
-  const startCanvasDrag=(id:BlockId,event:React.PointerEvent<HTMLButtonElement>)=>{if(event.pointerType==="mouse"&&event.button!==0)return;canvasDrag.current=id;event.currentTarget.setPointerCapture(event.pointerId)};
-  const moveCanvasDrag=(event:React.PointerEvent<HTMLButtonElement>)=>{if(!canvasDrag.current)return;const hit=document.elementFromPoint(event.clientX,event.clientY)?.closest("[data-home-block]");const target=hit?.getAttribute("data-home-block") as BlockId|null;if(target&&target!==canvasDrag.current&&visible.includes(target))reorder(canvasDrag.current,target)};
+  const startCanvasDrag=(id:BlockId,event:ReactPointerEvent<HTMLButtonElement>)=>{if(event.pointerType==="mouse"&&event.button!==0)return;canvasDrag.current=id;event.currentTarget.setPointerCapture(event.pointerId)};
+  const moveCanvasDrag=(event:ReactPointerEvent<HTMLButtonElement>)=>{if(!canvasDrag.current)return;const hit=document.elementFromPoint(event.clientX,event.clientY)?.closest("[data-home-block]");const target=hit?.getAttribute("data-home-block") as BlockId|null;if(target&&target!==canvasDrag.current&&visible.includes(target))reorder(canvasDrag.current,target)};
   const optionsByKey=new Map(pinOptions.map(item=>[pinKey(item),item]));
   const activePins=pins.flatMap(p=>{const option=optionsByKey.get(pinKey(p));return option?[option]:[]});
   const removePin=(pin:HomePin)=>{const next=pins.filter(p=>pinKey(p)!==pinKey(pin));writeHomePins(userId,next);setPins(next)};
