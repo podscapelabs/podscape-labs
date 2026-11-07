@@ -1,5 +1,5 @@
 "use client";
-import {useRef,useState,type PointerEvent,type ReactNode} from "react";
+import {useEffect,useRef,useState,type PointerEvent,type MouseEvent,type ReactNode} from "react";
 import styles from "./PodscapeHome.module.css";
 
 type DragState<T extends string>={id:T;pointerId:number;startX:number;startY:number;started:boolean};
@@ -49,13 +49,54 @@ export function WorkspaceEditToolbar({title,description,onAdd,onReset,onDone}:{t
   <button type="button" onClick={onDone}>Done</button>
  </div>;
 }
-export function WorkspaceEditBlock<T extends string>({id,scope,label,index,count,editing,dragging,required,onMove,onRemove,begin,move,stop,children}:{
+export function WorkspaceEditBlock<T extends string>({id,scope,label,index,count,editing,dragging,required,onMove,onRemove,begin,move,stop,onLongPress,children}:{
  id:T;scope:string;label:string;index:number;count:number;editing:boolean;dragging:boolean;required:boolean;
  onMove:(id:T,dir:number)=>void;onRemove?:(id:T)=>void;
- begin:(id:T,event:PointerEvent<HTMLDivElement>)=>void;move:(event:PointerEvent<HTMLDivElement>)=>void;stop:()=>void;children:ReactNode;
+ begin:(id:T,event:PointerEvent<HTMLDivElement>)=>void;move:(event:PointerEvent<HTMLDivElement>)=>void;stop:()=>void;onLongPress?:()=>void;children:ReactNode;
 }){
+ const timer=useRef<ReturnType<typeof setTimeout>|null>(null);
+ const press=useRef<{pointerId:number;x:number;y:number}|null>(null);
+ const blockClicks=useRef(false);
+ const clickReset=useRef<ReturnType<typeof setTimeout>|null>(null);
+ const cancelPress=()=>{
+  if(timer.current!==null){clearTimeout(timer.current);timer.current=null}
+  press.current=null;
+ };
+ useEffect(()=>()=>{cancelPress();if(clickReset.current!==null)clearTimeout(clickReset.current)},[]);
+ const onPressStart=(event:PointerEvent<HTMLDivElement>)=>{
+  if(editing){begin(id,event);return}
+  if(!onLongPress||(event.pointerType==="mouse"&&event.button!==0))return;
+  // Do not intercept controls such as forms, selection, or nested editable areas.
+  if((event.target as HTMLElement).closest("button,input,textarea,select,[contenteditable='true']"))return;
+  cancelPress();
+  const pointerId=event.pointerId;
+  press.current={pointerId,x:event.clientX,y:event.clientY};
+  timer.current=setTimeout(()=>{
+   if(!press.current||press.current.pointerId!==pointerId)return;
+   timer.current=null;
+   blockClicks.current=true;
+   if(clickReset.current!==null)clearTimeout(clickReset.current);
+   // A long hold should not activate an underlying link when the finger lifts.
+   clickReset.current=setTimeout(()=>{blockClicks.current=false},700);
+   onLongPress();
+  },450);
+ };
+ const onPressMove=(event:PointerEvent<HTMLDivElement>)=>{
+  if(editing){move(event);return}
+  const pending=press.current;
+  if(pending&&pending.pointerId===event.pointerId&&Math.hypot(event.clientX-pending.x,event.clientY-pending.y)>11)cancelPress();
+ };
+ const endPress=()=>{cancelPress();stop()};
+ const suppressClick=(event:MouseEvent<HTMLDivElement>)=>{
+  if(!blockClicks.current)return;
+  event.preventDefault();
+  event.stopPropagation();
+  blockClicks.current=false;
+  if(clickReset.current!==null){clearTimeout(clickReset.current);clickReset.current=null}
+ };
  return <div data-workspace-scope={scope} data-workspace-block={id} className={`${styles.homeCanvasBlock} ${editing?styles.homeCanvasBlockActive:""} ${dragging?styles.homeCanvasDragging:""}`}
-  onPointerDown={event=>{if(editing)begin(id,event)}} onPointerMove={event=>{if(editing)move(event)}} onPointerUp={stop} onPointerCancel={stop}>
+  onPointerDown={onPressStart} onPointerMove={onPressMove} onPointerUp={endPress} onPointerCancel={endPress} onPointerLeave={cancelPress} onClickCapture={suppressClick}
+  onContextMenu={event=>{if(blockClicks.current)event.preventDefault()}}>
   {editing?<div className={styles.homeCanvasBlockBar}>
     <button type="button" data-drag-handle="true" className={styles.homeCanvasHandle} aria-label={`Drag ${label} to reorder`}><span aria-hidden="true">⠿</span> {label}</button>
     <div><button type="button" aria-label={`Move ${label} up`} disabled={index===0} onClick={()=>onMove(id,-1)}>↑</button>
