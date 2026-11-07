@@ -52,8 +52,8 @@ export function ManagerCareOverview({bins}:{bins:ManagerBin[]}){
 
 export function ManagerActivityFeed({events,available=true}:{events:ManagerEvent[];available?:boolean}){
  return <section className={styles.managerModule} aria-label="Recent care history">
-  <header><div><p className={styles.managerEyebrow}>WHAT'S BEEN LOGGED</p><h2>Recent activity</h2></div><Link href="/keeper/activity">View activity →</Link></header>
-  {!available?<p className={styles.managerModuleEmpty}>Recent activity isn't available right now. Your existing logs are unchanged.</p>
+  <header><div><p className={styles.managerEyebrow}>RECENTLY LOGGED</p><h2>Recent activity</h2></div><Link href="/keeper/activity">View activity →</Link></header>
+  {!available?<p className={styles.managerModuleEmpty}>Recent activity is not available right now. Your existing logs are unchanged.</p>
    :events.length?<div className={styles.managerModuleList}>{events.slice(0,5).map(event=><Link key={event.id} href={"/keeper/"+event.enclosureId+"/history"}><span><strong>{event.kind.replaceAll("-"," ")}</strong><small>{event.enclosureName}{event.note?" · "+event.note:""}</small></span><em>{displayDate(event.createdAt)}</em></Link>)}</div>
    :<p className={styles.managerModuleEmpty}>No care logs yet. Scan a bin or open an enclosure to record your first activity.</p>}
  </section>;
