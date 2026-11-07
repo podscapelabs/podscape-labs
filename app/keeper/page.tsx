@@ -18,8 +18,6 @@ export const metadata: Metadata = { title: "Manager | PodScape Labs", robots: { 
 
 export default async function KeeperIndex({ searchParams }: { searchParams: Promise<{ species?: string }> }) {
   const member = await getMemberCollectionState();
-  const authDb = await customerSupabase();
-  const {data:{user:managerUser}} = authDb ? await authDb.auth.getUser() : {data:{user:null}};
   const authDb = member.signedIn ? await customerSupabase() : null;
   const {data:{user:managerUser}} = authDb ? await authDb.auth.getUser() : {data:{user:null}};
   const species = member.signedIn ? await getSpeciesRecords() : [];
