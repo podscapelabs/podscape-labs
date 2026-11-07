@@ -280,3 +280,24 @@
 .homeCanvasContentLocked .homeBlock{margin-bottom:0}
 @media(max-width:720px){.homeCanvasToolbar{top:6px;gap:6px;padding:8px;border-radius:14px}.homeCanvasToolbar strong{font-size:.94rem}.homeCanvasToolbar small{font-size:.59rem}.homeCanvasToolbar>button{padding:6px 8px;font-size:.65rem}.homeCanvasBlockActive{border-radius:15px;padding:6px}.homeCanvasHandle{font-size:.68rem}}
 :root[data-theme="dark"] .homeCanvasToolbar>button:last-child{color:var(--forest-deep)}
+
+/* iPhone-style edit mode: gently jiggle the actual blocks; their contents stay grouped. */
+@keyframes podscapeHomeBlockJiggle{
+  0%,100%{transform:rotate(-.32deg)}
+  50%{transform:rotate(.32deg)}
+}
+.homeCanvasEditing .homeCanvasBlockActive{animation:podscapeHomeBlockJiggle .26s ease-in-out infinite;transform-origin:center center;cursor:grab;touch-action:pan-y}
+.homeCanvasEditing .homeCanvasBlockActive:nth-of-type(even){animation-delay:-.13s}
+.homeCanvasEditing .homeCanvasBlockActive:active{cursor:grabbing;animation-play-state:paused;box-shadow:var(--shadow-soft)}
+.homeCanvasContentLocked{pointer-events:none;user-select:none;-webkit-user-select:none}
+.homeCanvasBlockActive .homeCanvasBlockBar{touch-action:pan-y}
+.homeCanvasHandle{touch-action:none}
+.homeCanvasToolbar{flex-wrap:wrap}
+.homeCanvasToolbar>button:nth-last-child(2){font-size:.69rem}
+@media(max-width:720px){
+ .homeCanvasToolbar{top:5px}
+ .homeCanvasToolbar>div{flex-basis:100%}
+ .homeCanvasToolbar>button{flex:1}
+ .homeCanvasToolbar>button:nth-last-child(2){font-size:.62rem}
+}
+@media(prefers-reduced-motion:reduce){.homeCanvasEditing .homeCanvasBlockActive{animation:none}}
