@@ -207,6 +207,6 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId}:{recent:T
       if(id==="guides")return compact(id,"book","FIELD GUIDE",guide?.title||"Explore field guides",guide?.description||"Care, husbandry and habitat resources.",guide?.href||"/field-guide",guide?"Read guide":"Browse guides");
       return compact(id,"community","COMMUNITY","Your community corner","Discover keepers, creators and what's growing around Podscape.","/community","Explore community");
     })}
-    {hydrated&&visible.length===0?<p className={styles.widgetEmpty}>No optional widgets are showing. Tap Edit Home above to explore the Widget Library.</p>:null}
+    {hydrated?<div className={styles.addWidgetFooter}><button type="button" className={styles.addWidgetButton} onClick={()=>{returnFocus.current=document.activeElement as HTMLElement;setTab("library");setEditing(true)}}><span aria-hidden="true">＋</span> Add Widget</button></div>:null}
   </section>;
 }
