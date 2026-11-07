@@ -7,6 +7,7 @@ import { CustomizableHomeShortcuts } from "./CustomizableHomeShortcuts";
 import { HomeWidgets, type HomeColony, type HomeProgress } from "./HomeWidgets";
 import { InstallPodscape } from "./InstallPodscape";
 import { ShortcutWelcomeTip } from "./ShortcutWelcomeTip";
+import { EditHomeButton } from "./EditHomeButton";
 import { getSpeciesRecords } from "@/lib/species-store";
 import { getProductRecords } from "@/lib/product-store";
 import { getGuideRecords } from "@/lib/guide-store";
@@ -52,7 +53,7 @@ export async function MarketingSite(){
  {title:"Meet the Community",label:"COMMUNITY",description:"Connect with fellow keepers.",href:"/community"}
  ];
  return <div className={styles.site}><a className="skip-link" href="#platform-main">Skip to content</a><Header/><main id="platform-main" className={styles.main}>
- <Link href="/account" className={styles.welcome}><span className={styles.welcomeMark}><PodscapeLineIcon name="leaf"/></span><HomeGreeting name={name}/><span className={styles.welcomeArrow}>→</span></Link>
+ <div className={styles.homeGreetingRow}><Link href="/account" className={styles.welcome}><span className={styles.welcomeMark}><PodscapeLineIcon name="leaf"/></span><HomeGreeting name={name}/><span className={styles.welcomeArrow}>→</span></Link><EditHomeButton/></div>
  <section className={styles.hero} aria-label="Discover PodScape">{hero&&<Image src={hero.image!} alt={hero.imageAlt||speciesDisplayName(hero)} fill priority sizes="(max-width: 720px) 100vw, 1100px" className={styles.heroImage}/>}<div className={styles.heroContent}><span className={styles.eyebrow}>EXPLORE PODSCAPE</span><h2>Small creatures.<br/>Big world.</h2><p>Discover species, care guides, community and more.</p></div></section>
  <CustomizableHomeShortcuts/>
  <ShortcutWelcomeTip/>
