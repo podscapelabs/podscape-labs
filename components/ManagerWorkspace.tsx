@@ -41,7 +41,7 @@ export function ManagerWorkspace({stats,enclosures,scope,primaryHref}:{stats:Rea
  useEffect(()=>{try{const saved=localStorage.getItem(storageKey);if(saved)setLayout(normalize(JSON.parse(saved)))}catch{}setReady(true)},[storageKey]);
  const update=(next:Layout)=>{setLayout(next);try{localStorage.setItem(storageKey,JSON.stringify(next))}catch{}};
  const swap=(id:string)=>{if(slot===null)return;const next=[...layout.tools];const prior=next.indexOf(id);if(prior>=0){[next[slot],next[prior]]=[next[prior],next[slot]]}else next[slot]=id;update({...layout,tools:next});setSlot(null)};
- const move=(id:Section,dir:number)=>{const next=[...layout.order],at=next.indexOf(id),to=at+dir;if(to<0||to>=next.length)return;[next[at],next[to]]=[next[to],next[at]];update({...layout,order:next})};
+ const move=(id:Section,dir:number)=>{const visible=layout.order.filter(item=>layout.visible.includes(item));const at=visible.indexOf(id),to=at+dir;if(at<0||to<0||to>=visible.length)return;const next=[...layout.order],a=next.indexOf(id),b=next.indexOf(visible[to]);[next[a],next[b]]=[next[b],next[a]];update({...layout,order:next})};
  const sections:Record<Section,ReactNode>={
   stats,
   enclosures,
