@@ -49,10 +49,10 @@ export function WorkspaceEditToolbar({title,description,onAdd,onReset,onDone}:{t
   <button type="button" onClick={onDone}>Done</button>
  </div>;
 }
-export function WorkspaceEditBlock<T extends string>({id,scope,label,index,count,editing,dragging,required,onMove,onRemove,begin,move,stop,onLongPress,children}:{
+export function WorkspaceEditBlock<T extends string>({id,scope,label,index,count,editing,dragging,required,onMove,onRemove,begin,move,stop,onLongPress,interactiveChildren=false,children}:{
  id:T;scope:string;label:string;index:number;count:number;editing:boolean;dragging:boolean;required:boolean;
  onMove:(id:T,dir:number)=>void;onRemove?:(id:T)=>void;
- begin:(id:T,event:PointerEvent<HTMLDivElement>)=>void;move:(event:PointerEvent<HTMLDivElement>)=>void;stop:()=>void;onLongPress?:()=>void;children:ReactNode;
+ begin:(id:T,event:PointerEvent<HTMLDivElement>)=>void;move:(event:PointerEvent<HTMLDivElement>)=>void;stop:()=>void;onLongPress?:()=>void;interactiveChildren?:boolean;children:ReactNode;
 }){
  const timer=useRef<ReturnType<typeof setTimeout>|null>(null);
  const press=useRef<{pointerId:number;x:number;y:number}|null>(null);
@@ -117,6 +117,6 @@ export function WorkspaceEditBlock<T extends string>({id,scope,label,index,count
     <button type="button" aria-label={`Move ${label} down`} disabled={index===count-1} onClick={()=>onMove(id,1)}>↓</button>
     {!required&&onRemove?<button type="button" aria-label={`Remove ${label}`} onClick={()=>onRemove(id)}>×</button>:null}</div>
   </div>:null}
-  <div className={editing?styles.homeCanvasContentLocked:undefined}>{children}</div>
+  <div className={editing&&!interactiveChildren?styles.homeCanvasContentLocked:undefined}>{children}</div>
  </div>;
 }
