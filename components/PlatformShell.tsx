@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { Footer } from "./Footer";
 import { Header } from "./Header";
 
 export function PlatformShell({ children }: { children: React.ReactNode }) {
-  return <div className="v2-site"><a className="skip-link" href="#platform-main">Skip to content</a><Header /><main id="platform-main">{children}</main><Footer /></div>;
+  return <div className="v2-site"><a className="skip-link" href="#platform-main">Skip to content</a><Header /><div id="platform-main">{children}</div></div>;
 }
 
 export function PlatformPageHeader({ eyebrow, title, intro, index }: { eyebrow: string; title: string; intro: string; index?: string }) {
