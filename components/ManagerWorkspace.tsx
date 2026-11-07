@@ -30,7 +30,7 @@ function normalize(value:unknown):Layout{
  const tools=Array.isArray(raw.tools)?raw.tools.filter(v=>library.some(t=>t.id===v)).filter((v,i,a)=>a.indexOf(v)===i).slice(0,6):initial.tools;
  return {order,visible,tools:tools.length?tools:initial.tools};
 }
-export function ManagerWorkspace({stats,enclosures,scope}:{stats:ReactNode;enclosures:ReactNode;scope:string}){
+export function ManagerWorkspace({stats,enclosures,scope,primaryHref}:{stats:ReactNode;enclosures:ReactNode;scope:string;primaryHref:string}){
  const storageKey=key+":"+scope;
  const [layout,setLayout]=useState<Layout>(initial);
  const [ready,setReady]=useState(false);
@@ -45,7 +45,7 @@ export function ManagerWorkspace({stats,enclosures,scope}:{stats:ReactNode;enclo
   enclosures,
   tools:<section className={styles.section} key="tools"><header><h2>Quick Tools</h2><button type="button" className={styles.managerTextButton} onClick={()=>setEditing(true)}>Customize ↗</button></header>
    <nav className={styles.tools} aria-label="Keeper quick tools">
-    {layout.tools.map((id,i)=>{const tool=library.find(t=>t.id===id);return tool?<Link href={tool.href} key={id} onClick={e=>{if(editing){e.preventDefault();setSlot(i)}}}><span><PodscapeLineIcon name={tool.icon}/></span><small>{tool.label}</small></Link>:null})}
+    {layout.tools.map((id,i)=>{const tool=library.find(t=>t.id===id);return tool?<Link href={id==="care"||id==="notes"?primaryHref:tool.href} key={id} onClick={e=>{if(editing){e.preventDefault();setSlot(i)}}}><span><PodscapeLineIcon name={tool.icon}/></span><small>{tool.label}</small></Link>:null})}
    </nav>
    {editing?<p className={styles.managerHint}>Tap any Quick Tool to replace or swap it.</p>:null}
   </section>
