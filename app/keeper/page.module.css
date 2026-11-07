@@ -84,3 +84,28 @@
   .bins { margin-right: -12px; grid-template-columns: repeat(4,minmax(142px,1fr)); }
   .binPhoto { height: 105px; }
 }
+
+/* Manager workspace: tools and enclosures take priority over decorative hero content. */
+.hero{min-height:0;background:linear-gradient(115deg,var(--surface),color-mix(in srgb,var(--accent) 7%,var(--surface)))}
+.heroCopy{padding:32px 0 43px}
+.heroCopy h1{font-size:clamp(2.5rem,5vw,3.8rem);line-height:1.05}
+.heroCopy>span{max-width:500px;margin:8px 0 16px;font-family:inherit;font-size:.88rem;line-height:1.5}
+.heroCopy a{gap:13px;padding:10px 16px}
+.dashboard{margin-top:-19px}
+.metrics a{box-shadow:none}
+.metrics span{white-space:normal}
+.attentionList>a{min-height:73px}
+.attentionList a>span:nth-child(2){min-width:0}
+.attentionList strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:720px){
+ .hero{min-height:0}
+ .heroCopy{padding:24px 0 35px}
+ .heroCopy h1{font-size:2.45rem}
+ .heroCopy>span{max-width:310px;font-size:.81rem;margin:7px 0 14px}
+ .dashboard{margin-top:-14px}
+ .metrics a{grid-template-columns:24px minmax(0,1fr) 8px;gap:2px 5px;padding:9px 7px}
+ .metrics svg{width:24px;height:24px;padding:3px}
+ .metrics strong{font-size:1.18rem}
+ .metrics span{font-size:.52rem;line-height:1.2}
+ .attentionList>a{min-height:66px}
+}
