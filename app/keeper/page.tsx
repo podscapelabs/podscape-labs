@@ -5,6 +5,7 @@ import { PlatformShell } from "@/components/PlatformShell";
 import { ManagerWorkspace } from "@/components/ManagerWorkspace";
 import { CreateEnclosure } from "@/components/KeeperWorkspace";
 import { KeeperMobileNav } from "@/components/KeeperMobileNav";
+import { ManagerWorkspace } from "@/components/ManagerWorkspace";
 import { PodscapeLineIcon, type PodscapeIconName } from "@/components/PodscapeLineIcon";
 import { getMemberCollectionState } from "@/lib/member-collection";
 import { customerSupabase } from "@/lib/customer-auth/server";
@@ -61,25 +62,14 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
           <p>Sign in to manage bins, care records, and colony details.</p>
           <Link href="/account/login">Member sign in →</Link>
         </section> : unavailable ? <section className={styles.empty} role="alert"><h2>Manager is temporarily unavailable.</h2><p>The Keeper database connection could not be reached.</p></section> : <>
-          <ManagerWorkspace scope={managerUser?.id||"guest"} primaryHref={firstBinHref} stats={<>          <section className={styles.metrics} aria-label="Keeper overview">
+          <ManagerWorkspace scope={managerUser?.id||"guest"} primaryHref={firstBinHref} stats={<>          <ManagerWorkspace scope={member.userId || "member"} stats={<>          <section className={styles.metrics} aria-label="Keeper overview">
             <Link href="/keeper/collection"><PodscapeLineIcon name="leaf" /><strong>{uniqueSpecies}</strong><span>Species</span><b>›</b></Link>
             <Link href="/keeper/collection"><PodscapeLineIcon name="bin" /><strong>{active.length}</strong><span>Bins</span><b>›</b></Link>
             <Link href="/keeper/collection"><PodscapeLineIcon name="community" /><strong>{totalPopulation}</strong><span>Recorded population</span><b>›</b></Link>
           </section>
 
-</>} enclosures={<>          <section className={styles.section}>
-            <header><h2>Your Enclosures</h2><Link href="/keeper/collection">View all <span>→</span></Link></header>
-            {recent.length ? <div className={styles.attentionList}>{recent.map(enclosure => {
-              const record=speciesById.get(enclosure.speciesId);
-              return <Link href={`/keeper/${enclosure.id}`} key={enclosure.id}>
-                <span className={styles.thumb}>{record?.image ? <Image src={record.image} alt="" fill sizes="58px" style={{objectFit:"cover",objectPosition:`${record.imagePositionX}% ${record.imagePositionY}%`}}/>:<PodscapeLineIcon name="jar"/>}</span>
-                <span><strong>{enclosure.name === "Primary colony" && record ? speciesDisplayName(record) : enclosure.name}</strong><small>{record ? speciesDisplayName(record) : "Species record"} · {enclosure.status.replaceAll("-"," ")}</small></span>
-                <em>{enclosure.quantity} recorded</em><b>›</b>
-              </Link>;
-            })}</div> : <div className={styles.emptyInline}><p>No active colonies yet.</p><Link href="/keeper/collection">Explore your collection →</Link></div>}
-          </section>
-
-</>}/>
+</>} enclosures={<></>} enclosures={<>
+</>} />
           {archived.length ? <details className={styles.archived}><summary>Archived bins ({archived.length})</summary><div>{archived.map((enclosure) => <Link href={`/keeper/${enclosure.id}`} key={enclosure.id}>{enclosure.name} →</Link>)}</div></details> : null}
           {selectedRecord ? <CreateEnclosure speciesId={selectedRecord.id} speciesName={`${speciesDisplayName(selectedRecord)} · ${speciesScientificName(selectedRecord)}`} /> : null}
         </>}
