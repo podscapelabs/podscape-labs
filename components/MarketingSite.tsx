@@ -33,7 +33,7 @@ export async function MarketingSite(){
  const featured:Tile[]=[
  ...(hero?[{title:speciesDisplayName(hero),label:"SPECIES SPOTLIGHT",description:"Discover this species in the Ledger.",href:`/ledger/${hero.slug}`,image:hero.image,alt:hero.imageAlt}]:[]),
  ...(product?[{title:product.title,label:"SHOP FEATURE",description:product.summary||"Explore our latest shop addition.",href:`/shop/${product.slug}`,image:product.image,alt:product.imageAlt}]:[]),
- {title:"Play the Demo",label:"PODBOUND",description:"Explore our isopod card game.",href:"/podbound"}
+ {title:"PodBound",label:"PODSCAPE ORIGINAL",description:"Discover our strategy card game.",href:"/podbound"}
  ];
  const recent:Tile[]=[
  ...(guide?[{title:guide.title,label:"GUIDE",description:guide.summary||"Learn something new.",href:`/field-guide/${guide.slug}`}]:[]),
