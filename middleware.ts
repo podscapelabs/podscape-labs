@@ -26,6 +26,11 @@ async function hasLegacyOwnerSession(request: NextRequest): Promise<boolean> {
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  // Account entry routes must always be reachable, even with stale Supabase cookies.
+  // They enforce invitation and password checks in their Server Actions.
+  if (pathname === "/account/login" || pathname === "/account/sign-up") {
+    return NextResponse.next();
+  }
   const protectedPage = isPrivateArea(pathname);
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
