@@ -7,8 +7,13 @@ import styles from "../customer-auth.module.css";
 
 export default async function CustomerLoginPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
   const db = await customerSupabase();
-  if (db) { const { data: { user } } = await db.auth.getUser(); if (user?.app_metadata?.role === "owner" || (user?.email && await isApprovedTesterEmail(user.email))) redirect("/app"); // A signed-in but unapproved or unconfirmed account must still be able to reach this form.\n    // Redirecting it to Early Access creates a loop that makes both navigation links look broken.
-  } }
+  if (db) {
+    const { data: { user } } = await db.auth.getUser();
+    if (user?.app_metadata?.role === "owner" || (user?.email && await isApprovedTesterEmail(user.email))) {
+      redirect("/app");
+    }
+    // A stale or unapproved session should not trap visitors on Early Access.
+  }
   const { status } = await searchParams;
   return (
     <CustomerAuthShell index="AC / 001" eyebrow="Podscape Labs · Member access" title="Welcome back." intro="Your place to manage the colonies, references, and resources that matter to you.">
