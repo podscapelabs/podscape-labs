@@ -5,6 +5,7 @@ import Link from "next/link";
 import {PodscapeLineIcon,type PodscapeIconName} from "./PodscapeLineIcon";
 import {pinKey,readHomePins,writeHomePins,type HomePin,type PinOption} from "./home-pins";
 import styles from "./PodscapeHome.module.css";
+import {moveBlock,dropBlock,visibleBlocks,uniqueAllowed} from "./workspace-layout";
 
 type Tile={title:string;label:string;description:string;href:string;image?:string|null;alt?:string};
 export type HomeColony={id:string;name:string;quantity:number;speciesName:string}|null;
@@ -41,9 +42,9 @@ function readLayout():Layout{
   const saved=localStorage.getItem(storageKey),legacy=saved?null:localStorage.getItem(legacyKey);
   const value=JSON.parse(saved||legacy||"null");
   if(!value||!Array.isArray(value.order)||!Array.isArray(value.visible))throw Error("No saved layout");
-  const oldOrder=(value.order as unknown[]).filter((id):id is BlockId=>typeof id==="string"&&defaultOrder.includes(id as BlockId));
+  const oldOrder=uniqueAllowed(value.order as unknown[],defaultOrder);
   const order=legacy?[...coreIds,...new Set(oldOrder),...available.filter(id=>!oldOrder.includes(id))]:[...new Set(oldOrder),...defaultOrder.filter(id=>!oldOrder.includes(id))];
-  const visible=[...new Set((value.visible as unknown[]).filter((id):id is WidgetId=>typeof id==="string"&&available.includes(id as WidgetId)))];
+  const visible=uniqueAllowed(value.visible as unknown[],available);
   return {order,visible};
  }catch{return {order:[...defaultOrder],visible:[...defaultVisible]}}
 }
@@ -78,7 +79,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
     return ()=>window.removeEventListener("podscape-edit-home",open);
   },[]);
   const close=()=>{setEditing(false);requestAnimationFrame(()=>returnFocus.current?.focus())};
-  const finishCanvas=()=>{canvasDrag.current=null;setCanvasEditing(false)};
+  const finishCanvas=()=>{canvasDrag.current=null;activeDrag.current=null;setDragging(null);setCanvasEditing(false)};
   const resetToDefault=()=>{if(!window.confirm("Reset your homepage to the default layout? This will remove optional widgets from Home and restore the original block order. Your account, colonies and favorites will not be deleted."))return false;canvasDrag.current=null;update({order:[...defaultOrder],visible:[...defaultVisible]});return true};
   useEffect(()=>{
     if(!editing)return;
@@ -106,23 +107,42 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
   };
   const add=(id:WidgetId)=>update({...layout,order:layout.order.includes(id)?layout.order:[...layout.order,id],visible:[...layout.visible.filter(item=>item!==id),id]});
   const remove=(id:WidgetId)=>update({...layout,visible:layout.visible.filter(item=>item!==id)});
-  const move=(id:BlockId,direction:number)=>{
-    const active=layout.order.filter(item=>isCore(item)||layout.visible.includes(item as WidgetId));
-    const index=active.indexOf(id),nextIndex=index+direction;
-    if(index<0||nextIndex<0||nextIndex>=active.length)return;
-    const target=active[nextIndex];const order=[...layout.order];
-    const a=order.indexOf(id),b=order.indexOf(target);
-    [order[a],order[b]]=[order[b],order[a]];
-    update({...layout,order});
+  const move=(id:BlockId,direction:number)=>update({...layout,order:moveBlock(layout.order,layout.visible,id,direction,coreIds)});
+  const reorder=(from:BlockId,to:BlockId)=>update({...layout,order:dropBlock(layout.order,from,to)});
+  const visible=visibleBlocks(layout.order,layout.visible,coreIds);
+  const [dragging,setDragging]=useState<BlockId|null>(null);
+  const activeDrag=useRef<{id:BlockId;pointerId:number;startX:number;startY:number;started:boolean}|null>(null);
+  const startCanvasDrag=(id:BlockId,event:ReactPointerEvent<HTMLDivElement>)=>{
+    if(event.pointerType==="mouse"&&event.button!==0)return;
+    if((event.target as HTMLElement).closest("button:not([data-drag-handle])"))return;
+    activeDrag.current={id,pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,started:false};
+    event.currentTarget.setPointerCapture(event.pointerId);
   };
-  const reorder=(from:BlockId,to:BlockId)=>{
-    if(from===to)return;
-    const order=[...layout.order];order.splice(order.indexOf(from),1);order.splice(order.indexOf(to),0,from);
-    update({...layout,order});
+  const moveCanvasDrag=(event:ReactPointerEvent<HTMLDivElement>)=>{
+    const drag=activeDrag.current;
+    if(!drag||drag.pointerId!==event.pointerId)return;
+    if(!drag.started){
+      if(Math.hypot(event.clientX-drag.startX,event.clientY-drag.startY)<7)return;
+      drag.started=true;setDragging(drag.id);
+    }
+    // Move only when crossing another block's midpoint, avoiding jitter at boundaries.
+    const edge=88;
+    if(event.clientY<edge)window.scrollBy(0,-12);
+    else if(event.clientY>window.innerHeight-edge)window.scrollBy(0,12);
+    const nodes=Array.from(document.querySelectorAll<HTMLElement>("[data-home-block]"));
+    const target=nodes.find(node=>{
+      const rect=node.getBoundingClientRect();
+      return event.clientY>=rect.top&&event.clientY<=rect.bottom&&node.dataset.homeBlock!==drag.id;
+    });
+    const targetId=target?.dataset.homeBlock as BlockId|undefined;
+    if(!targetId||!visible.includes(targetId))return;
+    const rect=target!.getBoundingClientRect();
+    const sourceIndex=visible.indexOf(drag.id),targetIndex=visible.indexOf(targetId);
+    if((sourceIndex<targetIndex&&event.clientY<rect.top+rect.height*.52)||
+       (sourceIndex>targetIndex&&event.clientY>rect.top+rect.height*.48))return;
+    reorder(drag.id,targetId);
   };
-  const visible=layout.order.filter(id=>isCore(id)||layout.visible.includes(id as WidgetId));
-  const startCanvasDrag=(id:BlockId,event:ReactPointerEvent<HTMLDivElement>)=>{if(event.pointerType==="mouse"&&event.button!==0)return;if((event.target as HTMLElement).closest("button")&&!((event.target as HTMLElement).closest("[data-drag-handle]")))return;canvasDrag.current=id;event.currentTarget.setPointerCapture(event.pointerId)};
-  const moveCanvasDrag=(event:ReactPointerEvent<HTMLDivElement>)=>{if(!canvasDrag.current)return;const edge=85;if(event.clientY<edge)window.scrollBy(0,-18);else if(event.clientY>window.innerHeight-edge)window.scrollBy(0,18);const hit=document.elementFromPoint(event.clientX,event.clientY)?.closest("[data-home-block]");const target=hit?.getAttribute("data-home-block") as BlockId|null;if(target&&target!==canvasDrag.current&&visible.includes(target))reorder(canvasDrag.current,target)};
+  const stopCanvasDrag=()=>{activeDrag.current=null;setDragging(null)};
   const optionsByKey=new Map(pinOptions.map(item=>[pinKey(item),item]));
   const activePins=pins.flatMap(p=>{const option=optionsByKey.get(pinKey(p));return option?[option]:[]});
   const removePin=(pin:HomePin)=>{const next=pins.filter(p=>pinKey(p)!==pinKey(pin));writeHomePins(userId,next);setPins(next)};
@@ -196,7 +216,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
         </div>
       </div>
     </div>}
-    {visible.map(id=><div key={id} data-home-block={id} className={`${styles.homeCanvasBlock} ${canvasEditing?styles.homeCanvasBlockActive:""}`} onPointerDown={event=>{if(canvasEditing)startCanvasDrag(id,event)}} onPointerMove={event=>{if(canvasEditing)moveCanvasDrag(event)}} onPointerUp={()=>{canvasDrag.current=null}} onPointerCancel={()=>{canvasDrag.current=null}}>
+    {visible.map(id=><div key={id} data-home-block={id} className={`${styles.homeCanvasBlock} ${canvasEditing?styles.homeCanvasBlockActive:""} ${dragging===id?styles.homeCanvasDragging:""}`} onPointerDown={event=>{if(canvasEditing)startCanvasDrag(id,event)}} onPointerMove={event=>{if(canvasEditing)moveCanvasDrag(event)}} onPointerUp={stopCanvasDrag} onPointerCancel={stopCanvasDrag}>
       {canvasEditing?<div className={styles.homeCanvasBlockBar}><button type="button" data-drag-handle="true" className={styles.homeCanvasHandle} aria-label={`Drag ${isCore(id)?coreLabels[id]:definitions[id].name} to reorder`}><span aria-hidden="true">⠿</span> {isCore(id)?coreLabels[id]:definitions[id].name}</button><div><button type="button" aria-label={`Move ${isCore(id)?coreLabels[id]:definitions[id].name} up`} disabled={visible.indexOf(id)===0} onClick={()=>move(id,-1)}>↑</button><button type="button" aria-label={`Move ${isCore(id)?coreLabels[id]:definitions[id].name} down`} disabled={visible.indexOf(id)===visible.length-1} onClick={()=>move(id,1)}>↓</button>{!isCore(id)?<button type="button" aria-label={`Remove ${definitions[id].name}`} onClick={()=>remove(id)}>×</button>:null}</div></div>:null}
       <div className={canvasEditing?styles.homeCanvasContentLocked:undefined}>{(()=>{
       if(id==="greeting")return <div key={id} className={styles.homeBlock}>{greeting}</div>;
