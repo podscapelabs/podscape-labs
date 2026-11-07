@@ -125,3 +125,7 @@
 .homeEditorHead button{flex:none;border:0;border-radius:11px;padding:10px 16px;min-height:43px;background:var(--forest);color:var(--paper);font-size:.76rem;font-weight:800;cursor:pointer}
 @media(min-width:721px){.homeEditorOverlay{align-items:center}}
 @media(max-width:720px){.homeGreetingRow{gap:7px;margin-bottom:10px}.homeGreetingRow .welcome{margin-bottom:0}.editHomeButton{min-width:66px;padding:8px 5px;border-radius:14px;font-size:.61rem;gap:4px}.editHomeButton>span:first-child{font-size:1.08rem}.homeEditorOverlay{padding:0 0 env(safe-area-inset-bottom,0px)}.homeEditorOverlay>.widgetEditor{border-radius:23px 23px 0 0;max-height:82dvh;padding:18px 14px}.homeEditorHead h2{font-size:1.55rem}}
+
+/* Personal pins may include longer game and feature names. */
+.shortcuts>.shortcut{min-width:0;overflow:hidden}
+.shortcuts>.shortcut>span:last-child{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;overflow-wrap:anywhere;max-width:100%;padding-inline:2px}
