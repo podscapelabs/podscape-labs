@@ -60,7 +60,7 @@ export function ManagerWorkspace({stats,enclosures,scope,primaryHref}:{stats:Rea
   </section>
  };
  return <div className={`${styles.managerWorkspace} ${canvasEditing?homeStyles.homeCanvasEditing:""}`}>
-  <div className={styles.managerWorkspaceHeader}><span>Your workspace</span><button type="button" className={homeStyles.editHomeButton} onClick={()=>{setCanvasEditing(true);setEditing(false);setSlot(null)}}><span aria-hidden="true">✎</span><span>Edit Manager</span></button></div>
+  <div className={styles.managerWorkspaceHeader}><span>Hold a section to customize</span><button type="button" className={homeStyles.editHomeButton} onClick={()=>{setCanvasEditing(true);setEditing(false);setSlot(null)}}><span aria-hidden="true">✎</span><span>Edit Manager</span></button></div>
   {canvasEditing?<WorkspaceEditToolbar title="Arrange your Manager" description="Drag sections to arrange your workspace. Quick Tools stay grouped." onAdd={()=>{finishCanvas();setEditing(true);setTab("library");setSlot(null)}} onReset={resetToDefault} onDone={finishCanvas}/>:null}
   {editing?<div className={homeStyles.homeEditorOverlay} onPointerDown={e=>{if(e.target===e.currentTarget){setEditing(false);setSlot(null)}}}>
    <div className={`${homeStyles.widgetEditor} ${homeStyles.widgetLibrary}`} role="dialog" aria-modal="true" aria-labelledby="manager-widget-title">
