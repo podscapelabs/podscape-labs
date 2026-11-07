@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect,useRef,useState,type ReactNode} from "react";
+import {useEffect,useLayoutEffect,useRef,useState,type ReactNode} from "react";
 import Link from "next/link";
 import {PodscapeLineIcon,type PodscapeIconName} from "./PodscapeLineIcon";
 import {pinKey,readHomePins,writeHomePins,type HomePin,type PinOption} from "./home-pins";
@@ -58,6 +58,26 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
   const [hydrated,setHydrated]=useState(false);
   const dialogRef=useRef<HTMLDivElement>(null);
   const returnFocus=useRef<HTMLElement|null>(null);
+  // The editor inserts a toolbar and block handles above the held block.
+  // Keep that exact block at its original viewport position when the layout expands.
+  const editAnchor=useRef<{id:BlockId;top:number}|null>(null);
+  const enterCanvas=(id?:BlockId)=>{
+    if(id){
+      const block=Array.from(document.querySelectorAll<HTMLElement>('[data-workspace-scope="home"]')).find(node=>node.dataset.workspaceBlock===id);
+      editAnchor.current=block?{id,top:block.getBoundingClientRect().top}:null;
+    }else editAnchor.current=null;
+    setCanvasEditing(true);
+    setEditing(false);
+  };
+  useLayoutEffect(()=>{
+    if(!canvasEditing||!editAnchor.current)return;
+    const {id,top}=editAnchor.current;
+    editAnchor.current=null;
+    const block=Array.from(document.querySelectorAll<HTMLElement>('[data-workspace-scope="home"]')).find(node=>node.dataset.workspaceBlock===id);
+    if(!block)return;
+    const difference=block.getBoundingClientRect().top-top;
+    if(Math.abs(difference)>1)window.scrollBy({top:difference,behavior:"instant"});
+  },[canvasEditing]);
   useEffect(()=>{
     const refresh=()=>setPins(readHomePins(userId));
     refresh();
@@ -72,12 +92,12 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
     return ()=>window.removeEventListener("podscape-home-widgets-changed",refresh);
   },[]);
   useEffect(()=>{
-    const open=()=>{setCanvasEditing(true);setEditing(false)};
+    const open=()=>enterCanvas();
     window.addEventListener("podscape-edit-home",open);
     return ()=>window.removeEventListener("podscape-edit-home",open);
   },[]);
   const close=()=>{setEditing(false);requestAnimationFrame(()=>returnFocus.current?.focus())};
-  const finishCanvas=()=>{stopDrag();setCanvasEditing(false)};
+  const finishCanvas=()=>{stopDrag();editAnchor.current=null;setCanvasEditing(false)};
   const resetToDefault=()=>{if(!window.confirm("Reset your homepage to the default layout? This will remove optional widgets from Home and restore the original block order. Your account, colonies and favorites will not be deleted."))return false;stopDrag();update({order:[...defaultOrder],visible:[...defaultVisible]});return true};
   useEffect(()=>{
     if(!editing)return;
@@ -157,7 +177,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
         </div>
       </div>
     </div>}
-    {visible.map((id,index)=><WorkspaceEditBlock key={id} id={id} scope="home" label={isCore(id)?coreLabels[id]:definitions[id].name} index={index} count={visible.length} editing={canvasEditing} dragging={dragging===id} required={isCore(id)} onMove={move} onRemove={id=>{if(!isCore(id))remove(id)}} begin={beginDrag} move={moveDrag} stop={stopDrag} interactiveChildren={id==="shortcuts"} onLongPress={()=>{setCanvasEditing(true);setEditing(false)}}>
+    {visible.map((id,index)=><WorkspaceEditBlock key={id} id={id} scope="home" label={isCore(id)?coreLabels[id]:definitions[id].name} index={index} count={visible.length} editing={canvasEditing} dragging={dragging===id} required={isCore(id)} onMove={move} onRemove={id=>{if(!isCore(id))remove(id)}} begin={beginDrag} move={moveDrag} stop={stopDrag} interactiveChildren={id==="shortcuts"} onLongPress={()=>enterCanvas(id)}>
       {(()=>{
       if(id==="greeting")return <div key={id} className={styles.homeBlock}>{greeting}</div>;
       if(id==="hero")return <div key={id} className={styles.homeBlock}>{hero}</div>;
