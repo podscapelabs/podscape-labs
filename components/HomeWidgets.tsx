@@ -15,7 +15,6 @@ type CoreId="greeting"|"hero"|"shortcuts"|"spotlight";
 type BlockId=CoreId|WidgetId;
 const coreIds:CoreId[]=["greeting","hero","shortcuts","spotlight"];
 const coreLabels:Record<CoreId,string>={greeting:"Welcome Greeting",hero:"Discovery Hero",shortcuts:"Quick Shortcuts",spotlight:"Podscape Spotlight"};
-const coreIcons:Record<CoreId,PodscapeIconName>={greeting:"leaf",hero:"jar",shortcuts:"scan",spotlight:"leaf"};
 const isCore=(id:BlockId):id is CoreId=>coreIds.includes(id as CoreId);
 type WidgetId="recent"|"colony"|"games"|"progress"|"schedule"|"guides"|"community"|"pins";
 type WidgetGroup="Discovery"|"My Keeper Tools"|"Play & Community";
@@ -55,9 +54,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
   const [editing,setEditing]=useState(false);
   const [canvasEditing,setCanvasEditing]=useState(false);
   const [pins,setPins]=useState<HomePin[]>([]);
-  const [tab,setTab]=useState<"library"|"arrange">("library");
   const [hydrated,setHydrated]=useState(false);
-  const dragged=useRef<BlockId|null>(null);
   const dialogRef=useRef<HTMLDivElement>(null);
   const returnFocus=useRef<HTMLElement|null>(null);
   useEffect(()=>{
@@ -123,19 +120,15 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
     </section>
   );
   return <section className={`${styles.widgetArea} ${canvasEditing?styles.homeCanvasEditing:""}`} aria-label="Your customizable homepage">
-    {canvasEditing?<WorkspaceEditToolbar title="Arrange your Home" description="Drag blocks to move them. Shortcuts stay together." onAdd={()=>{finishCanvas();returnFocus.current=document.activeElement as HTMLElement;setTab("library");setEditing(true)}} onReset={resetToDefault} onDone={finishCanvas}/>:null}
+    {canvasEditing?<WorkspaceEditToolbar title="Arrange your Home" description="Drag blocks to move them. Shortcuts stay together." onAdd={()=>{finishCanvas();returnFocus.current=document.activeElement as HTMLElement;setEditing(true)}} onReset={resetToDefault} onDone={finishCanvas}/>:null}
     {editing&&<div className={styles.homeEditorOverlay} onPointerDown={event=>{if(event.target===event.currentTarget)close()}}>
       <div className={`${styles.widgetEditor} ${styles.widgetLibrary}`} id="podscape-home-widget-editor" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="widget-library-title">
         <div className={styles.homeEditorHead}>
           <div><small>YOUR LITTLE WORLD, YOUR WAY</small><h2 id="widget-library-title">Widget Library</h2></div>
           <button type="button" onClick={close}>Done</button>
         </div>
-        <p>Choose the little tools you want to see. Essential blocks are always present but can be moved anywhere. Add optional widgets and arrange everything together. Pin species, games and colonies from their pages.</p>
-        <div className={styles.widgetTabs} role="group" aria-label="Widget library views">
-          <button type="button" className={tab==="library"?styles.widgetTabActive:""} aria-pressed={tab==="library"} onClick={()=>setTab("library")}>Explore widgets</button>
-          <button type="button" className={tab==="arrange"?styles.widgetTabActive:""} aria-pressed={tab==="arrange"} onClick={()=>setTab("arrange")}>Arrange Home <span>({visible.length})</span></button>
-        </div>
-        {tab==="library"?
+        <p>Add the widgets you love, remove the ones you don&apos;t. Changes are saved on this device.</p>
+        <div className={styles.widgetLibraryActions}><span>{layout.visible.length} of {available.length} widgets added</span><button type="button" onClick={()=>{close();setCanvasEditing(true)}}>Arrange Home ↗</button></div>
           <div className={styles.widgetLibraryGroups}>
             {groups.map(group=><section key={group}>
               <h3>{group}</h3>
@@ -156,31 +149,10 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
                 })}
               </div>
             </section>)}
-          </div>:
-          <div className={styles.widgetArrange}>
-            <p>Move all blocks—including greeting, hero, shortcuts and Spotlight. Core blocks stay on Home. Drag on desktop or use the arrows on mobile.</p>
-            
-            {visible.map((id,index)=><div className={styles.widgetArrangeRow} key={id} data-widget-id={id} draggable
-              onDragStart={event=>{dragged.current=id;event.dataTransfer.effectAllowed="move"}}
-              onDragOver={event=>event.preventDefault()}
-              onDrop={event=>{event.preventDefault();if(dragged.current)reorder(dragged.current,id);dragged.current=null}}
-              onDragEnd={()=>{dragged.current=null}}>
-              <span className={styles.widgetGrip} role="button" tabIndex={0} aria-label={`Drag ${(isCore(id)?coreLabels[id]:definitions[id].name)} to reorder`}
-                onPointerDown={event=>{if(event.pointerType==="mouse"&&event.button!==0)return;dragged.current=id;event.currentTarget.setPointerCapture(event.pointerId)}}
-                onPointerMove={event=>{if(!dragged.current||!(event.buttons&1)&&event.pointerType==="mouse")return;const hit=document.elementFromPoint(event.clientX,event.clientY)?.closest("[data-widget-id]");const target=hit?.getAttribute("data-widget-id") as BlockId|null;if(target&&target!==dragged.current&&visible.includes(target)){reorder(dragged.current,target)}}}
-                onPointerUp={()=>{dragged.current=null}}
-                onPointerCancel={()=>{dragged.current=null}}
-                onKeyDown={event=>{if(event.key==="ArrowUp"){event.preventDefault();move(id,-1)}else if(event.key==="ArrowDown"){event.preventDefault();move(id,1)}}}>⠿</span>
-              <span className={styles.widgetArrangeIcon}><PodscapeLineIcon name={isCore(id)?coreIcons[id]:definitions[id].icon}/></span>
-              <strong>{isCore(id)?coreLabels[id]:definitions[id].name}</strong>{isCore(id)?<small className={styles.coreBlockLabel}>Always on</small>:null}
-              <button type="button" aria-label={`Move ${(isCore(id)?coreLabels[id]:definitions[id].name)} up`} disabled={index===0} onClick={()=>move(id,-1)}>↑</button>
-              <button type="button" aria-label={`Move ${(isCore(id)?coreLabels[id]:definitions[id].name)} down`} disabled={index===visible.length-1} onClick={()=>move(id,1)}>↓</button>
-              {!isCore(id)?<button type="button" aria-label={`Remove ${definitions[id].name}`} onClick={()=>remove(id)}>×</button>:<span className={styles.coreBlockLock} aria-label="Required block">•</span>}
-            </div>)}
-          </div>}
+          </div>
         <div className={styles.widgetLibraryFooter}>
           <small>{visible.length} blocks on your homepage · {coreIds.length} always included · Saved on this device</small>
-          <button type="button" onClick={()=>{if(resetToDefault())setTab("library")}}>Reset layout</button>
+          <button type="button" onClick={()=>{resetToDefault()}}>Reset layout</button>
         </div>
       </div>
     </div>}
@@ -216,6 +188,6 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
       return compact(id,"community","COMMUNITY","Your community corner","Discover keepers, creators and what's growing around Podscape.","/community","Explore community");
     })()}
     </WorkspaceEditBlock>)}
-    {hydrated&&!canvasEditing?<div className={styles.addWidgetFooter}><button type="button" className={styles.addWidgetButton} onClick={()=>{returnFocus.current=document.activeElement as HTMLElement;setTab("library");setEditing(true)}}><span aria-hidden="true">＋</span> Add Widget</button></div>:null}
+    {hydrated&&!canvasEditing?<div className={styles.addWidgetFooter}><button type="button" className={styles.addWidgetButton} onClick={()=>{returnFocus.current=document.activeElement as HTMLElement;setEditing(true)}}><span aria-hidden="true">＋</span> Add Widget</button></div>:null}
   </section>;
 }
