@@ -3,12 +3,13 @@
 import {useEffect,useRef,useState} from "react";
 import Link from "next/link";
 import {PodscapeLineIcon,type PodscapeIconName} from "./PodscapeLineIcon";
+import {pinKey,readHomePins,writeHomePins,type HomePin,type PinOption} from "./home-pins";
 import styles from "./PodscapeHome.module.css";
 
 type Tile={title:string;label:string;description:string;href:string;image?:string|null;alt?:string};
 export type HomeColony={id:string;name:string;quantity:number;speciesName:string}|null;
 export type HomeProgress={level:number;exp:number}|null;
-type WidgetId="recent"|"colony"|"games"|"progress"|"schedule"|"guides"|"community";
+type WidgetId="recent"|"colony"|"games"|"progress"|"schedule"|"guides"|"community"|"pins";
 type WidgetGroup="Discovery"|"My Keeper Tools"|"Play & Community";
 type WidgetDef={name:string;description:string;icon:PodscapeIconName;group:WidgetGroup;preview:string;size:"wide"|"compact"};
 const definitions:Record<WidgetId,WidgetDef>={
@@ -18,12 +19,13 @@ const definitions:Record<WidgetId,WidgetDef>={
   progress:{name:"My Progress",description:"View your level and earned EXP at a glance.",icon:"leaf",group:"My Keeper Tools",preview:"Keeper level · Earned EXP",size:"compact"},
   schedule:{name:"Care Schedule",description:"One-tap access to the existing Manager care schedule.",icon:"calendar",group:"My Keeper Tools",preview:"Open your care schedule",size:"compact"},
   games:{name:"Play a Little",description:"Get straight into your Fun Zone activities.",icon:"creative",group:"Play & Community",preview:"Puzzles · Quizzes · Word games",size:"compact"},
-  community:{name:"Community",description:"Find your way back to the keeper community.",icon:"community",group:"Play & Community",preview:"Keepers · Creators · Updates",size:"compact"}
+  community:{name:"Community",description:"Find your way back to the keeper community.",icon:"community",group:"Play & Community",preview:"Keepers · Creators · Updates",size:"compact"},
+  pins:{name:"My Favorites",description:"Your pinned species, games and personal colonies in one place.",icon:"leaf",group:"Discovery",preview:"Pinned species · Games · Colonies",size:"wide"}
 };
 const available=Object.keys(definitions) as WidgetId[];
 const groups:WidgetGroup[]=["Discovery","My Keeper Tools","Play & Community"];
 const storageKey="podscape-home-widgets-v1";
-const defaultOrder:WidgetId[]=["recent","colony","games","progress","schedule","guides","community"];
+const defaultOrder:WidgetId[]=["recent","colony","games","progress","schedule","guides","community","pins"];
 const defaultVisible:WidgetId[]=["recent"];
 type Layout={order:WidgetId[];visible:WidgetId[]};
 
@@ -38,15 +40,28 @@ function readLayout():Layout{
   }catch{return {order:[...defaultOrder],visible:[...defaultVisible]}}
 }
 
-export function HomeWidgets({recent,colony,progress}:{recent:Tile[];colony:HomeColony;progress:HomeProgress}){
+export function HomeWidgets({recent,colony,progress,pinOptions,userId}:{recent:Tile[];colony:HomeColony;progress:HomeProgress;pinOptions:PinOption[];userId:string|null}){
   const [layout,setLayout]=useState<Layout>({order:defaultOrder,visible:defaultVisible});
   const [editing,setEditing]=useState(false);
+  const [pins,setPins]=useState<HomePin[]>([]);
   const [tab,setTab]=useState<"library"|"arrange">("library");
   const [hydrated,setHydrated]=useState(false);
   const dragged=useRef<WidgetId|null>(null);
   const dialogRef=useRef<HTMLDivElement>(null);
   const returnFocus=useRef<HTMLElement|null>(null);
-  useEffect(()=>{setLayout(readLayout());setHydrated(true)},[]);
+  useEffect(()=>{
+    const refresh=()=>setPins(readHomePins(userId));
+    refresh();
+    window.addEventListener("storage",refresh);
+    window.addEventListener("podscape-home-pins-changed",refresh);
+    return ()=>{window.removeEventListener("storage",refresh);window.removeEventListener("podscape-home-pins-changed",refresh)};
+  },[userId]);
+  useEffect(()=>{
+    const refresh=()=>setLayout(readLayout());
+    refresh();setHydrated(true);
+    window.addEventListener("podscape-home-widgets-changed",refresh);
+    return ()=>window.removeEventListener("podscape-home-widgets-changed",refresh);
+  },[]);
   useEffect(()=>{
     const open=()=>{returnFocus.current=document.activeElement as HTMLElement;setTab("library");setEditing(true)};
     window.addEventListener("podscape-edit-home",open);
@@ -94,6 +109,9 @@ export function HomeWidgets({recent,colony,progress}:{recent:Tile[];colony:HomeC
     update({...layout,order});
   };
   const visible=layout.order.filter(id=>layout.visible.includes(id));
+  const optionsByKey=new Map(pinOptions.map(item=>[pinKey(item),item]));
+  const activePins=pins.flatMap(p=>{const option=optionsByKey.get(pinKey(p));return option?[option]:[]});
+  const removePin=(pin:HomePin)=>{const next=pins.filter(p=>pinKey(p)!==pinKey(pin));writeHomePins(userId,next);setPins(next)};
   const guide=recent.find(item=>item.label==="GUIDE");
   const compact=(id:WidgetId,icon:PodscapeIconName,eyebrow:string,title:string,description:string,href:string,cta:string)=>(
     <section className={styles.widgetCard} key={id} aria-label={definitions[id].name}>
@@ -109,7 +127,7 @@ export function HomeWidgets({recent,colony,progress}:{recent:Tile[];colony:HomeC
           <div><small>YOUR LITTLE WORLD, YOUR WAY</small><h2 id="widget-library-title">Widget Library</h2></div>
           <button type="button" onClick={close}>Done</button>
         </div>
-        <p>Choose the little tools you want to see. Your welcome, shortcuts and Podscape Spotlight stay protected.</p>
+        <p>Choose the little tools you want to see. Your welcome, shortcuts and Podscape Spotlight stay protected. Pin individual species, games and colonies from their pages.</p>
         <div className={styles.widgetTabs} role="group" aria-label="Widget library views">
           <button type="button" className={tab==="library"?styles.widgetTabActive:""} aria-pressed={tab==="library"} onClick={()=>setTab("library")}>Explore widgets</button>
           <button type="button" className={tab==="arrange"?styles.widgetTabActive:""} aria-pressed={tab==="arrange"} onClick={()=>setTab("arrange")}>On My Home <span>({visible.length})</span></button>
@@ -164,6 +182,17 @@ export function HomeWidgets({recent,colony,progress}:{recent:Tile[];colony:HomeC
       </div>
     </div>}
     {visible.map(id=>{
+      if(id==="pins")return <section className={styles.section} key={id} aria-label="My Favorites">
+        <div className={styles.heading}><h2>My Favorites</h2><Link href="/menu">Discover →</Link></div>
+        {activePins.length?<div className={styles.pinnedGrid}>{activePins.map(item=><article key={pinKey(item)} className={styles.pinnedCard}>
+          <span className={styles.pinnedIcon}><PodscapeLineIcon name={item.kind==="colony"?"jar":item.kind==="game"?"creative":"leaf"}/></span>
+          <div><small>{item.kind==="colony"?"MY COLONY":item.kind==="game"?"FAVORITE GAME":"SPECIES"}</small><strong>{item.title}</strong><p>{item.description}</p></div>
+          <Link href={item.href} aria-label={`Open ${item.title}`}>Open ↗</Link>
+          <button type="button" onClick={()=>removePin(item)} aria-label={`Remove ${item.title} from favorites`}>×</button>
+        </article>)}</div>:
+        <div className={styles.widgetPinEmpty}><p>{pins.length?"Some pinned items are no longer available to this account.":"Nothing pinned yet. Open a species, colony or game and tap Add to Home."}</p><Link href="/menu">Explore Podscape →</Link></div>}
+      </section>;
+
       if(id==="recent")return <section className={styles.section} key={id} aria-label="Recent and noteworthy">
         <div className={styles.heading}><h2>Recent &amp; Noteworthy</h2><Link href="/menu">Explore →</Link></div>
         <div className={styles.tiles}>{recent.map(item=><Link href={item.href} className={styles.tile} key={item.href}>
