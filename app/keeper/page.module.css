@@ -156,3 +156,19 @@
 .managerToolLibrary svg{width:23px;height:23px;flex:none;color:var(--accent)}
 .managerFallback{display:flex;flex-wrap:wrap;gap:15px;margin:22px 0 5px;padding:14px 0;border-top:1px solid var(--border)}
 .managerFallback a{font-size:.72rem;font-weight:750;color:var(--accent)}
+
+
+/* Workspace visual consistency: content-driven height and tighter section rhythm. */
+.page{min-height:0;padding-bottom:clamp(28px,5vw,60px)}
+.managerWorkspace{padding-bottom:0}
+.managerWorkspaceHeader{margin:18px 0 14px;gap:12px}
+.managerWorkspaceHeader button{min-height:44px}
+.managerFallback{margin-top:18px;margin-bottom:0;gap:10px 18px}
+.managerFallback a{display:inline-flex;align-items:center;min-height:40px}
+.managerHint{border:1px dashed var(--border);border-radius:14px;background:var(--surface);padding:15px}
+.managerToolLibrary button{min-height:44px;border-radius:12px}
+@media(max-width:720px){
+ .page{padding-bottom:30px}
+ .managerWorkspaceHeader{margin-top:14px}
+ .managerFallback{margin-top:12px;padding-top:10px}
+}
