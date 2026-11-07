@@ -103,7 +103,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
   const add=(id:WidgetId)=>update({...layout,order:layout.order.includes(id)?layout.order:[...layout.order,id],visible:[...layout.visible.filter(item=>item!==id),id]});
   const remove=(id:WidgetId)=>update({...layout,visible:layout.visible.filter(item=>item!==id)});
   const move=(id:BlockId,direction:number)=>{
-    const active=layout.order.filter(item=>layout.visible.includes(item));
+    const active=layout.order.filter(item=>isCore(item)||layout.visible.includes(item as WidgetId));
     const index=active.indexOf(id),nextIndex=index+direction;
     if(index<0||nextIndex<0||nextIndex>=active.length)return;
     const target=active[nextIndex];const order=[...layout.order];
