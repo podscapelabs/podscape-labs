@@ -5,6 +5,8 @@ import { HomeGreeting } from "./HomeGreeting";
 import { PodscapeLineIcon } from "./PodscapeLineIcon";
 import { CustomizableHomeShortcuts } from "./CustomizableHomeShortcuts";
 import { HomeWidgets, type HomeColony, type HomeProgress } from "./HomeWidgets";
+import type { PinOption } from "./home-pins";
+import { games as funZoneGames } from "@/lib/fun-zone-games";
 import { InstallPodscape } from "./InstallPodscape";
 import { ShortcutWelcomeTip } from "./ShortcutWelcomeTip";
 import { EditHomeButton } from "./EditHomeButton";
@@ -29,23 +31,35 @@ export async function MarketingSite(){
  const {data:profile}=user&&db?await db.from("customer_profiles").select("display_name").eq("id",user.id).maybeSingle():{data:null};
  const name=(profile?.display_name||user?.user_metadata?.display_name||user?.user_metadata?.full_name||"").trim().split(/\s+/)[0]||undefined;
  let colony:HomeColony=null;
+ let ownedPins:PinOption[]=[];
  let progress:HomeProgress=null;
  if(user&&db){
-  const [colonyResult,progressResult]=await Promise.all([
+  const [colonyResult,progressResult,ownedResult]=await Promise.all([
     db.from("keeper_enclosures").select("id,name,species_id,quantity").eq("user_id",user.id).eq("is_archived",false).order("updated_at",{ascending:false}).limit(1).maybeSingle(),
-    db.from("member_progress").select("total_exp").eq("user_id",user.id).maybeSingle()
+    db.from("member_progress").select("total_exp").eq("user_id",user.id).maybeSingle(),
+    db.from("keeper_enclosures").select("id,name,species_id,quantity").eq("user_id",user.id).eq("is_archived",false)
   ]);
   if(colonyResult.data){
     const entry=colonyResult.data;
     const matched=records.find(record=>record.id===entry.species_id);
     colony={id:entry.id,name:entry.name,quantity:entry.quantity||0,speciesName:matched?speciesDisplayName(matched):"Your colony"};
   }
+  ownedPins=(ownedResult.data||[]).map(entry=>{
+    const matched=records.find(record=>record.id===entry.species_id);
+    return {kind:"colony" as const,id:entry.id,title:entry.name,description:(matched?speciesDisplayName(matched):"Colony")+" · "+(entry.quantity||0)+" recorded",href:"/keeper/"+entry.id};
+  });
   if(progressResult.data){
     const exp=Math.max(0,Number(progressResult.data.total_exp||0));
     progress={level:Math.floor(Math.sqrt(exp/100))+1,exp};
   }
  }
 
+ const pinOptions:PinOption[]=[
+  ...records.filter(record=>isSpeciesRecordActive(record)&&record.kind==="species"&&record.status==="published").map(record=>({kind:"species" as const,id:record.slug,title:speciesDisplayName(record),description:record.summary||"Discover this species",href:"/ledger/"+record.slug})),
+  ...ownedPins,
+  ...funZoneGames.map(game=>({kind:"game" as const,id:game.key,title:game.title,description:game.subtitle,href:"/fun-zone/"+game.key})),
+  {kind:"game",id:"word-search",title:"Word Search",description:"Find hidden isopod terms",href:"/fun-zone/word-search"}
+ ];
  const featured:Tile[]=spotlights.map(item=>({title:item.title,label:item.label,description:item.description,href:item.href,image:item.image,alt:item.alt}));
  const recent:Tile[]=[
  ...(guide?[{title:guide.title,label:"GUIDE",description:guide.summary||"Learn something new.",href:`/field-guide/${guide.slug}`}]:[]),
@@ -59,6 +73,6 @@ export async function MarketingSite(){
  <ShortcutWelcomeTip/>
  <InstallPodscape/>
  <section className={styles.section} aria-label="Podscape Spotlight"><div className={styles.heading}><h2>Podscape Spotlight</h2><span className={styles.spotlightHint}>Swipe to explore <span aria-hidden="true">↔</span></span></div><div className={styles.spotlightRail} role="region" aria-roledescription="carousel" aria-label="Curated Podscape highlights" tabIndex={0}>{featured.map(item=><TileCard item={item} key={item.href}/>)}</div></section>
- <HomeWidgets recent={recent} colony={colony} progress={progress}/>
+ <HomeWidgets recent={recent} colony={colony} progress={progress} pinOptions={pinOptions} userId={user?.id||null}/>
  </main></div>;
 }
