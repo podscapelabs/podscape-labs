@@ -8,3 +8,16 @@
 .done{width:100%;min-height:48px;margin-top:16px;padding:10px 18px;border:0;border-radius:13px;background:var(--forest);color:var(--paper);font-weight:800;cursor:pointer}
 @media(max-width:720px){.dialog{padding:23px 19px}.dialog p:not(.eyebrow){font-size:.78rem}}
 @media(prefers-reduced-motion:reduce){.scrim{backdrop-filter:none}}
+
+/* Short, dismissible three-step introduction to the existing Home editor. */
+.tourTop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px}
+.tourTop>span{color:var(--muted);font-size:.61rem;letter-spacing:.11em;font-weight:800}
+.tourTop button{min-width:44px;min-height:40px;border:0;background:transparent;color:var(--forest);font-size:.75rem;font-weight:750;cursor:pointer}
+.progress{display:flex;justify-content:center;gap:7px;margin:19px 0 3px}
+.progress>span{width:7px;height:7px;border-radius:99px;background:var(--line)}
+.progress .progressActive{width:23px;background:var(--forest)}
+.tourActions{display:flex;align-items:center;gap:9px}
+.tourActions .done{flex:1;min-width:0}
+.back{min-height:48px;margin-top:16px;padding:10px 16px;border:1px solid var(--line);border-radius:13px;background:var(--paper-strong);color:var(--forest);font-weight:800;cursor:pointer}
+.dialog button:focus-visible{outline:3px solid var(--forest);outline-offset:3px}
+@media(max-width:720px){.dialog{max-height:calc(100dvh - 48px);overflow-y:auto}}
