@@ -354,10 +354,11 @@
   -webkit-user-select: none;
 }
 .homeCanvasBlock:not(.homeCanvasBlockActive) {
-  touch-action: pan-y;
+  /* Allow nested horizontal carousels to handle their own pan gestures. */
+  touch-action: auto;
 }
 .homeCanvasBlock:not(.homeCanvasBlockActive) :where(a,button) {
-  touch-action: pan-y;
+  touch-action: auto;
 }
 
 /* Refinement: one unified widget library, with arranging as a secondary action. */
@@ -398,4 +399,17 @@
  .widgetGalleryCopy button{min-width:100px;font-size:.64rem}
  .widgetPreview>span{width:34px;height:34px}
  .widgetPreview strong{font-size:.9rem}
+}
+
+/* Spotlight: restore native side-scrolling under the hold-to-customize wrapper.
+   A partially visible next card makes the gesture discoverable on small phones. */
+.homeCanvasBlock:not(.homeCanvasBlockActive) .spotlightRail {
+  touch-action: pan-x pan-y;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  min-width: 0;
+}
+@media(max-width:720px){
+  .spotlightRail{gap:10px;scroll-padding-inline:2px;scroll-snap-type:x proximity}
+  .spotlightRail>.tile{flex:0 0 min(76vw,270px);scroll-snap-align:start}
 }
