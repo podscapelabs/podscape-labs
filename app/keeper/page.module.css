@@ -211,3 +211,6 @@
  .managerWorkspace .attentionList strong{font-size:1.04rem}
  .managerWorkspace .attentionList small{font-size:.66rem}
 }
+
+.managerFallback .managerTextButton{min-height:40px;margin-left:auto;padding:6px 10px;border:0;background:transparent;color:var(--accent);font-size:.72rem;font-weight:750}
+.managerFallback .managerTextButton:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
