@@ -2,7 +2,7 @@
 import {useEffect,useRef,useState} from "react";
 import {moveNavigationSlot} from "./navigation-customization";
 
-export function useShortcutEditor(ids:string[],change:(ids:string[])=>void){
+export function useShortcutEditor(ids:string[],change:(ids:string[])=>void,externalEditing=false){
   const [editing,setEditing]=useState(false);
   const [selected,setSelected]=useState(0);
   const timer=useRef<ReturnType<typeof setTimeout>|null>(null);
@@ -17,10 +17,16 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void){
   const changeRef=useRef(change);
   changeRef.current=change;
   const editingRef=useRef(editing);
-  editingRef.current=editing;
+  editingRef.current=editing||externalEditing;
   const stopTimer=()=>{if(timer.current!==null){clearTimeout(timer.current);timer.current=null}};
   const feedback=()=>{try{if("vibrate" in navigator)navigator.vibrate(10)}catch{}};
   useEffect(()=>()=>stopTimer(),[]);
+  useEffect(()=>{
+    if(!externalEditing)return;
+    stopTimer();holding.current=false;
+    // The parent canvas owns Done; never leave an independent shortcut edit session running.
+    setEditing(false);
+  },[externalEditing]);
   const handlers=(index:number)=>({
     onPointerDown:(event:React.PointerEvent<HTMLElement>)=>{
       if(event.pointerType==="mouse"&&event.button!==0)return;
@@ -38,7 +44,7 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void){
           suppressClick.current=true;
           editingRef.current=true;
           feedback();
-          setEditing(true);setSelected(index);
+          if(!externalEditing)setEditing(true);setSelected(index);
           dragging.current=index;
           try{pointer.current?.element.setPointerCapture(pointer.current.id)}catch{}
         },500);
@@ -72,8 +78,8 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void){
         wasDragged.current=false;
       }
     },
-    onContextMenu:(event:React.MouseEvent<HTMLElement>)=>{event.preventDefault();setEditing(true);editingRef.current=true;setSelected(index)}
+    onContextMenu:(event:React.MouseEvent<HTMLElement>)=>{event.preventDefault();if(!externalEditing)setEditing(true);editingRef.current=true;setSelected(index)}
   });
   const done=()=>{setEditing(false);editingRef.current=false;dragging.current=null;holding.current=false;suppressClick.current=false;pointer.current=null;stopTimer()};
-  return {editing,setEditing,selected,setSelected,handlers,done};
+  return {editing:editing||externalEditing,setEditing,selected,setSelected,handlers,done};
 }
