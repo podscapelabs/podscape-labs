@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
 import { getSpeciesRecords } from "@/lib/species-store";
 import { getProductRecords } from "@/lib/product-store";
@@ -39,7 +38,6 @@ export default async function PodBoundHome() {
     <a className="skip-link" href="#platform-main">Skip to content</a>
     <Header />
     <main id="platform-main" className={styles.main}>
-      <nav className={styles.breadcrumb} aria-label="Breadcrumb"><Link href="/app">PodScape Home</Link><span aria-hidden="true">/</span><span>PodBound</span></nav>
       <section className={styles.intro} aria-label="Welcome to PodBound">
         <span className={styles.introMark}><PodscapeLineIcon name="podbound" /></span>
         <div><p className={styles.introEyebrow}>A PODSCAPE LABS ORIGINAL</p><h1>Welcome to PodBound <span aria-hidden="true">✦</span></h1><p>Your next little adventure starts here.</p></div>
@@ -98,6 +96,5 @@ export default async function PodBoundHome() {
         <Link href="/app">Back to PodScape <span aria-hidden="true">→</span></Link>
       </section>
     </main>
-    <Footer />
   </div>;
 }
