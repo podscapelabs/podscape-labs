@@ -255,3 +255,23 @@
  .managerInsightGrid span{font-size:.61rem}
  .managerModuleList>a{padding:11px 2px}
 }
+
+/* Cross-colony recent care history. */
+.managerHistory{max-width:850px;margin:0 auto}
+.managerHistory h1{margin:8px 0;font-family:var(--display);font-weight:500;font-size:clamp(2rem,4vw,2.7rem)}
+.managerHistory>p:not(.managerEyebrow){color:var(--text-secondary);font-size:.84rem;line-height:1.5}
+.managerHistoryFilters{display:grid;grid-template-columns:minmax(0,2fr) minmax(150px,1fr);gap:12px;margin:24px 0 12px}
+.managerHistoryFilters label{display:grid;gap:6px;font-size:.72rem;font-weight:700}
+.managerHistoryFilters input,.managerHistoryFilters select{width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text-primary);font:inherit}
+.managerHistoryList{border:1px solid var(--border);border-radius:16px;background:var(--surface);overflow:hidden}
+.managerHistoryList>a{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px;border-bottom:1px solid var(--border);color:inherit;text-decoration:none}
+.managerHistoryList>a:last-child{border-bottom:none}
+.managerHistoryList>a>span{min-width:0;display:grid;gap:4px}
+.managerHistoryList strong{font-size:.82rem;text-transform:capitalize}
+.managerHistoryList small{font-size:.72rem;color:var(--text-secondary);line-height:1.35;overflow-wrap:anywhere}
+.managerHistoryList time{font-size:.67rem;color:var(--text-secondary);white-space:nowrap}
+.managerHistoryList>a:hover{background:var(--surface-secondary)}
+@media(max-width:720px){
+ .managerHistoryFilters{grid-template-columns:1fr;gap:10px;margin-top:18px}
+ .managerHistoryList>a{padding:12px 10px;gap:8px}
+}
