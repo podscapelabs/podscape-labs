@@ -1,6 +1,5 @@
 "use client";
-import {usePathname} from "next/navigation";
-import Link from "next/link";
+import {usePathname,useRouter} from "next/navigation";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
 import {choiceById,navigationChoices,moveNavigationSlot,swapNavigationSlot} from "./navigation-customization";
 import {useNavigationPreferences} from "./useNavigationPreferences";
@@ -9,6 +8,7 @@ import styles from "./KeeperMobileNav.module.css";
 
 export function GlobalMobileNav(){
   const pathname=usePathname();
+  const router=useRouter();
   const {ids,change,reset}=useNavigationPreferences("bottom");
   const {editing,selected,setSelected,handlers,done}=useShortcutEditor(ids,change);
   const excluded=pathname==="/"||pathname==="/admin"||pathname.startsWith("/admin/")&&pathname!=="/admin/preview"||pathname.startsWith("/account/login")||pathname.startsWith("/account/register")||pathname.startsWith("/account/reset")||pathname.startsWith("/auth/");
@@ -32,13 +32,13 @@ export function GlobalMobileNav(){
       <p>Saved on this device. Home and Menu remain available through the platform navigation.</p>
     </div>}
     <nav className={`${styles.nav} ${editing?styles.editing:""}`} aria-label="PodScape mobile navigation">
-      {items.map((item,index)=><Link href={item.href} data-shortcut-index={index} key={item.id}
+      {items.map((item,index)=><button type="button" data-shortcut-index={index} key={item.id}
         aria-current={!editing&&activeFor(item.href)?"page":undefined}
         aria-label={editing?`Choose ${item.label} to customize`:item.label}
         className={`${styles.item} ${item.id==="scan"?styles.primary:""} ${!editing&&activeFor(item.href)?styles.active:""} ${editing&&selected===index?styles.selected:""}`}
-        {...handlers(index)}>
+        {...handlers(index)} onClick={event=>{handlers(index).onClick(event);if(!event.defaultPrevented)router.push(item.href)}}>
         <span><PodscapeLineIcon name={item.icon}/></span><small>{item.label}</small>
-      </Link>)}
+      </button>)}
     </nav>
   </>;
 }
