@@ -22,6 +22,13 @@ const explore:{icon:PodscapeIconName;title:string;copy:string;href:string;cta:st
   {icon:"note",title:"Follow the studio",copy:"Behind-the-scenes updates and projects taking shape at Podscape Labs.",href:"/from-the-lab",cta:"From the Lab"}
 ];
 
+const socials:{name:string;copy:string;href:string}[]=[
+  {name:"Facebook",copy:"Announcements, species spotlights and community news.",href:"https://www.facebook.com/share/1DpaNVvCJM/"},
+  {name:"Instagram",copy:"Isopod photography, creative projects and behind-the-scenes moments.",href:"https://www.instagram.com/podscapelabs/"},
+  {name:"TikTok",copy:"Tiny creatures, quick videos and a little Podscape chaos.",href:"https://www.tiktok.com/@podscapelabs"},
+  {name:"Discord",copy:"Chat with fellow keepers, share ideas and join the conversation.",href:"https://discord.gg/MRa67kGxz5"}
+];
+
 export default function CommunityPage(){
   return <div className={styles.site}>
     <a className="skip-link" href="#community-main">Skip to content</a>
@@ -52,6 +59,14 @@ export default function CommunityPage(){
           <span className={styles.exploreIcon}><PodscapeLineIcon name={item.icon}/></span>
           <strong>{item.title}</strong><p>{item.copy}</p><span className={styles.cardLink}>{item.cta} <span aria-hidden="true">↗</span></span>
         </Link>)}</div>
+      </section>
+      <section className={styles.section} aria-labelledby="socials-heading">
+        <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>CONNECT WITH US</p><h2 id="socials-heading">Find Podscape beyond the portal.</h2></div></div>
+        <p className={styles.sectionDescription}>Follow along, say hello and join the little world we're growing together.</p>
+        <div className={styles.exploreGrid}>{socials.map(item=><a className={styles.exploreCard} href={item.href} target="_blank" rel="noopener noreferrer" key={item.name}>
+          <span className={styles.exploreIcon} aria-hidden="true"><PodscapeLineIcon name="community"/></span>
+          <strong>{item.name}</strong><p>{item.copy}</p><span className={styles.cardLink}>Visit {item.name} <span aria-hidden="true">↗</span></span>
+        </a>)}</div>
       </section>
       <section className={styles.section} aria-labelledby="coming-heading">
         <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>GROWING NEXT</p><h2 id="coming-heading">Room for everyone.</h2></div></div>
