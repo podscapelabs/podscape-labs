@@ -16,16 +16,24 @@ export async function createPodBoundCard(){
   revalidatePath("/admin/podbound");
   redirect("/admin/podbound/"+data.id+"?created=1");
 }
-async function uploadArtwork(id:string,file:File,kind:"core"|"alternate"){
-  if(file.size>10*1024*1024)throw new Error("Artwork must be 10 MB or smaller.");
-  const mimeExt:Record<string,string>={"image/jpeg":"jpg","image/png":"png","image/webp":"webp","image/avif":"avif"};
-  const ext=mimeExt[file.type];
-  if(!ext)throw new Error("Upload a JPG, PNG, WebP or AVIF image.");
-  const db=requireCardDatabase();
+/**
+ * Reserve a private storage path for browser-to-Supabase upload.
+ * This keeps image bytes out of the Vercel Server Action request body.
+ */
+export async function preparePodBoundArtworkUpload(id:string,kind:"core"|"alternate",mime:string,size:number) {
+  if(!await isAdminAuthenticated())return {error:"Owner sign-in is required.",path:"",token:""};
+  if(!/^[0-9a-f-]{36}$/i.test(id)||!["core","alternate"].includes(kind))return {error:"Invalid card or artwork type.",path:"",token:""};
+  const current=await getPodBoundCard(id);
+  if(!current)return {error:"Card not found.",path:"",token:""};
+  const extensions:Record<string,string>={"image/jpeg":"jpg","image/png":"png","image/webp":"webp","image/avif":"avif"};
+  const ext=extensions[mime];
+  if(!ext)return {error:"Choose a JPG, PNG, WebP or AVIF image.",path:"",token:""};
+  if(!Number.isFinite(size)||size<=0||size>10*1024*1024)return {error:"Artwork must be 10 MB or smaller.",path:"",token:""};
   const path=id+"/"+kind+"-"+crypto.randomUUID()+"."+ext;
-  const {error}=await db.storage.from("podbound-art").upload(path,await file.arrayBuffer(),{contentType:file.type,upsert:false});
-  if(error)throw new Error("Artwork upload failed: "+error.message);
-  return path;
+  const db=requireCardDatabase();
+  const {data,error}=await db.storage.from("podbound-art").createSignedUploadUrl(path);
+  if(error||!data)return {error:"Unable to prepare artwork upload. Please try again.",path:"",token:""};
+  return {error:"",path,token:data.token};
 }
 export async function savePodBoundCard(form:FormData){
   if(!await isAdminAuthenticated())redirect("/admin");
@@ -44,16 +52,14 @@ export async function savePodBoundCard(form:FormData){
     const {data,error}=await db.from("species_records").select("id").eq("id",speciesId).maybeSingle();
     if(error||!data)editorRedirect(id,"error","Choose a valid Leaf Ledger species.");
   }
-  let core=current.core_art_path, alternate=current.alternate_art_path;
-  try{
-    for(const [field,kind] of [["core_art","core"],["alternate_art","alternate"]] as const){
-      const file=form.get(field);
-      if(file instanceof File && file.size>0){
-        const result=await uploadArtwork(id,file,kind);
-        if(kind==="core")core=result;else alternate=result;
-      }
-    }
-  }catch(error){editorRedirect(id,"error",error instanceof Error?error.message:"Artwork upload failed.");}
+  const coreUpload=value(form,"uploaded_core_path",250);
+  const alternateUpload=value(form,"uploaded_alternate_path",250);
+  if(coreUpload && !new RegExp("^"+id.replace(/[.*+?^${}()|[\\]\\]/g,"\\$&")+"/core-[0-9a-f-]+\\.(jpg|png|webp|avif)$","i").test(coreUpload))
+    editorRedirect(id,"error","Invalid core artwork upload.");
+  if(alternateUpload && !new RegExp("^"+id.replace(/[.*+?^${}()|[\\]\\]/g,"\\$&")+"/alternate-[0-9a-f-]+\\.(jpg|png|webp|avif)$","i").test(alternateUpload))
+    editorRedirect(id,"error","Invalid alternate artwork upload.");
+  let core=coreUpload||current.core_art_path;
+  let alternate=alternateUpload||current.alternate_art_path;
   if(form.get("remove_core")==="yes")core=null;
   if(form.get("remove_alternate")==="yes")alternate=null;
   const db=requireCardDatabase();
@@ -68,7 +74,7 @@ export async function savePodBoundCard(form:FormData){
     updated_at:new Date().toISOString()
   }).eq("id",id);
   if(error)editorRedirect(id,"error",error.message);
-  revalidatePath("/admin/podbound");revalidatePath("/admin/podbound/"+id);
+  revalidatePath("/admin/podbound");revalidatePath("/admin/podbound/"+id);revalidatePath("/podbound/cards");revalidatePath("/podbound/cards/"+id);
   editorRedirect(id,"saved");
 }
 export async function archivePodBoundCard(form:FormData){
