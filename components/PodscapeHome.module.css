@@ -38,3 +38,59 @@
 .shortcuts>.shortcut{appearance:none;color:var(--ink);cursor:pointer;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation;padding:0;font:400 .87rem/1.2 var(--serif)}
 .shortcuts>.shortcut span{-webkit-user-select:none;user-select:none;pointer-events:none}
 @media(max-width:720px){.shortcuts>.shortcut{font-size:.65rem;padding:7px 1px}.shortcuts.shortcutEditing>.shortcut{touch-action:none}}
+
+/* Personal homepage experiment: the editorial foundation above remains fixed. */
+.widgetArea{margin-top:26px}
+.widgetControls{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.widgetControls>div>small{font-size:.58rem;letter-spacing:.11em;font-weight:800;color:var(--forest)}
+.widgetControls h2{margin:4px 0 0;font:400 1.55rem/1.15 var(--serif)}
+.widgetControls>button{flex:none;border:1px solid var(--line);border-radius:99px;background:var(--paper);color:var(--forest);padding:10px 13px;font-size:.73rem;font-weight:750;cursor:pointer}
+.widgetEditor{padding:17px;border:1px solid var(--line);border-radius:18px;background:var(--paper);box-shadow:var(--shadow-soft)}
+.widgetEditor>strong{font:400 1.5rem var(--serif)}
+.widgetEditor>p{margin:7px 0 17px;color:var(--muted);font-size:.78rem;line-height:1.5}
+.widgetEditorList{display:grid;gap:8px}
+.widgetEditorRow{display:flex;align-items:center;gap:9px;min-width:0;padding:12px 9px;border:1px solid var(--line);border-radius:12px;background:var(--paper-strong)}
+.widgetGrip{flex:none;color:var(--forest);font-size:1.1rem;cursor:grab}
+.widgetEditorRow>div{display:grid;gap:3px;flex:1;min-width:0}
+.widgetEditorRow>div strong{font:400 1.05rem/1.2 var(--serif)}
+.widgetEditorRow>div small{color:var(--muted);font-size:.68rem;line-height:1.3}
+.widgetVisibility{display:grid;place-items:center;flex:none;width:28px;height:35px}
+.widgetVisibility input{accent-color:var(--forest);width:18px;height:18px;cursor:pointer}
+.widgetEditorRow>button{width:34px;height:36px;flex:none;border:1px solid var(--line);border-radius:9px;background:var(--paper);color:var(--ink);cursor:pointer}
+.widgetEditorRow>button:disabled{opacity:.28;cursor:default}
+.widgetEditorFooter{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}
+.widgetEditorFooter small{font-size:.68rem;color:var(--muted)}
+.widgetEditorFooter button{flex:none;border:1px solid var(--line);border-radius:11px;padding:9px;background:var(--paper-strong);color:var(--forest);font-size:.69rem;font-weight:750;cursor:pointer}
+.widgetCard{display:flex;align-items:center;gap:15px;flex-wrap:wrap;margin-top:12px;padding:19px;border:1px solid var(--line);border-radius:19px;background:var(--paper)}
+.widgetSymbol{display:grid;place-items:center;flex:none;width:53px;height:53px;border-radius:16px;background:color-mix(in srgb,var(--forest) 12%,var(--paper));color:var(--forest);font-size:1.55rem}
+.widgetSymbol svg{width:27px;height:27px}
+.widgetCard>div{flex:1;min-width:170px}
+.widgetCard>div small{color:var(--forest);font-size:.58rem;font-weight:800;letter-spacing:.1em}
+.widgetCard h3{margin:5px 0;font:400 1.4rem/1.12 var(--serif)}
+.widgetCard p{margin:0;color:var(--muted);font-size:.76rem;line-height:1.5}
+.widgetCard>a{color:var(--forest);font-size:.73rem;font-weight:750;white-space:nowrap}
+.widgetRecentIcon{display:flex;height:130px;align-items:center;justify-content:center;flex-direction:column;gap:9px;color:var(--forest);background:color-mix(in srgb,var(--moss) 12%,var(--paper))}
+.widgetRecentIcon svg{width:34px;height:34px}
+.widgetRecentIcon small{font-size:.57rem;font-weight:800;letter-spacing:.04em}
+.widgetEmpty{padding:15px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);font-size:.76rem}
+.srOnly{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+@media(max-width:720px){
+.widgetArea{margin-top:19px}
+.widgetControls h2{font-size:1.3rem}
+.widgetControls>button{font-size:.67rem;padding:9px 11px}
+.widgetEditor{padding:12px}
+.widgetEditorRow{gap:6px;padding:10px 7px}
+.widgetEditorRow>div strong{font-size:.92rem}
+.widgetEditorRow>div small{font-size:.6rem}
+.widgetEditorRow>button{width:29px;height:35px}
+.widgetGrip{font-size:.9rem}
+.widgetCard{padding:14px;gap:11px}
+.widgetSymbol{width:41px;height:41px;border-radius:12px}
+.widgetSymbol svg{width:22px;height:22px}
+.widgetCard>div{min-width:125px}
+.widgetCard h3{font-size:1.18rem}
+.widgetCard>a{width:100%;padding-left:52px}
+.widgetRecentIcon{height:95px}
+.widgetRecentIcon svg{width:25px;height:25px}
+.widgetRecentIcon small{font-size:.5rem}
+}
