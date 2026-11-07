@@ -236,3 +236,26 @@
 .addWidgetButton>span{font-size:1.3rem;font-weight:400;line-height:1}
 .addWidgetButton:hover,.addWidgetButton:focus-visible{border-color:var(--forest);outline-offset:3px}
 @media(max-width:720px){.addWidgetFooter{margin-top:17px}.main{padding-bottom:calc(42px + env(safe-area-inset-bottom,0px))}}
+
+/* Home layout v2: editorial foundation can move with personal widgets. */
+.homeCustomizationBar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:12px}
+.homeCustomizationBar>span{color:var(--muted);font-size:.71rem;font-weight:750;letter-spacing:.025em}
+.homeCustomizationBar .editHomeButton{flex-direction:row;min-width:0;min-height:42px;gap:7px;padding:8px 15px;border-radius:999px;font-size:.73rem}
+.homeCustomizationBar .editHomeButton>span:first-child{font-size:1.1rem}
+.widgetArea{margin-top:0;min-height:0}
+.homeBlock{min-width:0;margin:0 0 16px}
+.homeBlock .homeGreetingRow{margin-bottom:0}
+.homeBlock .shortcuts{margin-top:0;margin-bottom:0}
+.homeBlock .section{margin-top:0}
+.widgetArea>.section{margin-top:18px}
+.widgetArea>.widgetCard{margin-top:12px}
+.widgetArrangeRow .coreBlockLabel{color:var(--muted);font-size:.62rem;white-space:nowrap}
+.widgetArrangeRow .coreBlockLock{width:30px;flex:none;text-align:center;color:var(--moss);font-size:1.2rem}
+@media(max-width:720px){
+ .homeCustomizationBar{margin-bottom:10px}
+ .homeCustomizationBar>span{font-size:.64rem}
+ .homeCustomizationBar .editHomeButton{min-height:39px;padding:7px 12px;font-size:.68rem}
+ .homeBlock{margin-bottom:12px}
+ .widgetArea>.section{margin-top:14px}
+ .widgetArrangeRow .coreBlockLabel{font-size:.57rem}
+}
