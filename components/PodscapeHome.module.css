@@ -109,3 +109,19 @@
 .jiggleReset{justify-self:start;border:0;padding:4px 0;background:transparent;color:var(--forest);font-size:.71rem;font-weight:750;cursor:pointer}
 @media(max-width:720px){.jiggleToolbar{margin:10px 0;padding:11px;gap:9px}.jiggleHint>strong{font-size:1.05rem}.jiggleHint>small{font-size:.64rem}}
 @media(prefers-reduced-motion:reduce){.shortcutEditing .shortcut.jiggling{animation:none}}
+
+/* Home edit entry sits beside the welcome card, not between editorial sections. */
+.homeGreetingRow{display:flex;align-items:stretch;gap:9px;margin-bottom:13px}
+.homeGreetingRow .welcome{flex:1;min-width:0;margin-bottom:0}
+.editHomeButton{display:flex;flex:none;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:84px;padding:10px;border:1px solid var(--line);border-radius:17px;background:var(--paper);color:var(--forest);font-size:.7rem;font-weight:750;cursor:pointer}
+.editHomeButton>span:first-child{font-size:1.3rem;line-height:1}
+.editHomeButton:hover{border-color:var(--forest)}
+/* The editor opens as a separate sheet; homepage sections stay in place. */
+.homeEditorOverlay{position:fixed;z-index:105;inset:0;display:flex;align-items:flex-end;justify-content:center;padding:15px;background:rgba(5,19,12,.65);backdrop-filter:blur(3px)}
+.homeEditorOverlay>.widgetEditor{width:min(100%,560px);max-height:min(82dvh,720px);overflow-y:auto;overscroll-behavior:contain;padding:22px;border-radius:22px;box-shadow:0 20px 70px rgba(0,0,0,.26)}
+.homeEditorHead{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.homeEditorHead small{display:block;font-size:.6rem;font-weight:800;letter-spacing:.1em;color:var(--forest)}
+.homeEditorHead h2{font:400 1.8rem/1.15 var(--serif);margin:5px 0 0}
+.homeEditorHead button{flex:none;border:0;border-radius:11px;padding:10px 16px;min-height:43px;background:var(--forest);color:var(--paper);font-size:.76rem;font-weight:800;cursor:pointer}
+@media(min-width:721px){.homeEditorOverlay{align-items:center}}
+@media(max-width:720px){.homeGreetingRow{gap:7px;margin-bottom:10px}.homeGreetingRow .welcome{margin-bottom:0}.editHomeButton{min-width:66px;padding:8px 5px;border-radius:14px;font-size:.61rem;gap:4px}.editHomeButton>span:first-child{font-size:1.08rem}.homeEditorOverlay{padding:0 0 env(safe-area-inset-bottom,0px)}.homeEditorOverlay>.widgetEditor{border-radius:23px 23px 0 0;max-height:82dvh;padding:18px 14px}.homeEditorHead h2{font-size:1.55rem}}
