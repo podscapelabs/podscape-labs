@@ -70,7 +70,7 @@ export default async function PodBoundHome() {
       <section id="the-game" className={styles.story} aria-labelledby="story-title">
         <p className={styles.smallLabel}>MEET THE GAME</p>
         <h2 id="story-title">A whole ecosystem in your hands.</h2>
-        <p>In PodBound, the smallest creatures face big challenges. Choose your species, respond to the environment, and make every decision count. It's a tabletop strategy game with real isopod biology at its heart.</p>
+        <p>In PodBound, the smallest creatures face big challenges. Choose your species, respond to the environment, and make every decision count. It is a tabletop strategy game with real isopod biology at its heart.</p>
         <span className={styles.storyFooter}><PodscapeLineIcon name="podbound" /> Created with curiosity at PodScape Labs.</span>
       </section>
 
