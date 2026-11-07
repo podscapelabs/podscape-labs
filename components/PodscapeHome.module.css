@@ -304,3 +304,13 @@
 
 /* Touch dragging requires preventing the browser's native pan gesture in edit mode. */
 .homeCanvasEditing .homeCanvasBlockActive,.homeCanvasEditing .homeCanvasBlockActive .homeCanvasBlockBar{touch-action:none}
+
+/* A grabbed homepage block lifts above the others while keeping its contents together. */
+.homeCanvasEditing .homeCanvasBlockActive{transition:border-color 150ms ease,background-color 150ms ease,box-shadow 150ms ease}
+.homeCanvasEditing .homeCanvasDragging{position:relative;z-index:5;animation:none!important;box-shadow:0 14px 34px color-mix(in srgb,var(--forest) 22%,transparent);border-style:solid;border-color:var(--forest);background:var(--paper);transform:scale(1.012);transition:box-shadow 130ms ease,transform 130ms ease}
+.homeCanvasEditing .homeCanvasDragging .homeCanvasHandle{background:var(--forest);color:var(--paper-strong)}
+:root[data-theme="dark"] .homeCanvasEditing .homeCanvasDragging .homeCanvasHandle{color:var(--forest-deep)}
+@media(prefers-reduced-motion:reduce){
+ .homeCanvasEditing .homeCanvasDragging{transform:none;transition:none}
+ .homeCanvasEditing .homeCanvasBlockActive{transition:none}
+}
