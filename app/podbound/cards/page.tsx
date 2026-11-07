@@ -26,7 +26,7 @@ export default async function PodBoundCardGallery({searchParams}:{searchParams:P
     <a className="skip-link" href="#catalogue">Skip to cards</a>
     <Header/>
     <main className={styles.main} id="catalogue">
-      <nav className={styles.crumbs} aria-label="Breadcrumb"><Link href="/app">Podscape</Link><span>/</span><Link href="/podbound">PodBound</Link><span>/</span><span>Card Catalogue</span></nav>
+      <nav className={styles.crumbs} aria-label="Back to PodBound"><Link href="/podbound">← PodBound</Link></nav>
       <header className={styles.header}>
         <p className={styles.kicker}>A PODSCAPE LABS ORIGINAL / FIELD ARCHIVE</p>
         <div className={styles.titleRow}><div><h1>Card Catalogue</h1><p>Meet the species, environments and artwork behind PodBound.</p></div><span className={styles.count}>{all.length} revealed {all.length===1?"card":"cards"}</span></div>
