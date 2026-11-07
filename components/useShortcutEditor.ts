@@ -10,6 +10,7 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void){
   const dragging=useRef<number|null>(null);
   const startPoint=useRef<{x:number;y:number}|null>(null);
   const suppressClick=useRef(false);
+  const pointer=useRef<{element:HTMLElement;id:number}|null>(null);
   const idsRef=useRef(ids);
   idsRef.current=ids;
   const changeRef=useRef(change);
@@ -22,6 +23,7 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void){
     onPointerDown:(event:React.PointerEvent<HTMLElement>)=>{
       if(event.pointerType==="mouse"&&event.button!==0)return;
       startPoint.current={x:event.clientX,y:event.clientY};
+      pointer.current={element:event.currentTarget,id:event.pointerId};
       if(editingRef.current){
         dragging.current=index;suppressClick.current=true;
         event.currentTarget.setPointerCapture(event.pointerId);
@@ -34,6 +36,7 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void){
           editingRef.current=true;
           setEditing(true);setSelected(index);
           dragging.current=index;
+          try{pointer.current?.element.setPointerCapture(pointer.current.id)}catch{}
         },500);
       }
     },
@@ -50,7 +53,7 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void){
       }
     },
     onPointerUp:()=>{
-      holding.current=false;stopTimer();dragging.current=null;startPoint.current=null;
+      holding.current=false;stopTimer();dragging.current=null;startPoint.current=null;pointer.current=null;
     },
     onPointerCancel:()=>{
       holding.current=false;stopTimer();dragging.current=null;startPoint.current=null;
@@ -65,6 +68,6 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void){
     },
     onContextMenu:(event:React.MouseEvent<HTMLElement>)=>{event.preventDefault();setEditing(true);editingRef.current=true;setSelected(index)}
   });
-  const done=()=>{setEditing(false);editingRef.current=false;dragging.current=null;holding.current=false;suppressClick.current=false;stopTimer()};
+  const done=()=>{setEditing(false);editingRef.current=false;dragging.current=null;holding.current=false;suppressClick.current=false;pointer.current=null;stopTimer()};
   return {editing,setEditing,selected,setSelected,handlers,done};
 }
