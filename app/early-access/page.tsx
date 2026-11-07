@@ -21,12 +21,12 @@ export default async function EarlyAccessPage() {
       {user ? <p>Your signed-in email is not currently approved for testing. Sign out to use a different invited email.</p> : <p>Have an invitation? Sign in or create your tester account.</p>}
       <div style={{display:"flex",gap:12,flexWrap:"wrap",marginTop:20}}>
         {user ? <form action={signOutCustomer}><button type="submit" className="button button-primary">Sign out / switch account</button></form> : <>
-          <Link className="button button-primary" href="/account/login">Tester sign in</Link>
-          <Link className="button button-outline" href="/account/sign-up">Create account</Link>
+          <a className="button button-primary" href="/account/login">Tester sign in</a>
+          <a className="button button-outline" href="/account/sign-up">Create account</a>
         </>}
       </div>
       <p className="admin-intro">Tester accounts cannot edit studio content or enter Owner Studio.</p>
-      <Link className="admin-back-link" href="/">← Public homepage</Link>
+      <a className="admin-back-link" href="/">← Public homepage</a>
     </section>
   </main>;
 }
