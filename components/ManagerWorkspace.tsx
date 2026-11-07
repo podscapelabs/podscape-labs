@@ -80,7 +80,7 @@ export function ManagerWorkspace({stats,enclosures,bins,events,activityAvailable
   enclosures,
   tools:<section className={styles.section} key="tools"><header><h2>Quick Tools</h2></header>
    <nav className={styles.tools} aria-label="Keeper quick tools">
-    {layout.tools.map(id=>{const tool=library.find(t=>t.id===id);return tool?<Link href={id==="care"||id==="notes"?primaryHref:tool.href} key={id}><span><PodscapeLineIcon name={tool.icon}/></span><small>{tool.label}</small></Link>:null})}
+    {layout.tools.map(id=>{const tool=library.find(t=>t.id===id);return tool?<Link href={id==="care"?"/keeper/scan?manual=1":id==="notes"?primaryHref:id==="history"&&primaryHref!=="/keeper/collection"?primaryHref+"/history":tool.href} key={id}><span><PodscapeLineIcon name={tool.icon}/></span><small>{tool.label}</small></Link>:null})}
    </nav>
   </section>
  };
