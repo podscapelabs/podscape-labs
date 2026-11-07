@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Header } from "./Header";
 import { HomeGreeting } from "./HomeGreeting";
-import { PodscapeLineIcon, type PodscapeIconName } from "./PodscapeLineIcon";
+import { PodscapeLineIcon } from "./PodscapeLineIcon";
+import { CustomizableHomeShortcuts } from "./CustomizableHomeShortcuts";
 import { getSpeciesRecords } from "@/lib/species-store";
 import { getProductRecords } from "@/lib/product-store";
 import { getGuideRecords } from "@/lib/guide-store";
@@ -11,14 +12,6 @@ import { customerSupabase } from "@/lib/customer-auth/server";
 import { getHomepageSpotlights } from "@/lib/podscape-spotlights";
 import styles from "./PodscapeHome.module.css";
 
-const shortcuts:{label:string;href:string;icon:PodscapeIconName;tone:string}[]=[
- {label:"Ledger",href:"/ledger",icon:"leaf",tone:"sage"},
- {label:"Shop",href:"/shop",icon:"shop",tone:"sand"},
- {label:"Fun Zone",href:"/fun-zone",icon:"creative",tone:"rose"},
- {label:"Community",href:"/community",icon:"community",tone:"sage"},
- {label:"Guides",href:"/field-guide",icon:"book",tone:"sage"},
- {label:"PodBound",href:"/podbound",icon:"podbound",tone:"sand"}
-];
 type Tile={title:string;label:string;description:string;href:string;image?:string|null;alt?:string};
 function TileCard({item}:{item:Tile}){return <Link href={item.href} className={styles.tile}><div className={styles.tileVisual}>{item.image?<Image src={item.image} alt={item.alt||item.title} fill sizes="(max-width: 720px) 33vw, 300px"/>:<span className={styles.tilePlaceholder}><PodscapeLineIcon name={item.label==="GUIDE"?"book":item.label==="SHOP"?"shop":"podbound"}/></span>}<span className={styles.tileTag}>{item.label}</span></div><div className={styles.tileCopy}><strong>{item.title}</strong><small>{item.description}</small><span className={styles.tileArrow} aria-hidden="true">→</span></div></Link>}
 export async function MarketingSite(){
@@ -40,7 +33,7 @@ export async function MarketingSite(){
  return <div className={styles.site}><a className="skip-link" href="#platform-main">Skip to content</a><Header/><main id="platform-main" className={styles.main}>
  <Link href="/account" className={styles.welcome}><span className={styles.welcomeMark}><PodscapeLineIcon name="leaf"/></span><HomeGreeting name={name}/><span className={styles.welcomeArrow}>→</span></Link>
  <section className={styles.hero} aria-label="Discover PodScape">{hero&&<Image src={hero.image!} alt={hero.imageAlt||speciesDisplayName(hero)} fill priority sizes="(max-width: 720px) 100vw, 1100px" className={styles.heroImage}/>}<div className={styles.heroContent}><span className={styles.eyebrow}>EXPLORE PODSCAPE</span><h2>Small creatures.<br/>Big world.</h2><p>Discover species, care guides, community and more.</p></div></section>
- <nav className={styles.shortcuts} aria-label="Explore PodScape">{shortcuts.map(item=><Link href={item.href} className={`${styles.shortcut} ${styles[item.tone]}`} key={item.label}><span className={styles.shortcutIcon}><PodscapeLineIcon name={item.icon}/></span><span>{item.label}</span></Link>)}</nav>
+ <CustomizableHomeShortcuts/>
  <section className={styles.section} aria-label="Podscape Spotlight"><div className={styles.heading}><h2>Podscape Spotlight</h2><span className={styles.spotlightHint}>Swipe to explore <span aria-hidden="true">↔</span></span></div><div className={styles.spotlightRail} role="region" aria-roledescription="carousel" aria-label="Curated Podscape highlights" tabIndex={0}>{featured.map(item=><TileCard item={item} key={item.href}/>)}</div></section>
  <section className={styles.section}><div className={styles.heading}><h2>Recent &amp; Noteworthy</h2><Link href="/menu">See all →</Link></div><div className={styles.tiles}>{recent.map(item=><TileCard item={item} key={item.href}/>)}</div></section>
  </main></div>;
