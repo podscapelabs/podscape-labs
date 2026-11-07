@@ -139,12 +139,17 @@ export function HomeWidgets({recent,colony,progress}:{recent:Tile[];colony:HomeC
           <div className={styles.widgetArrange}>
             <p>Drag on desktop, or use the arrows to arrange your widgets. Their order updates instantly.</p>
             {visible.length===0?<div className={styles.widgetArrangeEmpty}>No optional widgets yet. <button type="button" onClick={()=>setTab("library")}>Explore the library</button></div>:null}
-            {visible.map((id,index)=><div className={styles.widgetArrangeRow} key={id} draggable
+            {visible.map((id,index)=><div className={styles.widgetArrangeRow} key={id} data-widget-id={id} draggable
               onDragStart={event=>{dragged.current=id;event.dataTransfer.effectAllowed="move"}}
               onDragOver={event=>event.preventDefault()}
               onDrop={event=>{event.preventDefault();if(dragged.current)reorder(dragged.current,id);dragged.current=null}}
               onDragEnd={()=>{dragged.current=null}}>
-              <span className={styles.widgetGrip} aria-hidden="true">⠿</span>
+              <span className={styles.widgetGrip} role="button" tabIndex={0} aria-label={`Drag ${definitions[id].name} to reorder`}
+                onPointerDown={event=>{if(event.pointerType==="mouse"&&event.button!==0)return;dragged.current=id;event.currentTarget.setPointerCapture(event.pointerId)}}
+                onPointerMove={event=>{if(!dragged.current||!(event.buttons&1)&&event.pointerType==="mouse")return;const hit=document.elementFromPoint(event.clientX,event.clientY)?.closest("[data-widget-id]");const target=hit?.getAttribute("data-widget-id") as WidgetId|null;if(target&&target!==dragged.current&&visible.includes(target)){reorder(dragged.current,target)}}}
+                onPointerUp={()=>{dragged.current=null}}
+                onPointerCancel={()=>{dragged.current=null}}
+                onKeyDown={event=>{if(event.key==="ArrowUp"){event.preventDefault();move(id,-1)}else if(event.key==="ArrowDown"){event.preventDefault();move(id,1)}}}>⠿</span>
               <span className={styles.widgetArrangeIcon}><PodscapeLineIcon name={definitions[id].icon}/></span>
               <strong>{definitions[id].name}</strong>
               <button type="button" aria-label={`Move ${definitions[id].name} up`} disabled={index===0} onClick={()=>move(id,-1)}>↑</button>
