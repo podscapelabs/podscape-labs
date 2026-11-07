@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import {useRouter} from "next/navigation";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
 import {choiceById,navigationChoices,moveNavigationSlot,swapNavigationSlot} from "./navigation-customization";
 import {useNavigationPreferences} from "./useNavigationPreferences";
@@ -7,6 +7,7 @@ import {useShortcutEditor} from "./useShortcutEditor";
 import styles from "./PodscapeHome.module.css";
 
 export function CustomizableHomeShortcuts(){
+  const router=useRouter();
   const {ids,change,reset}=useNavigationPreferences("home");
   const {editing,selected,setSelected,handlers,done}=useShortcutEditor(ids,change);
   const choices=ids.map(id=>choiceById.get(id)).filter((x):x is NonNullable<typeof x>=>Boolean(x));
@@ -27,12 +28,12 @@ export function CustomizableHomeShortcuts(){
       <small>Changes are saved on this device.</small>
     </div>}
     <nav className={`${styles.shortcuts} ${editing?styles.shortcutEditing:""}`} aria-label="Explore Podscape">
-      {choices.map((item,index)=><Link href={item.href} data-shortcut-index={index}
+      {choices.map((item,index)=><button type="button" data-shortcut-index={index}
         className={`${styles.shortcut} ${styles[item.tone]} ${editing&&selected===index?styles.shortcutSelected:""}`}
         aria-label={editing?`Choose ${item.label} to customize`:item.label}
-        key={item.id} {...handlers(index)}>
+        key={item.id} {...handlers(index)} onClick={event=>{handlers(index).onClick(event);if(!event.defaultPrevented)router.push(item.href)}}>
         <span className={styles.shortcutIcon}><PodscapeLineIcon name={item.icon}/></span><span>{item.label}</span>
-      </Link>)}
+      </button>)}
     </nav>
   </section>;
 }
