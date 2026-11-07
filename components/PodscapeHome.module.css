@@ -359,3 +359,43 @@
 .homeCanvasBlock:not(.homeCanvasBlockActive) :where(a,button) {
   touch-action: pan-y;
 }
+
+/* Refinement: one unified widget library, with arranging as a secondary action. */
+.widgetLibraryActions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px;padding:0 2px;color:var(--muted);font-size:.72rem}
+.widgetLibraryActions>button{min-height:42px;padding:9px 13px;border:1px solid var(--line);border-radius:12px;background:var(--paper-strong);color:var(--forest);font-size:.75rem;font-weight:800;cursor:pointer}
+.widgetLibraryActions>button:hover{border-color:var(--forest)}
+.widgetLibraryActions>button:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
+.widgetLibrary>.homeEditorHead+p{margin:10px 0 12px;line-height:1.45}
+.widgetLibraryGroups h3{font-size:1.15rem;margin-bottom:9px}
+.widgetGallery{gap:9px}
+.widgetGalleryCard{border-radius:14px}
+.widgetPreview{min-height:77px;padding:18px 12px 10px}
+.widgetPreview small{display:none}
+.widgetPreview i{font-size:.51rem}
+.widgetGalleryCopy{gap:5px;padding:11px}
+.widgetGalleryCopy>strong{font-size:1.07rem}
+.widgetGalleryCopy p{font-size:.7rem;line-height:1.4;margin-bottom:7px}
+.widgetGalleryCopy button{min-height:43px}
+.widgetLibraryFooter{padding-top:10px}
+@media(max-width:720px){
+ .homeEditorOverlay>.widgetLibrary{height:auto;max-height:90dvh;padding:18px 16px calc(12px + env(safe-area-inset-bottom,0px))}
+ .widgetLibraryActions{font-size:.68rem}
+ .widgetLibraryActions>button{font-size:.69rem;padding:7px 10px}
+ .widgetGallery{grid-template-columns:1fr}
+ .widgetGalleryCard{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:0}
+ .widgetPreview{min-height:0;padding:12px 10px;gap:10px;background:transparent}
+ .widgetPreview>span{width:39px;height:39px;flex:none}
+ .widgetPreview strong{font-size:1rem}
+ .widgetPreview i{display:none}
+ .widgetGalleryCopy{display:flex;align-items:flex-end;justify-content:center;padding:10px 12px 10px 0;gap:4px}
+ .widgetGalleryCopy>strong{display:none}
+ .widgetGalleryCopy p{display:none}
+ .widgetGalleryCopy button{width:auto;min-width:118px;padding:8px 10px;font-size:.68rem;white-space:normal}
+ .widgetLibraryGroups>section{margin-bottom:16px}
+ .widgetLibraryFooter small{font-size:.62rem}
+}
+@media(max-width:390px){
+ .widgetGalleryCopy button{min-width:100px;font-size:.64rem}
+ .widgetPreview>span{width:34px;height:34px}
+ .widgetPreview strong{font-size:.9rem}
+}
