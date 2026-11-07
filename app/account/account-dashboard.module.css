@@ -121,3 +121,12 @@
  .accountOwnerGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
  .accountOwnerGrid>a{min-height:97px;padding:11px}
 }
+
+/* Keep the membership level legible against its dark forest pill, including link states. */
+.accountSummaryTop a.accountLevel,
+.accountSummaryTop a.accountLevel:visited,
+.accountSummaryTop a.accountLevel:hover,
+.accountSummaryTop a.accountLevel:focus-visible,
+.accountSummaryTop a.accountLevel strong{color:#fff9ec;text-decoration:none}
+.accountSummaryTop a.accountLevel{background:var(--forest);font-weight:650}
+.accountSummaryTop a.accountLevel strong{font-weight:800}
