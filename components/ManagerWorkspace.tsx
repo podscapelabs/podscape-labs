@@ -5,6 +5,7 @@ import Link from "next/link";
 import {PodscapeLineIcon,type PodscapeIconName} from "./PodscapeLineIcon";
 import styles from "@/app/keeper/page.module.css";
 import homeStyles from "./PodscapeHome.module.css";
+import {moveBlock,uniqueAllowed} from "./workspace-layout";
 
 type Section="stats"|"tools"|"enclosures";
 type Tool={id:string;label:string;href:string;icon:PodscapeIconName};
@@ -26,7 +27,7 @@ const initial:Layout={order:defaults,visible:defaults,tools:["scan","qr","add","
 function normalize(value:unknown):Layout{
  if(!value||typeof value!=="object")return initial;
  const raw=value as Partial<Layout>;
- const order=[...(Array.isArray(raw.order)?raw.order.filter((v):v is Section=>defaults.includes(v as Section)):[]),...defaults].filter((v,i,a)=>a.indexOf(v)===i);
+ const order=[...uniqueAllowed(Array.isArray(raw.order)?raw.order:[],defaults),...defaults].filter((v,i,a)=>a.indexOf(v)===i);
  const visible=Array.isArray(raw.visible)?defaults.filter(v=>raw.visible!.includes(v)):defaults;
  const tools=Array.isArray(raw.tools)?raw.tools.filter(v=>library.some(t=>t.id===v)).filter((v,i,a)=>a.indexOf(v)===i).slice(0,6):initial.tools;
  return {order,visible,tools:tools.length?tools:initial.tools};
@@ -41,7 +42,7 @@ export function ManagerWorkspace({stats,enclosures,scope,primaryHref}:{stats:Rea
  useEffect(()=>{try{const saved=localStorage.getItem(storageKey);if(saved)setLayout(normalize(JSON.parse(saved)))}catch{}setReady(true)},[storageKey]);
  const update=(next:Layout)=>{setLayout(next);try{localStorage.setItem(storageKey,JSON.stringify(next))}catch{}};
  const swap=(id:string)=>{if(slot===null)return;const next=[...layout.tools];const prior=next.indexOf(id);if(prior>=0){[next[slot],next[prior]]=[next[prior],next[slot]]}else next[slot]=id;update({...layout,tools:next});setSlot(null)};
- const move=(id:Section,dir:number)=>{const visible=layout.order.filter(item=>layout.visible.includes(item));const at=visible.indexOf(id),to=at+dir;if(at<0||to<0||to>=visible.length)return;const next=[...layout.order],a=next.indexOf(id),b=next.indexOf(visible[to]);[next[a],next[b]]=[next[b],next[a]];update({...layout,order:next})};
+ const move=(id:Section,dir:number)=>update({...layout,order:moveBlock(layout.order,layout.visible,id,dir)});
  const sections:Record<Section,ReactNode>={
   stats,
   enclosures,
@@ -64,7 +65,7 @@ export function ManagerWorkspace({stats,enclosures,scope,primaryHref}:{stats:Rea
     {slot!==null?<div className={styles.managerEditor}><div className={styles.managerPickerTitle}><h3>Replace Quick Tool {slot+1}</h3><button type="button" onClick={()=>setSlot(null)} aria-label="Close tool picker">×</button></div><div className={styles.managerToolLibrary}>{library.map(tool=><button type="button" key={tool.id} onClick={()=>swap(tool.id)}><PodscapeLineIcon name={tool.icon}/><span>{tool.label}</span>{layout.tools[slot]===tool.id?" ✓":""}</button>)}</div></div>:
     tab==="library"?<div className={homeStyles.widgetLibraryGroups}><section><h3>Manager widgets</h3><div className={homeStyles.widgetGallery}>{defaults.map(id=><article key={id} className={homeStyles.widgetGalleryCard}><div className={homeStyles.widgetPreview}><span><PodscapeLineIcon name={id==="stats"?"leaf":id==="tools"?"scan":"jar"}/></span><div><strong>{labels[id]}</strong><small>{id==="stats"?"Species, bins and population":id==="tools"?"Your everyday keeper actions":"Recently updated enclosures"}</small></div></div><div className={homeStyles.widgetGalleryCopy}><strong>{labels[id]}</strong><p>{id==="tools"?"Customize your six quick actions.":"Choose whether this section appears on your Manager."}</p><button type="button" className={layout.visible.includes(id)?homeStyles.widgetRemove:homeStyles.widgetAdd} onClick={()=>update({...layout,visible:layout.visible.includes(id)?layout.visible.filter(v=>v!==id):[...layout.visible,id]})}>{layout.visible.includes(id)?"✓ Added · Remove":"+ Add to Manager"}</button>{id==="tools"?<div className={styles.managerToolLibrary} aria-label="Choose a Quick Tool slot to edit">{layout.tools.map((toolId,i)=><button type="button" key={i} onClick={()=>setSlot(i)} aria-label={`Replace ${library.find(tool=>tool.id===toolId)?.label||"Quick Tool"} in slot ${i+1}`}><span>{i+1}. {library.find(tool=>tool.id===toolId)?.label||"Quick Tool"}</span><span aria-hidden="true">✎</span></button>)}</div>:null}</div></article>)}</div></section></div>:
     <div className={homeStyles.widgetArrange}><p>Use the arrows to arrange your Manager widgets. Changes save automatically on this device.</p>{layout.order.filter(id=>layout.visible.includes(id)).map((id,i,visible)=><div className={homeStyles.widgetArrangeRow} key={id}><span className={homeStyles.widgetArrangeIcon}><PodscapeLineIcon name={id==="stats"?"leaf":id==="tools"?"scan":"jar"}/></span><strong>{labels[id]}</strong><button type="button" disabled={i===0} aria-label={`Move ${labels[id]} up`} onClick={()=>move(id,-1)}>↑</button><button type="button" disabled={i===visible.length-1} aria-label={`Move ${labels[id]} down`} onClick={()=>move(id,1)}>↓</button><button type="button" aria-label={`Remove ${labels[id]}`} onClick={()=>update({...layout,visible:layout.visible.filter(v=>v!==id)})}>×</button></div>)}{layout.visible.length===0?<p>No Manager widgets selected. Explore the library to add one.</p>:null}</div>}
-    <div className={homeStyles.widgetLibraryFooter}><small>{layout.visible.length} widget{layout.visible.length===1?"":"s"} on your Manager · Saved on this device</small><button type="button" onClick={()=>{update(initial);setSlot(null);setTab("library")}}>Reset layout</button></div>
+    <div className={homeStyles.widgetLibraryFooter}><small>{layout.visible.length} widget{layout.visible.length===1?"":"s"} on your Manager · Saved on this device</small><button type="button" onClick={()=>{if(!window.confirm("Restore the default Manager layout and Quick Tools? Your colony records will not be affected."))return;update(initial);setSlot(null);setTab("library")}}>Reset layout</button></div>
    </div>
   </div>:null}
   {layout.order.filter(id=>layout.visible.includes(id)).map(id=><div key={id}>{sections[id]}</div>)}
