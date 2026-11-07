@@ -15,7 +15,7 @@ const shortcuts:{label:string;href:string;icon:PodscapeIconName;tone:string}[]=[
  {label:"Ledger",href:"/ledger",icon:"leaf",tone:"sage"},
  {label:"Shop",href:"/shop",icon:"shop",tone:"sand"},
  {label:"Fun Zone",href:"/fun-zone",icon:"creative",tone:"rose"},
- {label:"Community",href:"/from-the-lab",icon:"community",tone:"sage"},
+ {label:"Community",href:"/community",icon:"community",tone:"sage"},
  {label:"Guides",href:"/field-guide",icon:"book",tone:"sage"},
  {label:"PodBound",href:"/podbound",icon:"podbound",tone:"sand"}
 ];
@@ -35,7 +35,7 @@ export async function MarketingSite(){
  const recent:Tile[]=[
  ...(guide?[{title:guide.title,label:"GUIDE",description:guide.summary||"Learn something new.",href:`/field-guide/${guide.slug}`}]:[]),
  {title:"Explore the Fun Zone",label:"FUN ZONE",description:"Puzzles, games and activities.",href:"/fun-zone"},
- {title:"Meet the Community",label:"COMMUNITY",description:"Connect with fellow keepers.",href:"/from-the-lab"}
+ {title:"Meet the Community",label:"COMMUNITY",description:"Connect with fellow keepers.",href:"/community"}
  ];
  return <div className={styles.site}><a className="skip-link" href="#platform-main">Skip to content</a><Header/><main id="platform-main" className={styles.main}>
  <Link href="/account" className={styles.welcome}><span className={styles.welcomeMark}><PodscapeLineIcon name="leaf"/></span><HomeGreeting name={name}/><span className={styles.welcomeArrow}>→</span></Link>
