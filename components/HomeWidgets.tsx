@@ -79,7 +79,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
   },[]);
   const close=()=>{setEditing(false);requestAnimationFrame(()=>returnFocus.current?.focus())};
   const finishCanvas=()=>{canvasDrag.current=null;setCanvasEditing(false)};
-  const resetToDefault=()=>{canvasDrag.current=null;update({order:[...defaultOrder],visible:[...defaultVisible]})};
+  const resetToDefault=()=>{if(!window.confirm("Reset your homepage to the default layout? This will remove optional widgets from Home and restore the original block order. Your account, colonies and favorites will not be deleted."))return false;canvasDrag.current=null;update({order:[...defaultOrder],visible:[...defaultVisible]});return true};
   useEffect(()=>{
     if(!editing)return;
     const previous=document.body.style.overflow;
@@ -192,7 +192,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
           </div>}
         <div className={styles.widgetLibraryFooter}>
           <small>{visible.length} blocks on your homepage · {coreIds.length} always included · Saved on this device</small>
-          <button type="button" onClick={()=>{update({order:[...defaultOrder],visible:[...defaultVisible]});setTab("library")}}>Reset layout</button>
+          <button type="button" onClick={()=>{if(resetToDefault())setTab("library")}}>Reset layout</button>
         </div>
       </div>
     </div>}
