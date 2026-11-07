@@ -121,7 +121,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
   };
   const visible=layout.order.filter(id=>isCore(id)||layout.visible.includes(id as WidgetId));
   const startCanvasDrag=(id:BlockId,event:ReactPointerEvent<HTMLButtonElement>)=>{if(event.pointerType==="mouse"&&event.button!==0)return;canvasDrag.current=id;event.currentTarget.setPointerCapture(event.pointerId)};
-  const moveCanvasDrag=(event:ReactPointerEvent<HTMLButtonElement>)=>{if(!canvasDrag.current)return;const hit=document.elementFromPoint(event.clientX,event.clientY)?.closest("[data-home-block]");const target=hit?.getAttribute("data-home-block") as BlockId|null;if(target&&target!==canvasDrag.current&&visible.includes(target))reorder(canvasDrag.current,target)};
+  const moveCanvasDrag=(event:ReactPointerEvent<HTMLButtonElement>)=>{if(!canvasDrag.current)return;const edge=85;if(event.clientY<edge)window.scrollBy(0,-18);else if(event.clientY>window.innerHeight-edge)window.scrollBy(0,18);const hit=document.elementFromPoint(event.clientX,event.clientY)?.closest("[data-home-block]");const target=hit?.getAttribute("data-home-block") as BlockId|null;if(target&&target!==canvasDrag.current&&visible.includes(target))reorder(canvasDrag.current,target)};
   const optionsByKey=new Map(pinOptions.map(item=>[pinKey(item),item]));
   const activePins=pins.flatMap(p=>{const option=optionsByKey.get(pinKey(p));return option?[option]:[]});
   const removePin=(pin:HomePin)=>{const next=pins.filter(p=>pinKey(p)!==pinKey(pin));writeHomePins(userId,next);setPins(next)};
