@@ -23,9 +23,9 @@
 /* Spotlight: touch-first, user-controlled carousel with no automatic advance. */
 .spotlightHint{color:var(--muted);font-size:.71rem}
 .spotlightRail{display:flex;gap:11px;overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x mandatory;scroll-padding-inline:2px;padding:2px 2px 12px;scrollbar-width:thin}
-.spotlightRail>.tile{flex:0 0 clamp(210px,30%,320px);scroll-snap-align:start}
+.spotlightRail>.tile{flex:0 0 calc((100% - 22px) / 3);scroll-snap-align:start}
 .spotlightRail:focus-visible{outline:2px solid var(--forest);outline-offset:3px;border-radius:10px}
-@media(max-width:720px){.spotlightRail{gap:9px;padding-bottom:10px}.spotlightRail>.tile{flex-basis:min(64vw,245px)}.spotlightHint{font-size:.66rem}}
+@media(max-width:720px){.spotlightRail{gap:6px;padding-bottom:10px}.spotlightRail>.tile{flex-basis:calc((100% - 12px) / 3)}.spotlightHint{font-size:.66rem}}
 
 /* Personal navigation: long-press a homepage shortcut to customize. */
 .shortcutEditor{display:grid;gap:13px;margin:13px 0 8px;padding:16px;border:1px solid var(--line);border-radius:18px;background:var(--paper);box-shadow:var(--shadow-soft);color:var(--ink)}
