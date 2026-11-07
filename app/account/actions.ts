@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { isApprovedTesterEmail, requireCustomerPreviewAccess } from "@/lib/customer-auth/access";
+import { isApprovedTesterEmail, testerAccessStatus, requireCustomerPreviewAccess } from "@/lib/customer-auth/access";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { customerAuthSiteUrl, customerSupabase } from "@/lib/customer-auth/server";
 import { clearCustomerRecoveryPermission, hasCustomerRecoveryPermission } from "@/lib/customer-auth/recovery";
@@ -39,7 +39,11 @@ export async function signUpCustomer(_prev: CustomerFormState, form: FormData): 
   const confirmation = String(form.get("confirmPassword") || "");
   const displayName = stringField(form, "displayName", 60);
   if (!validEmail(email)) return { error: "Enter a valid email address.", message: "" };
-  if (!(await isApprovedTesterEmail(email)) && !(await isAdminAuthenticated())) return { error: "This email is not yet on the Early Access list. Ask the PodScape team to approve it first.", message: "" };
+  if (!(await isAdminAuthenticated())) {
+    const approval = await testerAccessStatus(email);
+    if (approval === "unavailable") return { error: "Early Access verification is temporarily unavailable. Please try again shortly.", message: "" };
+    if (approval !== "approved") return { error: "This email is not yet on the Early Access list. Ask the PodScape team to approve it first.", message: "" };
+  }
   if (!validNewPassword(password)) return { error: "Use a password of 12–128 characters.", message: "" };
   if (password !== confirmation) return { error: "Your passwords do not match.", message: "" };
 
@@ -71,7 +75,13 @@ export async function signInCustomer(_prev: CustomerFormState, form: FormData): 
   if (!validEmail(email) || !password) return { error: "Enter your email and password.", message: "" };
   const { error, data } = await db.auth.signInWithPassword({ email, password });
   if (error) return { error: "Invalid credentials or unverified email. Please try again.", message: "" };
-  if (data.user?.app_metadata?.role === "owner" || await isApprovedTesterEmail(email)) redirect("/app");
+  if (data.user?.app_metadata?.role === "owner") redirect("/app");
+  const approval = await testerAccessStatus(email);
+  if (approval === "unavailable") {
+    await db.auth.signOut();
+    return { error: "Sign-in succeeded, but Early Access verification is temporarily unavailable. Please try again shortly.", message: "" };
+  }
+  if (approval === "approved") redirect("/app");
   redirect("/early-access");
 }
 
