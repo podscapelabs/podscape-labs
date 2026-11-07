@@ -23,8 +23,6 @@ function TileCard({item}:{item:Tile}){return <Link href={item.href} className={s
 export async function MarketingSite(){
  const [records,products,guides,spotlights]=await Promise.all([getSpeciesRecords(),getProductRecords(),getGuideRecords(),getHomepageSpotlights()]);
  const species=records.filter(r=>isSpeciesRecordActive(r)&&r.image).sort((a,b)=>Date.parse(b.updatedAt)-Date.parse(a.updatedAt));
- const product=products.filter(p=>!p.archivedAt&&p.status==="published"&&p.image).sort((a,b)=>Number(b.featured)-Number(a.featured)||Date.parse(b.updatedAt)-Date.parse(a.updatedAt))[0];
- const guide=guides.filter(g=>!g.archivedAt&&g.status==="published").sort((a,b)=>Date.parse(b.updatedAt)-Date.parse(a.updatedAt))[0];
  const hero=species[0];
  const db=await customerSupabase();
  const {data:{user}}=db?await db.auth.getUser():{data:{user:null}};
@@ -61,11 +59,21 @@ export async function MarketingSite(){
   {kind:"game",id:"word-search",title:"Word Search",description:"Find hidden isopod terms",href:"/fun-zone/word-search"}
  ];
  const featured:Tile[]=spotlights.map(item=>({title:item.title,label:item.label,description:item.description,href:item.href,image:item.image,alt:item.alt}));
- const recent:Tile[]=[
- ...(guide?[{title:guide.title,label:"GUIDE",description:guide.summary||"Learn something new.",href:`/field-guide/${guide.slug}`}]:[]),
- {title:"Explore the Fun Zone",label:"FUN ZONE",description:"Puzzles, games and activities.",href:"/fun-zone"},
- {title:"Meet the Community",label:"COMMUNITY",description:"Connect with fellow keepers.",href:"/community"}
+ // Automatically surface recently edited or added published content, not static destinations.
+ // Existing records expose updatedAt (no dedicated publishedAt), so both edits and additions count.
+ const recentEntries=[
+  ...records.filter(r=>r.kind==="species"&&r.status==="published"&&isSpeciesRecordActive(r))
+   .map(r=>({title:speciesDisplayName(r),label:"SPECIES",description:r.summary||"Explore this species in the Leaf Ledger.",href:"/ledger/"+r.slug,image:r.image,alt:r.imageAlt,updatedAt:r.updatedAt})),
+  ...guides.filter(g=>!g.archivedAt&&g.status==="published")
+   .map(g=>({title:g.title,label:"FIELD GUIDE",description:g.summary||"Read this PodScape field guide.",href:"/field-guide/"+g.slug,image:null,alt:"",updatedAt:g.updatedAt})),
+  ...products.filter(p=>!p.archivedAt&&p.status==="published")
+   .map(p=>({title:p.title,label:"SHOP",description:p.summary||"See what's new in the PodScape Shop.",href:"/shop/"+p.slug,image:p.image,alt:p.imageAlt,updatedAt:p.updatedAt}))
  ];
+ const recent:Tile[]=recentEntries
+  .filter(item=>Number.isFinite(Date.parse(item.updatedAt||"")))
+  .sort((a,b)=>Date.parse(b.updatedAt)-Date.parse(a.updatedAt)||a.href.localeCompare(b.href))
+  .slice(0,12)
+  .map(({title,label,description,href,image,alt})=>({title,label,description,href,image,alt}));
  return <div className={styles.site}><a className="skip-link" href="#platform-main">Skip to content</a><Header/><main id="platform-main" className={styles.main}>
  <div className={styles.homeCustomizationBar}><span>Hold any block to customize</span><EditHomeButton/></div>
  <HomeWidgets recent={recent} colony={colony} progress={progress} pinOptions={pinOptions} userId={user?.id||null}
