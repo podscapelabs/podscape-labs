@@ -1,11 +1,12 @@
 "use client";
 
-import {useEffect,useRef,useState,type ReactNode,type PointerEvent as ReactPointerEvent} from "react";
+import {useEffect,useRef,useState,type ReactNode} from "react";
 import Link from "next/link";
 import {PodscapeLineIcon,type PodscapeIconName} from "./PodscapeLineIcon";
 import {pinKey,readHomePins,writeHomePins,type HomePin,type PinOption} from "./home-pins";
 import styles from "./PodscapeHome.module.css";
 import {moveBlock,dropBlock,visibleBlocks,uniqueAllowed} from "./workspace-layout";
+import {WorkspaceEditToolbar,WorkspaceEditBlock,useWorkspaceDrag} from "./WorkspaceEditCanvas";
 
 type Tile={title:string;label:string;description:string;href:string;image?:string|null;alt?:string};
 export type HomeColony={id:string;name:string;quantity:number;speciesName:string}|null;
@@ -53,7 +54,6 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
   const [layout,setLayout]=useState<Layout>({order:defaultOrder,visible:defaultVisible});
   const [editing,setEditing]=useState(false);
   const [canvasEditing,setCanvasEditing]=useState(false);
-  const canvasDrag=useRef<BlockId|null>(null);
   const [pins,setPins]=useState<HomePin[]>([]);
   const [tab,setTab]=useState<"library"|"arrange">("library");
   const [hydrated,setHydrated]=useState(false);
@@ -79,8 +79,8 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
     return ()=>window.removeEventListener("podscape-edit-home",open);
   },[]);
   const close=()=>{setEditing(false);requestAnimationFrame(()=>returnFocus.current?.focus())};
-  const finishCanvas=()=>{canvasDrag.current=null;activeDrag.current=null;setDragging(null);setCanvasEditing(false)};
-  const resetToDefault=()=>{if(!window.confirm("Reset your homepage to the default layout? This will remove optional widgets from Home and restore the original block order. Your account, colonies and favorites will not be deleted."))return false;canvasDrag.current=null;update({order:[...defaultOrder],visible:[...defaultVisible]});return true};
+  const finishCanvas=()=>{stopDrag();setCanvasEditing(false)};
+  const resetToDefault=()=>{if(!window.confirm("Reset your homepage to the default layout? This will remove optional widgets from Home and restore the original block order. Your account, colonies and favorites will not be deleted."))return false;stopDrag();update({order:[...defaultOrder],visible:[...defaultVisible]});return true};
   useEffect(()=>{
     if(!editing)return;
     const previous=document.body.style.overflow;
@@ -110,39 +110,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
   const move=(id:BlockId,direction:number)=>update({...layout,order:moveBlock(layout.order,layout.visible,id,direction,coreIds)});
   const reorder=(from:BlockId,to:BlockId)=>update({...layout,order:dropBlock(layout.order,from,to)});
   const visible=visibleBlocks(layout.order,layout.visible,coreIds);
-  const [dragging,setDragging]=useState<BlockId|null>(null);
-  const activeDrag=useRef<{id:BlockId;pointerId:number;startX:number;startY:number;started:boolean}|null>(null);
-  const startCanvasDrag=(id:BlockId,event:ReactPointerEvent<HTMLDivElement>)=>{
-    if(event.pointerType==="mouse"&&event.button!==0)return;
-    if((event.target as HTMLElement).closest("button:not([data-drag-handle])"))return;
-    activeDrag.current={id,pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,started:false};
-    event.currentTarget.setPointerCapture(event.pointerId);
-  };
-  const moveCanvasDrag=(event:ReactPointerEvent<HTMLDivElement>)=>{
-    const drag=activeDrag.current;
-    if(!drag||drag.pointerId!==event.pointerId)return;
-    if(!drag.started){
-      if(Math.hypot(event.clientX-drag.startX,event.clientY-drag.startY)<7)return;
-      drag.started=true;setDragging(drag.id);
-    }
-    // Move only when crossing another block's midpoint, avoiding jitter at boundaries.
-    const edge=88;
-    if(event.clientY<edge)window.scrollBy(0,-12);
-    else if(event.clientY>window.innerHeight-edge)window.scrollBy(0,12);
-    const nodes=Array.from(document.querySelectorAll<HTMLElement>("[data-home-block]"));
-    const target=nodes.find(node=>{
-      const rect=node.getBoundingClientRect();
-      return event.clientY>=rect.top&&event.clientY<=rect.bottom&&node.dataset.homeBlock!==drag.id;
-    });
-    const targetId=target?.dataset.homeBlock as BlockId|undefined;
-    if(!targetId||!visible.includes(targetId))return;
-    const rect=target!.getBoundingClientRect();
-    const sourceIndex=visible.indexOf(drag.id),targetIndex=visible.indexOf(targetId);
-    if((sourceIndex<targetIndex&&event.clientY<rect.top+rect.height*.52)||
-       (sourceIndex>targetIndex&&event.clientY>rect.top+rect.height*.48))return;
-    reorder(drag.id,targetId);
-  };
-  const stopCanvasDrag=()=>{activeDrag.current=null;setDragging(null)};
+  const {dragging,begin:beginDrag,move:moveDrag,stop:stopDrag}=useWorkspaceDrag<BlockId>("home",visible,reorder);
   const optionsByKey=new Map(pinOptions.map(item=>[pinKey(item),item]));
   const activePins=pins.flatMap(p=>{const option=optionsByKey.get(pinKey(p));return option?[option]:[]});
   const removePin=(pin:HomePin)=>{const next=pins.filter(p=>pinKey(p)!==pinKey(pin));writeHomePins(userId,next);setPins(next)};
@@ -155,7 +123,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
     </section>
   );
   return <section className={`${styles.widgetArea} ${canvasEditing?styles.homeCanvasEditing:""}`} aria-label="Your customizable homepage">
-    {canvasEditing?<div className={styles.homeCanvasToolbar} role="toolbar" aria-label="Edit homepage layout"><div><strong>Arrange your Home</strong><small>Drag blocks to move them. Shortcuts stay together.</small></div><button type="button" onClick={()=>{finishCanvas();returnFocus.current=document.activeElement as HTMLElement;setTab("library");setEditing(true)}}>+ Widgets</button><button type="button" onClick={resetToDefault}>Reset to Default</button><button type="button" onClick={finishCanvas}>Done</button></div>:null}
+    {canvasEditing?<WorkspaceEditToolbar title="Arrange your Home" description="Drag blocks to move them. Shortcuts stay together." onAdd={()=>{finishCanvas();returnFocus.current=document.activeElement as HTMLElement;setTab("library");setEditing(true)}} onReset={resetToDefault} onDone={finishCanvas}/>:null}
     {editing&&<div className={styles.homeEditorOverlay} onPointerDown={event=>{if(event.target===event.currentTarget)close()}}>
       <div className={`${styles.widgetEditor} ${styles.widgetLibrary}`} id="podscape-home-widget-editor" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="widget-library-title">
         <div className={styles.homeEditorHead}>
@@ -216,9 +184,8 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
         </div>
       </div>
     </div>}
-    {visible.map(id=><div key={id} data-home-block={id} className={`${styles.homeCanvasBlock} ${canvasEditing?styles.homeCanvasBlockActive:""} ${dragging===id?styles.homeCanvasDragging:""}`} onPointerDown={event=>{if(canvasEditing)startCanvasDrag(id,event)}} onPointerMove={event=>{if(canvasEditing)moveCanvasDrag(event)}} onPointerUp={stopCanvasDrag} onPointerCancel={stopCanvasDrag}>
-      {canvasEditing?<div className={styles.homeCanvasBlockBar}><button type="button" data-drag-handle="true" className={styles.homeCanvasHandle} aria-label={`Drag ${isCore(id)?coreLabels[id]:definitions[id].name} to reorder`}><span aria-hidden="true">⠿</span> {isCore(id)?coreLabels[id]:definitions[id].name}</button><div><button type="button" aria-label={`Move ${isCore(id)?coreLabels[id]:definitions[id].name} up`} disabled={visible.indexOf(id)===0} onClick={()=>move(id,-1)}>↑</button><button type="button" aria-label={`Move ${isCore(id)?coreLabels[id]:definitions[id].name} down`} disabled={visible.indexOf(id)===visible.length-1} onClick={()=>move(id,1)}>↓</button>{!isCore(id)?<button type="button" aria-label={`Remove ${definitions[id].name}`} onClick={()=>remove(id)}>×</button>:null}</div></div>:null}
-      <div className={canvasEditing?styles.homeCanvasContentLocked:undefined}>{(()=>{
+    {visible.map((id,index)=><WorkspaceEditBlock key={id} id={id} scope="home" label={isCore(id)?coreLabels[id]:definitions[id].name} index={index} count={visible.length} editing={canvasEditing} dragging={dragging===id} required={isCore(id)} onMove={move} onRemove={id=>{if(!isCore(id))remove(id)}} begin={beginDrag} move={moveDrag} stop={stopDrag}>
+      {(()=>{
       if(id==="greeting")return <div key={id} className={styles.homeBlock}>{greeting}</div>;
       if(id==="hero")return <div key={id} className={styles.homeBlock}>{hero}</div>;
       if(id==="shortcuts")return <div key={id} className={styles.homeBlock}>{shortcuts}</div>;
@@ -247,7 +214,8 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
       if(id==="schedule")return compact(id,"calendar","CARE SCHEDULE","Keep your colonies on track","Open your existing Manager care schedule to see and organize care activities.","/keeper/schedule","View schedule");
       if(id==="guides")return compact(id,"book","FIELD GUIDE",guide?.title||"Explore field guides",guide?.description||"Care, husbandry and habitat resources.",guide?.href||"/field-guide",guide?"Read guide":"Browse guides");
       return compact(id,"community","COMMUNITY","Your community corner","Discover keepers, creators and what's growing around Podscape.","/community","Explore community");
-    })()}</div></div>)}
+    })()}
+    </WorkspaceEditBlock>)}
     {hydrated&&!canvasEditing?<div className={styles.addWidgetFooter}><button type="button" className={styles.addWidgetButton} onClick={()=>{returnFocus.current=document.activeElement as HTMLElement;setTab("library");setEditing(true)}}><span aria-hidden="true">＋</span> Add Widget</button></div>:null}
   </section>;
 }
