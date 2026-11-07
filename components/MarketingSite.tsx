@@ -76,7 +76,7 @@ export async function MarketingSite(){
   .filter(item=>Number.isFinite(Date.parse(item.updatedAt||"")))
   .sort((a,b)=>Date.parse(b.updatedAt)-Date.parse(a.updatedAt)||a.href.localeCompare(b.href))
   .filter(item=>{
-   const key=item.title.trim().replace(/\\s+/g," ").toLocaleLowerCase();
+   const key=item.title.trim().replace(/\s+/g," ").toLocaleLowerCase();
    if(recentTitles.has(key))return false;
    recentTitles.add(key);
    return true;
