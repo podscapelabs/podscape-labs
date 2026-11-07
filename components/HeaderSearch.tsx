@@ -59,7 +59,7 @@ export function HeaderSearch(){
         {submitted.length>=2&&status==="error"&&<p className={styles.hint}>Search is unavailable right now. Try the full search page.</p>}
         {submitted.length>=2&&status==="ready"&&results.length===0&&<p className={styles.hint}>No results for “{submitted}”. Try another term.</p>}
         {submitted.length>=2&&status==="ready"&&results.length>0&&
-          <div className={styles.list} role="listbox" aria-label="Search suggestions">{results.map((item)=>(
+          <div className={styles.list} role="list" aria-label="Search suggestions">{results.map((item)=>(
             <Link role="option" aria-selected="false" key={item.href} href={item.href} className={styles.result} onClick={()=>setOpen(false)}>
               <span className={styles.category}>{item.category}</span><strong>{item.title}</strong>{item.subtitle&&<small>{item.subtitle}</small>}
               <span className={styles.arrow} aria-hidden="true">↗</span>
