@@ -174,11 +174,11 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
       </section>;
 
       if(id==="recent")return <section className={styles.section} key={id} aria-label="Recent and noteworthy">
-        <div className={styles.heading}><h2>Recent &amp; Noteworthy</h2><Link href="/menu">Explore →</Link></div>
-        <div className={styles.tiles}>{recent.map(item=><Link href={item.href} className={styles.tile} key={item.href}>
-          <div className={styles.widgetRecentIcon}><PodscapeLineIcon name={item.label==="GUIDE"?"book":item.label==="FUN ZONE"?"creative":"community"}/><small>{item.label}</small></div>
+        <div className={styles.heading}><h2>Recent &amp; Noteworthy</h2>{recent.length>1?<span className={styles.spotlightHint}>Swipe to explore <span aria-hidden="true">↔</span></span>:null}</div>
+        {recent.length?<div className={styles.recentRail} role="region" aria-roledescription="carousel" aria-label="Recently updated PodScape content" tabIndex={0}>{recent.map(item=><Link href={item.href} className={styles.tile} key={item.href}>
+          <div className={styles.widgetRecentIcon}><PodscapeLineIcon name={item.label==="FIELD GUIDE"?"book":item.label==="SHOP"?"shop":"leaf"}/><small>{item.label}</small></div>
           <div className={styles.tileCopy}><strong>{item.title}</strong><small>{item.description}</small><span className={styles.tileArrow} aria-hidden="true">→</span></div>
-        </Link>)}</div>
+        </Link>)}</div>:<div className={styles.widgetEmpty}>New and recently updated content will appear here once it is published.</div>}
       </section>;
       if(id==="colony")return compact(id,"jar","MY COLONY",colony?colony.name:"Your colonies, close at hand",colony?`${colony.speciesName} · ${colony.quantity} recorded`:"Add a colony in Manager to get a quick link here.",colony?"/keeper/"+colony.id:"/keeper/collection",colony?"Open colony":"Open Manager");
       if(id==="games")return compact(id,"creative","FUN ZONE","A little playtime?","Word games, puzzles and quizzes whenever you need a break.","/fun-zone","Play now");
