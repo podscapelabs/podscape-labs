@@ -7,6 +7,7 @@ import {pinKey,readHomePins,writeHomePins,type HomePin,type PinOption} from "./h
 import styles from "./PodscapeHome.module.css";
 import {moveBlock,dropBlock,visibleBlocks,uniqueAllowed} from "./workspace-layout";
 import {WorkspaceEditToolbar,WorkspaceEditBlock,useWorkspaceDrag} from "./WorkspaceEditCanvas";
+import {HomeCanvasEditContext} from "./HomeCanvasEditContext";
 
 type Tile={title:string;label:string;description:string;href:string;image?:string|null;alt?:string};
 export type HomeColony={id:string;name:string;quantity:number;speciesName:string}|null;
@@ -119,7 +120,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
       <Link href={href}>{cta} →</Link>
     </section>
   );
-  return <section className={`${styles.widgetArea} ${canvasEditing?styles.homeCanvasEditing:""}`} aria-label="Your customizable homepage">
+  return <HomeCanvasEditContext.Provider value={canvasEditing}><section className={`${styles.widgetArea} ${canvasEditing?styles.homeCanvasEditing:""}`} aria-label="Your customizable homepage">
     {canvasEditing?<WorkspaceEditToolbar title="Arrange your Home" description="Drag blocks to move them. Shortcuts stay together." onAdd={()=>{finishCanvas();returnFocus.current=document.activeElement as HTMLElement;setEditing(true)}} onReset={resetToDefault} onDone={finishCanvas}/>:null}
     {editing&&<div className={styles.homeEditorOverlay} onPointerDown={event=>{if(event.target===event.currentTarget)close()}}>
       <div className={`${styles.widgetEditor} ${styles.widgetLibrary}`} id="podscape-home-widget-editor" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="widget-library-title">
@@ -156,7 +157,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
         </div>
       </div>
     </div>}
-    {visible.map((id,index)=><WorkspaceEditBlock key={id} id={id} scope="home" label={isCore(id)?coreLabels[id]:definitions[id].name} index={index} count={visible.length} editing={canvasEditing} dragging={dragging===id} required={isCore(id)} onMove={move} onRemove={id=>{if(!isCore(id))remove(id)}} begin={beginDrag} move={moveDrag} stop={stopDrag} onLongPress={()=>{setCanvasEditing(true);setEditing(false)}}>
+    {visible.map((id,index)=><WorkspaceEditBlock key={id} id={id} scope="home" label={isCore(id)?coreLabels[id]:definitions[id].name} index={index} count={visible.length} editing={canvasEditing} dragging={dragging===id} required={isCore(id)} onMove={move} onRemove={id=>{if(!isCore(id))remove(id)}} begin={beginDrag} move={moveDrag} stop={stopDrag} interactiveChildren={id==="shortcuts"} onLongPress={()=>{setCanvasEditing(true);setEditing(false)}}>
       {(()=>{
       if(id==="greeting")return <div key={id} className={styles.homeBlock}>{greeting}</div>;
       if(id==="hero")return <div key={id} className={styles.homeBlock}>{hero}</div>;
@@ -189,5 +190,5 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
     })()}
     </WorkspaceEditBlock>)}
     {hydrated&&!canvasEditing?<div className={styles.addWidgetFooter}><button type="button" className={styles.addWidgetButton} onClick={()=>{returnFocus.current=document.activeElement as HTMLElement;setEditing(true)}}><span aria-hidden="true">＋</span> Add Widget</button></div>:null}
-  </section>;
+  </section></HomeCanvasEditContext.Provider>;
 }
