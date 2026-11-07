@@ -58,6 +58,7 @@ export function WorkspaceEditBlock<T extends string>({id,scope,label,index,count
  const press=useRef<{pointerId:number;x:number;y:number}|null>(null);
  const blockClicks=useRef(false);
  const clickReset=useRef<ReturnType<typeof setTimeout>|null>(null);
+ const activatedPointer=useRef<number|null>(null);
  const cancelPress=()=>{
   if(timer.current!==null){clearTimeout(timer.current);timer.current=null}
   press.current=null;
@@ -67,7 +68,7 @@ export function WorkspaceEditBlock<T extends string>({id,scope,label,index,count
   if(editing){begin(id,event);return}
   if(!onLongPress||(event.pointerType==="mouse"&&event.button!==0))return;
   // Do not intercept controls such as forms, selection, or nested editable areas.
-  if((event.target as HTMLElement).closest("button,input,textarea,select,[contenteditable='true']"))return;
+  if((event.target as HTMLElement).closest("input,textarea,select,[contenteditable='true']"))return;
   cancelPress();
   const pointerId=event.pointerId;
   press.current={pointerId,x:event.clientX,y:event.clientY};
@@ -75,9 +76,9 @@ export function WorkspaceEditBlock<T extends string>({id,scope,label,index,count
    if(!press.current||press.current.pointerId!==pointerId)return;
    timer.current=null;
    blockClicks.current=true;
-   if(clickReset.current!==null)clearTimeout(clickReset.current);
-   // A long hold should not activate an underlying link when the finger lifts.
-   clickReset.current=setTimeout(()=>{blockClicks.current=false},700);
+   activatedPointer.current=pointerId;
+   if(clickReset.current!==null){clearTimeout(clickReset.current);clickReset.current=null}
+   // Keep click suppression armed until after release, even for very long holds.
    onLongPress();
   },450);
  };
@@ -86,7 +87,15 @@ export function WorkspaceEditBlock<T extends string>({id,scope,label,index,count
   const pending=press.current;
   if(pending&&pending.pointerId===event.pointerId&&Math.hypot(event.clientX-pending.x,event.clientY-pending.y)>11)cancelPress();
  };
- const endPress=()=>{cancelPress();stop()};
+ const endPress=()=>{
+  if(activatedPointer.current!==null){
+   activatedPointer.current=null;
+   if(clickReset.current!==null)clearTimeout(clickReset.current);
+   // Safari may emit a synthetic click shortly after pointerup.
+   clickReset.current=setTimeout(()=>{blockClicks.current=false;clickReset.current=null},1100);
+  }
+  cancelPress();stop();
+ };
  const suppressClick=(event:MouseEvent<HTMLDivElement>)=>{
   if(!blockClicks.current)return;
   event.preventDefault();
@@ -96,7 +105,12 @@ export function WorkspaceEditBlock<T extends string>({id,scope,label,index,count
  };
  return <div data-workspace-scope={scope} data-workspace-block={id} className={`${styles.homeCanvasBlock} ${editing?styles.homeCanvasBlockActive:""} ${dragging?styles.homeCanvasDragging:""}`}
   onPointerDown={onPressStart} onPointerMove={onPressMove} onPointerUp={endPress} onPointerCancel={endPress} onPointerLeave={cancelPress} onClickCapture={suppressClick}
-  onContextMenu={event=>{if(blockClicks.current)event.preventDefault()}}>
+  onContextMenuCapture={event=>{
+   // On iOS a link preview may appear before the hold timer fires. Editable
+   // workspace blocks own this gesture, including their nested anchors.
+   if(onLongPress && !(event.target as HTMLElement).closest("input,textarea,select,[contenteditable='true']"))event.preventDefault();
+  }}
+  onDragStartCapture={event=>{if(onLongPress)event.preventDefault()}}>
   {editing?<div className={styles.homeCanvasBlockBar}>
     <button type="button" data-drag-handle="true" className={styles.homeCanvasHandle} aria-label={`Drag ${label} to reorder`}><span aria-hidden="true">⠿</span> {label}</button>
     <div><button type="button" aria-label={`Move ${label} up`} disabled={index===0} onClick={()=>onMove(id,-1)}>↑</button>
