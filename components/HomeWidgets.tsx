@@ -79,6 +79,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
   },[]);
   const close=()=>{setEditing(false);requestAnimationFrame(()=>returnFocus.current?.focus())};
   const finishCanvas=()=>{canvasDrag.current=null;setCanvasEditing(false)};
+  const resetToDefault=()=>{canvasDrag.current=null;update({order:[...defaultOrder],visible:[...defaultVisible]})};
   useEffect(()=>{
     if(!editing)return;
     const previous=document.body.style.overflow;
@@ -120,8 +121,8 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
     update({...layout,order});
   };
   const visible=layout.order.filter(id=>isCore(id)||layout.visible.includes(id as WidgetId));
-  const startCanvasDrag=(id:BlockId,event:ReactPointerEvent<HTMLButtonElement>)=>{if(event.pointerType==="mouse"&&event.button!==0)return;canvasDrag.current=id;event.currentTarget.setPointerCapture(event.pointerId)};
-  const moveCanvasDrag=(event:ReactPointerEvent<HTMLButtonElement>)=>{if(!canvasDrag.current)return;const edge=85;if(event.clientY<edge)window.scrollBy(0,-18);else if(event.clientY>window.innerHeight-edge)window.scrollBy(0,18);const hit=document.elementFromPoint(event.clientX,event.clientY)?.closest("[data-home-block]");const target=hit?.getAttribute("data-home-block") as BlockId|null;if(target&&target!==canvasDrag.current&&visible.includes(target))reorder(canvasDrag.current,target)};
+  const startCanvasDrag=(id:BlockId,event:ReactPointerEvent<HTMLDivElement>)=>{if(event.pointerType==="mouse"&&event.button!==0)return;if((event.target as HTMLElement).closest("button")&&!((event.target as HTMLElement).closest("[data-drag-handle]")))return;canvasDrag.current=id;event.currentTarget.setPointerCapture(event.pointerId)};
+  const moveCanvasDrag=(event:ReactPointerEvent<HTMLDivElement>)=>{if(!canvasDrag.current)return;const edge=85;if(event.clientY<edge)window.scrollBy(0,-18);else if(event.clientY>window.innerHeight-edge)window.scrollBy(0,18);const hit=document.elementFromPoint(event.clientX,event.clientY)?.closest("[data-home-block]");const target=hit?.getAttribute("data-home-block") as BlockId|null;if(target&&target!==canvasDrag.current&&visible.includes(target))reorder(canvasDrag.current,target)};
   const optionsByKey=new Map(pinOptions.map(item=>[pinKey(item),item]));
   const activePins=pins.flatMap(p=>{const option=optionsByKey.get(pinKey(p));return option?[option]:[]});
   const removePin=(pin:HomePin)=>{const next=pins.filter(p=>pinKey(p)!==pinKey(pin));writeHomePins(userId,next);setPins(next)};
@@ -134,7 +135,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
     </section>
   );
   return <section className={`${styles.widgetArea} ${canvasEditing?styles.homeCanvasEditing:""}`} aria-label="Your customizable homepage">
-    {canvasEditing?<div className={styles.homeCanvasToolbar} role="toolbar" aria-label="Edit homepage layout"><div><strong>Arrange your Home</strong><small>Drag each block by its handle. Shortcuts stay together.</small></div><button type="button" onClick={()=>{finishCanvas();returnFocus.current=document.activeElement as HTMLElement;setTab("library");setEditing(true)}}>+ Widgets</button><button type="button" onClick={finishCanvas}>Done</button></div>:null}
+    {canvasEditing?<div className={styles.homeCanvasToolbar} role="toolbar" aria-label="Edit homepage layout"><div><strong>Arrange your Home</strong><small>Drag blocks to move them. Shortcuts stay together.</small></div><button type="button" onClick={()=>{finishCanvas();returnFocus.current=document.activeElement as HTMLElement;setTab("library");setEditing(true)}}>+ Widgets</button><button type="button" onClick={resetToDefault}>Reset to Default</button><button type="button" onClick={finishCanvas}>Done</button></div>:null}
     {editing&&<div className={styles.homeEditorOverlay} onPointerDown={event=>{if(event.target===event.currentTarget)close()}}>
       <div className={`${styles.widgetEditor} ${styles.widgetLibrary}`} id="podscape-home-widget-editor" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="widget-library-title">
         <div className={styles.homeEditorHead}>
@@ -195,8 +196,8 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
         </div>
       </div>
     </div>}
-    {visible.map(id=><div key={id} data-home-block={id} className={`${styles.homeCanvasBlock} ${canvasEditing?styles.homeCanvasBlockActive:""}`}>
-      {canvasEditing?<div className={styles.homeCanvasBlockBar}><button type="button" className={styles.homeCanvasHandle} aria-label={`Drag ${isCore(id)?coreLabels[id]:definitions[id].name} to reorder`} onPointerDown={event=>startCanvasDrag(id,event)} onPointerMove={moveCanvasDrag} onPointerUp={()=>{canvasDrag.current=null}} onPointerCancel={()=>{canvasDrag.current=null}}><span aria-hidden="true">⠿</span> {isCore(id)?coreLabels[id]:definitions[id].name}</button><div><button type="button" aria-label={`Move ${isCore(id)?coreLabels[id]:definitions[id].name} up`} disabled={visible.indexOf(id)===0} onClick={()=>move(id,-1)}>↑</button><button type="button" aria-label={`Move ${isCore(id)?coreLabels[id]:definitions[id].name} down`} disabled={visible.indexOf(id)===visible.length-1} onClick={()=>move(id,1)}>↓</button>{!isCore(id)?<button type="button" aria-label={`Remove ${definitions[id].name}`} onClick={()=>remove(id)}>×</button>:null}</div></div>:null}
+    {visible.map(id=><div key={id} data-home-block={id} className={`${styles.homeCanvasBlock} ${canvasEditing?styles.homeCanvasBlockActive:""}`} onPointerDown={event=>{if(canvasEditing)startCanvasDrag(id,event)}} onPointerMove={event=>{if(canvasEditing)moveCanvasDrag(event)}} onPointerUp={()=>{canvasDrag.current=null}} onPointerCancel={()=>{canvasDrag.current=null}}>
+      {canvasEditing?<div className={styles.homeCanvasBlockBar}><button type="button" data-drag-handle="true" className={styles.homeCanvasHandle} aria-label={`Drag ${isCore(id)?coreLabels[id]:definitions[id].name} to reorder`}><span aria-hidden="true">⠿</span> {isCore(id)?coreLabels[id]:definitions[id].name}</button><div><button type="button" aria-label={`Move ${isCore(id)?coreLabels[id]:definitions[id].name} up`} disabled={visible.indexOf(id)===0} onClick={()=>move(id,-1)}>↑</button><button type="button" aria-label={`Move ${isCore(id)?coreLabels[id]:definitions[id].name} down`} disabled={visible.indexOf(id)===visible.length-1} onClick={()=>move(id,1)}>↓</button>{!isCore(id)?<button type="button" aria-label={`Remove ${definitions[id].name}`} onClick={()=>remove(id)}>×</button>:null}</div></div>:null}
       <div className={canvasEditing?styles.homeCanvasContentLocked:undefined}>{(()=>{
       if(id==="greeting")return <div key={id} className={styles.homeBlock}>{greeting}</div>;
       if(id==="hero")return <div key={id} className={styles.homeBlock}>{hero}</div>;
