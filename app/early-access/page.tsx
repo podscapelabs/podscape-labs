@@ -26,7 +26,7 @@ export default async function EarlyAccessPage() {
         </>}
       </div>
       <p className="admin-intro">Tester accounts cannot edit studio content or enter Owner Studio.</p>
-      <a className="admin-back-link" href="/">← Public homepage</a>
+      <Link className="admin-back-link" href="/">← Public homepage</Link>
     </section>
   </main>;
 }
