@@ -76,7 +76,7 @@ export function ManagerWorkspace({stats,enclosures,scope,primaryHref}:{stats:Rea
     <div className={homeStyles.widgetLibraryFooter}><small>{layout.visible.length} widget{layout.visible.length===1?"":"s"} on your Manager · Saved on this device</small><button type="button" onClick={()=>{if(!window.confirm("Restore the default Manager layout and Quick Tools? Your colony records will not be affected."))return;update(initial);setSlot(null);setTab("library")}}>Reset layout</button></div>
    </div>
   </div>:null}
-  {visible.map((id,index)=><WorkspaceEditBlock key={id} id={id} scope="manager" label={labels[id]} index={index} count={visible.length} editing={canvasEditing} dragging={dragging===id} required={false} onMove={move} onRemove={id=>update({...layout,visible:layout.visible.filter(v=>v!==id)})} begin={begin} move={dragMove} stop={stop}>{sections[id]}</WorkspaceEditBlock>)}
+  {visible.map((id,index)=><WorkspaceEditBlock key={id} id={id} scope="manager" label={labels[id]} index={index} count={visible.length} editing={canvasEditing} dragging={dragging===id} required={false} onMove={move} onRemove={id=>update({...layout,visible:layout.visible.filter(v=>v!==id)})} begin={begin} move={dragMove} stop={stop} onLongPress={()=>{setCanvasEditing(true);setEditing(false);setSlot(null)}}>{sections[id]}</WorkspaceEditBlock>)}
   {ready&&layout.visible.length===0?<p className={styles.managerHint}>All sections are hidden. Tap Edit Manager to add a widget.</p>:null}
   <div className={styles.managerFallback}><Link href="/keeper/collection">All colonies →</Link><Link href="/keeper/scan">Scan bin →</Link><Link href="/keeper/schedule">Schedule →</Link></div>
  </div>;
