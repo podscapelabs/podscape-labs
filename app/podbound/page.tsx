@@ -80,7 +80,7 @@ export default async function PodBoundHome() {
           <span className={styles.productImage}>{product.image ? <Image src={product.image} alt={product.imageAlt || product.title} fill sizes="(max-width: 700px) 35vw, 350px" style={{objectFit:"cover"}} /> : <PodscapeLineIcon name="shop" />}</span>
           <span className={styles.productCopy}><small>FROM THE PODSCAPE SHOP</small><strong>{product.title}</strong><span>{product.summary || "Explore the latest PodBound creation."}</span><em>{formatProductPrice(product)} CAD</em></span>
           <span className={styles.productArrow} aria-hidden="true">→</span>
-        </Link> : <div className={styles.shopEmpty}><span className={styles.shopIcon}><PodscapeLineIcon name="shop" /></span><div><strong>The PodBound collection is taking shape.</strong><p>Game releases, artwork, and accessories will appear here as they're ready.</p></div><Link href="/shop">Browse PodScape Shop →</Link></div>}
+        </Link> : <div className={styles.shopEmpty}><span className={styles.shopIcon}><PodscapeLineIcon name="shop" /></span><div><strong>The PodBound collection is taking shape.</strong><p>Game releases, artwork, and accessories will appear here as they are ready.</p></div><Link href="/shop">Browse PodScape Shop →</Link></div>}
         <p className={styles.shopNote}>PodBound products live in the same PodScape shop. Checkout is still in development.</p>
       </section>
 
