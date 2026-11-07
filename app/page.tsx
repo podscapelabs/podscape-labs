@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { ArrowUpRightIcon } from "@/components/Icons";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { MaintenanceMemberAccess } from "@/components/MaintenanceMemberAccess";
 import { siteContent } from "@/content/site";
 
 export const metadata: Metadata = {
@@ -22,7 +23,10 @@ export default function ConstructionPage() {
             height={38}
             priority
           />
-          <ThemeToggle />
+          <div className="construction-header-actions">
+            <a href="#member-access" className="construction-member-link">Member sign in</a>
+            <ThemeToggle />
+          </div>
         </header>
 
         <section className="construction-content" aria-labelledby="construction-title">
@@ -44,6 +48,8 @@ export default function ConstructionPage() {
             Visit PodBound<ArrowUpRightIcon />
           </a>
         </section>
+
+        <MaintenanceMemberAccess />
 
         <footer className="construction-footer">
           <span>{siteContent.brand.location}</span>
