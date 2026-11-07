@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useActionState } from "react";
 import {
   changeCustomerPassword,
@@ -66,11 +65,11 @@ export function CustomerAccountForm({ kind, initialName = "" }: { kind: FormKind
         <span aria-hidden="true">→</span>
       </button>
       {kind === "login" ? (
-        <div className={styles.formLinks}><Link href="/account/forgot-password">Forgot password?</Link><Link href="/account/sign-up">Create an account →</Link></div>
+        <div className={styles.formLinks}><a href="/account/forgot-password">Forgot password?</a><a href="/account/sign-up">Create an account →</a></div>
       ) : null}
-      {kind === "change" ? <p className={styles.formLinks}><Link href="/account">← Back to account</Link></p> : null}
+      {kind === "change" ? <p className={styles.formLinks}><a href="/account">← Back to account</a></p> : null}
       {kind === "sign-up" || kind === "forgot" || kind === "reset" ? (
-        <p className={styles.formLinks}><Link href="/account/login">← Back to sign in</Link></p>
+        <p className={styles.formLinks}><a href="/account/login">← Back to sign in</a></p>
       ) : null}
     </form>
   );
