@@ -238,7 +238,7 @@
 @media(max-width:720px){.addWidgetFooter{margin-top:17px}.main{padding-bottom:calc(42px + env(safe-area-inset-bottom,0px))}}
 
 /* Home layout v2: editorial foundation can move with personal widgets. */
-.homeCustomizationBar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:12px}
+.homeCustomizationBar{display:flex;align-items:center;justify-content:flex-end;gap:14px;margin-bottom:12px}
 .homeCustomizationBar>span{color:var(--muted);font-size:.71rem;font-weight:750;letter-spacing:.025em}
 .homeCustomizationBar .editHomeButton{flex-direction:row;min-width:0;min-height:42px;gap:7px;padding:8px 15px;border-radius:999px;font-size:.73rem}
 .homeCustomizationBar .editHomeButton>span:first-child{font-size:1.1rem}
