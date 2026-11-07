@@ -203,3 +203,20 @@
 .widgetArrangeRow .widgetGrip{display:grid;place-items:center;flex:none;width:23px;min-height:35px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .widgetArrangeRow .widgetGrip:active{cursor:grabbing}
 .widgetArrangeRow .widgetGrip:focus-visible{outline:2px solid var(--forest);outline-offset:2px;border-radius:5px}
+
+/* Personal favorites: resolved from published content or the member's own colonies. */
+.pinnedGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.pinnedCard{position:relative;display:grid;grid-template-columns:50px minmax(0,1fr);gap:10px;align-items:start;padding:14px 42px 14px 14px;min-height:138px;border:1px solid var(--line);border-radius:17px;background:var(--paper)}
+.pinnedIcon{display:grid;place-items:center;width:45px;height:45px;border-radius:13px;background:color-mix(in srgb,var(--forest) 11%,var(--paper));color:var(--forest)}
+.pinnedIcon svg{width:26px;height:26px}
+.pinnedCard>div{min-width:0}
+.pinnedCard>div small{display:block;font-size:.59rem;letter-spacing:.08em;font-weight:800;color:var(--forest)}
+.pinnedCard>div strong{display:block;margin:6px 0;font:400 1.25rem/1.14 var(--serif);overflow-wrap:anywhere}
+.pinnedCard>div p{margin:0;color:var(--muted);font-size:.72rem;line-height:1.4;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.pinnedCard>a{grid-column:2;color:var(--forest);font-size:.71rem;font-weight:800}
+.pinnedCard>button{position:absolute;top:9px;right:9px;width:30px;height:30px;border:1px solid var(--line);border-radius:50%;background:var(--paper-strong);color:var(--muted);font-size:1.15rem;cursor:pointer}
+.pinnedCard>button:hover{color:var(--forest);border-color:var(--forest)}
+.widgetPinEmpty{padding:20px;border:1px dashed var(--line);border-radius:15px;color:var(--muted);background:var(--paper)}
+.widgetPinEmpty p{margin:0 0 9px;font-size:.78rem;line-height:1.5}
+.widgetPinEmpty a{color:var(--forest);font-size:.76rem;font-weight:800}
+@media(max-width:720px){.pinnedGrid{grid-template-columns:1fr;gap:8px}.pinnedCard{min-height:108px;padding:12px 40px 12px 12px;gap:9px}.pinnedIcon{width:40px;height:40px}.pinnedIcon svg{width:23px;height:23px}.pinnedCard>div strong{font-size:1.13rem}.pinnedCard>div p{font-size:.69rem}}
