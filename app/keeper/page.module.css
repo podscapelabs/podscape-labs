@@ -172,3 +172,42 @@
  .managerWorkspaceHeader{margin-top:14px}
  .managerFallback{margin-top:12px;padding-top:10px}
 }
+
+/* Manager visual refinement — denser operational tools and coherent rhythm. */
+.managerWorkspace>.section{margin-top:18px}
+.managerWorkspace .section h2{font-size:clamp(1.55rem,2.8vw,1.95rem);font-weight:500;line-height:1.16}
+.managerWorkspace .section header{margin-bottom:12px}
+.managerWorkspace .metrics{gap:10px}
+.managerWorkspace .metrics a{min-height:78px;border-radius:16px;padding:12px 14px;gap:2px 9px}
+.managerWorkspace .metrics strong{font-size:1.55rem}
+.managerWorkspace .metrics span{font-size:.68rem;line-height:1.2}
+.managerWorkspace .metrics svg{width:31px;height:31px}
+.managerWorkspace .tools{gap:9px}
+.managerWorkspace .tools a{min-height:76px;gap:3px;padding:10px 5px;border-radius:14px}
+.managerWorkspace .tools span{width:34px;height:34px}
+.managerWorkspace .tools svg{width:27px;height:27px}
+.managerWorkspace .tools small{font-size:.7rem;line-height:1.2}
+.managerWorkspace .attentionList{gap:9px}
+.managerWorkspace .attentionList>a{min-height:76px;padding:9px 14px 9px 9px;border-radius:15px}
+.managerWorkspace .attentionList strong{font-size:1.1rem}
+.managerWorkspace .attentionList small{font-size:.7rem}
+.managerWorkspace .thumb{width:58px;height:54px;border-radius:11px}
+@media(max-width:720px){
+ .managerWorkspace>.section{margin-top:16px}
+ .managerWorkspace .section h2{font-size:1.52rem}
+ .managerWorkspace .section header{margin-bottom:10px}
+ .managerWorkspace .metrics{gap:6px}
+ .managerWorkspace .metrics a{min-height:65px;grid-template-columns:23px minmax(0,1fr) 8px;padding:9px 7px;gap:2px 5px;border-radius:13px}
+ .managerWorkspace .metrics svg{width:23px;height:23px;padding:3px}
+ .managerWorkspace .metrics strong{font-size:1.2rem}
+ .managerWorkspace .metrics span{font-size:.56rem;line-height:1.2}
+ .managerWorkspace .tools{gap:7px;scroll-padding-inline:1px}
+ .managerWorkspace .tools a{min-height:69px;min-width:70px;padding:8px 4px;gap:3px}
+ .managerWorkspace .tools span{width:30px;height:30px}
+ .managerWorkspace .tools svg{width:25px;height:25px}
+ .managerWorkspace .tools small{font-size:.65rem}
+ .managerWorkspace .attentionList>a{min-height:70px;grid-template-columns:51px minmax(0,1fr) 14px;gap:10px;padding:8px 12px 8px 8px;border-radius:14px}
+ .managerWorkspace .thumb{width:51px;height:50px}
+ .managerWorkspace .attentionList strong{font-size:1.04rem}
+ .managerWorkspace .attentionList small{font-size:.66rem}
+}
