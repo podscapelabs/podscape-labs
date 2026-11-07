@@ -54,10 +54,10 @@ export async function savePodBoundCard(form:FormData){
   }
   const coreUpload=value(form,"uploaded_core_path",250);
   const alternateUpload=value(form,"uploaded_alternate_path",250);
-  if(coreUpload && !new RegExp("^"+id.replace(/[.*+?^${}()|[\\]\\]/g,"\\$&")+"/core-[0-9a-f-]+\\.(jpg|png|webp|avif)$","i").test(coreUpload))
-    editorRedirect(id,"error","Invalid core artwork upload.");
-  if(alternateUpload && !new RegExp("^"+id.replace(/[.*+?^${}()|[\\]\\]/g,"\\$&")+"/alternate-[0-9a-f-]+\\.(jpg|png|webp|avif)$","i").test(alternateUpload))
-    editorRedirect(id,"error","Invalid alternate artwork upload.");
+  const validUpload=(path:string,kind:"core"|"alternate")=>
+    path.startsWith(id+"/"+kind+"-") && /^[0-9a-f-]+\\.(jpg|png|webp|avif)$/i.test(path.slice((id+"/"+kind+"-").length));
+  if(coreUpload&&!validUpload(coreUpload,"core"))editorRedirect(id,"error","Invalid core artwork upload.");
+  if(alternateUpload&&!validUpload(alternateUpload,"alternate"))editorRedirect(id,"error","Invalid alternate artwork upload.");
   let core=coreUpload||current.core_art_path;
   let alternate=alternateUpload||current.alternate_art_path;
   if(form.get("remove_core")==="yes")core=null;
