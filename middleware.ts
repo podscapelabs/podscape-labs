@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PRIVATE_AREAS = ["/app", "/menu", "/explore", "/ledger", "/poddex", "/keeper", "/fun-zone", "/shop", "/field-guide", "/from-the-lab", "/search", "/api/progress"];
+const PRIVATE_AREAS = ["/app", "/menu", "/explore", "/ledger", "/poddex", "/keeper", "/fun-zone", "/shop", "/field-guide", "/from-the-lab", "/search", "/api/progress", "/api/search"];
 
 function isPrivateArea(pathname: string): boolean {
   return PRIVATE_AREAS.some((area) => pathname === area || pathname.startsWith(area + "/"));
