@@ -1,7 +1,7 @@
 "use client";
 import {useRouter} from "next/navigation";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
-import {choiceById,navigationChoices,moveNavigationSlot,swapNavigationSlot} from "./navigation-customization";
+import {choiceById,navigationChoices,swapNavigationSlot} from "./navigation-customization";
 import {useNavigationPreferences} from "./useNavigationPreferences";
 import {useShortcutEditor} from "./useShortcutEditor";
 import styles from "./PodscapeHome.module.css";
@@ -13,25 +13,21 @@ export function CustomizableHomeShortcuts(){
   const choices=ids.map(id=>choiceById.get(id)).filter((x):x is NonNullable<typeof x>=>Boolean(x));
   const current=choices[selected]||choices[0];
   return <section aria-label="Your Podscape shortcuts">
-    {editing&&<div className={styles.shortcutEditor} role="region" aria-label="Customize homepage shortcuts">
-      <div className={styles.shortcutEditHead}><div><strong>Make Podscape yours</strong><small>Drag icons to arrange them, or swap a shortcut.</small></div><button type="button" onClick={done}>Done</button></div>
-      <label>Replace {current?.label||"shortcut"}
+    {editing&&<div className={styles.jiggleToolbar} role="region" aria-label="Customize homepage shortcuts">
+      <span className={styles.jiggleHint}>✧ <strong>Arrange your shortcuts</strong><small>Drag icons to move them. Tap one to replace it.</small></span>
+      <button type="button" className={styles.jiggleDone} onClick={done}>Done</button>
+      <label className={styles.jigglePicker}>Replace {current?.label||"shortcut"}
         <select value={current?.id||""} onChange={event=>change(swapNavigationSlot(ids,selected,event.target.value))}>
           {navigationChoices.map(item=><option key={item.id} value={item.id}>{item.label}{ids.includes(item.id)&&item.id!==current?.id?" (swap)":""}</option>)}
         </select>
       </label>
-      <div className={styles.shortcutEditActions}>
-        <button type="button" disabled={selected===0} onClick={()=>{change(moveNavigationSlot(ids,selected,selected-1));setSelected(selected-1)}}>← Move left</button>
-        <button type="button" disabled={selected===choices.length-1} onClick={()=>{change(moveNavigationSlot(ids,selected,selected+1));setSelected(selected+1)}}>Move right →</button>
-        <button type="button" onClick={()=>{reset();setSelected(0)}}>Reset</button>
-      </div>
-      <small>Changes are saved on this device.</small>
+      <button type="button" className={styles.jiggleReset} onClick={()=>{reset();setSelected(0)}}>Reset shortcuts</button>
     </div>}
     <nav className={`${styles.shortcuts} ${editing?styles.shortcutEditing:""}`} aria-label="Explore Podscape">
       {choices.map((item,index)=><button type="button" data-shortcut-index={index}
-        className={`${styles.shortcut} ${styles[item.tone]} ${editing&&selected===index?styles.shortcutSelected:""}`}
-        aria-label={editing?`Choose ${item.label} to customize`:item.label}
-        key={item.id} {...handlers(index)} onClick={event=>{handlers(index).onClick(event);if(!event.defaultPrevented)router.push(item.href)}}>
+        className={`${styles.shortcut} ${styles[item.tone]} ${editing?styles.jiggling:""} ${editing&&selected===index?styles.shortcutSelected:""}`}
+        aria-label={editing?`Choose or drag ${item.label}`:item.label}
+        key={item.id} style={editing?{animationDelay:`${index*-75}ms`}:undefined} {...handlers(index)} onClick={event=>{handlers(index).onClick(event);if(!event.defaultPrevented)router.push(item.href)}}>
         <span className={styles.shortcutIcon}><PodscapeLineIcon name={item.icon}/></span><span>{item.label}</span>
       </button>)}
     </nav>
