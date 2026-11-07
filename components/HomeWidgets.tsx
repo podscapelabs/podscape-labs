@@ -36,6 +36,8 @@ export function HomeWidgets({recent,colony,progress}:{recent:Tile[];colony:HomeC
   const [hydrated,setHydrated]=useState(false);
   const dragged=useRef<WidgetId|null>(null);
   useEffect(()=>{setLayout(readLayout());setHydrated(true)},[]);
+  useEffect(()=>{const open=()=>setEditing(true);window.addEventListener("podscape-edit-home",open);return ()=>window.removeEventListener("podscape-edit-home",open)},[]);
+  useEffect(()=>{if(!editing)return;const close=(event:KeyboardEvent)=>{if(event.key==="Escape")setEditing(false)};window.addEventListener("keydown",close);return ()=>window.removeEventListener("keydown",close)},[editing]);
   const update=(next:{order:WidgetId[];visible:WidgetId[]})=>{
     setLayout(next);try{localStorage.setItem(storageKey,JSON.stringify(next))}catch{}
   };
@@ -51,13 +53,10 @@ export function HomeWidgets({recent,colony,progress}:{recent:Tile[];colony:HomeC
     const order=[...layout.order];order.splice(order.indexOf(from),1);order.splice(order.indexOf(to),0,from);update({...layout,order});
   };
   return <section className={styles.widgetArea} aria-label="Personalize your Podscape homepage">
-    <div className={styles.widgetControls}>
-      <div><small>YOUR CORNER OF PODSCAPE</small><h2>Your homepage</h2></div>
-      <button type="button" onClick={()=>setEditing(!editing)} aria-expanded={editing} aria-controls="podscape-home-widget-editor">{editing?"Done":"Customize home"}</button>
-    </div>
-    {editing&&<div className={styles.widgetEditor} id="podscape-home-widget-editor">
-      <strong>Make it yours</strong>
-      <p>Add, hide or arrange the optional sections below. Your welcome, shortcuts and Podscape Spotlight stay in place so you never lose the essentials.</p>
+    {editing&&<div className={styles.homeEditorOverlay} role="presentation" onPointerDown={event=>{if(event.target===event.currentTarget)setEditing(false)}}>
+      <div className={styles.widgetEditor} id="podscape-home-widget-editor" role="dialog" aria-modal="true" aria-label="Customize your homepage">
+      <div className={styles.homeEditorHead}><div><small>MAKE PODSCAPE YOURS</small><h2>Customize Home</h2></div><button type="button" onClick={()=>setEditing(false)}>Done</button></div>
+      <p>Add, hide or arrange optional sections. Your welcome, shortcuts and Podscape Spotlight stay in place.</p>
       <div className={styles.widgetEditorList}>
         {layout.order.map((id,index)=><div className={styles.widgetEditorRow} key={id} draggable
           onDragStart={event=>{dragged.current=id;event.dataTransfer.effectAllowed="move"}}
@@ -72,13 +71,13 @@ export function HomeWidgets({recent,colony,progress}:{recent:Tile[];colony:HomeC
         </div>)}
       </div>
       <div className={styles.widgetEditorFooter}><small>Saved on this device. Drag on desktop or use arrows on mobile.</small><button type="button" onClick={()=>update({order:[...defaultOrder],visible:[...defaultVisible]})}>Reset layout</button></div>
-    </div>}
+      </div></div>}
     {layout.order.filter(id=>layout.visible.includes(id)).map(id=>{
       if(id==="recent")return <section className={styles.section} key={id} aria-label="Recent and noteworthy"><div className={styles.heading}><h2>Recent &amp; Noteworthy</h2><Link href="/menu">Explore →</Link></div><div className={styles.tiles}>{recent.map(item=><Link href={item.href} className={styles.tile} key={item.href}><div className={styles.widgetRecentIcon}><PodscapeLineIcon name={item.label==="GUIDE"?"book":item.label==="FUN ZONE"?"creative":"community"}/><small>{item.label}</small></div><div className={styles.tileCopy}><strong>{item.title}</strong><small>{item.description}</small><span className={styles.tileArrow} aria-hidden="true">→</span></div></Link>)}</div></section>;
       if(id==="colony")return <section className={styles.widgetCard} key={id}><span className={styles.widgetSymbol}><PodscapeLineIcon name="jar"/></span><div><small>MY COLONY</small><h3>{colony?colony.name:"Your colonies, close at hand"}</h3><p>{colony?`${colony.speciesName} · ${colony.quantity} recorded`:"Add a colony in Manager, then return here for a quick link."}</p></div><Link href={colony?"/keeper/"+colony.id:"/keeper/collection"}>{colony?"Open colony":"Open Manager"} →</Link></section>;
       if(id==="games")return <section className={styles.widgetCard} key={id}><span className={styles.widgetSymbol}><PodscapeLineIcon name="creative"/></span><div><small>FUN ZONE</small><h3>A little playtime?</h3><p>Word games, puzzles and quizzes whenever you need a break.</p></div><Link href="/fun-zone">Play now →</Link></section>;
       return <section className={styles.widgetCard} key={id}><span className={styles.widgetSymbol}>✦</span><div><small>MY PROGRESS</small><h3>{progress?`Level ${progress.level} Keeper`:"Your keeper journey"}</h3><p>{progress?`${progress.exp.toLocaleString("en-CA")} EXP earned so far.`:"Sign in and explore Podscape to start tracking milestones."}</p></div><Link href={progress?"/account/progress":"/account"}>View progress →</Link></section>;
     })}
-    {hydrated&&!editing&&layout.visible.length===0?<p className={styles.widgetEmpty}>Your optional widgets are hidden. Tap Customize home to bring some back.</p>:null}
+    {hydrated&&!editing&&layout.visible.length===0?<p className={styles.widgetEmpty}>Your optional widgets are hidden. Use Edit Home at the top to bring some back.</p>:null}
   </section>;
 }
