@@ -35,7 +35,7 @@ export function GlobalMobileNav(){
       {items.map((item,index)=><button type="button" data-shortcut-index={index} key={item.id}
         aria-current={!editing&&activeFor(item.href)?"page":undefined}
         aria-label={editing?`Choose ${item.label} to customize`:item.label}
-        className={`${styles.item} ${item.id==="scan"?styles.primary:""} ${!editing&&activeFor(item.href)?styles.active:""} ${editing&&selected===index?styles.selected:""}`}
+        className={`${styles.item} ${index===Math.floor(items.length/2)?styles.primary:""} ${!editing&&activeFor(item.href)?styles.active:""} ${editing&&selected===index?styles.selected:""}`}
         {...handlers(index)} onClick={event=>{handlers(index).onClick(event);if(!event.defaultPrevented)router.push(item.href)}}>
         <span><PodscapeLineIcon name={item.icon}/></span><small>{item.label}</small>
       </button>)}
