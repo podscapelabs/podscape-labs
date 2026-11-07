@@ -53,7 +53,7 @@
 /* Inline navigation customization on mobile. */
 .editor{display:none}
 @media(max-width:720px){
- .editing .item{touch-action:none;cursor:grab}
+ .editing .item{touch-action:none;cursor:grab;-webkit-touch-callout:none;user-select:none}
  .editing .item:active{cursor:grabbing}
  .editing .selected{border-radius:16px;outline:2px solid var(--accent,var(--forest));outline-offset:2px}
  .editor{position:fixed;z-index:61;display:grid;gap:12px;left:12px;right:12px;bottom:calc(91px + env(safe-area-inset-bottom,0px));max-width:540px;margin:auto;padding:17px;border:1px solid var(--border,var(--line));border-radius:20px;background:var(--surface,var(--paper));color:var(--text-primary,var(--ink));box-shadow:var(--shadow)}
