@@ -5,6 +5,7 @@ import { HomeGreeting } from "./HomeGreeting";
 import { PodscapeLineIcon } from "./PodscapeLineIcon";
 import { CustomizableHomeShortcuts } from "./CustomizableHomeShortcuts";
 import { HomeWidgets, type HomeColony, type HomeProgress } from "./HomeWidgets";
+import { InstallPodscape } from "./InstallPodscape";
 import { getSpeciesRecords } from "@/lib/species-store";
 import { getProductRecords } from "@/lib/product-store";
 import { getGuideRecords } from "@/lib/guide-store";
@@ -53,6 +54,7 @@ export async function MarketingSite(){
  <Link href="/account" className={styles.welcome}><span className={styles.welcomeMark}><PodscapeLineIcon name="leaf"/></span><HomeGreeting name={name}/><span className={styles.welcomeArrow}>→</span></Link>
  <section className={styles.hero} aria-label="Discover PodScape">{hero&&<Image src={hero.image!} alt={hero.imageAlt||speciesDisplayName(hero)} fill priority sizes="(max-width: 720px) 100vw, 1100px" className={styles.heroImage}/>}<div className={styles.heroContent}><span className={styles.eyebrow}>EXPLORE PODSCAPE</span><h2>Small creatures.<br/>Big world.</h2><p>Discover species, care guides, community and more.</p></div></section>
  <CustomizableHomeShortcuts/>
+ <InstallPodscape/>
  <section className={styles.section} aria-label="Podscape Spotlight"><div className={styles.heading}><h2>Podscape Spotlight</h2><span className={styles.spotlightHint}>Swipe to explore <span aria-hidden="true">↔</span></span></div><div className={styles.spotlightRail} role="region" aria-roledescription="carousel" aria-label="Curated Podscape highlights" tabIndex={0}>{featured.map(item=><TileCard item={item} key={item.href}/>)}</div></section>
  <HomeWidgets recent={recent} colony={colony} progress={progress}/>
  </main></div>;
