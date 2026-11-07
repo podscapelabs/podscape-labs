@@ -3,12 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { PlatformShell } from "@/components/PlatformShell";
 import { ManagerWorkspace } from "@/components/ManagerWorkspace";
+import type { ManagerBin } from "@/components/ManagerCareWidgets";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import { CreateEnclosure } from "@/components/KeeperWorkspace";
 import { KeeperMobileNav } from "@/components/KeeperMobileNav";
-import { PodscapeLineIcon, type PodscapeIconName } from "@/components/PodscapeLineIcon";
+import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
 import { getMemberCollectionState } from "@/lib/member-collection";
-import { listEnclosures } from "@/lib/keeper";
+import { listEnclosures, listManagerActivity } from "@/lib/keeper";
 import { getSpeciesRecords } from "@/lib/species-store";
 import { speciesDisplayName, speciesScientificName } from "@/data/species";
 import styles from "./page.module.css";
@@ -25,6 +26,10 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
   let unavailable = false;
   if (member.signedIn) try { enclosures = await listEnclosures(); } catch { unavailable = true; }
 
+  let activity: Awaited<ReturnType<typeof listManagerActivity>>=[];
+  let activityAvailable=true;
+  if(member.signedIn&&!unavailable)try{activity=await listManagerActivity(12);}catch{activityAvailable=false;}
+
   const selected = (await searchParams).species;
   const selectedRecord = species.find((record) => record.id === selected && record.kind === "species");
   const speciesById = new Map(species.map((record) => [record.id, record]));
@@ -34,14 +39,12 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
   const totalPopulation = active.reduce((total, enclosure) => total + enclosure.quantity, 0);
   const recent = [...active].sort((a,b) => Date.parse(b.updatedAt)-Date.parse(a.updatedAt)).slice(0,5);
   const firstBinHref = active[0] ? `/keeper/${active[0].id}` : "/keeper/collection";
-  const tools: { href: string; icon: PodscapeIconName; label: string }[] = [
-    { href: "/keeper/scan", icon: "scan", label: "Scan bin" },
-    { href: "/keeper/qr", icon: "qr", label: "Create QR" },
-    { href: "/keeper/collection", icon: "bin", label: "Add bin" },
-    { href: firstBinHref, icon: "droplet", label: "Log care" },
-    { href: "/keeper/schedule", icon: "calendar", label: "Schedule" },
-    { href: firstBinHref, icon: "note", label: "Notes" },
-  ];
+  const managerBins:ManagerBin[]=active.map(enclosure=>({
+    id:enclosure.id,name:enclosure.name,label:enclosure.label,
+    species:speciesById.get(enclosure.speciesId)?.commonName||"Species",
+    quantity:enclosure.quantity,status:enclosure.status,breeding:enclosure.breeding,
+    createdAt:enclosure.createdAt,updatedAt:enclosure.updatedAt
+  }));
 
   return <PlatformShell>
     <main className={styles.page}>
@@ -61,7 +64,7 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
           <p>Sign in to manage bins, care records, and colony details.</p>
           <Link href="/account/login">Member sign in →</Link>
         </section> : unavailable ? <section className={styles.empty} role="alert"><h2>Manager is temporarily unavailable.</h2><p>The Keeper database connection could not be reached.</p></section> : <>
-          <ManagerWorkspace scope={managerUser?.id || "guest"} primaryHref={firstBinHref} stats={<section className={styles.metrics} aria-label="Keeper overview">
+          <ManagerWorkspace scope={managerUser?.id || "guest"} primaryHref={firstBinHref} bins={managerBins} events={activity} activityAvailable={activityAvailable} stats={<section className={styles.metrics} aria-label="Keeper overview">
             <Link href="/keeper/collection"><PodscapeLineIcon name="leaf" /><strong>{uniqueSpecies}</strong><span>Species</span><b>›</b></Link>
             <Link href="/keeper/collection"><PodscapeLineIcon name="bin" /><strong>{active.length}</strong><span>Bins</span><b>›</b></Link>
             <Link href="/keeper/collection"><PodscapeLineIcon name="community" /><strong>{totalPopulation}</strong><span>Recorded population</span><b>›</b></Link>
