@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { navigation } from "@/data/platform";
-import { ArrowUpRightIcon } from "./Icons";
 import { SearchIcon, UserIcon } from "./PlatformIcons";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -25,7 +24,7 @@ export function Header() {
           <Link className="v2-icon-button v2-search-button" href="/search" aria-label="Search Podscape"><SearchIcon /></Link>
           <Link className="v2-icon-button v2-account-button" href="/account" aria-label="Your Podscape account"><UserIcon /></Link>
           <ThemeToggle />
-          <a className="v2-podbound-cta" href="https://www.podbound.net" target="_blank" rel="noreferrer">PodBound <ArrowUpRightIcon /></a>
+          <Link className="v2-podbound-cta" href="/podbound">PodBound <span aria-hidden="true">→</span></Link>
 
         </div>
       </div>
