@@ -227,3 +227,12 @@
  .shortcuts>.shortcut{font-size:clamp(.58rem,2.35vw,.7rem);letter-spacing:-.015em}
  .shortcuts>.shortcut>span:last-child{display:block;white-space:nowrap;overflow:hidden;text-overflow:clip;overflow-wrap:normal;line-clamp:unset;-webkit-line-clamp:unset;padding-inline:0}
 }
+
+/* The add-widget action follows the last visible homepage section.
+   No empty-state panel or minimum widget height; content grows only when widgets are added. */
+.widgetArea{min-height:0}
+.addWidgetFooter{display:flex;justify-content:center;align-items:center;margin-top:20px;margin-bottom:0}
+.addWidgetButton{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 19px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--forest);font-size:.8rem;font-weight:750;cursor:pointer}
+.addWidgetButton>span{font-size:1.3rem;font-weight:400;line-height:1}
+.addWidgetButton:hover,.addWidgetButton:focus-visible{border-color:var(--forest);outline-offset:3px}
+@media(max-width:720px){.addWidgetFooter{margin-top:17px}.main{padding-bottom:calc(42px + env(safe-area-inset-bottom,0px))}}
