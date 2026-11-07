@@ -51,3 +51,28 @@ export async function getEnclosureEvents(id:string,page=1,pageSize=30):Promise<K
  const total=count||0;
  return{events,page:safePage,pageSize:safeSize,total,hasNext:from+events.length<total};
 }
+
+export type ManagerActivity={
+ id:string;enclosureId:string;enclosureName:string;kind:string;note:string;createdAt:string;quantityChange:number|null;
+};
+/** Recent activity across the signed-in keeper's enclosures; never includes other users' records. */
+export async function listManagerActivity(limit=12):Promise<ManagerActivity[]>{
+ const {db,user}=await keeperContext();
+ if(!db||!user)return [];
+ const {data,error}=await db.from("keeper_events")
+  .select("id,enclosure_id,kind,note,quantity_change,created_at")
+  .eq("user_id",user.id).order("created_at",{ascending:false}).limit(Math.min(30,Math.max(1,limit)));
+ if(error)throw new Error("Unable to load recent keeper activity.");
+ const ids=[...new Set((data||[]).map(row=>String(row.enclosure_id)))];
+ if(!ids.length)return [];
+ const {data:enclosures,error:enclosureError}=await db.from("keeper_enclosures")
+  .select("id,name").eq("user_id",user.id).in("id",ids);
+ if(enclosureError)throw new Error("Unable to resolve keeper activity.");
+ const names=new Map((enclosures||[]).map(row=>[String(row.id),String(row.name)]));
+ return (data||[]).filter(row=>names.has(String(row.enclosure_id))).map(row=>({
+  id:String(row.id),enclosureId:String(row.enclosure_id),
+  enclosureName:names.get(String(row.enclosure_id))||"Enclosure",
+  kind:String(row.kind),note:String(row.note||""),
+  createdAt:String(row.created_at),quantityChange:row.quantity_change===null?null:Number(row.quantity_change)
+ }));
+}
