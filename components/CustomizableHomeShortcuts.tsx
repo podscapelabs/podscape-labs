@@ -4,16 +4,18 @@ import {PodscapeLineIcon} from "./PodscapeLineIcon";
 import {choiceById,navigationChoices,navigationGroups,swapNavigationSlot} from "./navigation-customization";
 import {useNavigationPreferences} from "./useNavigationPreferences";
 import {useShortcutEditor} from "./useShortcutEditor";
+import {useHomeCanvasEditing} from "./HomeCanvasEditContext";
 import styles from "./PodscapeHome.module.css";
 
 export function CustomizableHomeShortcuts(){
   const router=useRouter();
   const {ids,change,reset}=useNavigationPreferences("home");
-  const {editing,selected,setSelected,handlers,done}=useShortcutEditor(ids,change);
+  const canvasEditing=useHomeCanvasEditing();
+  const {editing,selected,setSelected,handlers,done}=useShortcutEditor(ids,change,canvasEditing);
   const choices=ids.map(id=>choiceById.get(id)).filter((x):x is NonNullable<typeof x>=>Boolean(x));
   const current=choices[selected]||choices[0];
   return <section aria-label="Your Podscape shortcuts">
-    {editing&&<div className={styles.jiggleToolbar} role="region" aria-label="Customize homepage shortcuts">
+    {editing&&!canvasEditing&&<div className={styles.jiggleToolbar} role="region" aria-label="Customize homepage shortcuts">
       <span className={styles.jiggleHint}>✧ <strong>Arrange your shortcuts</strong><small>Drag icons to move them. Tap one to replace it.</small></span>
       <button type="button" className={styles.jiggleDone} onClick={done}>Done</button>
       <label className={styles.jigglePicker}>Replace {current?.label||"shortcut"}
@@ -22,6 +24,15 @@ export function CustomizableHomeShortcuts(){
         </select>
       </label>
       <button type="button" className={styles.jiggleReset} onClick={()=>{reset();setSelected(0)}}>Reset shortcuts</button>
+    </div>}
+    {canvasEditing&&<div className={styles.inlineShortcutPicker}>
+      <span>Drag shortcuts to reorder · Tap one to replace</span>
+      <label>Replace {current?.label||"shortcut"}
+        <select value={current?.id||""} onChange={event=>change(swapNavigationSlot(ids,selected,event.target.value))}>
+          {navigationGroups.map(group=><optgroup label={group} key={group}>{navigationChoices.filter(item=>item.group===group).map(item=><option value={item.id} key={item.id}>{item.label}{item.planned?" (coming later)":""}{ids.includes(item.id)&&item.id!==current?.id?" (swap)":""}</option>)}</optgroup>)}
+        </select>
+      </label>
+      <button type="button" onClick={()=>{reset();setSelected(0)}}>Reset shortcuts</button>
     </div>}
     <nav className={`${styles.shortcuts} ${editing?styles.shortcutEditing:""}`} aria-label="Explore Podscape">
       {choices.map((item,index)=><button type="button" data-shortcut-index={index}
