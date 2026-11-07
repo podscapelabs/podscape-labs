@@ -226,3 +226,32 @@
  .heroCopy>span{margin:6px 0 12px;font-size:.76rem;line-height:1.4}
  .heroCopy a{padding:8px 13px}
 }
+
+/* Manager 2.0: informative, rearrangeable operational widgets */
+.managerModule{margin-top:18px;padding:18px;border:1px solid var(--border);border-radius:18px;background:var(--surface)}
+.managerModule header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:13px}
+.managerModule header h2{margin:3px 0 0;font-family:var(--display);font-weight:500;font-size:1.65rem;line-height:1.15}
+.managerModule header>a{color:var(--accent);font-size:.72rem;font-weight:750;white-space:nowrap}
+.managerEyebrow{margin:0;color:var(--text-secondary);font-size:.57rem;font-weight:800;letter-spacing:.13em}
+.managerPulse,.managerInsightGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.managerPulse>div,.managerInsightGrid>div{display:flex;flex-direction:column;gap:4px;padding:13px;background:var(--surface-secondary);border-radius:12px}
+.managerPulse strong,.managerInsightGrid strong{font-family:var(--display);font-size:1.6rem;font-weight:500;line-height:1}
+.managerPulse span,.managerInsightGrid span{font-size:.68rem;color:var(--text-secondary);line-height:1.3}
+.managerInsightGrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.managerModuleList{display:grid;gap:0;margin-top:10px}
+.managerModuleList>a{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 2px;border-bottom:1px solid var(--border);text-decoration:none;color:inherit}
+.managerModuleList>a:last-child{border-bottom:0}
+.managerModuleList>a>span{display:grid;gap:3px;min-width:0}
+.managerModuleList strong{font-size:.78rem;font-weight:750;text-transform:capitalize}
+.managerModuleList small{display:block;font-size:.68rem;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.managerModuleList em{font-style:normal;color:var(--accent);font-size:.68rem;font-weight:700;white-space:nowrap}
+.managerModuleEmpty{margin:12px 0;color:var(--text-secondary);font-size:.76rem;line-height:1.5}
+.managerModuleFine{margin:12px 0 0;font-size:.67rem;line-height:1.45;color:var(--text-secondary)}
+@media(max-width:720px){
+ .managerModule{margin-top:14px;padding:13px 12px;border-radius:15px}
+ .managerModule header h2{font-size:1.42rem}
+ .managerPulse>div,.managerInsightGrid>div{padding:11px 9px}
+ .managerPulse strong,.managerInsightGrid strong{font-size:1.4rem}
+ .managerInsightGrid span{font-size:.61rem}
+ .managerModuleList>a{padding:11px 2px}
+}
