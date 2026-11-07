@@ -341,3 +341,21 @@
  .homeCanvasBlockBar>div>button{min-width:40px;min-height:42px}
  .homeCanvasHandle{font-size:.75rem}
 }
+
+/* Safari/iOS: a hold belongs to workspace customization, never a link preview.
+   Pan-y stays enabled in browsing mode, so normal scrolling still works. */
+.homeCanvasBlock,
+.homeCanvasBlock :where(a,button,img,svg,[role="button"]) {
+  -webkit-touch-callout: none;
+}
+.homeCanvasBlock :where(a,img) {
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.homeCanvasBlock:not(.homeCanvasBlockActive) {
+  touch-action: pan-y;
+}
+.homeCanvasBlock:not(.homeCanvasBlockActive) :where(a,button) {
+  touch-action: pan-y;
+}
