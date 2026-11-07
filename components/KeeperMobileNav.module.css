@@ -75,3 +75,15 @@
 .nav>.primary{border:3px solid var(--surface,var(--paper));background:var(--accent,var(--forest));color:var(--background,var(--paper-strong))}
 .nav>.item span,.nav>.item small{-webkit-user-select:none;user-select:none;pointer-events:none}
 @media(max-width:720px){.nav.editing>.item{touch-action:none}}
+
+/* Center button stays prominent; all buttons jiggle gently during editing. */
+@keyframes podscapeToolbarJiggle{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg)}}
+@media(max-width:720px){
+.nav.editing>.item.jiggling{animation:podscapeToolbarJiggle .22s ease-in-out infinite;transform-origin:50% 60%;touch-action:none}
+.nav.editing>.item.selected{outline:2px solid var(--moss-light,var(--accent,var(--forest)));outline-offset:2px}
+.editor{gap:10px;padding:13px}
+.editorHeading strong{font-size:1.14rem}
+.editorHeading small{font-size:.66rem}
+.resetLink{justify-self:start;border:0;padding:4px 0;background:transparent;color:var(--accent,var(--forest));font-size:.7rem;font-weight:750;cursor:pointer}
+}
+@media(prefers-reduced-motion:reduce){.nav.editing>.item.jiggling{animation:none}}
