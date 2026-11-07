@@ -259,3 +259,24 @@
  .widgetArea>.section{margin-top:14px}
  .widgetArrangeRow .coreBlockLabel{font-size:.57rem}
 }
+
+/* Home screen arrangement: edit the blocks in place, not an abstract page list. */
+.homeCanvasToolbar{display:flex;position:sticky;top:8px;z-index:22;align-items:center;gap:9px;margin-bottom:12px;padding:10px;border:1px solid var(--line);border-radius:17px;background:var(--paper);box-shadow:var(--shadow-soft)}
+.homeCanvasToolbar>div{display:grid;flex:1;min-width:0;gap:2px}
+.homeCanvasToolbar strong{font:400 1.1rem/1.2 var(--serif)}
+.homeCanvasToolbar small{font-size:.67rem;color:var(--muted);line-height:1.3}
+.homeCanvasToolbar>button{flex:none;min-height:38px;padding:7px 11px;border:1px solid var(--line);border-radius:11px;color:var(--forest);background:var(--paper-strong);font-size:.72rem;font-weight:800;cursor:pointer}
+.homeCanvasToolbar>button:last-child{color:var(--paper-strong);background:var(--forest);border-color:var(--forest)}
+.homeCanvasBlock{min-width:0}
+.homeCanvasBlockActive{margin:0 0 11px;padding:7px;border:1px dashed var(--forest);border-radius:19px;background:color-mix(in srgb,var(--forest) 3%,var(--paper))}
+.homeCanvasBlockBar{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:7px}
+.homeCanvasHandle{display:flex;align-items:center;gap:7px;flex:1;min-width:0;min-height:41px;padding:6px 9px;border:0;border-radius:10px;background:color-mix(in srgb,var(--forest) 10%,var(--paper));color:var(--forest);font-size:.75rem;font-weight:800;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.homeCanvasHandle:active{cursor:grabbing}
+.homeCanvasHandle span{font-size:1.15rem}
+.homeCanvasBlockBar>div{display:flex;gap:4px;flex:none}
+.homeCanvasBlockBar>div button{min-width:33px;min-height:37px;border:1px solid var(--line);border-radius:9px;background:var(--paper);color:var(--forest);cursor:pointer}
+.homeCanvasBlockBar>div button:disabled{opacity:.3;cursor:default}
+.homeCanvasContentLocked{pointer-events:none;user-select:none}
+.homeCanvasContentLocked .homeBlock{margin-bottom:0}
+@media(max-width:720px){.homeCanvasToolbar{top:6px;gap:6px;padding:8px;border-radius:14px}.homeCanvasToolbar strong{font-size:.94rem}.homeCanvasToolbar small{font-size:.59rem}.homeCanvasToolbar>button{padding:6px 8px;font-size:.65rem}.homeCanvasBlockActive{border-radius:15px;padding:6px}.homeCanvasHandle{font-size:.68rem}}
+:root[data-theme="dark"] .homeCanvasToolbar>button:last-child{color:var(--forest-deep)}
