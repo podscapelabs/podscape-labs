@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect,useState,type ReactNode} from "react";
+import {useEffect,useLayoutEffect,useRef,useState,type ReactNode} from "react";
 import Link from "next/link";
 import {PodscapeLineIcon,type PodscapeIconName} from "./PodscapeLineIcon";
 import styles from "@/app/keeper/page.module.css";
@@ -40,6 +40,26 @@ export function ManagerWorkspace({stats,enclosures,scope,primaryHref}:{stats:Rea
  const [editing,setEditing]=useState(false);
  const [canvasEditing,setCanvasEditing]=useState(false);
  const [slot,setSlot]=useState<number|null>(null);
+ // Preserve the position of the section the user held while editor controls mount above it.
+ const editAnchor=useRef<{id:Section;top:number}|null>(null);
+ const enterCanvas=(id?:Section)=>{
+  if(id){
+   const block=Array.from(document.querySelectorAll<HTMLElement>('[data-workspace-scope="manager"]')).find(node=>node.dataset.workspaceBlock===id);
+   editAnchor.current=block?{id,top:block.getBoundingClientRect().top}:null;
+  }else editAnchor.current=null;
+  setCanvasEditing(true);
+  setEditing(false);
+  setSlot(null);
+ };
+ useLayoutEffect(()=>{
+  if(!canvasEditing||!editAnchor.current)return;
+  const {id,top}=editAnchor.current;
+  editAnchor.current=null;
+  const block=Array.from(document.querySelectorAll<HTMLElement>('[data-workspace-scope="manager"]')).find(node=>node.dataset.workspaceBlock===id);
+  if(!block)return;
+  const difference=block.getBoundingClientRect().top-top;
+  if(Math.abs(difference)>1)window.scrollBy({top:difference,behavior:"instant"});
+ },[canvasEditing]);
  useEffect(()=>{try{const saved=localStorage.getItem(storageKey);if(saved)setLayout(normalize(JSON.parse(saved)))}catch{}setReady(true)},[storageKey]);
  const update=(next:Layout)=>{setLayout(next);try{localStorage.setItem(storageKey,JSON.stringify(next))}catch{}};
  const swap=(id:string)=>{if(slot===null)return;const next=[...layout.tools];const prior=next.indexOf(id);if(prior>=0){[next[slot],next[prior]]=[next[prior],next[slot]]}else next[slot]=id;update({...layout,tools:next});setSlot(null)};
@@ -47,7 +67,7 @@ export function ManagerWorkspace({stats,enclosures,scope,primaryHref}:{stats:Rea
  const reorder=(from:Section,to:Section)=>update({...layout,order:dropBlock(layout.order,from,to)});
  const visible=layout.order.filter(id=>layout.visible.includes(id));
  const {dragging,begin,move:dragMove,stop}=useWorkspaceDrag<Section>("manager",visible,reorder);
- const finishCanvas=()=>{stop();setCanvasEditing(false)};
+ const finishCanvas=()=>{stop();editAnchor.current=null;setCanvasEditing(false)};
  const resetToDefault=()=>{if(!window.confirm("Restore the default Manager layout and Quick Tools? Your colony records will not be affected."))return;stop();update({order:[...defaults],visible:[...defaults],tools:[...initial.tools]});setSlot(null)};
  const sections:Record<Section,ReactNode>={
   stats,
@@ -59,7 +79,7 @@ export function ManagerWorkspace({stats,enclosures,scope,primaryHref}:{stats:Rea
   </section>
  };
  return <div className={`${styles.managerWorkspace} ${canvasEditing?homeStyles.homeCanvasEditing:""}`}>
-  <div className={styles.managerWorkspaceHeader}><span>Hold a section to customize</span><button type="button" className={homeStyles.editHomeButton} onClick={()=>{setCanvasEditing(true);setEditing(false);setSlot(null)}}><span aria-hidden="true">✎</span><span>Edit Manager</span></button></div>
+  <div className={styles.managerWorkspaceHeader}><span>Hold a section to customize</span><button type="button" className={homeStyles.editHomeButton} onClick={()=>enterCanvas()}><span aria-hidden="true">✎</span><span>Edit Manager</span></button></div>
   {canvasEditing?<WorkspaceEditToolbar title="Arrange your Manager" description="Drag sections to arrange your workspace. Quick Tools stay grouped." onAdd={()=>{finishCanvas();setEditing(true);setSlot(null)}} onReset={resetToDefault} onDone={finishCanvas}/>:null}
   {editing?<div className={homeStyles.homeEditorOverlay} onPointerDown={e=>{if(e.target===e.currentTarget){setEditing(false);setSlot(null)}}}>
    <div className={`${homeStyles.widgetEditor} ${homeStyles.widgetLibrary}`} role="dialog" aria-modal="true" aria-labelledby="manager-widget-title">
@@ -71,7 +91,7 @@ export function ManagerWorkspace({stats,enclosures,scope,primaryHref}:{stats:Rea
     <div className={homeStyles.widgetLibraryFooter}><small>{layout.visible.length} widget{layout.visible.length===1?"":"s"} on your Manager · Saved on this device</small><button type="button" onClick={()=>{if(!window.confirm("Restore the default Manager layout and Quick Tools? Your colony records will not be affected."))return;update(initial);setSlot(null)}}>Reset layout</button></div>
    </div>
   </div>:null}
-  {visible.map((id,index)=><WorkspaceEditBlock key={id} id={id} scope="manager" label={labels[id]} index={index} count={visible.length} editing={canvasEditing} dragging={dragging===id} required={false} onMove={move} onRemove={id=>update({...layout,visible:layout.visible.filter(v=>v!==id)})} begin={begin} move={dragMove} stop={stop} onLongPress={()=>{setCanvasEditing(true);setEditing(false);setSlot(null)}}>{sections[id]}</WorkspaceEditBlock>)}
+  {visible.map((id,index)=><WorkspaceEditBlock key={id} id={id} scope="manager" label={labels[id]} index={index} count={visible.length} editing={canvasEditing} dragging={dragging===id} required={false} onMove={move} onRemove={id=>update({...layout,visible:layout.visible.filter(v=>v!==id)})} begin={begin} move={dragMove} stop={stop} onLongPress={()=>enterCanvas(id)}>{sections[id]}</WorkspaceEditBlock>)}
   {ready&&layout.visible.length===0?<p className={styles.managerHint}>All sections are hidden. Tap Edit Manager to add a widget.</p>:null}
   <div className={styles.managerFallback}><Link href="/keeper/collection">All colonies →</Link><Link href="/keeper/scan">Scan bin →</Link><Link href="/keeper/schedule">Schedule →</Link></div>
  </div>;
