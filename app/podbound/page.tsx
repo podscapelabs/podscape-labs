@@ -19,8 +19,8 @@ export const metadata: Metadata = {
 const destinations = [
   { icon: "podbound" as const, title: "The Game", description: "Discover the world of PodBound.", href: "#the-game", ready: true },
   { icon: "book" as const, title: "How to Play", description: "Rules and strategies are being prepared.", href: "", ready: false },
-  { icon: "leaf" as const, title: "Card Catalogue", description: "Species cards and artwork are coming.", href: "", ready: false },
-  { icon: "creative" as const, title: "Simulator", description: "The playable simulator is moving here.", href: "", ready: false },
+  { icon: "leaf" as const, title: "Card Catalogue", description: "Browse revealed cards and original artwork.", href: "/podbound/cards", ready: true },
+  { icon: "creative" as const, title: "Simulator", description: "The 2.0 simulator will arrive when playtesting is ready.", href: "", ready: false },
 ];
 
 export default async function PodBoundHome() {
@@ -61,7 +61,7 @@ export default async function PodBoundHome() {
           {destinations.map((item) => <div className={styles.destination} key={item.title}>
             <span className={styles.destinationIcon}><PodscapeLineIcon name={item.icon} /></span>
             <h3>{item.title}</h3><p>{item.description}</p>
-            {item.ready ? <a href={item.href} className={styles.destinationArrow} aria-label={"Explore " + item.title}>→</a> :
+            {item.ready ? <Link href={item.href} className={styles.destinationArrow} aria-label={"Explore " + item.title}>→</Link> :
               <span className={styles.soon}>Coming soon</span>}
           </div>)}
         </div>
@@ -89,7 +89,7 @@ export default async function PodBoundHome() {
         <div className={styles.ledgerCard}>
           <div className={styles.speciesImage}>{featuredSpecies?.image ? <Image src={featuredSpecies.image} alt={featuredSpecies.imageAlt || speciesDisplayName(featuredSpecies)} fill sizes="(max-width: 700px) 35vw, 350px" style={{objectFit:"cover"}}/> : <PodscapeLineIcon name="leaf" />}</div>
           <div className={styles.ledgerCopy}><small>REAL SPECIES. REAL INSPIRATION.</small><h3>{featuredSpecies ? speciesDisplayName(featuredSpecies) : "Meet the creatures behind the cards"}</h3><p>Every PodBound species has a real story. Discover the animals, habitats and natural history that inspire the game.</p><Link href={featuredSpecies ? `/ledger/${featuredSpecies.slug}` : "/ledger"}>Meet the real species →</Link></div>
-          <div className={styles.ledgerCardMotif} aria-hidden="true"><PodscapeLineIcon name="podbound" /><span>Card catalogue connection coming soon</span></div>
+          <div className={styles.ledgerCardMotif} aria-hidden="true"><PodscapeLineIcon name="podbound" /><span>Discover the card collection</span></div>
         </div>
       </section>
 
