@@ -6,7 +6,6 @@ import { ManagerWorkspace } from "@/components/ManagerWorkspace";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import { CreateEnclosure } from "@/components/KeeperWorkspace";
 import { KeeperMobileNav } from "@/components/KeeperMobileNav";
-import { ManagerWorkspace } from "@/components/ManagerWorkspace";
 import { PodscapeLineIcon, type PodscapeIconName } from "@/components/PodscapeLineIcon";
 import { getMemberCollectionState } from "@/lib/member-collection";
 import { customerSupabase } from "@/lib/customer-auth/server";
