@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect,useRef,useState} from "react";
+import {useEffect,useRef,useState,type ReactNode} from "react";
 import Link from "next/link";
 import {PodscapeLineIcon,type PodscapeIconName} from "./PodscapeLineIcon";
 import {pinKey,readHomePins,writeHomePins,type HomePin,type PinOption} from "./home-pins";
@@ -9,6 +9,12 @@ import styles from "./PodscapeHome.module.css";
 type Tile={title:string;label:string;description:string;href:string;image?:string|null;alt?:string};
 export type HomeColony={id:string;name:string;quantity:number;speciesName:string}|null;
 export type HomeProgress={level:number;exp:number}|null;
+type CoreId="greeting"|"hero"|"shortcuts"|"spotlight";
+type BlockId=CoreId|WidgetId;
+const coreIds:CoreId[]=["greeting","hero","shortcuts","spotlight"];
+const coreLabels:Record<CoreId,string>={greeting:"Welcome Greeting",hero:"Discovery Hero",shortcuts:"Quick Shortcuts",spotlight:"Podscape Spotlight"};
+const coreIcons:Record<CoreId,PodscapeIconName>={greeting:"leaf",hero:"jar",shortcuts:"scan",spotlight:"leaf"};
+const isCore=(id:BlockId):id is CoreId=>coreIds.includes(id as CoreId);
 type WidgetId="recent"|"colony"|"games"|"progress"|"schedule"|"guides"|"community"|"pins";
 type WidgetGroup="Discovery"|"My Keeper Tools"|"Play & Community";
 type WidgetDef={name:string;description:string;icon:PodscapeIconName;group:WidgetGroup;preview:string;size:"wide"|"compact"};
@@ -24,29 +30,31 @@ const definitions:Record<WidgetId,WidgetDef>={
 };
 const available=Object.keys(definitions) as WidgetId[];
 const groups:WidgetGroup[]=["Discovery","My Keeper Tools","Play & Community"];
-const storageKey="podscape-home-widgets-v1";
-const defaultOrder:WidgetId[]=["recent","colony","games","progress","schedule","guides","community","pins"];
+const storageKey="podscape-home-widgets-v2";
+const legacyKey="podscape-home-widgets-v1";
+const defaultOrder:BlockId[]=["greeting","hero","shortcuts","spotlight","recent","colony","games","progress","schedule","guides","community","pins"];
 const defaultVisible:WidgetId[]=["recent"];
-type Layout={order:WidgetId[];visible:WidgetId[]};
+type Layout={order:BlockId[];visible:WidgetId[]};
 
 function readLayout():Layout{
-  try{
-    const value=JSON.parse(localStorage.getItem(storageKey)||"null");
-    if(!value||!Array.isArray(value.order)||!Array.isArray(value.visible))throw Error("No saved layout");
-    const oldOrder=(value.order as unknown[]).filter((id):id is WidgetId=>typeof id==="string"&&available.includes(id as WidgetId));
-    const order=[...new Set(oldOrder),...available.filter(id=>!oldOrder.includes(id))];
-    const visible=[...new Set((value.visible as unknown[]).filter((id):id is WidgetId=>typeof id==="string"&&available.includes(id as WidgetId)))];
-    return {order,visible};
-  }catch{return {order:[...defaultOrder],visible:[...defaultVisible]}}
+ try{
+  const saved=localStorage.getItem(storageKey),legacy=saved?null:localStorage.getItem(legacyKey);
+  const value=JSON.parse(saved||legacy||"null");
+  if(!value||!Array.isArray(value.order)||!Array.isArray(value.visible))throw Error("No saved layout");
+  const oldOrder=(value.order as unknown[]).filter((id):id is BlockId=>typeof id==="string"&&defaultOrder.includes(id as BlockId));
+  const order=legacy?[...coreIds,...new Set(oldOrder),...available.filter(id=>!oldOrder.includes(id))]:[...new Set(oldOrder),...defaultOrder.filter(id=>!oldOrder.includes(id))];
+  const visible=[...new Set((value.visible as unknown[]).filter((id):id is WidgetId=>typeof id==="string"&&available.includes(id as WidgetId)))];
+  return {order,visible};
+ }catch{return {order:[...defaultOrder],visible:[...defaultVisible]}}
 }
 
-export function HomeWidgets({recent,colony,progress,pinOptions,userId}:{recent:Tile[];colony:HomeColony;progress:HomeProgress;pinOptions:PinOption[];userId:string|null}){
+export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,hero,shortcuts,spotlight}:{recent:Tile[];colony:HomeColony;progress:HomeProgress;pinOptions:PinOption[];userId:string|null;greeting:ReactNode;hero:ReactNode;shortcuts:ReactNode;spotlight:ReactNode}){
   const [layout,setLayout]=useState<Layout>({order:defaultOrder,visible:defaultVisible});
   const [editing,setEditing]=useState(false);
   const [pins,setPins]=useState<HomePin[]>([]);
   const [tab,setTab]=useState<"library"|"arrange">("library");
   const [hydrated,setHydrated]=useState(false);
-  const dragged=useRef<WidgetId|null>(null);
+  const dragged=useRef<BlockId|null>(null);
   const dialogRef=useRef<HTMLDivElement>(null);
   const returnFocus=useRef<HTMLElement|null>(null);
   useEffect(()=>{
@@ -92,9 +100,9 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId}:{recent:T
     setLayout(next);
     try{localStorage.setItem(storageKey,JSON.stringify(next))}catch{}
   };
-  const add=(id:WidgetId)=>update({...layout,order:[...layout.order.filter(item=>item!==id),id],visible:[...layout.visible.filter(item=>item!==id),id]});
+  const add=(id:WidgetId)=>update({...layout,order:layout.order.includes(id)?layout.order:[...layout.order,id],visible:[...layout.visible.filter(item=>item!==id),id]});
   const remove=(id:WidgetId)=>update({...layout,visible:layout.visible.filter(item=>item!==id)});
-  const move=(id:WidgetId,direction:number)=>{
+  const move=(id:BlockId,direction:number)=>{
     const active=layout.order.filter(item=>layout.visible.includes(item));
     const index=active.indexOf(id),nextIndex=index+direction;
     if(index<0||nextIndex<0||nextIndex>=active.length)return;
@@ -103,12 +111,12 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId}:{recent:T
     [order[a],order[b]]=[order[b],order[a]];
     update({...layout,order});
   };
-  const reorder=(from:WidgetId,to:WidgetId)=>{
+  const reorder=(from:BlockId,to:BlockId)=>{
     if(from===to)return;
     const order=[...layout.order];order.splice(order.indexOf(from),1);order.splice(order.indexOf(to),0,from);
     update({...layout,order});
   };
-  const visible=layout.order.filter(id=>layout.visible.includes(id));
+  const visible=layout.order.filter(id=>isCore(id)||layout.visible.includes(id as WidgetId));
   const optionsByKey=new Map(pinOptions.map(item=>[pinKey(item),item]));
   const activePins=pins.flatMap(p=>{const option=optionsByKey.get(pinKey(p));return option?[option]:[]});
   const removePin=(pin:HomePin)=>{const next=pins.filter(p=>pinKey(p)!==pinKey(pin));writeHomePins(userId,next);setPins(next)};
@@ -120,17 +128,17 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId}:{recent:T
       <Link href={href}>{cta} →</Link>
     </section>
   );
-  return <section className={styles.widgetArea} aria-label="Your chosen homepage widgets">
+  return <section className={styles.widgetArea} aria-label="Your customizable homepage">
     {editing&&<div className={styles.homeEditorOverlay} onPointerDown={event=>{if(event.target===event.currentTarget)close()}}>
       <div className={`${styles.widgetEditor} ${styles.widgetLibrary}`} id="podscape-home-widget-editor" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="widget-library-title">
         <div className={styles.homeEditorHead}>
           <div><small>YOUR LITTLE WORLD, YOUR WAY</small><h2 id="widget-library-title">Widget Library</h2></div>
           <button type="button" onClick={close}>Done</button>
         </div>
-        <p>Choose the little tools you want to see. Your welcome, shortcuts and Podscape Spotlight stay protected. Pin individual species, games and colonies from their pages.</p>
+        <p>Choose the little tools you want to see. Essential blocks are always present but can be moved anywhere. Add optional widgets and arrange everything together. Pin species, games and colonies from their pages.</p>
         <div className={styles.widgetTabs} role="group" aria-label="Widget library views">
           <button type="button" className={tab==="library"?styles.widgetTabActive:""} aria-pressed={tab==="library"} onClick={()=>setTab("library")}>Explore widgets</button>
-          <button type="button" className={tab==="arrange"?styles.widgetTabActive:""} aria-pressed={tab==="arrange"} onClick={()=>setTab("arrange")}>On My Home <span>({visible.length})</span></button>
+          <button type="button" className={tab==="arrange"?styles.widgetTabActive:""} aria-pressed={tab==="arrange"} onClick={()=>setTab("arrange")}>Arrange Home <span>({visible.length})</span></button>
         </div>
         {tab==="library"?
           <div className={styles.widgetLibraryGroups}>
@@ -155,33 +163,37 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId}:{recent:T
             </section>)}
           </div>:
           <div className={styles.widgetArrange}>
-            <p>Drag on desktop, or use the arrows to arrange your widgets. Their order updates instantly.</p>
-            {visible.length===0?<div className={styles.widgetArrangeEmpty}>No optional widgets yet. <button type="button" onClick={()=>setTab("library")}>Explore the library</button></div>:null}
+            <p>Move all blocks—including greeting, hero, shortcuts and Spotlight. Core blocks stay on Home. Drag on desktop or use the arrows on mobile.</p>
+            
             {visible.map((id,index)=><div className={styles.widgetArrangeRow} key={id} data-widget-id={id} draggable
               onDragStart={event=>{dragged.current=id;event.dataTransfer.effectAllowed="move"}}
               onDragOver={event=>event.preventDefault()}
               onDrop={event=>{event.preventDefault();if(dragged.current)reorder(dragged.current,id);dragged.current=null}}
               onDragEnd={()=>{dragged.current=null}}>
-              <span className={styles.widgetGrip} role="button" tabIndex={0} aria-label={`Drag ${definitions[id].name} to reorder`}
+              <span className={styles.widgetGrip} role="button" tabIndex={0} aria-label={`Drag ${(isCore(id)?coreLabels[id]:definitions[id].name)} to reorder`}
                 onPointerDown={event=>{if(event.pointerType==="mouse"&&event.button!==0)return;dragged.current=id;event.currentTarget.setPointerCapture(event.pointerId)}}
-                onPointerMove={event=>{if(!dragged.current||!(event.buttons&1)&&event.pointerType==="mouse")return;const hit=document.elementFromPoint(event.clientX,event.clientY)?.closest("[data-widget-id]");const target=hit?.getAttribute("data-widget-id") as WidgetId|null;if(target&&target!==dragged.current&&visible.includes(target)){reorder(dragged.current,target)}}}
+                onPointerMove={event=>{if(!dragged.current||!(event.buttons&1)&&event.pointerType==="mouse")return;const hit=document.elementFromPoint(event.clientX,event.clientY)?.closest("[data-widget-id]");const target=hit?.getAttribute("data-widget-id") as BlockId|null;if(target&&target!==dragged.current&&visible.includes(target)){reorder(dragged.current,target)}}}
                 onPointerUp={()=>{dragged.current=null}}
                 onPointerCancel={()=>{dragged.current=null}}
                 onKeyDown={event=>{if(event.key==="ArrowUp"){event.preventDefault();move(id,-1)}else if(event.key==="ArrowDown"){event.preventDefault();move(id,1)}}}>⠿</span>
-              <span className={styles.widgetArrangeIcon}><PodscapeLineIcon name={definitions[id].icon}/></span>
-              <strong>{definitions[id].name}</strong>
-              <button type="button" aria-label={`Move ${definitions[id].name} up`} disabled={index===0} onClick={()=>move(id,-1)}>↑</button>
-              <button type="button" aria-label={`Move ${definitions[id].name} down`} disabled={index===visible.length-1} onClick={()=>move(id,1)}>↓</button>
-              <button type="button" aria-label={`Remove ${definitions[id].name}`} onClick={()=>remove(id)}>×</button>
+              <span className={styles.widgetArrangeIcon}><PodscapeLineIcon name={isCore(id)?coreIcons[id]:definitions[id].icon}/></span>
+              <strong>{isCore(id)?coreLabels[id]:definitions[id].name}</strong>{isCore(id)?<small className={styles.coreBlockLabel}>Always on</small>:null}
+              <button type="button" aria-label={`Move ${(isCore(id)?coreLabels[id]:definitions[id].name)} up`} disabled={index===0} onClick={()=>move(id,-1)}>↑</button>
+              <button type="button" aria-label={`Move ${(isCore(id)?coreLabels[id]:definitions[id].name)} down`} disabled={index===visible.length-1} onClick={()=>move(id,1)}>↓</button>
+              {!isCore(id)?<button type="button" aria-label={`Remove ${definitions[id].name}`} onClick={()=>remove(id)}>×</button>:<span className={styles.coreBlockLock} aria-label="Required block">•</span>}
             </div>)}
           </div>}
         <div className={styles.widgetLibraryFooter}>
-          <small>{visible.length} widget{visible.length===1?"":"s"} on your homepage · Saved on this device</small>
+          <small>{visible.length} blocks on your homepage · {coreIds.length} always included · Saved on this device</small>
           <button type="button" onClick={()=>{update({order:[...defaultOrder],visible:[...defaultVisible]});setTab("library")}}>Reset layout</button>
         </div>
       </div>
     </div>}
     {visible.map(id=>{
+      if(id==="greeting")return <div key={id} className={styles.homeBlock}>{greeting}</div>;
+      if(id==="hero")return <div key={id} className={styles.homeBlock}>{hero}</div>;
+      if(id==="shortcuts")return <div key={id} className={styles.homeBlock}>{shortcuts}</div>;
+      if(id==="spotlight")return <div key={id} className={styles.homeBlock}>{spotlight}</div>;
       if(id==="pins")return <section className={styles.section} key={id} aria-label="My Favorites">
         <div className={styles.heading}><h2>My Favorites</h2><Link href="/menu">Discover →</Link></div>
         {activePins.length?<div className={styles.pinnedGrid}>{activePins.map(item=><article key={pinKey(item)} className={styles.pinnedCard}>
