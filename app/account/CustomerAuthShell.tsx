@@ -1,4 +1,3 @@
-import Link from "next/link";
 import styles from "./customer-auth.module.css";
 
 export function CustomerAuthShell({
@@ -10,7 +9,7 @@ export function CustomerAuthShell({
     <div className={styles.page}>
       <div className={styles.container}>
         <nav className={styles.breadcrumb} aria-label="Breadcrumb">
-          <Link href="/admin/preview">Podscape Labs</Link><span aria-hidden="true">/</span><Link href="/account">Account</Link>
+          <a href="/early-access">Podscape Labs</a><span aria-hidden="true">/</span><a href="/account">Account</a>
         </nav>
         <div className={styles.grid}>
           <section className={styles.intro}>
