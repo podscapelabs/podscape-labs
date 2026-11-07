@@ -72,6 +72,6 @@
 
 /* Buttons navigate via the app router: iOS must not treat them as previewable links. */
 .nav>.item{appearance:none;border:0;font:inherit;cursor:pointer;background:transparent;padding:0;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
-.nav>.primary{border:3px solid var(--surface,var(--paper));background:var(--accent,var(--forest))}
+.nav>.primary{border:3px solid var(--surface,var(--paper));background:var(--accent,var(--forest));color:var(--background,var(--paper-strong))}
 .nav>.item span,.nav>.item small{-webkit-user-select:none;user-select:none;pointer-events:none}
 @media(max-width:720px){.nav.editing>.item{touch-action:none}}
