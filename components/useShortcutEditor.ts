@@ -19,6 +19,7 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void){
   const editingRef=useRef(editing);
   editingRef.current=editing;
   const stopTimer=()=>{if(timer.current!==null){clearTimeout(timer.current);timer.current=null}};
+  const feedback=()=>{try{if("vibrate" in navigator)navigator.vibrate(10)}catch{}};
   useEffect(()=>()=>stopTimer(),[]);
   const handlers=(index:number)=>({
     onPointerDown:(event:React.PointerEvent<HTMLElement>)=>{
@@ -36,6 +37,7 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void){
           if(!holding.current)return;
           suppressClick.current=true;
           editingRef.current=true;
+          feedback();
           setEditing(true);setSelected(index);
           dragging.current=index;
           try{pointer.current?.element.setPointerCapture(pointer.current.id)}catch{}
