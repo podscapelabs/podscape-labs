@@ -10,6 +10,7 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void){
   const dragging=useRef<number|null>(null);
   const startPoint=useRef<{x:number;y:number}|null>(null);
   const suppressClick=useRef(false);
+  const wasDragged=useRef(false);
   const pointer=useRef<{element:HTMLElement;id:number}|null>(null);
   const idsRef=useRef(ids);
   idsRef.current=ids;
@@ -22,6 +23,7 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void){
   const handlers=(index:number)=>({
     onPointerDown:(event:React.PointerEvent<HTMLElement>)=>{
       if(event.pointerType==="mouse"&&event.button!==0)return;
+      wasDragged.current=false;
       startPoint.current={x:event.clientX,y:event.clientY};
       pointer.current={element:event.currentTarget,id:event.pointerId};
       if(editingRef.current){
@@ -48,6 +50,7 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void){
       const hit=document.elementFromPoint(event.clientX,event.clientY)?.closest("[data-shortcut-index]");
       const to=hit?Number(hit.getAttribute("data-shortcut-index")):-1;
       if(Number.isInteger(to)&&to>=0&&to<idsRef.current.length&&to!==dragging.current){
+        wasDragged.current=true;
         changeRef.current(moveNavigationSlot(idsRef.current,dragging.current,to));
         dragging.current=to;setSelected(to);
       }
@@ -63,7 +66,8 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void){
         event.preventDefault();
         event.stopPropagation();
         if(!editingRef.current)suppressClick.current=false;
-        setSelected(index);
+        if(!wasDragged.current)setSelected(index);
+        wasDragged.current=false;
       }
     },
     onContextMenu:(event:React.MouseEvent<HTMLElement>)=>{event.preventDefault();setEditing(true);editingRef.current=true;setSelected(index)}
