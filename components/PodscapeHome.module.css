@@ -129,3 +129,14 @@
 /* Personal pins may include longer game and feature names. */
 .shortcuts>.shortcut{min-width:0;overflow:hidden}
 .shortcuts>.shortcut>span:last-child{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;overflow-wrap:anywhere;max-width:100%;padding-inline:2px}
+
+/* The homepage ends at its last visible widget, not an empty padded panel.
+   Reserve only the space needed to reveal the final card above the floating nav.
+   Adding widgets naturally extends document height. */
+.site{min-height:0}
+.main{padding-bottom:28px}
+@media(max-width:720px){
+  .main{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+  .widgetArea{margin-bottom:0}
+  .widgetArea>.section:last-child,.widgetArea>.widgetCard:last-child{margin-bottom:0}
+}
