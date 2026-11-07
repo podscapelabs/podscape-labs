@@ -24,7 +24,7 @@ const formActions = {
   change: changeAuthenticatedCustomerPassword,
 };
 
-export function CustomerAccountForm({ kind, initialName = "" }: { kind: FormKind; initialName?: string }) {
+export function CustomerAccountForm({ kind, initialName = "", embedded = false }: { kind: FormKind; initialName?: string; embedded?: boolean }) {
   const [state, submit, pending] = useActionState(formActions[kind], INITIAL_STATE);
   return (
     <form className={styles.form} action={submit}>
@@ -65,10 +65,10 @@ export function CustomerAccountForm({ kind, initialName = "" }: { kind: FormKind
         <span aria-hidden="true">→</span>
       </button>
       {kind === "login" ? (
-        <div className={styles.formLinks}><a href="/account/forgot-password">Forgot password?</a><a href="/account/sign-up">Create an account →</a></div>
+        <div className={styles.formLinks}><a href="/account/forgot-password">Forgot password?</a>{!embedded ? <a href="/account/sign-up">Create an account →</a> : null}</div>
       ) : null}
       {kind === "change" ? <p className={styles.formLinks}><a href="/account">← Back to account</a></p> : null}
-      {kind === "sign-up" || kind === "forgot" || kind === "reset" ? (
+      {!embedded && (kind === "sign-up" || kind === "forgot" || kind === "reset") ? (
         <p className={styles.formLinks}><a href="/account/login">← Back to sign in</a></p>
       ) : null}
     </form>
