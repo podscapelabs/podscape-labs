@@ -19,7 +19,7 @@ export default async function CardEditor({params,searchParams}:{params:Promise<{
   {query.saved&&<p className={styles.success} role="status">Card saved successfully.</p>}
   {query.created&&<p className={styles.success} role="status">Draft created. Make it your own!</p>}
   {query.error&&<p className={styles.failure} role="alert">{query.error}</p>}
-  <form id="card-editor" action={savePodBoundCard} className={styles.editor} encType="multipart/form-data">
+  <form id="card-editor" action={savePodBoundCard} className={styles.editor}>
    <input type="hidden" name="id" value={card.id}/>
    <section className={styles.editPanel}><p className={styles.eyebrow}>01 / IDENTITY</p><h2>Meet the card</h2><div className={styles.fieldGrid}>
     <label className={styles.wide}>Card name<input name="title" maxLength={180} defaultValue={card.title} required/></label>
