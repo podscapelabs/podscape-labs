@@ -15,11 +15,11 @@ function readId(value:string):string|null {
  try {const url=new URL(raw);if(url.protocol!=="https:"&&url.protocol!=="http:")return null;const path=url.pathname.match(/\/(?:keeper|bins?)\/([a-f\d-]{36})(?:\/|$)/i);return path?.[1]||url.searchParams.get("bin")||null;}catch{return null;}
 }
 const tasks=[{label:"Misted",kind:"maintenance",note:"Misted"},{label:"Fed",kind:"feeding",note:"Fed"},{label:"Spot cleaned",kind:"maintenance",note:"Spot cleaned"},{label:"Leaf litter",kind:"maintenance",note:"Leaf litter added"}] as const;
-export function KeeperScanner({bins,initialBinId=""}:{bins:Bin[];initialBinId?:string}){
+export function KeeperScanner({bins,initialBinId="",startManual=false}:{bins:Bin[];initialBinId?:string;startManual?:boolean}){
  const video=useRef<HTMLVideoElement>(null);const stream=useRef<MediaStream|null>(null);const lock=useRef(false);
  const canvas=useRef<HTMLCanvasElement|null>(null);
  const saving=useRef(false);
- const [selected,setSelected]=useState<Bin|null>(()=>bins.find(b=>b.id===initialBinId)||null);const [state,setState]=useState<"idle"|"scanning"|"saved">(initialBinId?"idle":"scanning");const [error,setError]=useState("");const [choice,setChoice]=useState("");const [pending,start]=useTransition();
+ const [selected,setSelected]=useState<Bin|null>(()=>bins.find(b=>b.id===initialBinId)||null);const [state,setState]=useState<"idle"|"scanning"|"saved">(initialBinId||startManual?"idle":"scanning");const [error,setError]=useState("");const [choice,setChoice]=useState("");const [pending,start]=useTransition();
  const [sessionCount,setSessionCount]=useState(0);const [customNote,setCustomNote]=useState("");const [customDate,setCustomDate]=useState("");const [manual,setManual]=useState(initialBinId);const [lastSaved,setLastSaved]=useState<{bin:Bin;task:string}|null>(null);
  const stop=()=>{stream.current?.getTracks().forEach(t=>t.stop());stream.current=null;canvas.current=null;};
  function match(value:string){const id=readId(value);const found=bins.find(b=>b.id.toLowerCase()===id?.toLowerCase());if(found){lock.current=true;stop();setSelected(found);setState("idle");setCustomNote("");setCustomDate("");setError("");return true;}setError("That code does not match an active bin in your collection.");return false;}
