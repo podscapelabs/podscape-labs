@@ -130,3 +130,12 @@
 .accountSummaryTop a.accountLevel strong{color:#fff9ec;text-decoration:none}
 .accountSummaryTop a.accountLevel{background:var(--forest);font-weight:650}
 .accountSummaryTop a.accountLevel strong{font-weight:800}
+
+
+/* Account dashboard: content-sized canvas and more comfortable controls. */
+.page{min-height:0;padding-bottom:clamp(24px,5vw,55px)}
+.inner{padding-bottom:14px}
+.profile,.progress,.activity,.accordions{box-shadow:none}
+.edit{display:inline-flex;align-items:center;justify-content:center;min-height:44px}
+.accountSummaryTop a.accountLevel{color:#fff9ec}
+:root[data-theme="dark"] .accountSummaryTop a.accountLevel{background:#31563b;color:#fff9ec}
