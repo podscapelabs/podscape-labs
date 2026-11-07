@@ -12,5 +12,5 @@ export default async function Page({params}:{params:Promise<{game:string}>}){
  const db=await customerSupabase();
  const {data:{user}}=db?await db.auth.getUser():{data:{user:null}};
  const puzzles:PuzzleItem[]=[{id:"sample-01",title:game.puzzleTitle,description:game.description,topic:game.category,difficulty:"Intro",href:`/fun-zone/${game.key}/sample-01`,status:"playable"}];
- return <PlatformShell><div style={{padding:"12px 18px 0",maxWidth:1140,margin:"auto"}}><PinToHome pin={{kind:"game",id:game.key}} userId={user?.id||null}/></div><PuzzleLibrary return <PlatformShell><PuzzleLibrary title={game.title} subtitle={game.subtitle} puzzles={puzzles}/></PlatformShell>;
+ return <PlatformShell><div style={{padding:"12px 18px 0",maxWidth:1140,margin:"auto"}}><PinToHome pin={{kind:"game",id:game.key}} userId={user?.id||null}/></div><PuzzleLibrary title={game.title} subtitle={game.subtitle} puzzles={puzzles}/></PlatformShell>;
 }
