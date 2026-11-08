@@ -57,3 +57,7 @@
  .careGrid{gap:7px}
  .careGrid div{padding:10px}
 }
+
+/* Context is optional: a clear value remains the primary scan target. */
+.factNote{margin:7px 0 0;color:var(--text-secondary);font-size:.7rem;line-height:1.4;overflow-wrap:anywhere}
+.moisturePending{margin:0;padding:12px 15px;border:1px solid var(--border);border-radius:var(--radius-small,13px);background:var(--surface);color:var(--text-secondary);font-size:.73rem;line-height:1.5}
