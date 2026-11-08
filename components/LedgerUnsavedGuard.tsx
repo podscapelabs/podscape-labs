@@ -10,7 +10,7 @@ export function LedgerUnsavedGuard(){
     const form=marker.current?.closest("form");
     if(!form)return;
     let submitted=false;
-    let initial=snapshot(form);
+    const initial=snapshot(form);
     const changed=()=>{setDirty(snapshot(form)!==initial);};
     const beforeUnload=(event:BeforeUnloadEvent)=>{
       if(!submitted&&snapshot(form)!==initial){event.preventDefault();event.returnValue="";}
