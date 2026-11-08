@@ -1,13 +1,18 @@
-name: PodScape workspace QA
+name: PodScape pre-deployment QA
 on:
   push:
     branches:
       - codex/unified-home-manager-customization
+  pull_request:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: podscape-qa-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
-  typecheck:
+  verify:
+    name: Lint, typecheck & production build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -20,9 +25,9 @@ jobs:
         run: corepack enable && corepack prepare pnpm@10.14.0 --activate
       - name: Install locked dependencies
         run: pnpm install --frozen-lockfile
+      - name: Lint entire repository
+        run: pnpm run lint
       - name: Typecheck application
         run: pnpm run typecheck
       - name: Build Next.js application
         run: pnpm run build
-      - name: Lint updated workspaces
-        run: pnpm exec eslint components/PodscapeWorkspaceUI.tsx components/KeeperScanner.tsx components/KeeperBinTools.tsx components/KeeperWorkspace.tsx app/keeper/scan/page.tsx app/keeper/actions.ts 'app/keeper/[id]/page.tsx' 'app/keeper/[id]/details/page.tsx' 'app/keeper/[id]/history/page.tsx' lib/keeper.ts app/shop/page.tsx app/ledger/page.tsx 'app/ledger/[slug]/page.tsx' components/LedgerPageIntro.tsx app/fun-zone/page.tsx app/fun-zone/FunZoneLibrary.tsx components/PuzzleLibrary.tsx components/PlayGame.tsx app/community/page.tsx
