@@ -92,3 +92,21 @@ export async function listQuickCareDates(enclosureIds:string[]):Promise<Record<s
  }
  return result;
 }
+
+/** Lightweight recent care preview for the unified enclosure workspace. */
+export async function listQuickCareActivity(enclosureIds:string[]):Promise<Record<string,KeeperEvent[]>>{
+ const {db,user}=await keeperContext();if(!db||!user||!enclosureIds.length)return{};
+ const allowed=new Set(enclosureIds);
+ const {data,error}=await db.from("keeper_events").select("id,enclosure_id,kind,note,quantity_change,created_at")
+  .eq("user_id",user.id).order("created_at",{ascending:false}).limit(300);
+ if(error)throw new Error("Unable to load recent care activity.");
+ const grouped:Record<string,KeeperEvent[]>={};
+ for(const row of data||[]){
+  const id=String(row.enclosure_id);
+  if(!allowed.has(id))continue;
+  if(!grouped[id])grouped[id]=[];
+  if(grouped[id].length>=3)continue;
+  grouped[id].push({id:String(row.id),kind:String(row.kind),note:String(row.note||""),createdAt:String(row.created_at),quantityChange:row.quantity_change===null?null:Number(row.quantity_change)});
+ }
+ return grouped;
+}
