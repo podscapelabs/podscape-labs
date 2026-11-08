@@ -1,4 +1,4 @@
-name: Keeper workspace QA
+name: PodScape workspace QA
 on:
   push:
     branches:
@@ -24,5 +24,5 @@ jobs:
         run: pnpm run typecheck
       - name: Build Next.js application
         run: pnpm run build
-      - name: Lint keeper workflow
-        run: pnpm exec eslint components/PodscapeWorkspaceUI.tsx components/KeeperScanner.tsx components/KeeperBinTools.tsx components/KeeperWorkspace.tsx app/keeper/scan/page.tsx app/keeper/actions.ts 'app/keeper/[id]/page.tsx' 'app/keeper/[id]/details/page.tsx' 'app/keeper/[id]/history/page.tsx' lib/keeper.ts
+      - name: Lint updated workspaces
+        run: pnpm exec eslint components/PodscapeWorkspaceUI.tsx components/KeeperScanner.tsx components/KeeperBinTools.tsx components/KeeperWorkspace.tsx app/keeper/scan/page.tsx app/keeper/actions.ts 'app/keeper/[id]/page.tsx' 'app/keeper/[id]/details/page.tsx' 'app/keeper/[id]/history/page.tsx' lib/keeper.ts app/shop/page.tsx app/ledger/page.tsx 'app/ledger/[slug]/page.tsx' components/LedgerPageIntro.tsx
