@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { SpeciesIdentityStatus, SpeciesRecord, SpeciesRecordKind, SpeciesStatus } from "@/data/species";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { generateSpeciesSearchTags } from "@/lib/species-search-tags";
 import { appendSpeciesRecord, getSpeciesRecords, replaceSpeciesRecord, saveSpeciesPhoto } from "@/lib/species-store";
 
 function field(formData: FormData, name: string, limit = 2000) {
@@ -131,7 +132,7 @@ export async function saveSpeciesRecord(formData: FormData) {
     imagePositionY: boundedNumber(formData, "imagePositionY", 0, 100, current.imagePositionY),
     imageZoom: boundedNumber(formData, "imageZoom", 1, 2, current.imageZoom),
     summary: field(formData, "summary", 600),
-    tags: field(formData, "tags", 500).split(",").map((tag) => tag.trim()).filter(Boolean),
+    tags: generateSpeciesSearchTags({ commonName, scientificName, genus: field(formData, "genus", 100), species: field(formData, "species", 100), morph: field(formData, "morph", 120), slug }),
     notableTraits: Array.from(new Set(field(formData, "notableTraits", 1000)
       .split(/\r?\n/).map(trait => trait.trim().slice(0, 65)).filter(Boolean))).slice(0, 5),
     careLevel: field(formData, "careLevel", 100),
