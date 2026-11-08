@@ -18,3 +18,38 @@
 
 .extras{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:8px 0}
 .extras>a{font-size:.75rem;color:var(--accent);font-weight:750}
+
+/* Manager-integrated secondary desk: purposeful density and consistent app cards. */
+.page{padding-top:8px;background:var(--background)}
+.header{align-items:center;margin:12px 0 14px;gap:12px}
+.header h1{font-size:clamp(1.65rem,4vw,2.2rem);margin:5px 0 3px}
+.header .kicker{font-size:.61rem;letter-spacing:.12em}
+.back{white-space:nowrap;border-radius:var(--radius-small);font-size:.72rem;padding:9px 12px}
+.extras{margin:4px 0 16px;gap:9px}
+.section{border-radius:var(--radius-medium);background:var(--surface);box-shadow:var(--shadow-soft);margin-bottom:9px}
+.section>summary{display:flex;align-items:center;flex-direction:row;gap:11px;padding:13px 15px}
+.sectionIcon{display:grid;place-items:center;width:37px;height:37px;flex:none;color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--surface));border-radius:10px;font-size:1.2rem}
+.sectionLabel{display:grid;min-width:0;gap:3px;flex:1}
+.sectionLabel strong{font-family:var(--display);font-size:1.15rem;font-weight:550;color:var(--text-primary)}
+.sectionLabel small{font-family:inherit;font-size:.7rem;color:var(--text-secondary)}
+.section>summary .chevron{font-family:inherit;font-size:1.3rem;color:var(--accent);transition:transform .18s}
+.section[open]>summary .chevron{transform:rotate(180deg)}
+.sectionBody{padding:12px}
+.links{margin:12px 0;display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.links a{background:var(--surface);padding:12px;border-radius:var(--radius-small);text-align:center;box-shadow:var(--shadow-soft)}
+@media(max-width:650px){
+ .page{padding:3px 0 105px}
+ .header{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;margin:10px 0 12px}
+ .header h1{font-size:1.7rem}
+ .header p{font-size:.71rem}
+ .back{width:auto;text-align:center;white-space:normal;max-width:115px;padding:9px}
+ .extras{margin:5px 0 14px}
+ .section>summary{align-items:center;flex-direction:row;padding:12px;gap:10px}
+ .section>summary span{text-align:left}
+ .sectionLabel strong{font-size:1.07rem}
+ .sectionLabel small{font-size:.66rem}
+ .sectionIcon{width:34px;height:34px}
+ .sectionBody{padding:9px}
+ .links{gap:7px}
+ .links a{font-size:.7rem;padding:12px 7px}
+}
