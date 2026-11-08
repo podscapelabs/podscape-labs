@@ -26,6 +26,14 @@ export type SpeciesRecord = {
   /** Editorially selected general captive moisture tendency; never derived from legacy labels. */
   moistureProfile?: "dry-leaning" | "dry-balanced" | "balanced" | "balanced-moist" | "moist-leaning" | "";
   moistureNote?: string;
+  /** Optional concise context. No inferred husbandry instructions. */
+  ventilationNote?: string;
+  temperatureNote?: string;
+  activityNote?: string;
+  reproductionNote?: string;
+  /** Observed feeding enthusiasm, separate from diet and portion guidance. */
+  feedingResponse?: string;
+  feedingResponseNote?: string;
   temperature: string;
   ventilation: string;
   reproduction?: string;
