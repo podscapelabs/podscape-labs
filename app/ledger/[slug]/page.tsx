@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 /** A short introductory extract, not a second full husbandry article. */
 function introText(value: string, fallback = "") {
   const plain = value.replace(/#{1,6}\s+/g, "").replace(/\s+/g, " ").trim();
-  if (!plain) return fallback;
+  if (!plain) return "";
   if (plain.length <= 235) return plain;
   const firstTwo = plain.match(/^(.+?[.!?])(?:\s+(.+?[.!?]))?(?:\s|$)/);
   const sentenceText = firstTwo ? [firstTwo[1], firstTwo[2]].filter(Boolean).join(" ") : "";
@@ -37,8 +37,7 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
   const record = await getSpeciesRecord((await params).slug);
   if (!record) notFound();
 
-  const member = await getMemberCollectionState();
-  const db = await customerSupabase();
+  const [member, db] = await Promise.all([getMemberCollectionState(), customerSupabase()]);
   const { data: { user } } = db ? await db.auth.getUser() : { data: { user: null } };
   const collectionEntry = member.entries.find(entry => entry.speciesId === record.id);
   const displayName = speciesDisplayName(record);
@@ -54,8 +53,12 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
     ["Reproduction", record.reproduction],
   ].filter((entry): entry is [string, string] => typeof entry[1] === "string" && entry[1].trim().length > 0);
 
-  const about = introText(record.summary || record.about);
-  const feeding = introText(record.feeding);
+  // Legacy preview copy must never masquerade as a published species description.
+  const isPlaceholder = (value: string) => /temporary (?:visual )?record for testing|placeholder (?:text|description)|lorem ipsum/i.test(value);
+  const summary = isPlaceholder(record.summary || "") ? "" : record.summary || "";
+  const authoredAbout = isPlaceholder(record.about || "") ? "" : record.about || "";
+  const about = introText(authoredAbout || summary);
+  const feeding = introText(record.feeding || "");
   let relatedGuides: { slug: string; title: string; summary: string }[] = [];
   try {
     const guides = await getGuideRecords();
