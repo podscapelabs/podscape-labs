@@ -76,3 +76,19 @@ export async function listManagerActivity(limit=12):Promise<ManagerActivity[]>{
   createdAt:String(row.created_at),quantityChange:row.quantity_change===null?null:Number(row.quantity_change)
  }));
 }
+
+/** Most recent saved timestamp for each Quick Care action in each owned enclosure. */
+export async function listQuickCareDates(enclosureIds:string[]):Promise<Record<string,Record<string,string>>>{
+ const {db,user}=await keeperContext();if(!db||!user||!enclosureIds.length)return{};
+ const {data,error}=await db.from("keeper_events").select("enclosure_id,note,created_at")
+  .eq("user_id",user.id).in("enclosure_id",enclosureIds).in("note",["Misted","Fed","Spot cleaned","Leaf litter added"])
+  .order("created_at",{ascending:false}).limit(2000);
+ if(error)throw new Error("Unable to load latest care dates.");
+ const result:Record<string,Record<string,string>>={};
+ for(const event of data||[]){
+  const id=String(event.enclosure_id),note=String(event.note);
+  if(!result[id])result[id]={};
+  if(!result[id][note])result[id][note]=String(event.created_at);
+ }
+ return result;
+}
