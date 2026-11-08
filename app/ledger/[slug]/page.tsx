@@ -65,7 +65,7 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
   const authoredAbout = isPlaceholder(record.about || "") ? "" : record.about || "";
   const about = introText(authoredAbout || summary);
   const feeding = introText(record.feeding || "");
-  const notableTraits = [...new Set((record.notableTraits || []).map(trait => trait.trim()).filter(Boolean))].slice(0, 4);
+  const notableTraits = [...new Set((record.notableTraits || []).map(trait => trait.trim()).filter(Boolean))].slice(0, 5);
   let relatedGuides: { slug: string; title: string; summary: string }[] = [];
   try {
     const guides = await getGuideRecords();
