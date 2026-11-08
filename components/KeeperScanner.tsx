@@ -61,7 +61,6 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  const [lastDates,setLastDates]=useState<Record<string,Record<string,string>>>(careDates);
  const [notice,setNotice]=useState("");
  const [undoPending,setUndoPending]=useState(false);
- const [showManual,setShowManual]=useState(false);
  const [multiCare,setMultiCare]=useState(false);
  const [chosenBins,setChosenBins]=useState<string[]>([]);
  const [confirmAllCare,setConfirmAllCare]=useState<{kind:string;note:string;label:string}|null>(null);
@@ -154,7 +153,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  }
  function switchBin(bin:Bin){
   if(pending||undoPending)return;
-  setSelected(bin);setNotice(lastOperation?"Previous care action available to undo.":"");setError("");setShowManual(false);setCustomNote("");setCustomDate("");setChosenBins([bin.id]);setConfirmAllCare(null);
+  setSelected(bin);setNotice(lastOperation?"Previous care action available to undo.":"");setError("");setCustomNote("");setCustomDate("");setChosenBins([bin.id]);setConfirmAllCare(null);
  }
  function toggleMultiCare(){
   if(pending||undoPending)return;
@@ -254,7 +253,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
    </div>
    <div className={styles.careFooter}><Link className={styles.settingsLink} href={"/keeper/"+selected.id+"/details"}>Colony settings & QR ↗</Link><button type="button" className={styles.nextBin} onClick={beginScan} disabled={pending||undoPending}>▣ Scan next bin</button></div>
 
-   {false&&showManual&&!multiCare?<div className={styles.manualPicker}><select value={manual} onChange={e=>setManual(e.target.value)} aria-label="Choose another bin"><option value="">Select a bin</option>{bins.map(b=><option key={b.id} value={b.id}>{b.species} — {b.name}</option>)}</select><button onClick={()=>{if(manual){match(manual);setShowManual(false);}}} disabled={!manual}>Open bin</button></div>:null}
+
   </div>:null}
  {(!selected||state!=="idle")&&error?<p className={styles.error} role="alert">{error}</p>:null}
  </section>;
