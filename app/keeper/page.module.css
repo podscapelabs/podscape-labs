@@ -385,3 +385,31 @@
  .managerWorkspace .section header{margin-bottom:7px}
  .managerFallback{gap:5px 12px}
 }
+
+
+/* Manager layout choices: same component family, personal density. */
+.managerPresets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0 17px}
+.managerPresets button{display:grid;align-content:center;gap:5px;min-height:82px;padding:12px 14px;text-align:left;border:1px solid var(--border);border-radius:14px;background:var(--surface-secondary);color:var(--text-primary);font-family:inherit;font-size:.82rem;font-weight:750;cursor:pointer}
+.managerPresets button:hover,.managerPresets button:focus-visible{border-color:var(--accent);outline-offset:2px}
+.managerPresets small{color:var(--text-secondary);font-size:.68rem;line-height:1.4;font-weight:450}
+.managerFooterNav{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:18px 0 0;padding-top:15px;border-top:1px solid var(--border)}
+.managerFooterNav button{display:flex;align-items:center;gap:8px;min-height:48px;padding:10px 12px;border:1px solid var(--border);border-radius:14px;background:var(--surface);color:var(--text-primary);font-family:inherit;font-size:.76rem;font-weight:750;text-align:left;cursor:pointer}
+.managerFooterNav button svg{width:22px;height:22px;flex:none;color:var(--accent)}
+.managerFooterNav button span{flex:1}
+.managerFooterNav button b{color:var(--accent);font-size:1.05rem;font-weight:500}
+.managerFooterNav button:hover,.managerFooterNav button:focus-visible{border-color:var(--accent);outline-offset:2px}
+.managerDirectory{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0 2px}
+.managerDirectory a{display:flex;align-items:center;gap:8px;min-height:47px;padding:10px;border:1px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text-primary);font-size:.72rem}
+.managerDirectory a svg{width:22px;height:22px;flex:none;color:var(--accent)}
+.managerDirectory a span{flex:1}
+.managerDirectory a b{font-weight:500;color:var(--accent)}
+@media(max-width:720px){
+ .managerPresets{gap:7px}
+ .managerPresets button{padding:10px;min-height:78px;font-size:.73rem}
+ .managerPresets small{font-size:.64rem}
+ .managerFooterNav{gap:7px;margin-top:13px}
+ .managerFooterNav button{padding:9px;gap:6px;font-size:.68rem}
+ .managerFooterNav button svg{width:20px;height:20px}
+ .managerDirectory{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .managerDirectory a{font-size:.68rem}
+}
