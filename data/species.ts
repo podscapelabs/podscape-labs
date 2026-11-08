@@ -21,7 +21,7 @@ export type SpeciesRecord = {
   imageZoom: number;
   summary: string;
   tags: string[];
-  /** Up to four concise, editorially verified distinguishing traits. */
+  /** Up to five concise, editorially verified distinguishing traits. */
   notableTraits?: string[];
   careLevel: string;
   moisture: string;
