@@ -15,3 +15,15 @@
  .exploreCard{min-height:0}
  .close>a{margin-left:0}
 }
+
+/* Shared PodScape community foundation — the global shell owns header/navigation. */
+.site{background:var(--background);color:var(--text-primary)}
+.main{width:min(1100px,calc(100% - 32px));padding-top:14px}
+.sectionHeading{align-items:center}
+.sectionHeading>div{width:100%}
+.exploreCard,.futureCard{background:var(--surface);border-color:var(--border);border-radius:var(--radius-medium,18px);color:var(--text-primary)}
+.exploreCard p,.futureCard p,.sectionDescription{color:var(--text-secondary)}
+.exploreIcon,.futureIcon{background:color-mix(in srgb,var(--accent) 10%,var(--surface));color:var(--accent)}
+.cardLink{color:var(--accent)}
+.futureCard small{color:var(--accent)}
+@media(max-width:700px){.main{padding:10px 0 45px}.sectionHeading{margin-bottom:12px}.exploreGrid{gap:9px}.futureGrid{gap:9px}}
