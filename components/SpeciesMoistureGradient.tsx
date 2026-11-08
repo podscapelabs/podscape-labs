@@ -20,7 +20,7 @@ export function SpeciesMoistureGradient({position,note}:{position:MoisturePositi
     </div>
     <div className={styles.ends}><span>Drier tendency</span><span>Moister tendency</span></div>
    </div>
-   {note?.trim()?<p className={styles.note}>{note.trim()}</p>:null}
-   <p className={styles.caution}>General keeper-reported tendency, not a humidity measurement or prescribed wet-to-dry enclosure ratio.</p>
+   {note?.trim()?<p className={styles.note}>{note.trim()}</p>:<p className={styles.note}>General moisture preference. Localized moist areas may still be important, including for dry-leaning species; consult a species guide for specifics.</p>}
+   <p className={styles.caution}>The marker shows a general captive moisture tendency—not humidity %, the amount of wet substrate, or permission to keep an enclosure entirely dry.</p>
   </div>;
 }
