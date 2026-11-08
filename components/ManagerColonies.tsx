@@ -8,13 +8,15 @@ import { speciesDisplayName, speciesScientificName, type SpeciesRecord } from "@
 import type { Enclosure } from "@/lib/keeper";
 import styles from "./ManagerColonies.module.css";
 
-export function ManagerColonies({ records, bins, collectedIds }: {
+export function ManagerColonies({ records, bins, collectedIds, intent }: {
   records: SpeciesRecord[];
   bins: Enclosure[];
   collectedIds: string[];
+  intent?: "notes";
 }) {
-  const [tab, setTab] = useState<"species" | "bins">("species");
+  const [tab, setTab] = useState<"species" | "bins">(intent==="notes"?"bins":"species");
   const [query, setQuery] = useState("");
+  const binHref=(id:string)=>"/keeper/"+id+(intent==="notes"?"?panel=observation#observation":"");
   const [genus, setGenus] = useState("all");
   const [care, setCare] = useState("all");
   const [sort, setSort] = useState("recent");
@@ -41,6 +43,7 @@ export function ManagerColonies({ records, bins, collectedIds }: {
       <button type="button" className={tab==="species"?styles.selected:""} aria-pressed={tab==="species"} onClick={()=>{setTab("species");reset();}}>Species</button>
       <button type="button" className={tab==="bins"?styles.selected:""} aria-pressed={tab==="bins"} onClick={()=>{setTab("bins");reset();}}>Bins</button>
     </div></div>
+    {intent==="notes"?<p style={{color:"var(--text-secondary)",fontSize:".82rem",margin:"0 0 12px"}}>Select a bin to add a dated observation to its care history.</p>:null}
     <div className={styles.search}><PodscapeLineIcon name="scan" /><input type="search" value={query} onChange={e=>setQuery(e.target.value)} placeholder={tab==="species"?"Search species in your collection…":"Search your bins…"} aria-label="Search your colonies" /></div>
     <div className={styles.filters}>
       {tab==="species" && <>
@@ -54,7 +57,7 @@ export function ManagerColonies({ records, bins, collectedIds }: {
       const owned = bins.filter(bin=>bin.speciesId===record.id);
       const total = owned.reduce((sum,bin)=>sum+bin.quantity,0);
       const status = owned.find(bin=>bin.isPrimary)?.status || owned[0]?.status;
-      const href = owned[0] ? "/keeper/"+owned[0].id : "/ledger/"+record.slug+"#keeper-record";
+      const href = owned[0] ? binHref(owned[0].id) : "/ledger/"+record.slug+"#keeper-record";
       return <Link className={styles.card} href={href} key={record.id}>
         <span className={styles.photo}>{record.image?<Image src={record.image} alt="" fill sizes="(max-width:700px) 90px,130px" style={{objectFit:"cover",objectPosition:record.imagePositionX+"% "+record.imagePositionY+"%"}}/>:<PodscapeLineIcon name="leaf"/>}</span>
         <span className={styles.cardBody}><strong>{speciesDisplayName(record)}</strong><em>{speciesScientificName(record)}</em><small>{record.catalogueNumber}</small>
@@ -64,7 +67,7 @@ export function ManagerColonies({ records, bins, collectedIds }: {
       </Link>;
     }) : visibleBins.map(bin=>{
       const record=speciesMap.get(bin.speciesId);
-      return <Link className={styles.card} key={bin.id} href={"/keeper/"+bin.id}>
+      return <Link className={styles.card} key={bin.id} href={binHref(bin.id)}>
         <span className={styles.photo}>{record?.image?<Image src={record.image} alt="" fill sizes="(max-width:700px) 90px,130px" style={{objectFit:"cover"}}/>:<PodscapeLineIcon name="bin"/>}</span>
         <span className={styles.cardBody}><strong>{bin.name}</strong><em>{record?speciesDisplayName(record):"Species record"}</em><small>{bin.label||"Colony record"}</small><span className={styles.counts}><span><PodscapeLineIcon name="community"/>{bin.quantity} count</span></span></span>
         <span className={styles.status}>{bin.status.replaceAll("-"," ")}</span><span className={styles.arrow}>›</span>
