@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AdminPhotoEditor } from "@/components/AdminPhotoEditor";
 import { LedgerUnsavedGuard } from "@/components/LedgerUnsavedGuard";
+import { LedgerDeskWorkflow } from "@/components/LedgerDeskWorkflow";
 import { NotableTraitPicker } from "@/components/NotableTraitPicker";
 import { SpecimenLeaf } from "@/components/SpecimenLeaf";
 import { speciesDisplayName, speciesRecordLabel, speciesScientificName } from "@/data/species";
@@ -64,25 +65,36 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
               <button className="button button-primary" type="submit">Save changes</button>
             </div>
           </div>
-          <nav className={styles.sectionNav} aria-label="Jump to species record sections"><a href="#ledger-identity">Identity</a><a href="#ledger-profile">Profile</a><a href="#ledger-status">Status</a><a href="#ledger-photo">Photos</a><a href="#ledger-traits">Traits</a><a href="#ledger-care">Care</a><a href="#ledger-notes">Notes</a></nav>
-          <fieldset id="ledger-status"><legend>Record control</legend><div className="admin-form-grid three"><label><span>Record type</span><select name="kind" defaultValue={selected.kind}><option value="species">Species record</option><option value="photo-test">Temporary photo test</option></select></label><label><span>Identity status</span><select name="identityStatus" defaultValue={selected.identityStatus}><option value="unassigned">Unassigned</option><option value="provisional">Provisional</option><option value="verified">Verified</option></select></label><label><span>Publication</span><select name="status" defaultValue={selected.archivedAt ? "archived" : selected.status}><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></label></div><div className="admin-form-grid two"><label><span>Catalogue number</span><input name="catalogueNumber" defaultValue={selected.catalogueNumber} /></label><label><span>URL slug</span><input name="slug" defaultValue={selected.slug} /></label></div></fieldset>
+          <LedgerDeskWorkflow recordId={selected.id}>
+          <div data-ledger-stage="identity" id="ledger-stage-identity">
           <fieldset id="ledger-identity"><legend>Identity</legend><div className="admin-form-grid two"><label><span>Common name</span><input name="commonName" defaultValue={selected.commonName} placeholder="Leave blank until assigned" /></label><label><span>Scientific name</span><input name="scientificName" defaultValue={selected.scientificName} placeholder="Leave blank until assigned" /></label><label><span>Genus</span><input name="genus" list="ledger-genus-options" defaultValue={selected.genus} placeholder="Select or type confirmed genus" /><datalist id="ledger-genus-options">{[...new Set(records.map(r=>r.genus).filter(Boolean))].sort().map(genus=><option key={genus} value={genus}/>)}</datalist><small>Suggestions from your existing records. Verify scientific identification before selecting.</small></label><label><span>Species</span><input name="species" defaultValue={selected.species} /></label><label><span>Morph or variety</span><input name="morph" defaultValue={selected.morph} /></label></div></fieldset>
-          <details id="ledger-profile" className={styles.optionalSection} open>
-            <summary>Species profile <small>About and short catalogue summary</small></summary>
+          </div>
+          <div data-ledger-stage="profile" id="ledger-stage-profile">
+          <div id="ledger-profile" className={styles.workflowSection}>
+            <div className={styles.workflowSectionHeading}>Species profile <small>About and short catalogue summary</small></div>
             <fieldset aria-label="Species profile description">
               <label><span>About · public species introduction</span><textarea name="about" defaultValue={selected.about} rows={4} placeholder="Brief description of what makes this species recognizable and interesting." /></label>
               <label><span>Catalogue summary · optional fallback</span><textarea name="summary" defaultValue={selected.summary} rows={2} placeholder="Short card description; used if About is blank." /></label>
             </fieldset>
-          </details>
-          <details id="ledger-traits" className={styles.optionalSection}>
-            <summary>Notable traits <small>Select up to five traits from the reusable library</small></summary>
+          </div>
+          </div>
+          <div data-ledger-stage="status" id="ledger-stage-status">
+          <fieldset id="ledger-status"><legend>Record control</legend><div className="admin-form-grid three"><label><span>Record type</span><select name="kind" defaultValue={selected.kind}><option value="species">Species record</option><option value="photo-test">Temporary photo test</option></select></label><label><span>Identity status</span><select name="identityStatus" defaultValue={selected.identityStatus}><option value="unassigned">Unassigned</option><option value="provisional">Provisional</option><option value="verified">Verified</option></select></label><label><span>Publication</span><select name="status" defaultValue={selected.archivedAt ? "archived" : selected.status}><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></label></div><div className="admin-form-grid two"><label><span>Catalogue number</span><input name="catalogueNumber" defaultValue={selected.catalogueNumber} /></label><label><span>URL slug</span><input name="slug" defaultValue={selected.slug} /></label></div></fieldset>
+          </div>
+          <div data-ledger-stage="photo" id="ledger-stage-photo">
+          <div id="ledger-photo" className={styles.workflowSection}><div className={styles.workflowSectionHeading}>Photography <small>Upload, crop, and describe the specimen</small></div><fieldset aria-label="Photography and summary"><AdminPhotoEditor key={selected.id} image={selected.image} imagePositionX={selected.imagePositionX} imagePositionY={selected.imagePositionY} imageZoom={selected.imageZoom} /><label><span>Accessible image description</span><input name="imageAlt" defaultValue={selected.imageAlt} placeholder="Describe the visible specimen without guessing its identity" /></label></fieldset></div>
+          </div>
+          <div data-ledger-stage="traits" id="ledger-stage-traits">
+          <div id="ledger-traits" className={styles.workflowSection}>
+            <div className={styles.workflowSectionHeading}>Notable traits <small>Select up to five traits from the reusable library</small></div>
             <fieldset aria-label="Notable traits">
               <NotableTraitPicker key={selected.id} initialTraits={selected.notableTraits || []} />
             </fieldset>
-          </details>
-          <details id="ledger-photo" className={styles.optionalSection} open={false}><summary>Photography <small>Upload, crop, and describe the specimen</small></summary><fieldset aria-label="Photography and summary"><AdminPhotoEditor key={selected.id} image={selected.image} imagePositionX={selected.imagePositionX} imagePositionY={selected.imagePositionY} imageZoom={selected.imageZoom} /><label><span>Accessible image description</span><input name="imageAlt" defaultValue={selected.imageAlt} placeholder="Describe the visible specimen without guessing its identity" /></label></fieldset></details>
-          <details id="ledger-care" className={styles.optionalSection} open>
-            <summary>At a glance <small>General species tendencies · quick reference, not care instructions</small></summary>
+          </div>
+          </div>
+          <div data-ledger-stage="care" id="ledger-stage-care">
+          <div id="ledger-care" className={styles.workflowSection}>
+            <div className={styles.workflowSectionHeading}>At a glance <small>General species tendencies · quick reference, not care instructions</small></div>
             <fieldset aria-label="General species snapshot">
               <p className={styles.editingNotice}>Choose the broad tendencies supported by your research. Keep the details in guides, not in every Ledger entry.</p>
               <div className="admin-form-grid two">
@@ -103,9 +115,13 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
                 </div>
               </details>
             </fieldset>
-          </details>
-          <details id="ledger-notes" className={styles.optionalSection}><summary>Editorial notes <small>Internal keeper notes and reference links</small></summary><fieldset aria-label="Editorial notes"><label><span>Keeper notes</span><textarea name="keeperNotes" defaultValue={selected.keeperNotes} rows={7} /></label><label><span>Field Guide links · one path per line</span><textarea name="fieldGuideLinks" defaultValue={selected.fieldGuideLinks.join("\n")} rows={4} /></label></fieldset></details>
-          <div className="admin-form-footer"><p>Drafts are visible only inside the current private platform preview. Publishing requires an assigned identity.</p><button className="button button-primary" type="submit">Save record</button></div>
+          </div>
+          </div>
+          <div data-ledger-stage="notes" id="ledger-stage-notes">
+          <div id="ledger-notes" className={styles.workflowSection}><div className={styles.workflowSectionHeading}>Editorial notes <small>Internal keeper notes and reference links</small></div><fieldset aria-label="Editorial notes"><label><span>Keeper notes</span><textarea name="keeperNotes" defaultValue={selected.keeperNotes} rows={7} /></label><label><span>Field Guide links · one path per line</span><textarea name="fieldGuideLinks" defaultValue={selected.fieldGuideLinks.join("\n")} rows={4} /></label></fieldset></div>
+          </div>
+          </LedgerDeskWorkflow>
+
         </form>
         <form className="admin-archive-form" action={toggleSpeciesArchive}><input type="hidden" name="id" value={selected.id} /><div><strong>{selected.archivedAt ? "Restore this record" : "Archive this record"}</strong><p>{selected.archivedAt ? "Restoring returns it to the active Ledger desk and private preview." : "Archiving hides it from the Ledger and search without deleting its data or photograph."}</p></div><button className="button button-outline" type="submit">{selected.archivedAt ? "Restore record" : "Archive record"}</button></form>
       </section> : <section className="admin-record-editor"><p>{params.record ? "The selected record was not found in this view. Choose another species from the list." : "No species records exist yet."}</p></section>}
