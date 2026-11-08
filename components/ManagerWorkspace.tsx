@@ -30,7 +30,9 @@ const initial:Layout={order:defaults,visible:["tools","enclosures","care","activ
 function normalize(value:unknown):Layout{
  if(!value||typeof value!=="object")return initial;
  const raw=value as Partial<Layout>;
- const order=[...uniqueAllowed(Array.isArray(raw.order)?raw.order:[],defaults),...defaults].filter((v,i,a)=>a.indexOf(v)===i);
+ const previousDefault=["stats","care","tools","activity","enclosures","insights"];
+ const oldUntouched=Array.isArray(raw.order)&&raw.order.join("|")===previousDefault.join("|");
+ const order=oldUntouched?[...defaults]:[...uniqueAllowed(Array.isArray(raw.order)?raw.order:[],defaults),...defaults].filter((v,i,a)=>a.indexOf(v)===i);
  // Existing layouts keep their custom selections, but gain the new care/activity widgets on upgrade.
  const legacy=Array.isArray(raw.order)&&!raw.order.some(v=>v==="care"||v==="activity"||v==="insights");
  const visible=Array.isArray(raw.visible)?defaults.filter(v=>raw.visible!.includes(v)||(legacy&&(v==="care"||v==="activity"))):initial.visible;
