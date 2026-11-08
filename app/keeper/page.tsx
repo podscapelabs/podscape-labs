@@ -30,6 +30,7 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
   let activityAvailable=true;
   if(member.signedIn&&!unavailable)try{activity=await listManagerActivity(12);}catch{activityAvailable=false;}
 
+  const heroSpecies=species.find(record=>record.kind==="species"&&record.image);
   const selected = (await searchParams).species;
   const selectedRecord = species.find((record) => record.id === selected && record.kind === "species");
   const speciesById = new Map(species.map((record) => [record.id, record]));
@@ -48,18 +49,16 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
 
   return <PlatformShell>
     <main className={styles.page}>
-      <section className={styles.managerIntro} aria-label="Your collection">
-        <div><p>PODSCAPE / MANAGER</p><h1>Your collection.</h1><span>A little world of colonies, care and discoveries.</span></div>
-        <Link href="/keeper/collection">All colonies <span aria-hidden="true">→</span></Link>
-      </section>
-
       <div className={styles.dashboard}>
         {!member.signedIn ? <section className={styles.empty}>
           <PodscapeLineIcon name="jar" /><h2>Your Manager is private.</h2>
           <p>Sign in to manage bins, care records, and colony details.</p>
           <Link href="/account/login">Member sign in →</Link>
         </section> : unavailable ? <section className={styles.empty} role="alert"><h2>Manager is temporarily unavailable.</h2><p>The Keeper database connection could not be reached.</p></section> : <>
-          <ManagerWorkspace scope={managerUser?.id || "guest"} primaryHref={firstBinHref} bins={managerBins} events={activity} activityAvailable={activityAvailable} stats={<section className={styles.metrics} aria-label="Keeper overview">
+          <ManagerWorkspace hero={<section className={styles.managerHero} aria-label="Manager portal">
+            {heroSpecies?.image?<div className={styles.managerHeroPhoto}><Image src={heroSpecies.image} alt="" fill sizes="(max-width: 720px) 100vw, 1100px" style={{objectFit:"cover",objectPosition:`${heroSpecies.imagePositionX}% ${heroSpecies.imagePositionY}%`}}/></div>:null}
+            <div className={styles.managerHeroContent}><span>YOUR KEEPER WORKSPACE</span><h1>Manager.</h1><p>A little world of colonies, care and discovery.</p><Link href="/keeper/collection">Explore your colonies <span aria-hidden="true">→</span></Link></div>
+          </section>} scope={managerUser?.id || "guest"} primaryHref={firstBinHref} bins={managerBins} events={activity} activityAvailable={activityAvailable} stats={<section className={styles.metrics} aria-label="Keeper overview">
             <Link href="/keeper/collection"><PodscapeLineIcon name="leaf" /><strong>{uniqueSpecies}</strong><span>Species</span><b>›</b></Link>
             <Link href="/keeper/collection"><PodscapeLineIcon name="bin" /><strong>{active.length}</strong><span>Bins</span><b>›</b></Link>
             <Link href="/keeper/collection"><PodscapeLineIcon name="community" /><strong>{totalPopulation}</strong><span>Recorded population</span><b>›</b></Link>
