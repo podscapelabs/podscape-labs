@@ -57,7 +57,7 @@ export function useWorkspaceDrag<T extends string>(
     const root=event.currentTarget.closest<HTMLElement>("[data-workspace-root]");
     (root||event.currentTarget).setPointerCapture(event.pointerId);
   };
-  const move=(event:PointerEvent<HTMLDivElement>)=>{
+  const move=(event:PointerEvent<HTMLElement>)=>{
     const drag=current.current;
     if(!drag||drag.pointerId!==event.pointerId)return;
     if(!drag.started){
