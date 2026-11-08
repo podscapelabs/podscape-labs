@@ -26,7 +26,7 @@ export default async function ColonyDetails({params}:{params:Promise<{id:string}
  const species=record?speciesDisplayName(record):"Unlinked species";
  return <PlatformShell><main className={styles.page}><div className="v2-container">
   <Breadcrumbs items={[{label:"Manager",href:"/keeper"},{label:enclosure.name,href:enclosure.isArchived?"/keeper":"/keeper/"+id},{label:"Settings"}]}/>
-  <WorkspaceHeader section="MANAGER / COLONY SETTINGS" title={species} description={enclosure.name+(enclosure.label?" · "+enclosure.label:"")} backHref={enclosure.isArchived?"/keeper":"/keeper/scan?bin="+id} backLabel={enclosure.isArchived?"Manager":"Back to care"}/>
+  <WorkspaceHeader section="MANAGER / COLONY SETTINGS" title={species} description={enclosure.name+(enclosure.label?" · "+enclosure.label:"")} backHref={enclosure.isArchived?"/keeper":"/keeper/"+id} backLabel={enclosure.isArchived?"Manager":"Colony workspace"}/>
   <div className={styles.extras}><PinToHome pin={{kind:"colony",id}} userId={user?.id||null}/>{record?<Link href={"/ledger/"+record.slug}>Species reference ↗</Link>:null}</div>
   
   <details className={styles.section}><summary><span className={styles.sectionIcon} aria-hidden="true">✧</span><span className={styles.sectionLabel}><strong>Colony profile</strong><small>Population, condition & setup</small></span><span className={styles.chevron} aria-hidden="true">⌄</span></summary><div className={styles.sectionBody}><KeeperControls entry={enclosure} showLogForm={false}/></div></details>
