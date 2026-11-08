@@ -1,8 +1,9 @@
 import type { PodscapeIconName } from "./PodscapeLineIcon";
 
-export type NavGroup="Main"|"Discover"|"Keeper tools"|"Play & projects"|"Community & studio"|"Coming later";
-export type NavChoice={id:string;label:string;href:string;icon:PodscapeIconName;tone:"sage"|"sand"|"rose";group:NavGroup;description:string;planned?:boolean};
+export type NavGroup="Main"|"Discover"|"Keeper tools"|"Play & projects"|"Community & studio"|"Coming later"|"Owner";
+export type NavChoice={id:string;label:string;href:string;icon:PodscapeIconName;tone:"sage"|"sand"|"rose";group:NavGroup;description:string;planned?:boolean;ownerOnly?:boolean};
 export const navigationChoices:NavChoice[]=[
+  {id:"owner-tools",label:"Owner Tools",href:"/account/owner-tools",icon:"manager",tone:"sage",group:"Owner",description:"Your private owner management desks",ownerOnly:true},
   {id:"home",label:"Home",href:"/app",icon:"home",tone:"sage",group:"Main",description:"Your Podscape homepage"},
   {id:"menu",label:"Menu",href:"/menu",icon:"menu",tone:"sand",group:"Main",description:"Explore all Podscape features"},
   {id:"search",label:"Search",href:"/search",icon:"search",tone:"sage",group:"Main",description:"Find species, products, guides and more"},
@@ -33,26 +34,27 @@ export const navigationChoices:NavChoice[]=[
   {id:"vendor-directory",label:"Vendor Directory",href:"/explore#vendor-directory",icon:"vendor",tone:"sand",group:"Coming later",description:"Future directory for hobby breeders and businesses",planned:true},
   {id:"creative-network",label:"Creative Network",href:"/explore#creative-network",icon:"creative",tone:"rose",group:"Coming later",description:"Future network for artists and makers",planned:true},
 ];
-export const navigationGroups:NavGroup[]=["Main","Discover","Keeper tools","Play & projects","Community & studio","Coming later"];
+export const navigationGroups:NavGroup[]=["Main","Discover","Keeper tools","Play & projects","Community & studio","Coming later","Owner"];
 export const initialBottom=["home","shop","scan","manager","menu"];
 export const initialHome=["ledger","shop","fun-zone","community","guides","podbound"];
 export const choiceById=new Map(navigationChoices.map(item=>[item.id,item]));
+export function availableNavigationChoices(isOwner:boolean){return navigationChoices.filter(item=>isOwner||!item.ownerOnly)}
 export type PreferenceArea="bottom"|"home";
-export function cleanPreference(value:unknown,area:PreferenceArea):string[]{
+export function cleanPreference(value:unknown,area:PreferenceArea,isOwner=false):string[]{
   const defaults=area==="bottom"?initialBottom:initialHome;
   const expected=defaults.length;
-  if(!Array.isArray(value)||value.some(id=>typeof id!=="string"||!choiceById.has(id))||new Set(value).size!==value.length)return [...defaults];
+  if(!Array.isArray(value)||value.some(id=>typeof id!=="string"||!choiceById.has(id)||(!isOwner&&choiceById.get(id)?.ownerOnly))||new Set(value).size!==value.length)return [...defaults];
   // Restore a sixth slot without discarding existing five-slot preferences.
   if(area==="home"&&value.length===5)return [...value,...defaults.filter(id=>!value.includes(id))].slice(0,expected) as string[];
   if(value.length!==expected)return [...defaults];
   return value as string[];
 }
-export function readPreference(area:PreferenceArea):string[]{
-  try{return cleanPreference(JSON.parse(localStorage.getItem("podscape-nav-v1-"+area)||"null"),area)}
+export function readPreference(area:PreferenceArea,isOwner=false):string[]{
+  try{return cleanPreference(JSON.parse(localStorage.getItem("podscape-nav-v1-"+area)||"null"),area,isOwner)}
   catch{return area==="bottom"?[...initialBottom]:[...initialHome]}
 }
-export function writePreference(area:PreferenceArea,ids:string[]){
-  const next=cleanPreference(ids,area);
+export function writePreference(area:PreferenceArea,ids:string[],isOwner=false){
+  const next=cleanPreference(ids,area,isOwner);
   try{localStorage.setItem("podscape-nav-v1-"+area,JSON.stringify(next));window.dispatchEvent(new CustomEvent("podscape-nav-updated",{detail:{area}}))}catch{}
 }
 export function swapNavigationSlot(ids:string[],index:number,nextId:string){
