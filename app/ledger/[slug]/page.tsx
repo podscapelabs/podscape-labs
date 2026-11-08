@@ -14,6 +14,7 @@ import { isGuideActive } from "@/data/guides";
 import { getGuideRecords } from "@/lib/guide-store";
 import { getMemberCollectionState } from "@/lib/member-collection";
 import { getSpeciesRecord } from "@/lib/species-store";
+import { isAdminAuthenticated } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -34,9 +35,13 @@ function introText(value: string, fallback = "") {
   return plain.slice(0, cutoff > 120 ? cutoff : 232).trimEnd() + "…";
 }
 
-export default async function SpeciesPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function SpeciesPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ ownerPreview?: string }> }) {
   const record = await getSpeciesRecord((await params).slug);
   if (!record) notFound();
+  const previewRequested = (await searchParams).ownerPreview === "1";
+  const unpublished = record.status !== "published" || record.kind !== "species";
+  // A draft may not be opened publicly, even when its direct slug is known.
+  if ((unpublished || previewRequested) && !(previewRequested && await isAdminAuthenticated())) notFound();
 
   const [member, db] = await Promise.all([getMemberCollectionState(), customerSupabase()]);
   const { data: { user } } = db ? await db.auth.getUser() : { data: { user: null } };
@@ -90,7 +95,8 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
   return <PlatformShell>
     <main className={styles.page}>
       <div className="v2-container">
-        {member.signedIn && record.kind === "species" ? <SpeciesDiscoveryTracker speciesId={record.id} /> : null}
+        {!previewRequested && member.signedIn && record.kind === "species" ? <SpeciesDiscoveryTracker speciesId={record.id} /> : null}
+        {previewRequested ? <div className={styles.ownerPreviewBanner}><span>Private owner preview · {record.status}</span><Link href={`/admin/species?record=${encodeURIComponent(record.id)}`}>← Return to Ledger Desk</Link></div> : null}
         <div className={styles.profileTopline}>
           <Link href="/ledger" className={styles.ledgerBack}>← Leaf Ledger</Link>
           <span className={styles.catalogueLabel}>{record.catalogueNumber}</span>
@@ -139,7 +145,7 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
             </div>
           </details>
 
-          {record.kind === "species" ? <section className={styles.dashboardPersonal} aria-label="Your PodScape">
+          {!previewRequested && record.kind === "species" ? <section className={styles.dashboardPersonal} aria-label="Your PodScape">
             <div className={styles.dashboardPersonalTitle}>Your PodScape</div>
             <div className={styles.dashboardPersonalActions}>
               {record.status === "published" ? <PinToHome pin={{ kind: "species", id: record.slug }} userId={user?.id || null} /> : null}
