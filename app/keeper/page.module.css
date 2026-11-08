@@ -506,3 +506,11 @@
  .managerModule[aria-label="Care overview"] .managerPulse>a{padding:9px 10px;gap:2px}
  .managerModule[aria-label="Care overview"] .managerPulse>a>strong{font-size:1.28rem}
 }
+
+/* Match Manager's six shortcut slots to the Home shortcut rhythm. */
+.managerWorkspace .managerHomeShortcuts{grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+@media(max-width:720px){
+ .managerWorkspace .managerHomeShortcuts{grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}
+ .managerWorkspace .managerHomeShortcuts>button{width:100%;min-width:0;min-height:74px;padding:7px 1px;font-size:clamp(.54rem,2.1vw,.66rem)}
+ .managerWorkspace .managerHomeShortcuts>button span:last-child{font-size:inherit;line-height:1.12;white-space:normal;overflow-wrap:anywhere}
+}
