@@ -115,10 +115,14 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
         </header>
 
         <div className={styles.dashboardBody}>
-          {about ? <section className={styles.dashboardAbout} aria-labelledby="species-about">
-            <span className={styles.aboutSymbol} aria-hidden="true">❧</span>
-            <div><h2 id="species-about">About {displayName}</h2><p>{about}</p></div>
-          </section> : null}
+          {about ? <details className={styles.dashboardAbout}>
+            <summary>
+              <span className={styles.aboutSymbol} aria-hidden="true">❧</span>
+              <span className={styles.aboutSummary}><strong>About {displayName}</strong><span className={styles.aboutPreview}>{about}</span></span>
+              <span className={styles.aboutChevron} aria-hidden="true">⌄</span>
+            </summary>
+            <div className={styles.aboutFull}><p>{authoredAbout || summary}</p></div>
+          </details> : null}
 
           <section className={styles.dashboardCare} aria-labelledby="record-care-title">
             <div className={styles.dashboardSectionHead}><div><p className={styles.sectionKicker}>Basic care &amp; behaviour</p><h2 id="record-care-title">At a glance</h2></div></div>
