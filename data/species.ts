@@ -27,6 +27,9 @@ export type SpeciesRecord = {
   moisture: string;
   /** Editorially selected general captive moisture tendency; never derived from legacy labels. */
   moistureProfile?: "dry-leaning" | "dry-balanced" | "balanced" | "balanced-moist" | "moist-leaning" | "";
+  /** Editorially reviewed substrate-moisture range, five ordinal categories (1 dry ... 5 very damp). */
+  moistureRangeStart?: number | null;
+  moistureRangeEnd?: number | null;
   moistureNote?: string;
   /** Optional concise context. No inferred husbandry instructions. */
   ventilationNote?: string;
