@@ -489,3 +489,20 @@
  .managerPrimarySearch .managerSearchField{min-height:46px;border-radius:13px}
  .managerWorkspace [data-workspace-block="hero"] + [data-workspace-block="tools"] .section{margin-top:12px}
 }
+
+/* Lightweight Manager usability: actionable care totals and clear search results. */
+.managerPulse>a{
+ display:flex;flex-direction:column;gap:4px;min-width:0;
+ padding:13px;border:1px solid transparent;border-radius:12px;
+ background:var(--surface-secondary);color:var(--text-primary);text-decoration:none;
+}
+.managerPulse>a>strong{font:500 1.6rem/1 var(--display)}
+.managerPulse>a>span{display:flex;align-items:center;justify-content:space-between;gap:5px;color:var(--text-secondary);font-size:.68rem;line-height:1.3}
+.managerPulse>a>span span{color:var(--accent);font-size:.83rem}
+.managerPulse>a:hover{border-color:var(--accent)}
+.managerPulse>a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.managerSearchCount{margin:3px 0 0!important;padding:5px 2px 7px;color:var(--text-secondary);font-size:.66rem!important;line-height:1.3}
+@media(max-width:720px){
+ .managerModule[aria-label="Care overview"] .managerPulse>a{padding:9px 10px;gap:2px}
+ .managerModule[aria-label="Care overview"] .managerPulse>a>strong{font-size:1.28rem}
+}
