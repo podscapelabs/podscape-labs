@@ -1255,3 +1255,14 @@ h1, h2, h3 { text-wrap: balance; }
 @media(max-width:720px){
  .v2-header{display:none!important}
 }
+
+/* Search is also a portal: keep its archive heading compact without hiding
+   the universal search field or changing unrelated article layouts. */
+@media(max-width:720px){
+ .v2-site:has(.v2-search-page) .v2-page-header-grid{padding-block:18px 16px}
+ .v2-site:has(.v2-search-page) .v2-page-header h1{font-size:clamp(2.25rem,9vw,3rem)}
+ .v2-site:has(.v2-search-page) .v2-page-header aside{display:none}
+ .v2-site:has(.v2-search-page) .v2-page-section{padding-top:12px;padding-bottom:36px}
+ .v2-site:has(.v2-search-page) .v2-search-page>input{min-height:48px;font-size:16px;border-radius:12px}
+ .v2-site:has(.v2-search-page) .v2-search-page>div:not(.v2-empty-state){margin-top:18px}
+}
