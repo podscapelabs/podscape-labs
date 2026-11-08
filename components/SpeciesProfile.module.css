@@ -225,3 +225,30 @@
  .dashboardFacts>div{min-height:58px}
  .dashboardSectionHead h2{font-size:1.58rem}
 }
+
+
+/* Reusable species workspace: shares Home / Manager canvas and widget library. */
+.speciesWorkspace{min-width:0;display:grid;gap:12px}
+.speciesCustomizeIntro{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid var(--border);border-radius:14px;background:var(--surface)}
+.speciesCustomizeIntro>span{display:grid;gap:3px;min-width:0}
+.speciesCustomizeIntro strong{font-size:.78rem;color:var(--text-primary);font-weight:750}
+.speciesCustomizeIntro small{font-size:.67rem;line-height:1.4;color:var(--text-secondary)}
+.speciesCustomizeIntro button{flex:none;min-height:42px;padding:9px 13px;border:1px solid var(--border);border-radius:999px;color:var(--accent);background:var(--surface-secondary);font-size:.73rem;font-weight:800;cursor:pointer}
+.speciesWorkspace [data-workspace-block]{min-width:0}
+.speciesWorkspace [data-workspace-block]>.homeBlock{margin:0}
+.speciesWorkspace :global(.homeCanvasToolbar){margin-bottom:0}
+.speciesInfoCard{padding:15px;border:1px solid var(--border);border-radius:15px;background:var(--surface);display:grid;gap:8px}
+.speciesInfoCard h2{margin:0;font:550 1.22rem/1.2 var(--display);color:var(--text-primary)}
+.speciesInfoCard p{margin:0;font-size:.8rem;line-height:1.5;color:var(--text-secondary)}
+.speciesAllDetails{border:1px solid var(--border);border-radius:15px;background:var(--surface);overflow:hidden}
+.speciesAllDetails>summary{cursor:pointer;list-style:none;padding:13px 15px;color:var(--text-primary);font-size:.81rem;font-weight:750}
+.speciesAllDetails>summary::-webkit-details-marker{display:none}
+.speciesAllDetails>summary:after{content:"⌄";float:right;color:var(--accent)}
+.speciesAllDetails[open]>summary:after{content:"⌃"}
+.speciesAllDetails>summary span{display:block;margin-top:2px;font-size:.68rem;font-weight:450;color:var(--text-secondary)}
+.speciesHiddenWidgets{display:grid;gap:12px;padding:0 14px 15px}
+.speciesHiddenSection{display:grid;gap:7px}
+.speciesHiddenSection>button{justify-self:start;min-height:40px;padding:8px 12px;background:var(--surface-secondary);border:1px solid var(--border);border-radius:999px;color:var(--accent);font-size:.7rem;font-weight:750;cursor:pointer}
+.speciesWorkspace :global(.widgetLibrary){width:min(100%,590px)}
+.speciesCustomizeIntro button:focus-visible,.speciesHiddenSection button:focus-visible,.speciesAllDetails>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(max-width:600px){.speciesCustomizeIntro{padding:9px 11px}.speciesCustomizeIntro small{font-size:.63rem}.speciesInfoCard{padding:12px}.speciesWorkspace{gap:10px}}
