@@ -10,7 +10,7 @@ import { KeeperMobileNav } from "@/components/KeeperMobileNav";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Scan Bin | PodScape Keeper", robots: { index: false, follow: false } };
 
-export default async function ScanPage({searchParams}:{searchParams:Promise<{bin?:string;manual?:string}>}) {
+export default async function ScanPage({searchParams}:{searchParams:Promise<{bin?:string;manual?:string;mode?:string}>}) {
  const member = await getMemberCollectionState();
  if (!member.signedIn) return <PlatformShell><main className="v2-container" style={{padding:"48px 16px"}}><h1>Scan a bin</h1><p>Please <Link href="/account/login">sign in</Link> to manage your own bins.</p></main></PlatformShell>;
  let enclosures: Awaited<ReturnType<typeof listEnclosures>> = [];
@@ -24,5 +24,6 @@ export default async function ScanPage({searchParams}:{searchParams:Promise<{bin
  const options = await searchParams;
  const requested = options.bin || "";
  const startManual = options.manual === "1";
- return <PlatformShell><main className="v2-container scan-page-active" style={{padding:"12px 16px 104px"}}><KeeperScanner bins={bins} initialBinId={requested} startManual={startManual} careDates={careDates} activity={activity}/></main><KeeperMobileNav active="scan"/></PlatformShell>;
+ const careMode = options.mode === "care" || startManual;
+ return <PlatformShell><main className="v2-container scan-page-active" style={{padding:"12px 16px 104px"}}><KeeperScanner bins={bins} initialBinId={requested} startManual={startManual} careMode={careMode} careDates={careDates} activity={activity}/></main><KeeperMobileNav active="scan"/></PlatformShell>;
 }
