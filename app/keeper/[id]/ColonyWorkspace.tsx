@@ -94,6 +94,7 @@ export function ColonyWorkspace({colony,initialEvents,referenceUrl}:{colony:Colo
    <p className={styles.description}>Tap an action to save it to this bin's private care history.</p>
    {colony.archived?<p className={styles.warning}>This bin is archived. Restore it in Details before recording care.</p>:null}
    <div className={styles.actions}>{actions.map(action=><button type="button" key={action.note} disabled={pending||undoing||colony.archived} onClick={()=>record(action)}><PodscapeLineIcon name={action.icon}/><strong>{action.label}</strong><small>{lastCare(events,action.note)?"Last: "+dayLabel(lastCare(events,action.note)!):"Not logged yet"}</small></button>)}</div>
+   <Link className={styles.bulkLink} href="/keeper/scan?manual=1">Log care for multiple bins →</Link>
    {error?<p className={styles.warning} role="alert">{error}</p>:null}
    {message?<div className={styles.notice} role="status"><span>{message}</span>{lastSaved?<button type="button" onClick={undo} disabled={pending||undoing}>{undoing?"Undoing…":"Undo"}</button>:null}</div>:null}
   </section>
@@ -102,7 +103,7 @@ export function ColonyWorkspace({colony,initialEvents,referenceUrl}:{colony:Colo
    <div className={styles.toolGrid}>
     <Link href={"/keeper/"+colony.id+"/details"}><PodscapeLineIcon name="note"/><strong>Edit details</strong><small>Population, habitat and notes</small></Link>
     <Link href={"/keeper/qr?bin="+encodeURIComponent(colony.id)}><PodscapeLineIcon name="qr"/><strong>QR Label</strong><small>Print or download</small></Link>
-    <Link href="/keeper/schedule"><PodscapeLineIcon name="calendar"/><strong>Care schedule</strong><small>Plan and review misting</small></Link>
+    <Link href={"/keeper/"+colony.id+"/details?panel=care#care-reminders"}><PodscapeLineIcon name="calendar"/><strong>Care schedule</strong><small>Set this bin’s misting interval</small></Link>
     <Link href={"/keeper/"+colony.id+"/history"}><PodscapeLineIcon name="jar"/><strong>Care history</strong><small>Review previous records</small></Link>
    </div>
   </section>
