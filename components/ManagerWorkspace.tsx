@@ -144,7 +144,7 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
     <ManagerQuickShortcuts ids={layout.tools} change={ids=>update({...layout,tools:ids})} primaryHref={primaryHref} canvasEditing={canvasEditing}/>
   </section>
  };
- return <HomeCanvasEditContext.Provider value={canvasEditing}><div className={`${styles.managerWorkspace} ${canvasEditing?homeStyles.homeCanvasEditing:""}`}>
+ return <HomeCanvasEditContext.Provider value={canvasEditing}><div className={`${styles.managerWorkspace} ${canvasEditing?homeStyles.homeCanvasEditing:""}`} data-workspace-root="manager" onPointerMove={event=>{if(canvasEditing)dragMove(event)}} onPointerUp={()=>{if(canvasEditing)stop()}} onPointerCancel={()=>{if(canvasEditing)stop()}}>
   {canvasEditing?<WorkspaceEditToolbar title="Arrange your Manager" description="Drag sections to arrange your workspace. Quick Tools stay grouped." onAdd={()=>{finishCanvas();setEditing(true);setSlot(null)}} onReset={resetToDefault} onDone={finishCanvas}/>:null}
   {editing?<div className={homeStyles.homeEditorOverlay} onPointerDown={e=>{if(e.target===e.currentTarget){setEditing(false);setSlot(null)}}}>
    <div className={`${homeStyles.widgetEditor} ${homeStyles.widgetLibrary}`} role="dialog" aria-modal="true" aria-labelledby="manager-widget-title">
