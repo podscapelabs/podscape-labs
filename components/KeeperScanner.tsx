@@ -168,13 +168,12 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  function saveMultiple(kind:string,note:string,label:string,confirmed=false){
   if(!multiCare||pending||undoPending||saving.current)return;
   if(!chosenBins.length){setError("Select at least one enclosure.");return;}
-  if(chosenBins.length>500){setError("Care batches support up to 500 bins.");return;}
+  // Only skip duplicates recorded in this open session; a partial selection can still proceed.
+  const targetIds=chosenBins.filter(id=>!recent.some(r=>r.binId===id&&r.label===label));
+  if(!targetIds.length){setNotice(label+" already logged for all selected bins this session.");return;}
+  if(targetIds.length>500){setError("Care batches support up to 500 bins.");return;}
   if(chosenBins.length===bins.length&&bins.length>1&&!confirmed){setConfirmAllCare({kind,note,label});return;}
   setConfirmAllCare(null);
-  if(chosenBins.some(id=>recent.some(r=>r.binId===id&&r.label===label))){
-   setError("This action was already logged for one of your selected bins this session. Adjust the selection or undo first.");return;
-  }
-  const targetIds=[...chosenBins];
   saving.current=true;setError("");setNotice("");
   start(async()=>{try{
    const result=await logKeeperEventBatch({ids:targetIds,kind,note});
@@ -240,11 +239,11 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
     const last=lastDates[selected.id]?.[t.note];
     return <button type="button" key={t.label} className={logged?styles.careTileLogged:styles.careTile} disabled={pending||undoPending||(multiCare&&chosenBins.length===0)} onClick={()=>multiCare?saveMultiple(t.kind,t.note,t.label):save(t.kind,t.note,t.label)}>
       <span className={styles.careTileTop}><span aria-hidden="true">{t.icon}</span><span aria-hidden="true">{logged?"✓":""}</span></span>
-      <strong>{t.label}</strong><small>{multiCare?(logged?"Saved for selected bins":chosenBins.length+" "+(chosenBins.length===1?"bin":"bins")+" selected"):(logged?"Saved this session · ":"Last: ")+formatLast(last)}</small>
+      <strong>{t.label}</strong><small>{multiCare?(logged?"Saved for selected bins":chosenBins.filter(id=>recent.some(r=>r.binId===id&&r.label===t.label)).length+" of "+chosenBins.length+" logged"):(logged?"Saved this session · ":"Last: ")+formatLast(last)}</small>
     </button>;
    })}</div>
-   {confirmAllCare&&multiCare?<div className={styles.confirmAll} role="group" aria-label="Confirm all-enclosure care"><p>Log <strong>{confirmAllCare.label.toLowerCase()}</strong> for all <strong>{bins.length} enclosures</strong> across your collection?</p><div><button type="button" onClick={()=>setConfirmAllCare(null)} disabled={pending}>Cancel</button><button type="button" onClick={()=>saveMultiple(confirmAllCare.kind,confirmAllCare.note,confirmAllCare.label,true)} disabled={pending}>Log all {bins.length} bins</button></div></div>:null}
-   {(notice||latest)?<div className={styles.inlineNotice} role="status"><span>{notice||"Care saved."}</span>{latest?<button type="button" onClick={undo} disabled={undoPending||pending}>{undoPending?"Undoing…":"Undo"}</button>:null}</div>:null}
+   {confirmAllCare&&multiCare?<div className={styles.confirmAll} role="group" aria-label="Confirm all-enclosure care"><p>Log <strong>{confirmAllCare.label.toLowerCase()}</strong> for <strong>{chosenBins.filter(id=>!recent.some(r=>r.binId===id&&r.label===confirmAllCare.label)).length} remaining bins</strong> across your collection?</p><div><button type="button" onClick={()=>setConfirmAllCare(null)} disabled={pending}>Cancel</button><button type="button" onClick={()=>saveMultiple(confirmAllCare.kind,confirmAllCare.note,confirmAllCare.label,true)} disabled={pending}>Confirm bulk care</button></div></div>:null}
+   {(notice||latest)?<div className={styles.inlineNotice} role="status"><span>{notice||"Care saved."}</span>{latest?<button type="button" onClick={undo} disabled={undoPending||pending}>{undoPending?"Undoing…":"Undo "+latest.label+(latest.records.length>1?" ("+latest.records.length+")":"")}</button>:null}</div>:null}
    {!multiCare?<details className={styles.careDetails}><summary>Add note or custom date</summary><label htmlFor="keeper-care-note">Care note</label><textarea id="keeper-care-note" maxLength={1500} rows={3} value={customNote} onChange={e=>setCustomNote(e.target.value)} placeholder="What did you do or observe?"/><label htmlFor="keeper-care-date">Care date (for notes)</label><input id="keeper-care-date" type="date" value={customDate} max={new Date().toISOString().slice(0,10)} onChange={e=>setCustomDate(e.target.value)}/><button type="button" disabled={pending||!customNote.trim()} onClick={()=>save("observation",customNote.trim(),"Custom note",customDate||undefined)}>Save note</button></details>:null}
    <div className={styles.workspaceHistory}>
     <div className={styles.historyHead}><h2>Recent activity</h2><Link href={"/keeper/"+selected.id+"/history"}>Full history →</Link></div>
