@@ -51,3 +51,11 @@
  .photo{aspect-ratio:1.05}
 }
 @media(max-width:370px){.path strong{font-size:.6rem}.path{padding:8px 6px}.category{padding:10px}}
+
+/* The Shop search is a real catalogue form, not a link to global search. */
+.search{width:100%;min-width:0}
+.search input[type="search"]{flex:1;min-width:0;min-height:34px;border:0;outline:0;background:transparent;color:var(--text-primary);font:inherit;font-size:16px}
+.search input[type="search"]::placeholder{color:var(--text-secondary);opacity:1}
+.search:focus-within{border-color:var(--accent);outline:2px solid var(--focus);outline-offset:2px}
+.searchSubmit{flex-shrink:0;min-height:36px;padding:7px 11px;border:0;border-radius:10px;background:var(--accent);color:var(--background);font:inherit;font-size:.74rem;font-weight:750;cursor:pointer}
+.searchSubmit:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
