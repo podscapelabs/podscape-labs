@@ -11,11 +11,14 @@ export const metadata={title:"Podscape Spotlight | Owner Tools",robots:{index:fa
 export default async function SpotlightDesk({searchParams}:{searchParams:Promise<{saved?:string;error?:string}>}){
   if(!(await isAdminAuthenticated()))redirect("/admin");
   const [options,selected,query]=await Promise.all([getSpotlightOptions(),getSpotlightSelection(),searchParams]);
+  const optionHrefs=new Set(options.map(item=>item.href));
+  const missing=selected?.filter(href=>!optionHrefs.has(href))||[];
   return <main className={styles.page}><div className={styles.wrap}>
     <Link className={styles.back} href="/account/owner-tools">← Owner Tools</Link>
     <header className={styles.header}><p>PODSCAPE LABS / EDITORIAL</p><h1>Spotlight Desk</h1><span>Choose up to five fixed homepage highlights and their order. New species and products will never be inserted automatically.</span></header>
     {query.saved&&<p role="status" className={styles.success}>Spotlight selection saved. The homepage reads these exact choices; new content does not replace them.</p>}
     {query.error&&<p role="alert" className={styles.error}>Could not save Spotlights. Check for duplicate choices and ensure the database migration is installed.</p>}
+    {missing.length>0?<p role="status" className={styles.error}>{missing.length} saved highlight(s) are unavailable or unpublished. Select replacements and save; PodScape will not automatically substitute new content.</p>:null}
     {selected===null&&<p role="status" className={styles.error}>Spotlight storage isn&apos;t installed yet. The homepage keeps its existing highlights until the release migration is applied.</p>}
     <form action={saveSpotlightSelection} className={styles.form}>
       <div className={styles.sectionHead}><h2>Homepage rotation</h2><small>Swipeable · Manually curated · No automatic replacements</small></div>
@@ -24,6 +27,7 @@ export default async function SpotlightDesk({searchParams}:{searchParams:Promise
         <span className={styles.slotBody}><strong>{i===0?"First highlight":`Highlight ${i+1}`}</strong>
           <select name={`slot${i+1}`} defaultValue={selected?.[i]||""}>
             <option value="">Not used</option>
+            {selected?.[i]&&!optionHrefs.has(selected[i])?<option value={selected[i]} disabled>Unavailable · choose replacement</option>:null}
             {options.map(o=><option value={o.href} key={o.href}>{o.label} · {o.title}</option>)}
           </select>
         </span>
