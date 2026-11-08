@@ -25,4 +25,4 @@ jobs:
       - name: Build Next.js application
         run: pnpm run build
       - name: Lint keeper workflow
-        run: pnpm exec eslint components/KeeperScanner.tsx components/KeeperBinTools.tsx components/KeeperWorkspace.tsx app/keeper/scan/page.tsx app/keeper/actions.ts 'app/keeper/[id]/page.tsx' 'app/keeper/[id]/details/page.tsx' lib/keeper.ts
+        run: pnpm exec eslint components/PodscapeWorkspaceUI.tsx components/KeeperScanner.tsx components/KeeperBinTools.tsx components/KeeperWorkspace.tsx app/keeper/scan/page.tsx app/keeper/actions.ts 'app/keeper/[id]/page.tsx' 'app/keeper/[id]/details/page.tsx' 'app/keeper/[id]/history/page.tsx' lib/keeper.ts
