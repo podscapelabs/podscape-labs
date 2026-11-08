@@ -520,3 +520,10 @@
 @media(prefers-reduced-motion:reduce){
  .homeCanvasEditing .homeCanvasDragging{transition:none}
 }
+
+/* Personalized mobile welcome: search belongs to the greeting, not the art hero. */
+.greetingWorkspace{min-width:0}
+@media(max-width:720px){
+ .greetingWorkspace{display:grid;gap:10px;margin-bottom:10px}
+ .greetingWorkspace .homeGreetingRow{margin-bottom:0}
+}
