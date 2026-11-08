@@ -6,26 +6,31 @@ import {moveBlock,dropBlock,uniqueAllowed} from "./workspace-layout";
 import homeStyles from "./PodscapeHome.module.css";
 import styles from "./SpeciesProfile.module.css";
 
-export const speciesWidgetIds=["about","care","behaviour","moisture","feeding","habitat","traits","guides"] as const;
+export const speciesWidgetIds=["care","moisture","about","advanced","feeding","habitat","traits","guides"] as const;
 export type SpeciesWidgetId=(typeof speciesWidgetIds)[number];
 export const speciesWidgetLabels:Record<SpeciesWidgetId,string>={
- about:"Species overview",care:"Basic care",behaviour:"Behaviour & breeding",moisture:"Moisture preference",
+ about:"Species overview",care:"Basic Care & Behaviour",moisture:"Moisture preference",advanced:"Advanced Care",
  feeding:"Feeding overview",habitat:"Habitat & substrate",traits:"Notable traits",guides:"Related Field Guides"
 };
 const descriptions:Record<SpeciesWidgetId,string>={
- about:"A short introduction to the species",care:"Care level, temperature and ventilation",behaviour:"Activity, reproduction and feeding response",
+ about:"A short introduction to the species",care:"Essential care, activity and breeding at a glance",advanced:"Feeding and substrate details when you want more depth",
  moisture:"Its relative dry-to-moist tendency",feeding:"General feeding information",habitat:"Substrate and habitat notes",
  traits:"Distinctive characteristics",guides:"Supporting species-specific guides"
 };
 const defaultOrder:SpeciesWidgetId[]=[...speciesWidgetIds];
-const defaultVisible:SpeciesWidgetId[]=["about","care","behaviour","moisture"];
+const defaultVisible:SpeciesWidgetId[]=["care","moisture","about"];
 type Layout={order:SpeciesWidgetId[];visible:SpeciesWidgetId[]};
 const defaultLayout=():Layout=>({order:[...defaultOrder],visible:[...defaultVisible]});
 function normalize(value:unknown):Layout{
  if(!value||typeof value!=="object")return defaultLayout();
  const obj=value as Partial<Layout>;
- const order=[...uniqueAllowed(Array.isArray(obj.order)?obj.order:[],defaultOrder),...defaultOrder].filter((v,i,a)=>a.indexOf(v)===i);
- const visible=uniqueAllowed(Array.isArray(obj.visible)?obj.visible:defaultVisible,defaultOrder);
+ // Migrate layouts saved before Basic Care and Behaviour were combined.
+ const oldOrder=Array.isArray(obj.order)?obj.order:[];
+ const ordered=oldOrder.filter(id=>id!=="behaviour");
+ const order=[...uniqueAllowed(ordered,defaultOrder),...defaultOrder].filter((v,i,a)=>a.indexOf(v)===i);
+ const existing=Array.isArray(obj.visible)?obj.visible:defaultVisible;
+ const migrated=existing.includes("behaviour")&&!existing.includes("care")?[...existing,"care"]:existing;
+ const visible=uniqueAllowed(migrated,defaultOrder);
  return {order,visible};
 }
 
