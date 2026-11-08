@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AdminPhotoEditor } from "@/components/AdminPhotoEditor";
+import { NotableTraitPicker } from "@/components/NotableTraitPicker";
 import { SpecimenLeaf } from "@/components/SpecimenLeaf";
 import { speciesDisplayName, speciesRecordLabel, speciesScientificName } from "@/data/species";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
@@ -56,10 +57,9 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
           <fieldset id="ledger-status"><legend>Record control</legend><div className="admin-form-grid three"><label><span>Record type</span><select name="kind" defaultValue={selected.kind}><option value="species">Species record</option><option value="photo-test">Temporary photo test</option></select></label><label><span>Identity status</span><select name="identityStatus" defaultValue={selected.identityStatus}><option value="unassigned">Unassigned</option><option value="provisional">Provisional</option><option value="verified">Verified</option></select></label><label><span>Publication</span><select name="status" defaultValue={selected.archivedAt ? "archived" : selected.status}><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></label></div><div className="admin-form-grid two"><label><span>Catalogue number</span><input name="catalogueNumber" defaultValue={selected.catalogueNumber} /></label><label><span>URL slug</span><input name="slug" defaultValue={selected.slug} /></label></div></fieldset>
           <fieldset id="ledger-identity"><legend>Identity</legend><div className="admin-form-grid two"><label><span>Common name</span><input name="commonName" defaultValue={selected.commonName} placeholder="Leave blank until assigned" /></label><label><span>Scientific name</span><input name="scientificName" defaultValue={selected.scientificName} placeholder="Leave blank until assigned" /></label><label><span>Genus</span><input name="genus" defaultValue={selected.genus} /></label><label><span>Species</span><input name="species" defaultValue={selected.species} /></label><label><span>Morph or variety</span><input name="morph" defaultValue={selected.morph} /></label><label><span>Tags · comma separated</span><input name="tags" defaultValue={selected.tags.join(", ")} /></label></div></fieldset>
           <details id="ledger-traits" className={styles.optionalSection}>
-            <summary>Notable traits <small>Up to four distinctive, verified characteristics</small></summary>
+            <summary>Notable traits <small>Select up to five traits from the reusable library</small></summary>
             <fieldset aria-label="Notable traits">
-              <label><span>Traits · one per line</span><textarea name="notableTraits" rows={4} maxLength={1000} defaultValue={(selected.notableTraits || []).join("\n")} placeholder={"Distinctive colour pattern\nConglobating species\nFrequently visible"} /></label>
-              <p className={styles.editingNotice}>Only enter supported traits that distinguish this animal. Keep each phrase short (up to 65 characters). Do not repeat basic care labels just to fill space.</p>
+              <NotableTraitPicker key={selected.id} initialTraits={selected.notableTraits || []} />
             </fieldset>
           </details>
           <details id="ledger-photo" className={styles.optionalSection} open={false}><summary>Photography &amp; summary <small>Upload, crop, and describe the specimen</small></summary><fieldset aria-label="Photography and summary"><AdminPhotoEditor key={selected.id} image={selected.image} imagePositionX={selected.imagePositionX} imagePositionY={selected.imagePositionY} imageZoom={selected.imageZoom} /><label><span>Accessible image description</span><input name="imageAlt" defaultValue={selected.imageAlt} placeholder="Describe the visible specimen without guessing its identity" /></label><label><span>Catalogue summary</span><textarea name="summary" defaultValue={selected.summary} rows={3} /></label></fieldset></details>
