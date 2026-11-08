@@ -446,3 +446,12 @@
  .managerWorkspace .managerHomeShortcuts>button{width:auto;min-height:72px;padding:7px 4px;font-size:.7rem}
  .managerWorkspace .managerHomeShortcuts>button span:last-child{font-size:.68rem}
 }
+
+/* Align the customizable Manager canvas with the other mobile portals. */
+@media(max-width:720px){
+ .page{padding-top:12px;padding-bottom:36px}
+ .dashboard{margin-top:0}
+ .managerHero{margin:0 0 10px;min-height:196px;border-radius:20px}
+ .managerWorkspace>.section,.managerWorkspace [data-workspace-block]>.section{margin-top:20px}
+ .managerWorkspace .section header{margin-bottom:10px}
+}
