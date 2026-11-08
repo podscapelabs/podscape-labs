@@ -50,6 +50,7 @@ export async function createSpeciesRecord() {
     imageZoom: 1,
     summary: "",
     tags: [],
+    notableTraits: [],
     careLevel: "",
     moisture: "",
     moistureProfile: "",
@@ -131,6 +132,8 @@ export async function saveSpeciesRecord(formData: FormData) {
     imageZoom: boundedNumber(formData, "imageZoom", 1, 2, current.imageZoom),
     summary: field(formData, "summary", 600),
     tags: field(formData, "tags", 500).split(",").map((tag) => tag.trim()).filter(Boolean),
+    notableTraits: Array.from(new Set(field(formData, "notableTraits", 1000)
+      .split(/\r?\n/).map(trait => trait.trim().slice(0, 65)).filter(Boolean))).slice(0, 4),
     careLevel: field(formData, "careLevel", 100),
     moisture: field(formData, "moisture", 160),
     moistureProfile: (["", "dry-leaning", "dry-balanced", "balanced", "balanced-moist", "moist-leaning"].includes(field(formData, "moistureProfile", 40)) ? field(formData, "moistureProfile", 40) : "") as SpeciesRecord["moistureProfile"],
