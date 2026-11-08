@@ -66,7 +66,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  const [confirmAllCare,setConfirmAllCare]=useState<{kind:string;note:string;label:string}|null>(null);
  const [lastOperation,setLastOperation]=useState<LastOperation|null>(null);
  const stop=()=>{stream.current?.getTracks().forEach(t=>t.stop());stream.current=null;canvas.current=null;setTorchOn(false);};
- function match(value:string){const id=readId(value);const found=bins.find(b=>b.id.toLowerCase()===id?.toLowerCase());if(found){lock.current=true;stop();setSelected(found);setState("idle");setCustomNote("");setCustomDate("");setError("");setNotice("");setMultiCare(false);setChosenBins([found.id]);setConfirmAllCare(null);return true;}setError("That code does not match an active bin in your collection.");return false;}
+ function match(value:string){const id=readId(value);const found=bins.find(b=>b.id.toLowerCase()===id?.toLowerCase());if(found){lock.current=true;stop();setSelected(found);setState("idle");setCustomNote("");setCustomDate("");setError("");setNotice(lastOperation?"Previous care action available to undo.":"");setMultiCare(false);setChosenBins([found.id]);setConfirmAllCare(null);return true;}setError("That code does not match an active bin in your collection.");return false;}
  useEffect(()=>()=>stop(),[]);
  useEffect(()=>{if(state!=="scanning")return;
  let live=true;let timer:ReturnType<typeof setInterval>|undefined;
@@ -77,7 +77,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
    stream.current=media;
    const track=media.getVideoTracks()[0] as EnhancedTrack;
    try{
-    const caps=track.getCapabilities?.();
+    const caps=track.getCapabilities?.() as CameraCapabilities|undefined;
     setTorchAvailable(Boolean(caps?.torch));
     if(caps?.zoom&&caps.zoom.max>caps.zoom.min&&Math.min(caps.zoom.max,4)>caps.zoom.min){setZoomRange({min:caps.zoom.min,max:Math.min(caps.zoom.max,4)});setZoom((track.getSettings() as MediaTrackSettings&{zoom?:number}).zoom||caps.zoom.min);}
     else setZoomRange(null);
@@ -131,7 +131,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  }
  async function toggleTorch(){if(await setCameraOption({torch:!torchOn}))setTorchOn(v=>!v);}
  async function updateZoom(value:number){if(await setCameraOption({zoom:value}))setZoom(value);}
- function beginScan(){lock.current=false;setSelected(null);setNotice("");setError("");setMultiCare(false);setChosenBins([]);setConfirmAllCare(null);setState("scanning");}
+ function beginScan(){lock.current=false;setSelected(null);setNotice(lastOperation?"Previous care action available to undo.":"");setError("");setMultiCare(false);setChosenBins([]);setConfirmAllCare(null);setState("scanning");}
  function save(kind:string,note:string,label:string,occurredOn?:string){
  if(!selected||pending||saving.current)return;
  // A checked tile is a successful save in this session, not a toggle to delete.
@@ -153,11 +153,11 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  }
  function switchBin(bin:Bin){
   if(pending||undoPending)return;
-  setSelected(bin);setNotice("");setError("");setShowManual(false);setCustomNote("");setCustomDate("");setChosenBins([bin.id]);setConfirmAllCare(null);
+  setSelected(bin);setNotice(lastOperation?"Previous care action available to undo.":"");setError("");setShowManual(false);setCustomNote("");setCustomDate("");setChosenBins([bin.id]);setConfirmAllCare(null);
  }
  function toggleMultiCare(){
   if(pending||undoPending)return;
-  setMultiCare(v=>!v);setChosenBins(selected?[selected.id]:[]);setConfirmAllCare(null);setNotice("");setError("");
+  setMultiCare(v=>!v);setChosenBins(selected?[selected.id]:[]);setConfirmAllCare(null);setNotice(lastOperation?"Previous care action available to undo.":"");setError("");
  }
  function toggleChosen(id:string){setConfirmAllCare(null);setChosenBins(ids=>ids.includes(id)?ids.filter(v=>v!==id):[...ids,id]);}
  function selectSpecies(){
@@ -168,14 +168,16 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  function saveMultiple(kind:string,note:string,label:string,confirmed=false){
   if(!multiCare||pending||undoPending||saving.current)return;
   if(!chosenBins.length){setError("Select at least one enclosure.");return;}
+  if(chosenBins.length>500){setError("Care batches support up to 500 bins.");return;}
   if(chosenBins.length===bins.length&&bins.length>1&&!confirmed){setConfirmAllCare({kind,note,label});return;}
   setConfirmAllCare(null);
   if(chosenBins.some(id=>recent.some(r=>r.binId===id&&r.label===label))){
    setError("This action was already logged for one of your selected bins this session. Adjust the selection or undo first.");return;
   }
+  const targetIds=[...chosenBins];
   saving.current=true;setError("");setNotice("");
   start(async()=>{try{
-   const result=await logKeeperEventBatch({ids:chosenBins,kind,note});
+   const result=await logKeeperEventBatch({ids:targetIds,kind,note});
    if(!result.success||!result.events){setError(result.error||"Could not save care for these bins.");return;}
    const createdAt=new Date().toISOString();
    const entries:CareRecord[]=result.events.map(event=>({id:event.id,binId:event.enclosureId,label,note,createdAt,previous:lastDates[event.enclosureId]?.[note]||null,reminderBefore:note==="Misted"?syncMistingReminder(event.enclosureId,createdAt):undefined}));
