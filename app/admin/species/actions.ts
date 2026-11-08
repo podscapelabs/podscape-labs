@@ -55,6 +55,8 @@ export async function createSpeciesRecord() {
     careLevel: "",
     moisture: "",
     moistureProfile: "",
+    moistureRangeStart: null,
+    moistureRangeEnd: null,
     moistureNote: "",
     ventilationNote: "",
     temperatureNote: "",
@@ -110,6 +112,15 @@ export async function saveSpeciesRecord(formData: FormData) {
     studioRedirect(id, "error", error instanceof Error ? error.message : "Unable to save photo", view);
   }
 
+  const rangeStartRaw = field(formData, "moistureRangeStart", 2);
+  const rangeEndRaw = field(formData, "moistureRangeEnd", 2);
+  const validRangeValue = (value: string) => value === "" || ["1", "2", "3", "4", "5"].includes(value);
+  if (!validRangeValue(rangeStartRaw) || !validRangeValue(rangeEndRaw)
+      || Boolean(rangeStartRaw) !== Boolean(rangeEndRaw)
+      || (rangeStartRaw && Number(rangeStartRaw) > Number(rangeEndRaw))) {
+    studioRedirect(id, "error", "Choose a complete moisture range, starting with the drier zone and ending with the damper zone.", view);
+  }
+
   const status: SpeciesStatus = publication === "archived" ? current.status : (publication as SpeciesStatus);
   const archivedAt = publication === "archived" ? current.archivedAt || new Date().toISOString() : null;
 
@@ -138,6 +149,8 @@ export async function saveSpeciesRecord(formData: FormData) {
     careLevel: field(formData, "careLevel", 100),
     moisture: formData.has("moisture") ? field(formData, "moisture", 160) : (current.moisture || ""),
     moistureProfile: (["", "dry-leaning", "dry-balanced", "balanced", "balanced-moist", "moist-leaning"].includes(field(formData, "moistureProfile", 40)) ? field(formData, "moistureProfile", 40) : "") as SpeciesRecord["moistureProfile"],
+    moistureRangeStart: rangeStartRaw ? Number(rangeStartRaw) : null,
+    moistureRangeEnd: rangeEndRaw ? Number(rangeEndRaw) : null,
     moistureNote: formData.has("moistureNote") ? field(formData, "moistureNote", 240) : (current.moistureNote || ""),
     ventilationNote: formData.has("ventilationNote") ? field(formData, "ventilationNote", 240) : (current.ventilationNote || ""),
     temperatureNote: formData.has("temperatureNote") ? field(formData, "temperatureNote", 240) : (current.temperatureNote || ""),
