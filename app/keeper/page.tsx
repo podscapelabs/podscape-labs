@@ -48,14 +48,9 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
 
   return <PlatformShell>
     <main className={styles.page}>
-      <section className={styles.hero}>
-        <div className={styles.heroVeil} />
-        <div className={styles.heroCopy}>
-          <p>MANAGER</p>
-          <h1>Colony Manager</h1>
-          <span>Your colonies, care and records in one place.</span>
-          <Link href="/keeper/collection">Manage colonies <b>→</b></Link>
-        </div>
+      <section className={styles.managerIntro} aria-label="Your collection">
+        <div><p>PODSCAPE / MANAGER</p><h1>Your collection.</h1><span>A little world of colonies, care and discoveries.</span></div>
+        <Link href="/keeper/collection">All colonies <span aria-hidden="true">→</span></Link>
       </section>
 
       <div className={styles.dashboard}>
@@ -69,7 +64,7 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
             <Link href="/keeper/collection"><PodscapeLineIcon name="bin" /><strong>{active.length}</strong><span>Bins</span><b>›</b></Link>
             <Link href="/keeper/collection"><PodscapeLineIcon name="community" /><strong>{totalPopulation}</strong><span>Recorded population</span><b>›</b></Link>
           </section>} enclosures={<section className={styles.section}>
-            <header><h2>Your Enclosures</h2><Link href="/keeper/collection">View all <span>→</span></Link></header>
+            <header><h2>Recently updated</h2><Link href="/keeper/collection">View all <span>→</span></Link></header>
             {recent.length ? <div className={styles.attentionList}>{recent.map(enclosure => {
               const record = speciesById.get(enclosure.speciesId);
               return <Link href={`/keeper/${enclosure.id}`} key={enclosure.id}>
