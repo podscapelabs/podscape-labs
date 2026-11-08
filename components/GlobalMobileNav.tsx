@@ -1,18 +1,19 @@
 "use client";
 import {usePathname,useRouter} from "next/navigation";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
-import {choiceById,navigationChoices,navigationGroups,swapNavigationSlot} from "./navigation-customization";
+import {choiceById,availableNavigationChoices,navigationGroups,swapNavigationSlot} from "./navigation-customization";
 import {useNavigationPreferences} from "./useNavigationPreferences";
 import {useShortcutEditor} from "./useShortcutEditor";
 import styles from "./KeeperMobileNav.module.css";
 
-export function GlobalMobileNav(){
+export function GlobalMobileNav({isOwner=false}:{isOwner?:boolean}){
   const pathname=usePathname();
   const router=useRouter();
-  const {ids,change,reset}=useNavigationPreferences("bottom");
+  const {ids,change,reset}=useNavigationPreferences("bottom",isOwner);
   const {editing,selected,setSelected,handlers,done}=useShortcutEditor(ids,change);
   const excluded=pathname==="/"||pathname==="/admin"||pathname.startsWith("/admin/")&&pathname!=="/admin/preview"||pathname.startsWith("/account/login")||pathname.startsWith("/account/register")||pathname.startsWith("/account/reset")||pathname.startsWith("/auth/");
   if(excluded)return null;
+  const accessibleChoices=availableNavigationChoices(isOwner);
   const items=ids.map(id=>choiceById.get(id)).filter((x):x is NonNullable<typeof x>=>Boolean(x));
   const selectedItem=items[selected]||items[0];
   const activeFor=(href:string)=>href==="/app"?pathname==="/app":href==="/menu"?pathname==="/menu":pathname===href||pathname.startsWith(href+"/");
@@ -24,7 +25,7 @@ export function GlobalMobileNav(){
       </div>
       <label className={styles.replace}>Replace {selectedItem?.label||"shortcut"}
         <select value={selectedItem?.id||""} onChange={event=>change(swapNavigationSlot(ids,selected,event.target.value))}>
-          {navigationGroups.map(group=><optgroup label={group} key={group}>{navigationChoices.filter(item=>item.group===group).map(item=><option value={item.id} key={item.id}>{item.label}{item.planned?" (coming later)":""}{ids.includes(item.id)&&item.id!==selectedItem?.id?" (swap)":""}</option>)}</optgroup>)}
+          {navigationGroups.filter(group=>accessibleChoices.some(item=>item.group===group)).map(group=><optgroup label={group} key={group}>{accessibleChoices.filter(item=>item.group===group).map(item=><option value={item.id} key={item.id}>{item.label}{item.planned?" (coming later)":""}{ids.includes(item.id)&&item.id!==selectedItem?.id?" (swap)":""}</option>)}</optgroup>)}
         </select>
       </label>
       <button type="button" className={styles.resetLink} onClick={()=>{reset();setSelected(0)}}>Reset toolbar</button>
