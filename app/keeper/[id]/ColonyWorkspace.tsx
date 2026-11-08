@@ -38,9 +38,10 @@ function syncMisting(id:string,now:string){
  }catch{/* The server care log still saves when local device settings are inaccessible. */}
  return undefined;
 }
-export function ColonyWorkspace({colony,initialEvents,referenceUrl}:{colony:Colony;initialEvents:CareEvent[];referenceUrl?:string}){
+export function ColonyWorkspace({colony,initialEvents,careDates,referenceUrl}:{colony:Colony;initialEvents:CareEvent[];careDates:Record<string,string>;referenceUrl?:string}){
  const router=useRouter();
  const [events,setEvents]=useState(initialEvents);
+ const dateFor=(note:string)=>lastCare(events,note)||careDates[note]||"";
  const [pending,start]=useTransition();
  const [message,setMessage]=useState("");
  const [error,setError]=useState("");
@@ -105,14 +106,14 @@ export function ColonyWorkspace({colony,initialEvents,referenceUrl}:{colony:Colo
   </header>
   <div className={styles.metrics} aria-label="Colony overview">
    <div><span>Recorded population</span><strong>{colony.quantity.toLocaleString()}</strong></div>
-   <div><span>Last misted</span><strong>{lastCare(events,"Misted")?dayLabel(lastCare(events,"Misted")!):"Not logged"}</strong></div>
+   <div><span>Last misted</span><strong>{dateFor("Misted")?dayLabel(dateFor("Misted")):"Not logged"}</strong></div>
    <div><span>Breeding</span><strong>{colony.breeding.replaceAll("-"," ")}</strong></div>
   </div>
   <section className={styles.care} aria-labelledby="care-heading">
    <div className={styles.sectionTitle}><div><p>DAILY CARE</p><h2 id="care-heading">Quick Care</h2></div><Link href={"/keeper/"+colony.id+"/history"}>View history →</Link></div>
    <p className={styles.description}>Tap an action to save it to this bin's private care history.</p>
    {colony.archived?<p className={styles.warning}>This bin is archived. Restore it in Details before recording care.</p>:null}
-   <div className={styles.actions}>{actions.map(action=><button type="button" key={action.note} disabled={pending||undoing||colony.archived} onClick={()=>record(action)}><PodscapeLineIcon name={action.icon}/><strong>{action.label}</strong><small>{lastCare(events,action.note)?"Last: "+dayLabel(lastCare(events,action.note)!):"Not logged yet"}</small></button>)}</div>
+   <div className={styles.actions}>{actions.map(action=><button type="button" key={action.note} disabled={pending||undoing||colony.archived} onClick={()=>record(action)}><PodscapeLineIcon name={action.icon}/><strong>{action.label}</strong><small>{dateFor(action.note)?"Last: "+dayLabel(dateFor(action.note)):"Not logged yet"}</small></button>)}</div>
    <details className={styles.observation} id="observation"><summary>+ Add an observation or care note</summary>
     <form onSubmit={recordObservation}><label htmlFor="colony-observation">What did you notice?</label><textarea id="colony-observation" rows={3} maxLength={1500} value={observation} onChange={event=>setObservation(event.target.value)} placeholder="New mancae spotted, habitat changes, feeding notes…" required/><button type="submit" disabled={pending||undoing||colony.archived||!observation.trim()}>{pending?"Saving…":"Save observation"}</button></form>
    </details>
