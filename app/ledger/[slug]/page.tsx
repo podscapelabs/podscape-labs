@@ -5,6 +5,7 @@ import { CollectionButton } from "@/components/CollectionButton";
 import { PinToHome } from "@/components/PinToHome";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import { Breadcrumbs, PlatformShell } from "@/components/PlatformShell";
+import {WorkspaceLinks} from "@/components/PodscapeWorkspaceUI";
 import { SpecimenLeaf } from "@/components/SpecimenLeaf";
 import { SpeciesDiscoveryTracker } from "@/components/SpeciesDiscoveryTracker";
 import styles from "@/components/SpeciesProfile.module.css";
@@ -93,6 +94,8 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
                 {record.fieldGuideLinks.length ? <details className={styles.topic}><summary>Sources &amp; references</summary><div className={styles.topicBody}><ul className={styles.references}>{record.fieldGuideLinks.filter((url) => /^https:\/\//.test(url)).map((url) => <li key={url}><a href={url} target="_blank" rel="noopener noreferrer">{new URL(url).hostname}</a></li>)}</ul></div></details> : null}
               </div>
             </section> : null}
+
+          <WorkspaceLinks items={[{label:"Explore more species",href:"/ledger"},{label:"My colonies",href:"/keeper/collection"}]}/>
 
           {record.kind === "species" ? <div className={styles.collectionArea} id="keeper-record">
             {collectionEntry ? <p>In your collection · <Link href={`/keeper?species=${encodeURIComponent(record.id)}`}>Manage colony in Keeper workspace →</Link></p>
