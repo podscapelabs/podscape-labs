@@ -139,3 +139,11 @@
 .edit{display:inline-flex;align-items:center;justify-content:center;min-height:44px}
 .accountSummaryTop a.accountLevel{color:#fff9ec}
 :root[data-theme="dark"] .accountSummaryTop a.accountLevel{background:#31563b;color:#fff9ec}
+
+/* Account is a portal too: consistent top gutter and compact mobile sections. */
+@media(max-width:720px){
+ .page{padding-top:12px;padding-bottom:36px}
+ .accountHeader{padding-top:12px;padding-bottom:14px}
+ .accountActions{margin-top:18px}
+ .accountSettings{margin-top:22px}
+}
