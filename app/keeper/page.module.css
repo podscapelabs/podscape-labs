@@ -328,3 +328,60 @@
 .lead{color:var(--text-secondary);font-size:.82rem;line-height:1.55;margin:12px 0 16px}
 .kicker{font-size:.66rem;letter-spacing:.14em;font-weight:750;color:var(--accent);margin:20px 0 7px}
 @media(max-width:450px){.entry{padding:11px 12px;gap:9px}.entry time{font-size:.64rem}}
+
+
+/* Manager dashboard v3 — use the compact Home hierarchy and its actual shortcut surfaces. */
+.managerIntro{
+ width:min(1100px,calc(100% - 32px));margin:0 auto;
+ display:flex;justify-content:space-between;align-items:center;gap:20px;
+ padding:23px 0 10px;
+}
+.managerIntro>div{min-width:0}
+.managerIntro p{margin:0 0 5px;color:var(--accent);font-size:.62rem;font-weight:800;letter-spacing:.13em}
+.managerIntro h1{margin:0;font:400 clamp(1.85rem,4.5vw,2.65rem)/1.1 var(--display);letter-spacing:-.035em}
+.managerIntro div>span{display:block;margin-top:6px;color:var(--text-secondary);font-size:.8rem;line-height:1.4}
+.managerIntro>a{flex:none;border:1px solid var(--border);border-radius:999px;padding:10px 13px;background:var(--surface);color:var(--accent);font-size:.72rem;font-weight:750}
+.managerIntro>a span{margin-left:6px}
+.dashboard{width:min(1100px,calc(100% - 32px));margin:0 auto}
+.managerWorkspace{display:grid;gap:0}
+.managerWorkspace>.section,.managerWorkspace [data-workspace-block]>.section{margin-top:17px}
+.managerWorkspace .section h2,.managerWorkspace .managerModule h2{font:400 clamp(1.27rem,2.5vw,1.6rem)/1.2 var(--display);letter-spacing:-.02em}
+.managerWorkspace .section header{min-height:32px;margin-bottom:9px}
+.managerWorkspace .metrics a{border-radius:15px;box-shadow:none}
+.managerWorkspace .attentionList>a{border-radius:14px}
+.managerHomeShortcuts{margin:0!important;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}
+.managerHomeShortcuts>a{color:var(--text-primary);text-decoration:none;min-width:0;box-shadow:none}
+.managerHomeShortcuts>a:focus-visible,.managerIntro>a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.managerFinder{margin:8px 0 5px}
+.managerFinder>label{display:flex;align-items:center;gap:8px;margin-bottom:8px;color:var(--text-secondary);font-size:.7rem;font-weight:800;letter-spacing:.04em}
+.managerFinder>label svg{width:18px;height:18px;color:var(--accent)}
+.managerSearchField{display:flex;align-items:center;gap:10px;min-height:48px;padding:0 13px;border:1px solid var(--border);border-radius:15px;background:var(--surface)}
+.managerSearchField:focus-within{border-color:var(--accent);outline:2px solid color-mix(in srgb,var(--accent) 12%,transparent)}
+.managerSearchField>span{font-family:var(--display);font-size:1.6rem;line-height:1;color:var(--accent)}
+.managerSearchField input{min-width:0;width:100%;min-height:44px;border:0;background:transparent;outline:0;color:var(--text-primary);font:inherit;font-size:.84rem}
+.managerSearchField input::placeholder{color:var(--text-secondary);opacity:1}
+.managerSearchField button{flex:none;width:30px;height:30px;border:0;border-radius:50%;background:var(--surface-secondary);color:var(--accent);font-size:1.3rem;cursor:pointer}
+.managerSearchResults{margin-top:7px;padding:5px 12px;border:1px solid var(--border);border-radius:14px;background:var(--surface)}
+.managerSearchResults>a{display:grid;grid-template-columns:1fr auto;gap:3px 8px;padding:11px 2px;border-bottom:1px solid var(--border);color:inherit}
+.managerSearchResults>a:last-child{border:0}
+.managerSearchResults strong{font:500 1rem var(--display)}
+.managerSearchResults span{grid-column:1;color:var(--text-secondary);font-size:.72rem}
+.managerSearchResults b{grid-column:2;grid-row:1/3;align-self:center;color:var(--accent);font-weight:500}
+.managerSearchResults p{color:var(--text-secondary);font-size:.75rem}
+.managerSearchResults p a{color:var(--accent);font-weight:750}
+.managerFallback{margin-top:15px;gap:8px 16px}
+@media(max-width:720px){
+ .managerIntro{width:calc(100% - 28px);padding:14px 0 10px;gap:10px}
+ .managerIntro h1{font-size:1.75rem}
+ .managerIntro div>span{font-size:.71rem}
+ .managerIntro>a{font-size:.64rem;padding:9px 10px}
+ .dashboard{width:calc(100% - 28px);margin:0 auto}
+ .managerFinder{margin-top:3px}
+ .managerHomeShortcuts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:0!important}
+ .managerHomeShortcuts>a{width:auto;min-height:72px;padding:7px 4px;font-size:.7rem}
+ .managerHomeShortcuts>a span:last-child{font-size:.68rem}
+ .managerWorkspace>.section,.managerWorkspace [data-workspace-block]>.section{margin-top:14px}
+ .managerWorkspace .metrics{gap:7px}
+ .managerWorkspace .section header{margin-bottom:7px}
+ .managerFallback{gap:5px 12px}
+}
