@@ -12,8 +12,9 @@ import styles from "./page.module.css";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "My Colonies | PodScape Labs", robots: { index: false, follow: false } };
 
-export default async function MyColoniesPage() {
+export default async function MyColoniesPage({searchParams}:{searchParams:Promise<{intent?:string}>}) {
   const member = await getMemberCollectionState();
+  const intent=(await searchParams).intent==="notes"?"notes":undefined;
   let unavailable = false;
   let bins: Awaited<ReturnType<typeof listEnclosures>> = [];
   let records: Awaited<ReturnType<typeof getSpeciesRecords>> = [];
@@ -34,7 +35,7 @@ export default async function MyColoniesPage() {
         </header>
         {!member.signedIn ? <section className={styles.empty}><h2>Your colonies are private.</h2><p>Sign in to see and manage your records.</p><Link href="/account/login">Sign in →</Link></section>
           : unavailable ? <section className={styles.empty} role="alert"><h2>Colony records are unavailable.</h2><p>Try again when the Keeper database is available.</p></section>
-          : <ManagerColonies records={species} bins={active} collectedIds={member.ids} />}
+          : <ManagerColonies records={species} bins={active} collectedIds={member.ids} intent={intent} />}
       </div>
     </div>
     {member.signedIn ? <KeeperMobileNav active="keeper"/> : null}
