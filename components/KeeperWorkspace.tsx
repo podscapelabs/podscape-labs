@@ -11,7 +11,7 @@ export function CreateEnclosure({ speciesId, speciesName }: {speciesId:string;sp
  return <form className={styles.create} onSubmit={submit}><label>New enclosure for {speciesName}<input value={name} maxLength={80} onChange={e=>setName(e.target.value)} placeholder="e.g. Panda King · Bin A04" required /></label><button disabled={pending}>{pending?"Creating…":"Create enclosure →"}</button>{message?<p role="alert">{message}</p>:null}</form>;
 }
 
-export function KeeperControls({entry}: {entry:Enclosure}) {
+export function KeeperControls({entry,showLogForm=true}: {entry:Enclosure;showLogForm?:boolean}) {
  const [form,setForm]=useState({name:entry.name,label:entry.label,quantity:entry.quantity,status:entry.status,breeding:entry.breeding,enclosureType:entry.enclosureType,acquiredOn:entry.acquiredOn||"",source:entry.source,notes:entry.notes});
  const [kind,setKind]=useState("feeding");const [note,setNote]=useState("");const [message,setMessage]=useState("");const [pending,start]=useTransition();const router=useRouter();
  function edit(e:FormEvent){e.preventDefault();setMessage("");start(async()=>{const result=await updateEnclosure({id:entry.id,...form});setMessage(result.success?"Enclosure saved.":result.error||"Save failed.");if(result.success)router.refresh();});}
@@ -34,7 +34,7 @@ export function KeeperControls({entry}: {entry:Enclosure}) {
   <label>Source<input value={form.source} maxLength={300} onChange={e=>change("source",e.target.value)} placeholder="Breeder, shop, trade…"/></label>
   <label className={styles.wide}>Private keeper notes<textarea rows={3} maxLength={5000} value={form.notes} onChange={e=>change("notes",e.target.value)} placeholder="Habitat notes, colony changes…"/></label>
  </div><button className={styles.primary} disabled={pending}>{pending?"Saving…":"Save colony details"}</button><button type="button" onClick={archive} disabled={pending}>{entry.isArchived?"Restore enclosure":"Archive enclosure"}</button></form>
- <form className={styles.card} onSubmit={log}><div className={styles.heading}><h2>Log activity</h2><span>A quick record from your bin</span></div><div className={styles.fields}><label>Activity<select value={kind} onChange={e=>setKind(e.target.value)}>{["feeding","maintenance","breeding","observation","inventory"].map(x=><option key={x} value={x}>{x}</option>)}</select></label><label className={styles.wide}>What happened?<textarea required maxLength={1500} rows={3} value={note} onChange={e=>setNote(e.target.value)} placeholder="Fed vegetables; observed mancae; changed leaf litter…"/></label></div><button className={styles.primary} disabled={pending||!note.trim()}>{pending?"Recording…":"Add to activity log +"}</button></form>
+ {showLogForm?<form className={styles.card} onSubmit={log}><div className={styles.heading}><h2>Log activity</h2><span>A quick record from your bin</span></div><div className={styles.fields}><label>Activity<select value={kind} onChange={e=>setKind(e.target.value)}>{["feeding","maintenance","breeding","observation","inventory"].map(x=><option key={x} value={x}>{x}</option>)}</select></label><label className={styles.wide}>What happened?<textarea required maxLength={1500} rows={3} value={note} onChange={e=>setNote(e.target.value)} placeholder="Fed vegetables; observed mancae; changed leaf litter…"/></label></div><button className={styles.primary} disabled={pending||!note.trim()}>{pending?"Recording…":"Add to activity log +"}</button></form>:null}
  <p className={styles.message} role="status" aria-live="polite">{message}</p>
  </div>;
 }
