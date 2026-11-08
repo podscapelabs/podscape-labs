@@ -6,7 +6,17 @@ export function KeeperBinTools({binId,binName,species,lastRecordedMisting}:Props
  const [interval,setInterval]=useState("3");
  const [message,setMessage]=useState("");
  const [lastMisted,setLastMisted]=useState(lastRecordedMisting?lastRecordedMisting.slice(0,10):"");
- useEffect(()=>{try{const saved=JSON.parse(localStorage.getItem("podscape-keeper-reminder-"+binId)||"null");if(saved&&Number.isInteger(saved.intervalDays))setInterval(String(saved.intervalDays));if(typeof saved?.lastMisted==="string")setLastMisted(saved.lastMisted);}catch{}},[binId]);
+ useEffect(()=>{
+  const recorded=lastRecordedMisting?.slice(0,10)||"";
+  setLastMisted(recorded);
+  try{
+   const saved=JSON.parse(localStorage.getItem("podscape-keeper-reminder-"+binId)||"null");
+   if(saved&&Number.isInteger(saved.intervalDays))setInterval(String(saved.intervalDays));
+   // A stale device preference must not override newer care stored in the database.
+   const deviceDate=typeof saved?.lastMisted==="string"?saved.lastMisted:"";
+   setLastMisted(deviceDate>recorded?deviceDate:recorded);
+  }catch{/* Saved server history remains authoritative when local storage fails. */}
+ },[binId,lastRecordedMisting]);
  const due=lastMisted&&Number(interval)>0?new Date(lastMisted+"T12:00:00"):null;if(due&&!Number.isNaN(due.getTime()))due.setDate(due.getDate()+Number(interval));
  // Resolve the host at interaction time rather than on the server.
  async function openLabel(){
