@@ -73,6 +73,16 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
   const feeding = introText(record.feeding || "");
   const moistureLabels:Record<MoisturePosition,string>={"dry-leaning":"Dry-leaning","dry-balanced":"Dry to balanced","balanced":"Balanced","balanced-moist":"Balanced to moist","moist-leaning":"Moist-leaning"};
   const moistureIndex = moisturePosition ? moisturePositions.indexOf(moisturePosition) : -1;
+  const moistureZoneNames=["Dry","Slightly damp","Moderate","Damp","Very damp"];
+  const rangeStart=record.moistureRangeStart;
+  const rangeEnd=record.moistureRangeEnd;
+  const hasReviewedRange=typeof rangeStart==="number" && typeof rangeEnd==="number"
+    && Number.isInteger(rangeStart) && Number.isInteger(rangeEnd)
+    && rangeStart>=1 && rangeEnd<=5 && rangeStart<=rangeEnd;
+  const moistureRangeLabel=hasReviewedRange
+    ? (rangeStart===rangeEnd ? moistureZoneNames[rangeStart-1] : moistureZoneNames[rangeStart-1]+" – "+moistureZoneNames[rangeEnd-1])
+    : moisturePosition ? moistureLabels[moisturePosition] : "";
+
   const notableTraits = [...new Set((record.notableTraits || []).map(trait => trait.trim()).filter(Boolean))].slice(0, 5);
   // Keep the hero distinctive; don't repeat information already in the care grid.
   const redundantTrait = (trait:string) => {
@@ -124,11 +134,16 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
               <div className={styles.dashboardSectionHead}><h2>Basic Care &amp; Behaviour</h2></div>
               <dl className={styles.dashboardFacts}>{quickFacts.map(({label,value})=><div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
             </section> : null,
-            moisture: moisturePosition ? <div className={styles.dashboardMoisture} aria-label={"Moisture preference: "+moistureLabels[moisturePosition]}>
-              <div className={styles.moistureTop}><strong>Moisture preference</strong><span>{moistureLabels[moisturePosition]}</span></div>
-              <div className={styles.moistureTrack} aria-hidden="true">{moisturePositions.map((item,index)=><span key={item} className={index===moistureIndex?styles.moistureSelected:""}/>)}</div>
-              <div className={styles.moistureEnds}><span>Dry</span><span>Moist</span></div>
-            </div> : legacyMoisturePending ? <p className={styles.moisturePending}>Moisture preference awaiting review.</p> : null,
+            moisture: hasReviewedRange || moisturePosition ? <div className={styles.dashboardMoisture} aria-label={"General substrate moisture conditions: "+moistureRangeLabel}>
+              <div className={styles.moistureTop}><strong>Substrate moisture range</strong><span>{moistureRangeLabel}</span></div>
+              <div className={styles.moistureTrack} aria-hidden="true">{moistureZoneNames.map((item,index)=><span key={item} className={hasReviewedRange
+                ? index+1>=rangeStart! && index+1<=rangeEnd! ? styles.moistureRangeSelected : ""
+                : index===moistureIndex ? styles.moistureSelected : ""}/>)}</div>
+              <div className={styles.moistureEnds}><span>Dry</span><span>Very damp</span></div>
+              <p className={styles.moistureContext}>{hasReviewedRange
+                ? "General captive substrate conditions, not a measured humidity requirement. Maintain a suitable moisture gradient and damp refuge."
+                : "Broad editorial tendency. Detailed substrate range awaiting review."}</p>
+            </div> : legacyMoisturePending ? <p className={styles.moisturePending}>Substrate moisture information awaiting review.</p> : null,
             advanced: feeding || record.substrate?.trim() || relatedGuides.length ? <section className={styles.speciesInfoCard} aria-label="Advanced care">
               <h2>Advanced Care</h2>
               {feeding ? <div className={styles.advancedCareDetail}><strong>Feeding</strong><p>{feeding}</p></div> : null}
