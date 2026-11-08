@@ -6,9 +6,9 @@ import ts from "typescript";
 function loadPureHelper(path){
   const source=readFileSync(new URL("../"+path,import.meta.url),"utf8");
   const js=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
-  const module={exports:{}};
-  runInNewContext(js,{module,exports:module.exports});
-  return module.exports;
+  const commonJs={exports:{}};
+  runInNewContext(js,{module:commonJs,exports:commonJs.exports});
+  return commonJs.exports;
 }
 
 const {generateSpeciesSearchTags}=loadPureHelper("lib/species-search-tags.ts");
