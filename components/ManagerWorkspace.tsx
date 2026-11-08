@@ -11,7 +11,7 @@ import {ManagerCareOverview,ManagerActivityFeed,ManagerInsights,type ManagerBin,
 
 type Section="stats"|"care"|"tools"|"activity"|"enclosures"|"insights";
 type Tool={id:string;label:string;href:string;icon:PodscapeIconName};
-const defaults:Section[]=["stats","care","tools","activity","enclosures","insights"];
+const defaults:Section[]=["tools","enclosures","care","activity","stats","insights"];
 const labels:Record<Section,string>={stats:"Colony Statistics",care:"Care Overview",tools:"Quick Tools",activity:"Recent Activity",enclosures:"Your Enclosures",insights:"Colony Insights"};
 const key="podscape-manager-layout-v1";
 const library:Tool[]=[
@@ -26,7 +26,7 @@ const library:Tool[]=[
  {id:"activity",label:"Recent activity",href:"/keeper/activity",icon:"note"}
 ];
 type Layout={order:Section[];visible:Section[];tools:string[]};
-const initial:Layout={order:defaults,visible:["stats","care","tools","activity","enclosures"],tools:["scan","qr","add","care","schedule","notes"]};
+const initial:Layout={order:defaults,visible:["tools","enclosures","care","activity","stats"],tools:["scan","qr","add","care","schedule","notes"]};
 function normalize(value:unknown):Layout{
  if(!value||typeof value!=="object")return initial;
  const raw=value as Partial<Layout>;
@@ -44,6 +44,7 @@ export function ManagerWorkspace({stats,enclosures,bins,events,activityAvailable
  const [editing,setEditing]=useState(false);
  const [canvasEditing,setCanvasEditing]=useState(false);
  const [slot,setSlot]=useState<number|null>(null);
+ const [query,setQuery]=useState("");
  // Preserve the position of the section the user held while editor controls mount above it.
  const editAnchor=useRef<{id:Section;top:number}|null>(null);
  const enterCanvas=(id?:Section)=>{
@@ -70,6 +71,8 @@ export function ManagerWorkspace({stats,enclosures,bins,events,activityAvailable
  const move=(id:Section,dir:number)=>update({...layout,order:moveBlock(layout.order,layout.visible,id,dir)});
  const reorder=(from:Section,to:Section)=>update({...layout,order:dropBlock(layout.order,from,to)});
  const visible=layout.order.filter(id=>layout.visible.includes(id));
+ const matching=query.trim().toLocaleLowerCase();
+ const searchResults=matching?bins.filter(bin=>[bin.name,bin.label,bin.species,bin.status].some(value=>value?.toLocaleLowerCase().includes(matching))).slice(0,8):[];
  const {dragging,begin,move:dragMove,stop}=useWorkspaceDrag<Section>("manager",visible,reorder);
  const finishCanvas=()=>{stop();editAnchor.current=null;setCanvasEditing(false)};
  const resetToDefault=()=>{if(!window.confirm("Restore the default Manager layout and Quick Tools? Your colony records will not be affected."))return;stop();update({order:[...defaults],visible:[...defaults],tools:[...initial.tools]});setSlot(null)};
@@ -79,13 +82,18 @@ export function ManagerWorkspace({stats,enclosures,bins,events,activityAvailable
   activity:<ManagerActivityFeed events={events} available={activityAvailable}/>,
   insights:<ManagerInsights bins={bins} events={events}/>,
   enclosures,
-  tools:<section className={styles.section} key="tools"><header><h2>Quick Tools</h2></header>
-   <nav className={styles.tools} aria-label="Keeper quick tools">
-    {layout.tools.map(id=>{const tool=library.find(t=>t.id===id);return tool?<Link href={id==="care"?"/keeper/scan?manual=1":id==="notes"?primaryHref:id==="history"&&primaryHref!=="/keeper/collection"?primaryHref+"/history":tool.href} key={id}><span><PodscapeLineIcon name={tool.icon}/></span><small>{tool.label}</small></Link>:null})}
+  tools:<section className={styles.section} key="tools"><header><h2>Your shortcuts</h2><button type="button" className={styles.managerTextButton} onClick={()=>{setEditing(true);setSlot(null)}}>Customize →</button></header>
+   <nav className={`${homeStyles.shortcuts} ${styles.managerHomeShortcuts}`} aria-label="Manager shortcuts">
+    {layout.tools.map((id,index)=>{const tool=library.find(t=>t.id===id);return tool?<Link className={`${homeStyles.shortcut} ${index%3===0?homeStyles.sand:index%3===1?homeStyles.sage:homeStyles.rose}`} href={id==="care"?"/keeper/scan?manual=1":id==="notes"?primaryHref:id==="history"&&primaryHref!=="/keeper/collection"?primaryHref+"/history":tool.href} key={id}><span className={homeStyles.shortcutIcon}><PodscapeLineIcon name={tool.icon}/></span><span>{tool.label}</span></Link>:null})}
    </nav>
   </section>
  };
  return <div className={`${styles.managerWorkspace} ${canvasEditing?homeStyles.homeCanvasEditing:""}`}>
+  <div className={styles.managerFinder}>
+    <label htmlFor="manager-collection-search"><PodscapeLineIcon name="scan"/><span>Search your collection</span></label>
+    <div className={styles.managerSearchField}><span aria-hidden="true">⌕</span><input id="manager-collection-search" type="search" value={query} onChange={event=>setQuery(event.target.value)} placeholder="Find a species, bin or enclosure…" autoComplete="off"/>{query?<button type="button" onClick={()=>setQuery("")} aria-label="Clear collection search">×</button>:null}</div>
+    {matching?<div className={styles.managerSearchResults} role="region" aria-live="polite" aria-label="Matching colonies">{searchResults.length?searchResults.map(bin=><Link key={bin.id} href={`/keeper/${bin.id}`}><strong>{bin.species}</strong><span>{bin.name}{bin.label?" · "+bin.label:""} · {bin.quantity} recorded</span><b aria-hidden="true">→</b></Link>):<p>No colonies match “{query}”. <Link href="/keeper/collection">Browse all colonies →</Link></p>}</div>:null}
+  </div>
   {canvasEditing?<WorkspaceEditToolbar title="Arrange your Manager" description="Drag sections to arrange your workspace. Quick Tools stay grouped." onAdd={()=>{finishCanvas();setEditing(true);setSlot(null)}} onReset={resetToDefault} onDone={finishCanvas}/>:null}
   {editing?<div className={homeStyles.homeEditorOverlay} onPointerDown={e=>{if(e.target===e.currentTarget){setEditing(false);setSlot(null)}}}>
    <div className={`${homeStyles.widgetEditor} ${homeStyles.widgetLibrary}`} role="dialog" aria-modal="true" aria-labelledby="manager-widget-title">
