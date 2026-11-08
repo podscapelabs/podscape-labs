@@ -2,6 +2,7 @@ import type {Metadata} from "next";
 import Link from "next/link";
 import {notFound} from "next/navigation";
 import {PlatformShell,Breadcrumbs} from "@/components/PlatformShell";
+import {WorkspaceHeader,WorkspaceLinks} from "@/components/PodscapeWorkspaceUI";
 import {KeeperControls} from "@/components/KeeperWorkspace";
 import {KeeperBinTools} from "@/components/KeeperBinTools";
 import {KeeperMobileNav} from "@/components/KeeperMobileNav";
@@ -25,11 +26,11 @@ export default async function ColonyDetails({params}:{params:Promise<{id:string}
  const species=record?speciesDisplayName(record):"Unlinked species";
  return <PlatformShell><main className={styles.page}><div className="v2-container">
   <Breadcrumbs items={[{label:"Manager",href:"/keeper"},{label:enclosure.name,href:enclosure.isArchived?"/keeper":"/keeper/"+id},{label:"Settings"}]}/>
-  <div className={styles.header}><div><p className={styles.kicker}>MANAGER / COLONY SETTINGS</p><h1>{species}</h1><p>{enclosure.name}{enclosure.label?" · "+enclosure.label:""}</p></div><Link className={styles.back} href={enclosure.isArchived?"/keeper":"/keeper/scan?bin="+id}>{enclosure.isArchived?"← Manager":"← Back to care"}</Link></div>
+  <WorkspaceHeader section="MANAGER / COLONY SETTINGS" title={species} description={enclosure.name+(enclosure.label?" · "+enclosure.label:"")} backHref={enclosure.isArchived?"/keeper":"/keeper/scan?bin="+id} backLabel={enclosure.isArchived?"Manager":"Back to care"}/>
   <div className={styles.extras}><PinToHome pin={{kind:"colony",id}} userId={user?.id||null}/>{record?<Link href={"/ledger/"+record.slug}>Species reference ↗</Link>:null}</div>
   
   <details className={styles.section}><summary><span className={styles.sectionIcon} aria-hidden="true">✧</span><span className={styles.sectionLabel}><strong>Colony profile</strong><small>Population, condition & setup</small></span><span className={styles.chevron} aria-hidden="true">⌄</span></summary><div className={styles.sectionBody}><KeeperControls entry={enclosure} showLogForm={false}/></div></details>
   <details className={styles.section}><summary><span className={styles.sectionIcon} aria-hidden="true">▣</span><span className={styles.sectionLabel}><strong>QR & care reminders</strong><small>Labels and misting schedule</small></span><span className={styles.chevron} aria-hidden="true">⌄</span></summary><div className={styles.sectionBody}><KeeperBinTools binId={id} binName={enclosure.name} species={species} lastRecordedMisting={mistingDate}/></div></details>
-  <div className={styles.links}><Link href={"/keeper/"+id+"/history"}>Care history →</Link><Link href="/keeper/schedule">Schedules →</Link></div>
+  <WorkspaceLinks items={[{href:"/keeper/"+id+"/history",label:"Care history"},{href:"/keeper/schedule",label:"Schedules"}]}/>
  </div></main><KeeperMobileNav active="keeper"/></PlatformShell>;
 }
