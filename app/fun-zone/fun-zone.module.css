@@ -41,3 +41,14 @@
  .sectionHeading{align-items:center}
  .carouselNext{width:40px;height:40px}
 }
+
+/* The Fun Zone follows shared PodScape interiors without sacrificing its playful featured area. */
+.page{min-height:0;padding-bottom:72px}
+.wrap{width:min(1060px,calc(100% - 32px))}
+.funLinks{display:flex;flex-wrap:wrap;gap:9px;margin:16px 0 0}
+.funLinks a{display:inline-flex;align-items:center;min-height:42px;padding:9px 13px;border:1px solid var(--border);border-radius:var(--radius-small,12px);background:var(--surface);color:var(--accent);font-size:.73rem;font-weight:750}
+.funLinks a:hover{border-color:var(--accent)}
+.puzzleCard{border-radius:var(--radius-medium,18px)}
+.library{margin-top:20px}
+.library>div:first-child{margin-bottom:12px}
+@media(max-width:680px){.page{padding:15px 0 68px}.wrap{width:calc(100% - 28px)}.balance{min-width:108px;max-width:128px}.funLinks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.funLinks a{padding:8px 10px;font-size:.69rem}.library{margin-top:16px}}
