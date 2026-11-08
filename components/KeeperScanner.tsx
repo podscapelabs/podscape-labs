@@ -19,6 +19,7 @@ function readId(value:string):string|null {
  try {const url=new URL(raw);if(url.protocol!=="https:"&&url.protocol!=="http:")return null;const path=url.pathname.match(/\/(?:keeper|bins?)\/([a-f\d-]{36})(?:\/|$)/i);return path?.[1]||url.searchParams.get("bin")||null;}catch{return null;}
 }
 const tasks=[{label:"Misted",kind:"maintenance",note:"Misted",icon:"◌"},{label:"Fed",kind:"feeding",note:"Fed",icon:"◈"},{label:"Spot cleaned",kind:"maintenance",note:"Spot cleaned",icon:"✧"},{label:"Leaf litter",kind:"maintenance",note:"Leaf litter added",icon:"❧"}] as const;
+type CareActivity={id:string;kind:string;note:string;createdAt:string;quantityChange:number|null};
 type CareRecord={id:string;binId:string;label:string;note:string;createdAt:string;previous:string|null};
 type LastOperation={records:CareRecord[];label:string};
 type ActivityEntry={id:string;kind:string;note:string;createdAt:string;quantityChange:number|null};
@@ -28,7 +29,7 @@ function formatLast(value:string|null|undefined){
  const now=new Date();if(date.toDateString()===now.toDateString())return "Today · "+date.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});
  return date.toLocaleDateString(undefined,{month:"short",day:"numeric",...(date.getFullYear()===now.getFullYear()?{}:{year:"numeric" as const})});
 }
-export function KeeperScanner({bins,initialBinId="",startManual=false,careDates={},detailNavigation=false}:{bins:Bin[];initialBinId?:string;startManual?:boolean;careDates?:Record<string,Record<string,string>>;detailNavigation?:boolean}){
+export function KeeperScanner({bins,initialBinId="",startManual=false,careDates={},activity={},detailNavigation=false}:{bins:Bin[];initialBinId?:string;startManual?:boolean;careDates?:Record<string,Record<string,string>>;activity?:Record<string,CareActivity[]>;detailNavigation?:boolean}){
  const router=useRouter();
  const video=useRef<HTMLVideoElement>(null);const stream=useRef<MediaStream|null>(null);const lock=useRef(false);
  const canvas=useRef<HTMLCanvasElement|null>(null);
