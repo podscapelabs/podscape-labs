@@ -1,17 +1,18 @@
 "use client";
 import {useRouter} from "next/navigation";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
-import {choiceById,navigationChoices,navigationGroups,swapNavigationSlot} from "./navigation-customization";
+import {choiceById,availableNavigationChoices,navigationGroups,swapNavigationSlot} from "./navigation-customization";
 import {useNavigationPreferences} from "./useNavigationPreferences";
 import {useShortcutEditor} from "./useShortcutEditor";
 import {useHomeCanvasEditing} from "./HomeCanvasEditContext";
 import styles from "./PodscapeHome.module.css";
 
-export function CustomizableHomeShortcuts(){
+export function CustomizableHomeShortcuts({isOwner=false}:{isOwner?:boolean}){
   const router=useRouter();
-  const {ids,change,reset}=useNavigationPreferences("home");
+  const {ids,change,reset}=useNavigationPreferences("home",isOwner);
   const canvasEditing=useHomeCanvasEditing();
   const {editing,selected,setSelected,handlers,done}=useShortcutEditor(ids,change,canvasEditing);
+  const accessibleChoices=availableNavigationChoices(isOwner);
   const choices=ids.map(id=>choiceById.get(id)).filter((x):x is NonNullable<typeof x>=>Boolean(x));
   const current=choices[selected]||choices[0];
   return <section aria-label="Your Podscape shortcuts">
@@ -20,7 +21,7 @@ export function CustomizableHomeShortcuts(){
       <button type="button" className={styles.jiggleDone} onClick={done}>Done</button>
       <label className={styles.jigglePicker}>Replace {current?.label||"shortcut"}
         <select value={current?.id||""} onChange={event=>change(swapNavigationSlot(ids,selected,event.target.value))}>
-          {navigationGroups.map(group=><optgroup label={group} key={group}>{navigationChoices.filter(item=>item.group===group).map(item=><option value={item.id} key={item.id}>{item.label}{item.planned?" (coming later)":""}{ids.includes(item.id)&&item.id!==current?.id?" (swap)":""}</option>)}</optgroup>)}
+          {navigationGroups.filter(group=>accessibleChoices.some(item=>item.group===group)).map(group=><optgroup label={group} key={group}>{accessibleChoices.filter(item=>item.group===group).map(item=><option value={item.id} key={item.id}>{item.label}{item.planned?" (coming later)":""}{ids.includes(item.id)&&item.id!==current?.id?" (swap)":""}</option>)}</optgroup>)}
         </select>
       </label>
       <button type="button" className={styles.jiggleReset} onClick={()=>{reset();setSelected(0)}}>Reset shortcuts</button>
