@@ -1249,3 +1249,9 @@ h1, h2, h3 { text-wrap: balance; }
  .construction-member-link{padding:7px 10px;font-size:.69rem;text-align:center}
  .construction-wordmark{max-width:43vw}
 }
+
+/* App-first mobile navigation: portals own their identity; the universal bottom
+   toolbar and Menu replace the traditional website header on every app page. */
+@media(max-width:720px){
+ .v2-header{display:none!important}
+}
