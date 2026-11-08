@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CollectionButton } from "@/components/CollectionButton";
+import { SpeciesDashboardWorkspace } from "@/components/SpeciesDashboardWorkspace";
 import { PinToHome } from "@/components/PinToHome";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import { PlatformShell } from "@/components/PlatformShell";
@@ -81,7 +82,6 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
       || (Boolean(record.activity?.trim()) && /frequently visible|mostly concealed/.test(text));
   };
   const heroTraits = notableTraits.filter(trait=>!redundantTrait(trait)).slice(0,3);
-  const moreTraits = notableTraits.filter(trait=>!heroTraits.includes(trait)&&!redundantTrait(trait));
   let relatedGuides: { slug: string; title: string; summary: string }[] = [];
   try {
     const guides = await getGuideRecords();
@@ -115,36 +115,38 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
         </header>
 
         <div className={styles.dashboardBody}>
-          {about ? <details className={styles.dashboardAbout}>
-            <summary>
-              <span className={styles.aboutSymbol} aria-hidden="true">❧</span>
-              <span className={styles.aboutSummary}><strong>About {displayName}</strong><span className={styles.aboutPreview}>{about}</span></span>
-              <span className={styles.aboutChevron} aria-hidden="true">⌄</span>
-            </summary>
-            <div className={styles.aboutFull}><p>{authoredAbout || summary}</p></div>
-          </details> : null}
-
-          <section className={styles.dashboardCare} aria-labelledby="record-care-title">
-            <div className={styles.dashboardSectionHead}><div><p className={styles.sectionKicker}>Basic care &amp; behaviour</p><h2 id="record-care-title">At a glance</h2></div></div>
-            {quickFacts.length ? <dl className={styles.dashboardFacts}>
-              {quickFacts.map(({label,value})=><div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
-            </dl> : null}
-            {moisturePosition ? <div className={styles.dashboardMoisture} aria-label={"Moisture preference: "+moistureLabels[moisturePosition]}>
+          <SpeciesDashboardWorkspace scope={user?.id || "guest"} preview={previewRequested} widgets={{
+            about:about ? <details className={styles.dashboardAbout}>
+              <summary><span className={styles.aboutSymbol} aria-hidden="true">❧</span><span className={styles.aboutSummary}><strong>About {displayName}</strong><span className={styles.aboutPreview}>{about}</span></span><span className={styles.aboutChevron} aria-hidden="true">⌄</span></summary>
+              <div className={styles.aboutFull}><p>{authoredAbout || summary}</p></div>
+            </details> : null,
+            care:quickFacts.some(fact=>["Care level","Temperature","Ventilation"].includes(fact.label)) ? <section className={styles.dashboardCare} aria-label="Basic care">
+              <div className={styles.dashboardSectionHead}><p className={styles.sectionKicker}>Species quick reference</p><h2>Basic care</h2></div>
+              <dl className={styles.dashboardFacts}>{quickFacts.filter(fact=>["Care level","Temperature","Ventilation"].includes(fact.label)).map(({label,value})=><div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+            </section> : null,
+            behaviour:quickFacts.some(fact=>["Activity","Reproduction","Feeding response"].includes(fact.label)) ? <section className={styles.dashboardCare} aria-label="Behaviour and breeding">
+              <div className={styles.dashboardSectionHead}><p className={styles.sectionKicker}>Behaviour &amp; growth</p><h2>At a glance</h2></div>
+              <dl className={styles.dashboardFacts}>{quickFacts.filter(fact=>["Activity","Reproduction","Feeding response"].includes(fact.label)).map(({label,value})=><div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+            </section> : null,
+            moisture: moisturePosition ? <div className={styles.dashboardMoisture} aria-label={"Moisture preference: "+moistureLabels[moisturePosition]}>
               <div className={styles.moistureTop}><strong>Moisture preference</strong><span>{moistureLabels[moisturePosition]}</span></div>
               <div className={styles.moistureTrack} aria-hidden="true">{moisturePositions.map((item,index)=><span key={item} className={index===moistureIndex?styles.moistureSelected:""}/>)}</div>
               <div className={styles.moistureEnds}><span>Dry</span><span>Moist</span></div>
-            </div> : legacyMoisturePending ? <p className={styles.moisturePending}>Moisture preference awaiting review.</p> : null}
-            {!quickFacts.length&&!moisturePosition ? <p className={styles.empty}>Care characteristics are being prepared for this species.</p> : null}
-          </section>
+            </div> : legacyMoisturePending ? <p className={styles.moisturePending}>Moisture preference awaiting review.</p> : null,
+            feeding: feeding ? <section className={styles.speciesInfoCard}><h2>Feeding overview</h2><p>{feeding}</p></section> : null,
+            habitat: record.substrate?.trim() ? <section className={styles.speciesInfoCard}><h2>Habitat &amp; substrate</h2><p>{introText(record.substrate)}</p></section> : null,
+            traits: notableTraits.length ? <section className={styles.speciesInfoCard}><h2>Notable traits</h2><ul className={styles.compactTraits}>{notableTraits.map(trait=><li key={trait}>{trait}</li>)}</ul></section> : null,
+            guides: relatedGuides.length ? <section className={styles.speciesInfoCard}><h2>Related Field Guides</h2><div className={styles.relatedGuides}>{relatedGuides.map(guide=><Link href={`/field-guide/${guide.slug}`} key={guide.slug}><span><strong>{guide.title}</strong>{guide.summary?<small>{guide.summary}</small>:null}</span><b aria-hidden="true">→</b></Link>)}</div></section> : null
+          }} />
 
           <details className={styles.dashboardExplore}>
-            <summary><span className={styles.exploreMark} aria-hidden="true">✧</span><span className={styles.exploreCopy}><strong>Explore more</strong><small>Feeding, habitat, traits &amp; detailed guides</small></span><span className={styles.exploreArrow} aria-hidden="true">⌄</span></summary>
+            <summary><span className={styles.exploreMark} aria-hidden="true">✧</span><span className={styles.exploreCopy}><strong>Explore more</strong><small>Full reference, habitat &amp; detailed guides</small></span><span className={styles.exploreArrow} aria-hidden="true">⌄</span></summary>
             <div className={styles.detailContents}>
               {feeding ? <div className={styles.detailItem}><strong>Feeding overview</strong><p>{feeding}</p></div> : null}
               {record.substrate?.trim() ? <div className={styles.detailItem}><strong>Substrate overview</strong><p>{introText(record.substrate)}</p></div> : null}
-              {moreTraits.length ? <div className={styles.detailItem}><strong>Additional traits</strong><ul className={styles.compactTraits}>{moreTraits.map(trait=><li key={trait}>{trait}</li>)}</ul></div> : null}
+              {notableTraits.length ? <div className={styles.detailItem}><strong>Notable traits</strong><ul className={styles.compactTraits}>{notableTraits.map(trait=><li key={trait}>{trait}</li>)}</ul></div> : null}
               {relatedGuides.length ? <div className={styles.relatedGuides}>{relatedGuides.map(guide=><Link href={`/field-guide/${guide.slug}`} key={guide.slug}><span><strong>{guide.title}</strong>{guide.summary?<small>{guide.summary}</small>:null}</span><b aria-hidden="true">→</b></Link>)}</div> : null}
-              <p className={styles.detailDisclaimer}>These are general species tendencies, not precise care requirements. Provide an appropriate moisture gradient, and consult reliable species guides for specific husbandry.</p>
+              <p className={styles.detailDisclaimer}>This snapshot describes general tendencies, not precise care requirements. Research individual species and consult reliable guides for specific husbandry.</p>
               <Link className={styles.exploreGuideLink} href="/field-guide?topic=Species#all-guides">Browse Field Guides →</Link>
             </div>
           </details>
