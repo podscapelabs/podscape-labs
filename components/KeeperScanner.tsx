@@ -18,9 +18,30 @@ function readId(value:string):string|null {
  try {const url=new URL(raw);if(url.protocol!=="https:"&&url.protocol!=="http:")return null;const path=url.pathname.match(/\/(?:keeper|bins?)\/([a-f\d-]{36})(?:\/|$)/i);return path?.[1]||url.searchParams.get("bin")||null;}catch{return null;}
 }
 const tasks=[{label:"Misted",kind:"maintenance",note:"Misted",icon:"◌"},{label:"Fed",kind:"feeding",note:"Fed",icon:"◈"},{label:"Spot cleaned",kind:"maintenance",note:"Spot cleaned",icon:"✧"},{label:"Leaf litter",kind:"maintenance",note:"Leaf litter added",icon:"❧"}] as const;
-type CareRecord={id:string;binId:string;label:string;note:string;createdAt:string;previous:string|null};
+type CareRecord={id:string;binId:string;label:string;note:string;createdAt:string;previous:string|null;reminderBefore?:string|null};
 type LastOperation={records:CareRecord[];label:string};
 type ActivityEntry={id:string;kind:string;note:string;createdAt:string;quantityChange:number|null};
+/** Keep the optional on-device misting schedule aligned with a successful misting log. */
+function syncMistingReminder(binId:string,createdAt:string):string|null|undefined{
+ try{
+  const key="podscape-keeper-reminder-"+binId;
+  const previous=localStorage.getItem(key);
+  if(!previous)return undefined; // Never create a schedule the keeper did not choose.
+  const reminder=JSON.parse(previous);
+  if(!Number.isInteger(reminder?.intervalDays))return undefined;
+  const date=new Date(createdAt);
+  const localDay=[date.getFullYear(),String(date.getMonth()+1).padStart(2,"0"),String(date.getDate()).padStart(2,"0")].join("-");
+  localStorage.setItem(key,JSON.stringify({...reminder,lastMisted:localDay,updatedAt:new Date().toISOString()}));
+  return previous;
+ }catch{return undefined;}
+}
+function restoreMistingReminder(entry:CareRecord){
+ if(entry.reminderBefore===undefined)return;
+ try{const key="podscape-keeper-reminder-"+entry.binId;
+  if(entry.reminderBefore===null)localStorage.removeItem(key);
+  else localStorage.setItem(key,entry.reminderBefore);
+ }catch{/* Device-only reminder preferences may be unavailable. */}
+}
 function formatLast(value:string|null|undefined){
  if(!value)return "Never logged";
  const date=new Date(value);if(Number.isNaN(date.getTime()))return "Never logged";
@@ -122,7 +143,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
   if(result.success&&result.id){
    const previous=lastDates[bin.id]?.[note]||null;
    const createdAt=occurredOn?occurredOn+"T12:00:00Z":new Date().toISOString();
-   const entry:CareRecord={id:result.id,binId:bin.id,label,note,createdAt,previous};
+   const entry:CareRecord={id:result.id,binId:bin.id,label,note,createdAt,previous,reminderBefore:note==="Misted"?syncMistingReminder(bin.id,createdAt):undefined};
    setRecent(r=>[...r,entry]);setLastOperation({records:[entry],label});
    setLastDates(d=>({...d,[bin.id]:{...(d[bin.id]||{}),[note]:createdAt}}));
    setNotice(label+" saved");
@@ -157,7 +178,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
    const result=await logKeeperEventBatch({ids:chosenBins,kind,note});
    if(!result.success||!result.events){setError(result.error||"Could not save care for these bins.");return;}
    const createdAt=new Date().toISOString();
-   const entries:CareRecord[]=result.events.map(event=>({id:event.id,binId:event.enclosureId,label,note,createdAt,previous:lastDates[event.enclosureId]?.[note]||null}));
+   const entries:CareRecord[]=result.events.map(event=>({id:event.id,binId:event.enclosureId,label,note,createdAt,previous:lastDates[event.enclosureId]?.[note]||null,reminderBefore:note==="Misted"?syncMistingReminder(event.enclosureId,createdAt):undefined}));
    setRecent(r=>[...r,...entries]);
    setLastOperation({records:entries,label});
    setLastDates(d=>{const updated={...d};for(const entry of entries)updated[entry.binId]={...(updated[entry.binId]||{}),[note]:createdAt};return updated;});
@@ -172,6 +193,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
     ?await undoKeeperEventBatch({eventIds:operation.records.map(r=>r.id)})
     :await undoKeeperEvent({id:operation.records[0].id,enclosureId:operation.records[0].binId});
    if(!result.success){setError(result.error||"Undo failed.");return;}
+   for(const entry of operation.records)restoreMistingReminder(entry);
    const ids=new Set(operation.records.map(r=>r.id));
    setRecent(r=>r.filter(x=>!ids.has(x.id)));
    setLastDates(d=>{const updated={...d};for(const entry of operation.records)updated[entry.binId]={...(updated[entry.binId]||{}),[entry.note]:entry.previous||""};return updated;});
