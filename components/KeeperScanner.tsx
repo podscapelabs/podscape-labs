@@ -50,7 +50,7 @@ function formatLast(value:string|null|undefined){
  const now=new Date();if(date.toDateString()===now.toDateString())return "Today · "+date.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});
  return date.toLocaleDateString(undefined,{month:"short",day:"numeric",...(date.getFullYear()===now.getFullYear()?{}:{year:"numeric" as const})});
 }
-export function KeeperScanner({bins,initialBinId="",startManual=false,careDates={},activity={}}:{bins:Bin[];initialBinId?:string;startManual?:boolean;careDates?:Record<string,Record<string,string>>;activity?:Record<string,ActivityEntry[]>}){
+export function KeeperScanner({bins,initialBinId="",startManual=false,careMode=false,careDates={},activity={}}:{bins:Bin[];initialBinId?:string;startManual?:boolean;careMode?:boolean;careDates?:Record<string,Record<string,string>>;activity?:Record<string,ActivityEntry[]>}){
  const router=useRouter();
  const video=useRef<HTMLVideoElement>(null);const stream=useRef<MediaStream|null>(null);const lock=useRef(false);
  const canvas=useRef<HTMLCanvasElement|null>(null);
@@ -70,7 +70,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  const [confirmAllCare,setConfirmAllCare]=useState<{kind:string;note:string;label:string}|null>(null);
  const [lastOperation,setLastOperation]=useState<LastOperation|null>(null);
  const stop=()=>{stream.current?.getTracks().forEach(t=>t.stop());stream.current=null;canvas.current=null;setTorchOn(false);};
- function match(value:string){const id=readId(value);const found=bins.find(b=>b.id.toLowerCase()===id?.toLowerCase());if(found){lock.current=true;stop();if(state==="scanning"){router.push("/keeper/"+found.id);return true;}setSelected(found);setState("idle");setCustomNote("");setCustomDate("");setError("");setNotice(lastOperation?"Previous care action available to undo.":"");setMultiCare(false);setChosenBins([found.id]);setConfirmAllCare(null);return true;}setError("That code does not match an active bin in your collection.");return false;}
+ function match(value:string){const id=readId(value);const found=bins.find(b=>b.id.toLowerCase()===id?.toLowerCase());if(found){lock.current=true;stop();if(state==="scanning"&&!careMode){router.push("/keeper/"+found.id);return true;}setSelected(found);setState("idle");setCustomNote("");setCustomDate("");setError("");setNotice(lastOperation?"Previous care action available to undo.":"");setMultiCare(false);setChosenBins([found.id]);setConfirmAllCare(null);return true;}setError("That code does not match an active bin in your collection.");return false;}
  useEffect(()=>()=>stop(),[]);
  useEffect(()=>{if(state!=="scanning")return;
  let live=true;let timer:ReturnType<typeof setInterval>|undefined;
