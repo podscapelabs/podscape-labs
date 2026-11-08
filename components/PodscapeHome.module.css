@@ -587,3 +587,13 @@
  .spotlightRail .tileVisual:has(.tilePlaceholder)::after{width:28px;height:28px;right:15%;top:17%}
  .spotlightRail .tilePlaceholder svg{width:44px;height:44px}
 }
+
+/* Six shortcuts in a single compact row, retaining Home's original density. */
+.shortcuts{grid-template-columns:repeat(6,minmax(0,1fr))}
+@media(max-width:720px){
+ .shortcuts{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;overflow:visible}
+ .shortcuts>.shortcut{flex:none;min-width:0;width:100%;min-height:74px;padding:7px 1px;font-size:clamp(.54rem,2.1vw,.66rem)}
+ .shortcuts>.shortcut .shortcutIcon{width:29px;height:29px}
+ .shortcuts>.shortcut .shortcutIcon svg{width:20px;height:20px}
+ .shortcuts>.shortcut>span:last-child{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;white-space:normal;overflow:hidden;overflow-wrap:anywhere;line-height:1.12;max-width:100%;padding-inline:1px}
+}
