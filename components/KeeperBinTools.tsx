@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import styles from "./KeeperScanner.module.css";
-type Props={binId:string;binName:string;species:string};
-export function KeeperBinTools({binId,binName,species}:Props){
+type Props={binId:string;binName:string;species:string;lastRecordedMisting?:string};
+export function KeeperBinTools({binId,binName,species,lastRecordedMisting}:Props){
  const [interval,setInterval]=useState("3");
  const [message,setMessage]=useState("");
- const [lastMisted,setLastMisted]=useState("");
+ const [lastMisted,setLastMisted]=useState(lastRecordedMisting?lastRecordedMisting.slice(0,10):"");
  useEffect(()=>{try{const saved=JSON.parse(localStorage.getItem("podscape-keeper-reminder-"+binId)||"null");if(saved&&Number.isInteger(saved.intervalDays))setInterval(String(saved.intervalDays));if(typeof saved?.lastMisted==="string")setLastMisted(saved.lastMisted);}catch{}},[binId]);
  const due=lastMisted&&Number(interval)>0?new Date(lastMisted+"T12:00:00"):null;if(due&&!Number.isNaN(due.getTime()))due.setDate(due.getDate()+Number(interval));
  // Resolve the host at interaction time rather than on the server.
