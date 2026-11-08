@@ -94,25 +94,32 @@
 }
 @media(prefers-reduced-motion:reduce){.nav.editing>.item.jiggling{animation:none}}
 
-/* Every customizable slot uses the same fixed icon/label tracks. A one-line
-   label occupies the same space as a two-line label, so swapping shortcuts
-   cannot shift icons or text. The raised middle action only changes its shell. */
+/* Keep the original compact toolbar footprint. All five slots reserve the
+   same space for icon + up to two text lines; labels never enlarge the bar. */
 @media (max-width: 720px) {
+  .nav {
+    padding: 7px 6px 5px;
+    align-items: end;
+  }
   .nav > .item {
+    box-sizing: border-box;
     min-width: 0;
-    min-height: 64px;
+    width: 100%;
+    height: 53px;
+    min-height: 53px;
     display: grid;
-    grid-template-rows: 29px 2.4em;
+    grid-template-rows: 24px 23px;
     align-content: center;
     justify-items: center;
-    row-gap: 4px;
-    padding: 4px 2px;
+    row-gap: 2px;
+    padding: 2px 1px;
   }
   .nav > .item span {
-    width: 29px;
-    height: 29px;
+    width: 24px;
+    height: 24px;
     align-self: center;
   }
+  .nav > .item svg { width: 23px; height: 23px; }
   .nav > .item small {
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -122,22 +129,26 @@
     overflow-wrap: anywhere;
     width: 100%;
     max-width: 100%;
-    height: 2.4em;
+    height: 23px;
     margin: 0;
-    line-height: 1.2;
-    font-size: .57rem;
+    font-size: .55rem;
+    line-height: 11.5px;
     text-align: center;
     align-self: center;
     align-content: center;
   }
   .nav > .primary {
-    width: 74px;
-    height: 74px;
-    min-height: 74px;
-    margin: -25px auto 0;
-    padding: 5px 4px;
-    grid-template-rows: 29px 2.4em;
+    box-sizing: border-box;
+    width: min(62px, 100%);
+    height: 62px;
+    min-height: 62px;
+    margin: -16px auto 0;
+    padding: 4px 2px;
+    grid-template-rows: 25px 23px;
+    row-gap: 2px;
     align-content: center;
-    row-gap: 4px;
+    border-radius: 20px;
   }
+  .nav > .primary span { width: 25px; height: 25px; }
+  .nav > .primary svg { width: 25px; height: 25px; }
 }
