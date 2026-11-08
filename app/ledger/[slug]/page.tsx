@@ -129,10 +129,11 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
               <div className={styles.moistureTrack} aria-hidden="true">{moisturePositions.map((item,index)=><span key={item} className={index===moistureIndex?styles.moistureSelected:""}/>)}</div>
               <div className={styles.moistureEnds}><span>Dry</span><span>Moist</span></div>
             </div> : legacyMoisturePending ? <p className={styles.moisturePending}>Moisture preference awaiting review.</p> : null,
-            advanced: feeding || record.substrate?.trim() ? <section className={styles.speciesInfoCard} aria-label="Advanced care">
+            advanced: feeding || record.substrate?.trim() || relatedGuides.length ? <section className={styles.speciesInfoCard} aria-label="Advanced care">
               <h2>Advanced Care</h2>
               {feeding ? <div className={styles.advancedCareDetail}><strong>Feeding</strong><p>{feeding}</p></div> : null}
               {record.substrate?.trim() ? <div className={styles.advancedCareDetail}><strong>Substrate &amp; habitat</strong><p>{introText(record.substrate)}</p></div> : null}
+              {relatedGuides.length ? <div className={styles.advancedCareDetail}><strong>Further reading</strong><div className={styles.relatedGuides}>{relatedGuides.map(guide=><Link href={`/field-guide/${guide.slug}`} key={guide.slug}><span><strong>{guide.title}</strong></span><b aria-hidden="true">→</b></Link>)}</div></div> : null}
               <p className={styles.advancedCareNote}>General observations, not a complete husbandry prescription. Consult species-specific guides for details.</p>
             </section> : null,
             feeding: feeding ? <section className={styles.speciesInfoCard}><h2>Feeding overview</h2><p>{feeding}</p></section> : null,
