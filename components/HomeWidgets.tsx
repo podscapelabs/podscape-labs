@@ -182,7 +182,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
       if(id==="greeting")return <div key={id} className={styles.homeBlock}>{greeting}</div>;
       if(id==="hero")return <div key={id} className={styles.homeBlock}>{hero}</div>;
       if(id==="shortcuts")return <div key={id} className={styles.homeBlock}>{shortcuts}</div>;
-      if(id==="spotlight")return <div key={id} className={styles.homeBlock}>{spotlight}</div>;
+      if(id==="spotlight")return spotlight ? <div key={id} className={styles.homeBlock}>{spotlight}</div> : null;
       if(id==="pins")return <section className={styles.section} key={id} aria-label="My Favorites">
         <div className={styles.heading}><h2>My Favorites</h2><Link href="/menu">Discover →</Link></div>
         {activePins.length?<div className={styles.pinnedGrid}>{activePins.map(item=><article key={pinKey(item)} className={styles.pinnedCard}>
