@@ -99,9 +99,9 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
               <p className={styles.editingNotice}>Choose the broad tendencies supported by your research. Keep the details in guides, not in every Ledger entry.</p>
               <div className="admin-form-grid two">
                 <label><span>Care level</span><select name="careLevel" defaultValue={selected.careLevel}>{["","Beginner","Intermediate","Advanced","Expert"].map(value=><option key={value} value={value}>{value||"Unspecified"}</option>)}{selected.careLevel&&!["","Beginner","Intermediate","Advanced","Expert"].includes(selected.careLevel)?<option value={selected.careLevel}>{selected.careLevel} (existing)</option>:null}</select></label>
-                <label><span>Moisture preference</span><select name="moistureProfile" defaultValue={selected.moistureProfile||""}>
+                <label><span>Legacy moisture tendency</span><select name="moistureProfile" defaultValue={selected.moistureProfile||""}>
                   <option value="">Unspecified</option><option value="dry-leaning">Drier side</option><option value="dry-balanced">Dry to balanced</option><option value="balanced">Balanced</option><option value="balanced-moist">Balanced to moist</option><option value="moist-leaning">Moister side</option>
-                </select><small>Relative preference along a moisture gradient, not a humidity percentage.</small></label>
+                </select><small>Existing single-point reference; a reviewed range below takes priority on the profile. Not a humidity percentage.</small></label>
                 <div className={styles.moistureRangeEditor}>
                   <strong>Recommended substrate moisture range</strong>
                   <small>Choose the general range supported by husbandry references. This is not an exact relative humidity percentage or experimentally measured preference.</small>
