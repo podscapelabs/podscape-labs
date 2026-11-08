@@ -138,3 +138,59 @@
  .feedingPreview p{font-size:.77rem}
 }
 @media(max-width:360px){.compactPhoto{flex-basis:86px;width:86px;height:86px}.identity h1{font-size:2rem}.compactFacts dd{font-size:.79rem}}
+
+
+/* Species Dashboard · scan-first presentation */
+.profileTopline{padding-top:12px}
+.compactHero{position:relative;isolation:isolate;overflow:hidden;min-height:166px;gap:18px;padding:20px;border:1px solid var(--border);border-radius:20px;background:radial-gradient(ellipse at 80% 0%,color-mix(in srgb,var(--accent) 12%,transparent),transparent 56%),linear-gradient(140deg,var(--surface),var(--surface-secondary));box-shadow:var(--shadow-soft)}
+.compactHero:before{content:"";position:absolute;right:-12%;top:-100%;width:70%;height:210%;border-radius:50%;border:1px solid color-mix(in srgb,var(--accent) 23%,transparent);transform:rotate(32deg);z-index:-1;pointer-events:none}
+.compactHero .compactPhoto{border-radius:50%;flex:0 0 142px;width:142px;height:142px;border:3px solid var(--border);box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 10%,transparent)}
+.heroTraits{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin:12px 0 0;padding:0}
+.heroTraits li{max-width:100%;padding:6px 9px;border:1px solid var(--border);border-radius:999px;background:color-mix(in srgb,var(--surface) 82%,transparent);font-size:.68rem;line-height:1.25;color:var(--text-secondary);font-weight:660}
+.dashboardBody{max-width:980px;display:grid;gap:15px;padding:15px 0 26px}
+.dashboardAbout{display:grid;grid-template-columns:42px minmax(0,1fr);gap:14px;align-items:center;padding:15px 17px;border:1px solid var(--border);border-radius:18px;background:var(--surface)}
+.aboutSymbol{display:grid;place-items:center;align-self:start;width:38px;height:38px;border-radius:50%;background:color-mix(in srgb,var(--accent) 14%,var(--surface-secondary));color:var(--accent);font-size:1.4rem}
+.dashboardAbout h2{margin:0 0 4px;font-family:var(--display);font-weight:550;font-size:1.28rem}
+.dashboardAbout p{margin:0;color:var(--text-secondary);font-size:.8rem;line-height:1.45}
+.dashboardCare{display:grid;gap:10px}
+.dashboardSectionHead h2{margin:4px 0 1px;font-family:var(--display);font-weight:550;font-size:1.85rem;line-height:1.1}
+.dashboardFacts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0}
+.dashboardFacts>div{min-width:0;padding:12px 13px;border:1px solid var(--border);border-radius:14px;background:var(--surface);display:grid;gap:5px;align-content:center}
+.dashboardFacts dt{color:var(--text-secondary);font-size:.61rem;letter-spacing:.065em;text-transform:uppercase;font-weight:780}
+.dashboardFacts dd{color:var(--text-primary);font-size:.91rem;font-weight:640;line-height:1.25;margin:0;overflow-wrap:anywhere}
+.dashboardMoisture{display:grid;gap:9px;padding:13px 16px;background:var(--surface);border:1px solid var(--border);border-radius:16px}
+.dashboardExplore{border:1px solid var(--border);border-radius:16px;background:linear-gradient(115deg,var(--surface),var(--surface-secondary));overflow:hidden}
+.dashboardExplore>summary{display:flex;align-items:center;gap:13px;list-style:none;cursor:pointer;padding:14px 17px}
+.dashboardExplore>summary::-webkit-details-marker{display:none}
+.exploreMark{display:grid;place-items:center;flex:0 0 36px;height:36px;border-radius:12px;background:color-mix(in srgb,var(--accent) 12%,var(--surface));color:var(--accent);font-size:1.4rem}
+.exploreCopy{display:grid;gap:3px;flex:1}
+.exploreCopy strong{font-family:var(--display);color:var(--text-primary);font-size:1.25rem;font-weight:570}
+.exploreCopy small{color:var(--text-secondary);font-size:.73rem}
+.exploreArrow{color:var(--accent);font-size:1.4rem;transition:transform .2s}
+.dashboardExplore[open] .exploreArrow{transform:rotate(180deg)}
+.dashboardExplore .detailContents{padding:2px 16px 17px}
+.exploreGuideLink{color:var(--accent);font-weight:760;font-size:.77rem;text-decoration:none}
+.dashboardPersonal{display:grid;gap:9px;padding:12px 0 0;border-top:1px solid var(--border)}
+.dashboardPersonalTitle{font-family:var(--display);font-size:1.15rem;font-weight:560}
+.dashboardPersonalActions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.dashboardPersonalActions :global(button),.dashboardPersonalActions .collectionDestination{font-size:.73rem}
+.collectionDestination{display:inline-flex;align-items:center;min-height:42px;padding:9px 13px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--accent);text-decoration:none;font-weight:750}
+.dashboardExplore>summary:focus-visible,.exploreGuideLink:focus-visible,.collectionDestination:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media(max-width:600px){
+ .compactHero{min-height:134px;padding:14px;gap:10px}
+ .compactHero .compactPhoto{flex-basis:100px;width:100px;height:100px}
+ .compactHero .identity h1{font-size:clamp(1.95rem,8vw,2.8rem)}
+ .compactHero .identity .scientific{font-size:.93rem}
+ .heroTraits{margin-top:8px;gap:5px}
+ .heroTraits li{font-size:.62rem;padding:5px 8px}
+ .dashboardBody{gap:13px;padding-top:12px}
+ .dashboardAbout{grid-template-columns:34px minmax(0,1fr);gap:11px;padding:12px}
+ .aboutSymbol{width:32px;height:32px}
+ .dashboardAbout h2{font-size:1.16rem}
+ .dashboardAbout p{font-size:.76rem}
+ .dashboardFacts{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .dashboardFacts>div{padding:11px 12px;min-height:62px}
+ .dashboardFacts dt{font-size:.59rem}
+ .dashboardFacts dd{font-size:.84rem}
+}
+@media(max-width:370px){.compactHero .compactPhoto{flex-basis:83px;width:83px;height:83px}.heroTraits li{font-size:.59rem}}
