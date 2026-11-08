@@ -26,17 +26,22 @@ const library:Tool[]=[
  {id:"activity",label:"Recent activity",href:"/keeper/activity",icon:"note"}
 ];
 type Layout={order:Section[];visible:Section[];tools:string[]};
-const initial:Layout={order:defaults,visible:["tools","enclosures","care","activity","stats"],tools:["scan","qr","add","care","schedule","notes"]};
+const initial:Layout={order:defaults,visible:["tools","enclosures","care"],tools:["scan","care","colonies","add","schedule","qr"]};
+const detailed:Layout={order:defaults,visible:[...defaults],tools:[...initial.tools]};
 function normalize(value:unknown):Layout{
  if(!value||typeof value!=="object")return initial;
  const raw=value as Partial<Layout>;
  const previousDefault=["stats","care","tools","activity","enclosures","insights"];
  const oldUntouched=Array.isArray(raw.order)&&raw.order.join("|")===previousDefault.join("|");
+ const previousLaunchVisible=["stats","care","tools","activity","enclosures"];
+ const previousCompactVisible=["tools","enclosures","care","activity","stats"];
+ const untouchedVisibility=Array.isArray(raw.visible)&&[previousLaunchVisible,previousCompactVisible].some(items=>items.length===raw.visible!.length&&items.every(item=>raw.visible!.includes(item as Section)));
+ const untouchedTools=Array.isArray(raw.tools)&&raw.tools.join("|")==="scan|qr|add|care|schedule|notes";
  const order=oldUntouched?[...defaults]:[...uniqueAllowed(Array.isArray(raw.order)?raw.order:[],defaults),...defaults].filter((v,i,a)=>a.indexOf(v)===i);
  // Existing layouts keep their custom selections, but gain the new care/activity widgets on upgrade.
  const legacy=Array.isArray(raw.order)&&!raw.order.some(v=>v==="care"||v==="activity"||v==="insights");
- const visible=Array.isArray(raw.visible)?defaults.filter(v=>raw.visible!.includes(v)||(legacy&&(v==="care"||v==="activity"))):initial.visible;
- const tools=Array.isArray(raw.tools)?raw.tools.filter(v=>library.some(t=>t.id===v)).filter((v,i,a)=>a.indexOf(v)===i).slice(0,6):initial.tools;
+ const visible=Array.isArray(raw.visible)?(oldUntouched&&untouchedVisibility?initial.visible:defaults.filter(v=>raw.visible!.includes(v)||(legacy&&(v==="care"||v==="activity")))):initial.visible;
+ const tools=Array.isArray(raw.tools)?(oldUntouched&&untouchedTools?initial.tools:raw.tools.filter(v=>library.some(t=>t.id===v)).filter((v,i,a)=>a.indexOf(v)===i).slice(0,6)):initial.tools;
  return {order,visible,tools:tools.length?tools:initial.tools};
 }
 export function ManagerWorkspace({stats,enclosures,bins,events,activityAvailable,scope,primaryHref}:{stats:ReactNode;enclosures:ReactNode;bins:ManagerBin[];events:ManagerEvent[];activityAvailable:boolean;scope:string;primaryHref:string}){
@@ -47,6 +52,7 @@ export function ManagerWorkspace({stats,enclosures,bins,events,activityAvailable
  const [canvasEditing,setCanvasEditing]=useState(false);
  const [slot,setSlot]=useState<number|null>(null);
  const [query,setQuery]=useState("");
+ const [showDirectory,setShowDirectory]=useState(false);
  // Preserve the position of the section the user held while editor controls mount above it.
  const editAnchor=useRef<{id:Section;top:number}|null>(null);
  const enterCanvas=(id?:Section)=>{
@@ -77,7 +83,8 @@ export function ManagerWorkspace({stats,enclosures,bins,events,activityAvailable
  const searchResults=matching?bins.filter(bin=>[bin.name,bin.label,bin.species,bin.status].some(value=>value?.toLocaleLowerCase().includes(matching))).slice(0,8):[];
  const {dragging,begin,move:dragMove,stop}=useWorkspaceDrag<Section>("manager",visible,reorder);
  const finishCanvas=()=>{stop();editAnchor.current=null;setCanvasEditing(false)};
- const resetToDefault=()=>{if(!window.confirm("Restore the default Manager layout and Quick Tools? Your colony records will not be affected."))return;stop();update({order:[...defaults],visible:[...defaults],tools:[...initial.tools]});setSlot(null)};
+ const resetToDefault=()=>{if(!window.confirm("Restore the default Manager dashboard? Your colony records will not be affected."))return;stop();update({...initial,order:[...defaults],visible:[...initial.visible],tools:[...initial.tools]});setSlot(null)};
+ const applyPreset=(preset:"compact"|"detailed")=>{const base=preset==="compact"?initial:detailed;update({...layout,order:[...base.order],visible:[...base.visible]});setSlot(null)};
  const sections:Record<Section,ReactNode>={
   stats,
   care:<ManagerCareOverview bins={bins}/>,
@@ -100,15 +107,17 @@ export function ManagerWorkspace({stats,enclosures,bins,events,activityAvailable
   {editing?<div className={homeStyles.homeEditorOverlay} onPointerDown={e=>{if(e.target===e.currentTarget){setEditing(false);setSlot(null)}}}>
    <div className={`${homeStyles.widgetEditor} ${homeStyles.widgetLibrary}`} role="dialog" aria-modal="true" aria-labelledby="manager-widget-title">
     <div className={homeStyles.homeEditorHead}><div><small>YOUR WORKSPACE, YOUR WAY</small><h2 id="manager-widget-title">Widget Library</h2></div><button type="button" onClick={()=>{setEditing(false);setSlot(null)}}>Done</button></div>
-    <p>Add or remove Manager sections, and choose the Quick Tools you use most.</p>
+    <p>Keep the dashboard simple or bring your entire collection overview onto one screen. Every keeper tool remains available either way.</p>
+    <div className={styles.managerPresets} role="group" aria-label="Dashboard starting layouts"><button type="button" onClick={()=>applyPreset("compact")}>Compact dashboard <small>Shortcuts, colonies and care</small></button><button type="button" onClick={()=>applyPreset("detailed")}>Detailed dashboard <small>All collection widgets</small></button></div>
     <div className={homeStyles.widgetLibraryActions}><span>{layout.visible.length} of {defaults.length} sections shown</span><button type="button" onClick={()=>{setEditing(false);setSlot(null);setCanvasEditing(true)}}>Arrange Manager</button></div>
     {slot!==null?<div className={styles.managerEditor}><div className={styles.managerPickerTitle}><h3>Replace Quick Tool {slot+1}</h3><button type="button" onClick={()=>setSlot(null)} aria-label="Close tool picker">×</button></div><div className={styles.managerToolLibrary}>{library.map(tool=><button type="button" key={tool.id} onClick={()=>swap(tool.id)}><PodscapeLineIcon name={tool.icon}/><span>{tool.label}</span>{layout.tools[slot]===tool.id?" ✓":""}</button>)}</div></div>:
     <div className={homeStyles.widgetLibraryGroups}><section><h3>Manager widgets</h3><div className={homeStyles.widgetGallery}>{defaults.map(id=><article key={id} className={homeStyles.widgetGalleryCard}><div className={homeStyles.widgetPreview}><span><PodscapeLineIcon name={id==="stats"?"leaf":id==="tools"?"scan":id==="care"?"droplet":id==="activity"?"note":id==="insights"?"community":"jar"}/></span><div><strong>{labels[id]}</strong><small>{id==="stats"?"Species, bins and population":id==="care"?"Due misting and schedules":id==="tools"?"Your everyday keeper actions":id==="activity"?"Latest care records":id==="insights"?"Trends from your records":"Recently updated enclosures"}</small></div></div><div className={homeStyles.widgetGalleryCopy}><strong>{labels[id]}</strong><p>{id==="tools"?"Customize your six quick actions.":"Choose whether this section appears on your Manager."}</p><button type="button" className={layout.visible.includes(id)?homeStyles.widgetRemove:homeStyles.widgetAdd} onClick={()=>update({...layout,visible:layout.visible.includes(id)?layout.visible.filter(v=>v!==id):[...layout.visible,id]})}>{layout.visible.includes(id)?"✓ Added · Remove":"+ Add to Manager"}</button>{id==="tools"?<div className={styles.managerToolLibrary} aria-label="Choose a Quick Tool slot to edit">{layout.tools.map((toolId,i)=><button type="button" key={i} onClick={()=>setSlot(i)} aria-label={`Replace ${library.find(tool=>tool.id===toolId)?.label||"Quick Tool"} in slot ${i+1}`}><span>{i+1}. {library.find(tool=>tool.id===toolId)?.label||"Quick Tool"}</span><span aria-hidden="true">✎</span></button>)}</div>:null}</div></article>)}</div></section></div>}
-    <div className={homeStyles.widgetLibraryFooter}><small>{layout.visible.length} widget{layout.visible.length===1?"":"s"} on your Manager · Saved on this device</small><button type="button" onClick={()=>{if(!window.confirm("Restore the default Manager layout and Quick Tools? Your colony records will not be affected."))return;update(initial);setSlot(null)}}>Reset layout</button></div>
+    <div className={homeStyles.widgetLibraryFooter}><small>{layout.visible.length} widget{layout.visible.length===1?"":"s"} on your Manager · All tools always accessible · Saved on this device</small><button type="button" onClick={resetToDefault}>Reset layout</button></div>
    </div>
   </div>:null}
   {visible.map((id,index)=><WorkspaceEditBlock key={id} id={id} scope="manager" label={labels[id]} index={index} count={visible.length} editing={canvasEditing} dragging={dragging===id} required={false} onMove={move} onRemove={id=>update({...layout,visible:layout.visible.filter(v=>v!==id)})} begin={begin} move={dragMove} stop={stop} onLongPress={()=>enterCanvas(id)}>{sections[id]}</WorkspaceEditBlock>)}
   {ready&&layout.visible.length===0?<div className={styles.managerHint}>All Manager sections are hidden. <button type="button" className={styles.managerTextButton} onClick={()=>{setEditing(true);setSlot(null)}}>Open Widget Library</button></div>:null}
-  <div className={styles.managerFallback}><Link href="/keeper/collection">All colonies →</Link><Link href="/keeper/scan">Scan bin →</Link><Link href="/keeper/schedule">Schedule →</Link><Link href="/keeper/activity">Activity →</Link><button type="button" className={styles.managerTextButton} onClick={()=>{setEditing(true);setSlot(null)}}>Customize Manager</button></div>
+  <div className={styles.managerFooterNav}><button type="button" aria-expanded={showDirectory} aria-controls="manager-tool-directory" onClick={()=>setShowDirectory(value=>!value)}><PodscapeLineIcon name="menu"/><span>{showDirectory?"Hide all tools":"Explore all Manager tools"}</span><b aria-hidden="true">{showDirectory?"−":"+"}</b></button><button type="button" onClick={()=>{setEditing(true);setSlot(null)}}><PodscapeLineIcon name="manager"/><span>Customize dashboard</span><b aria-hidden="true">→</b></button></div>
+  {showDirectory?<nav id="manager-tool-directory" className={styles.managerDirectory} aria-label="All Manager tools">{library.map(tool=><Link key={tool.id} href={tool.id==="care"?"/keeper/scan?manual=1":tool.id==="notes"?primaryHref:tool.id==="history"?"/keeper/activity":tool.href}><PodscapeLineIcon name={tool.icon}/><span>{tool.label}</span><b aria-hidden="true">→</b></Link>)}</nav>:null}
  </div>;
 }
