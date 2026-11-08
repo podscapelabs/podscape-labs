@@ -41,3 +41,49 @@
  .careGrid { grid-template-columns: repeat(3,minmax(0,1fr)); }
 }
 @media (max-width: 360px) { .intro h1 { font-size: 2.5rem; } .careGrid div { padding: 11px; } .artwork { width: min(100%,290px); } }
+
+/* Leaf Ledger species profiles: concise identity + modular reference cards. */
+.hero{align-items:center;gap:10px;padding-top:13px;padding-bottom:17px}
+.intro h1{font-size:clamp(2.6rem,9vw,4.8rem)}
+.scientific{font-size:clamp(1.08rem,4vw,1.55rem)}
+.heroAction{margin-top:17px}
+.artwork{width:min(100%,300px)}
+.section{grid-template-columns:minmax(0,1fr);gap:13px;padding:20px 0}
+.sectionHeading h2{margin:4px 0 0}
+.aboutCard,.collectionCard,.guidePanel{min-width:0;padding:17px;border:1px solid var(--border);border-radius:var(--radius-medium,16px);background:var(--surface)}
+.aboutCard p,.collectionCard p,.guideIntro p{margin:0;color:var(--text-secondary);font-size:.84rem;line-height:1.6;overflow-wrap:anywhere}
+.aboutCard p{color:var(--text-primary)}
+.careGrid{gap:9px}
+.careGrid div{padding:15px;border-radius:var(--radius-small,13px);background:var(--surface)}
+.careGrid dt{font-size:.6rem;letter-spacing:.075em}
+.careGrid dd{font-size:.91rem;font-weight:550}
+.guidePanel{display:grid;gap:15px}
+.guideIntro{display:grid;gap:6px}
+.guideIntro>strong{color:var(--text-primary);font:500 1.24rem/1.2 var(--display)}
+.relatedGuides{display:grid;gap:7px}
+.relatedGuides a{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid var(--border);border-radius:var(--radius-small,12px);background:var(--surface-secondary);text-decoration:none;color:var(--text-primary)}
+.relatedGuides span{display:grid;gap:4px;min-width:0}
+.relatedGuides strong{font-size:.8rem}
+.relatedGuides small{color:var(--text-secondary);font-size:.7rem;line-height:1.4}
+.relatedGuides b{color:var(--accent)}
+.guideLink{justify-self:start;display:inline-flex;padding:11px 15px;border:1px solid var(--border);border-radius:999px;color:var(--accent);font-size:.77rem;font-weight:750;text-decoration:none}
+.guideLink:hover,.relatedGuides a:hover{border-color:var(--accent)}
+.collectionCard{display:grid;justify-items:start;gap:12px}
+.collectionCard a{color:var(--accent);font-size:.78rem;font-weight:750}
+.bottomNav{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:20px 0 10px}
+.bottomNav a{color:var(--accent);font-size:.77rem;font-weight:750;text-decoration:none}
+#keeper-record{scroll-margin-top:20px}
+@media(min-width:780px){
+ .hero{gap:24px;padding:20px 0 24px}
+ .artwork{width:min(100%,365px)}
+ .section{grid-template-columns:minmax(195px,.36fr) minmax(0,1fr);gap:23px;padding:27px 0}
+ .careGrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:600px){
+ .hero{padding-top:8px;gap:2px}
+ .artwork{width:min(100%,275px)}
+ .section{padding:19px 0}
+ .section h2{font-size:clamp(1.65rem,6vw,2.05rem)}
+ .aboutCard,.collectionCard,.guidePanel{padding:14px}
+ .careGrid div{padding:12px}
+}
