@@ -58,10 +58,45 @@ export async function logKeeperEvent(input:{ id:string; kind:string; note:string
 /** Undo a care entry created in the active Quick Care session. Ownership is checked server-side. */
 export async function undoKeeperEvent(input:{id:string;enclosureId:string}):Promise<Result>{
  await requireCustomerPreviewAccess();
- if(!/^[a-f\\d-]{36}$/i.test(input.id)||!/^[a-f\\d-]{36}$/i.test(input.enclosureId))return{success:false,error:"Invalid care entry."};
+ if(!/^[a-f\d-]{36}$/i.test(input.id)||!/^[a-f\d-]{36}$/i.test(input.enclosureId))return{success:false,error:"Invalid care entry."};
  const {db,user}=await keeperContext();if(!db||!user)return{success:false,error:"Sign in first."};
  const {data,error}=await db.from("keeper_events").delete().eq("id",input.id).eq("enclosure_id",input.enclosureId).eq("user_id",user.id).in("kind",["maintenance","feeding","observation"]).select("id").maybeSingle();
  if(error||!data)return{success:false,error:"Could not undo this entry. Refresh your care history."};
  revalidatePath("/keeper/"+input.enclosureId);revalidatePath("/keeper");revalidatePath("/keeper/activity");
+ return{success:true};
+}
+
+type BatchResult={success:boolean;error?:string;events?:{id:string;enclosureId:string}[]};
+/** Save one independent maintenance record per selected, active enclosure. */
+export async function logKeeperEventBatch(input:{ids:string[];kind:string;note:string}):Promise<BatchResult>{
+ await requireCustomerPreviewAccess();
+ const ids=[...new Set(input.ids||[])];
+ if(ids.length<1||ids.length>100||ids.some(id=>!/^[a-f0-9-]{36}$/i.test(id))||
+  !["feeding","maintenance"].includes(input.kind)||!["Misted","Fed","Spot cleaned","Leaf litter added"].includes(input.note))
+  return{success:false,error:"Select up to 100 bins and a valid care action."};
+ const {db,user}=await keeperContext();if(!db||!user)return{success:false,error:"Sign in first."};
+ const {data:owned,error:checkError}=await db.from("keeper_enclosures").select("id").eq("user_id",user.id).eq("is_archived",false).in("id",ids);
+ if(checkError||!owned||owned.length!==ids.length)return{success:false,error:"Some selected bins are no longer active or do not belong to you."};
+ const timestamp=new Date().toISOString();
+ const {data,error}=await db.from("keeper_events").insert(ids.map(id=>({user_id:user.id,enclosure_id:id,kind:input.kind,note:input.note,created_at:timestamp}))).select("id,enclosure_id");
+ if(error||!data||data.length!==ids.length)return{success:false,error:"Could not save batch care. Check your care history before retrying."};
+ revalidatePath("/keeper");revalidatePath("/keeper/activity");
+ for(const id of ids)revalidatePath("/keeper/"+id);
+ return{success:true,events:data.map(row=>({id:String(row.id),enclosureId:String(row.enclosure_id)}))};
+}
+
+/** Undo every record from one successful multi-care operation, never other keepers' entries. */
+export async function undoKeeperEventBatch(input:{eventIds:string[]}):Promise<Result>{
+ await requireCustomerPreviewAccess();
+ const ids=[...new Set(input.eventIds||[])];
+ if(!ids.length||ids.length>100||ids.some(id=>!/^[a-f0-9-]{36}$/i.test(id)))return{success:false,error:"Invalid batch."};
+ const {db,user}=await keeperContext();if(!db||!user)return{success:false,error:"Sign in first."};
+ const {data:owned,error:checkError}=await db.from("keeper_events").select("id,enclosure_id").eq("user_id",user.id)
+  .in("id",ids).in("kind",["feeding","maintenance"]);
+ if(checkError||!owned||owned.length!==ids.length)return{success:false,error:"The original batch could not be verified."};
+ const {data:removed,error}=await db.from("keeper_events").delete().eq("user_id",user.id).in("id",ids).select("id");
+ if(error||!removed||removed.length!==ids.length)return{success:false,error:"Undo incomplete. Refresh your history before trying again."};
+ revalidatePath("/keeper");revalidatePath("/keeper/activity");
+ for(const id of new Set(owned.map(row=>String(row.enclosure_id))))revalidatePath("/keeper/"+id);
  return{success:true};
 }
