@@ -25,4 +25,4 @@ jobs:
       - name: Build Next.js application
         run: pnpm run build
       - name: Lint updated workspaces
-        run: pnpm exec eslint components/PodscapeWorkspaceUI.tsx components/KeeperScanner.tsx components/KeeperBinTools.tsx components/KeeperWorkspace.tsx app/keeper/scan/page.tsx app/keeper/actions.ts 'app/keeper/[id]/page.tsx' 'app/keeper/[id]/details/page.tsx' 'app/keeper/[id]/history/page.tsx' lib/keeper.ts app/shop/page.tsx app/ledger/page.tsx 'app/ledger/[slug]/page.tsx' components/LedgerPageIntro.tsx app/fun-zone/page.tsx app/fun-zone/FunZoneLibrary.tsx components/PuzzleLibrary.tsx app/community/page.tsx
+        run: pnpm exec eslint components/PodscapeWorkspaceUI.tsx components/KeeperScanner.tsx components/KeeperBinTools.tsx components/KeeperWorkspace.tsx app/keeper/scan/page.tsx app/keeper/actions.ts 'app/keeper/[id]/page.tsx' 'app/keeper/[id]/details/page.tsx' 'app/keeper/[id]/history/page.tsx' lib/keeper.ts app/shop/page.tsx app/ledger/page.tsx 'app/ledger/[slug]/page.tsx' components/LedgerPageIntro.tsx app/fun-zone/page.tsx app/fun-zone/FunZoneLibrary.tsx components/PuzzleLibrary.tsx components/PlayGame.tsx app/community/page.tsx
