@@ -5,6 +5,7 @@ export type NavChoice={id:string;label:string;href:string;icon:PodscapeIconName;
 export const navigationChoices:NavChoice[]=[
   {id:"home",label:"Home",href:"/app",icon:"home",tone:"sage",group:"Main",description:"Your Podscape homepage"},
   {id:"menu",label:"Menu",href:"/menu",icon:"menu",tone:"sand",group:"Main",description:"Explore all Podscape features"},
+  {id:"search",label:"Search",href:"/search",icon:"search",tone:"sage",group:"Main",description:"Find species, products, guides and more"},
   {id:"account",label:"Account",href:"/account",icon:"community",tone:"sage",group:"Main",description:"Your profile, rewards and account settings"},
   {id:"shop",label:"Shop",href:"/shop",icon:"shop",tone:"sand",group:"Discover",description:"Browse the Podscape shop"},
   {id:"ledger",label:"Ledger",href:"/ledger",icon:"leaf",tone:"sage",group:"Discover",description:"Explore species in the Leaf Ledger"},
