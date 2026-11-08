@@ -27,3 +27,13 @@
 .cardLink{color:var(--accent)}
 .futureCard small{color:var(--accent)}
 @media(max-width:700px){.main{padding:10px 0 45px}.sectionHeading{margin-bottom:12px}.exploreGrid{gap:9px}.futureGrid{gap:9px}}
+
+/* Community uses the same mobile edge and section rhythm as other portals. */
+@media(max-width:720px){
+ .main{padding-top:12px;padding-bottom:36px}
+ .hero{min-height:0;border-radius:20px}
+ .heroText{padding:24px 20px}
+ .intro{padding-top:22px;padding-bottom:0}
+ .section{margin-top:22px}
+ .sectionHeading{margin-bottom:12px}
+}
