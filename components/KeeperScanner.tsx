@@ -5,7 +5,7 @@ import Image from "next/image";
 import jsQR from "jsqr";
 import { logKeeperEvent, undoKeeperEvent, logKeeperEventBatch, undoKeeperEventBatch } from "@/app/keeper/actions";
 import styles from "./KeeperScanner.module.css";
-type Bin = { id:string; name:string; label:string; species:string; quantity:number; image:string|null };
+type Bin = { id:string; name:string; label:string; speciesId:string; species:string; quantity:number; image:string|null };
 type DetectedCode = { rawValue:string };
 type QRDetector = { detect:(source:HTMLVideoElement)=>Promise<DetectedCode[]> };
 type QRConstructor = new (options:{formats:string[]})=>QRDetector;
@@ -41,9 +41,10 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  const [showManual,setShowManual]=useState(false);
  const [multiCare,setMultiCare]=useState(false);
  const [chosenBins,setChosenBins]=useState<string[]>([]);
+ const [confirmAllCare,setConfirmAllCare]=useState<{kind:string;note:string;label:string}|null>(null);
  const [lastOperation,setLastOperation]=useState<LastOperation|null>(null);
  const stop=()=>{stream.current?.getTracks().forEach(t=>t.stop());stream.current=null;canvas.current=null;setTorchOn(false);};
- function match(value:string){const id=readId(value);const found=bins.find(b=>b.id.toLowerCase()===id?.toLowerCase());if(found){lock.current=true;stop();setSelected(found);setState("idle");setCustomNote("");setCustomDate("");setError("");setNotice("");setMultiCare(false);setChosenBins([found.id]);return true;}setError("That code does not match an active bin in your collection.");return false;}
+ function match(value:string){const id=readId(value);const found=bins.find(b=>b.id.toLowerCase()===id?.toLowerCase());if(found){lock.current=true;stop();setSelected(found);setState("idle");setCustomNote("");setCustomDate("");setError("");setNotice("");setMultiCare(false);setChosenBins([found.id]);setConfirmAllCare(null);return true;}setError("That code does not match an active bin in your collection.");return false;}
  useEffect(()=>()=>stop(),[]);
  useEffect(()=>{if(state!=="scanning")return;
  let live=true;let timer:ReturnType<typeof setInterval>|undefined;
@@ -108,7 +109,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  }
  async function toggleTorch(){if(await setCameraOption({torch:!torchOn}))setTorchOn(v=>!v);}
  async function updateZoom(value:number){if(await setCameraOption({zoom:value}))setZoom(value);}
- function beginScan(){lock.current=false;setSelected(null);setNotice("");setError("");setMultiCare(false);setChosenBins([]);setState("scanning");}
+ function beginScan(){lock.current=false;setSelected(null);setNotice("");setError("");setMultiCare(false);setChosenBins([]);setConfirmAllCare(null);setState("scanning");}
  function save(kind:string,note:string,label:string,occurredOn?:string){
  if(!selected||pending||saving.current)return;
  // A checked tile is a successful save in this session, not a toggle to delete.
@@ -130,20 +131,23 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  }
  function switchBin(bin:Bin){
   if(pending||undoPending)return;
-  setSelected(bin);setNotice("");setError("");setShowManual(false);setCustomNote("");setCustomDate("");setChosenBins([bin.id]);
+  setSelected(bin);setNotice("");setError("");setShowManual(false);setCustomNote("");setCustomDate("");setChosenBins([bin.id]);setConfirmAllCare(null);
  }
  function toggleMultiCare(){
   if(pending||undoPending)return;
-  setMultiCare(v=>!v);setChosenBins(selected?[selected.id]:[]);setNotice("");setError("");
+  setMultiCare(v=>!v);setChosenBins(selected?[selected.id]:[]);setConfirmAllCare(null);setNotice("");setError("");
  }
- function toggleChosen(id:string){setChosenBins(ids=>ids.includes(id)?ids.filter(v=>v!==id):[...ids,id]);}
+ function toggleChosen(id:string){setConfirmAllCare(null);setChosenBins(ids=>ids.includes(id)?ids.filter(v=>v!==id):[...ids,id]);}
  function selectSpecies(){
   if(!selected)return;
-  setChosenBins(bins.filter(b=>b.species===selected.species).map(b=>b.id));
+  setConfirmAllCare(null);setChosenBins(bins.filter(b=>b.speciesId===selected.speciesId).map(b=>b.id));
  }
- function saveMultiple(kind:string,note:string,label:string){
+ function selectAllEnclosures(){setConfirmAllCare(null);setChosenBins(bins.map(b=>b.id));}
+ function saveMultiple(kind:string,note:string,label:string,confirmed=false){
   if(!multiCare||pending||undoPending||saving.current)return;
   if(!chosenBins.length){setError("Select at least one enclosure.");return;}
+  if(chosenBins.length===bins.length&&bins.length>1&&!confirmed){setConfirmAllCare({kind,note,label});return;}
+  setConfirmAllCare(null);
   if(chosenBins.some(id=>recent.some(r=>r.binId===id&&r.label===label))){
    setError("This action was already logged for one of your selected bins this session. Adjust the selection or undo first.");return;
   }
@@ -176,6 +180,8 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  }
  const latest=lastOperation;
  const loggedForBin=selected?recent.filter(r=>r.binId===selected.id):[];
+ const speciesBins=selected?bins.filter(b=>b.speciesId===selected.speciesId):[];
+ const speciesPopulation=speciesBins.reduce((sum,bin)=>sum+bin.quantity,0);
  return <section className={styles.wrap}>
  {state!=="scanning"&&!selected?<div className={styles.heading}><div><p className={styles.kicker}>PODSCAPE LABS / KEEPER</p><h1>Quick Care</h1><p>Scan a bin, log care, and move on.</p></div><Link href="/ledger/my-collection">My Collection ↗</Link></div>:null}
  {state==="scanning"?<div className={styles.camera}><video ref={video} muted playsInline aria-label="QR scanning camera"/><div className={styles.brackets} aria-hidden="true"><span/><span/><span/><span/></div>{torchAvailable||zoomRange?<div className={styles.cameraControls}>{torchAvailable?<button type="button" onClick={toggleTorch} aria-pressed={torchOn}>{torchOn?"Light on":"Light off"}</button>:null}{zoomRange?<button type="button" onClick={()=>updateZoom(zoom>zoomRange.min+.1?zoomRange.min:Math.min(2,zoomRange.max))}>{zoom>zoomRange.min+.1?"1×":"2×"}</button>:null}</div>:null}</div>:null}
@@ -189,11 +195,14 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
    </div>
    <div className={styles.binPicker}>
     <div className={styles.binPickerHead}><div><h2>My enclosures</h2><p>{multiCare?"Tap bins to highlight them for care.":"Tap a bin to switch without scanning again."}</p></div><button type="button" className={styles.modeButton} aria-pressed={multiCare} onClick={toggleMultiCare} disabled={pending||undoPending}>{multiCare?"Done selecting":"Multi-care"}</button></div>
-    {multiCare?<div className={styles.selectionLine}><span>{chosenBins.length} selected</span><button type="button" onClick={selectSpecies}>Select all {selected.species}</button></div>:null}
+    {multiCare?<div className={styles.selectionLine}>
+      <span>{chosenBins.length} of {bins.length} selected</span>
+      <div className={styles.selectionActions}><button type="button" onClick={selectSpecies} disabled={pending||undoPending}>All {selected.species} ({speciesBins.length})</button><button type="button" onClick={selectAllEnclosures} disabled={pending||undoPending}>All bins ({bins.length})</button></div>
+    </div>:null}
     <div className={styles.binCarousel} role="group" aria-label={multiCare?"Choose bins for bulk care":"Choose a bin to view"}>
      {bins.map(bin=>{const marked=multiCare?chosenBins.includes(bin.id):bin.id===selected.id;return <button type="button" key={bin.id} className={marked?styles.binCardSelected:styles.binCard} onClick={()=>multiCare?toggleChosen(bin.id):switchBin(bin)} aria-pressed={marked} disabled={pending||undoPending}><span className={styles.binCardHeading}>{bin.species}<span aria-hidden="true">{marked?"✓":""}</span></span><strong>{bin.name}</strong><small>{bin.label||"No shelf assigned"}</small></button>;})}
     </div>
-    {multiCare?<p className={styles.bulkHint}>Each selected enclosure receives its own care record. Undo reverses the whole batch.</p>:null}
+    {multiCare?<p className={styles.bulkHint}>Each selected enclosure keeps its own care history and population. Undo reverses the batch.</p>:null}
    </div>
    <div className={styles.actionHead}><div><h2>{multiCare?"Multi-care":"Log care"}</h2><p>{multiCare?"Actions apply to the highlighted enclosures.":"Tap to save. Stay here to log more."}</p></div><span>{multiCare?chosenBins.length+" selected":loggedForBin.length+" this session"}</span></div>
    <div className={styles.careGrid}>{tasks.map(t=>{
