@@ -25,10 +25,10 @@ function normalize(value:unknown):Layout{
  if(!value||typeof value!=="object")return defaultLayout();
  const obj=value as Partial<Layout>;
  // Migrate layouts saved before Basic Care and Behaviour were combined.
- const oldOrder=Array.isArray(obj.order)?obj.order:[];
+ const oldOrder:unknown[]=Array.isArray(obj.order)?obj.order:[];
  const ordered=oldOrder.filter(id=>id!=="behaviour");
  const order=[...uniqueAllowed(ordered,defaultOrder),...defaultOrder].filter((v,i,a)=>a.indexOf(v)===i);
- const existing=Array.isArray(obj.visible)?obj.visible:defaultVisible;
+ const existing:unknown[]=Array.isArray(obj.visible)?obj.visible:defaultVisible;
  const migrated=existing.includes("behaviour")&&!existing.includes("care")?[...existing,"care"]:existing;
  const visible=uniqueAllowed(migrated,defaultOrder);
  return {order,visible};
