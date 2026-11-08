@@ -16,12 +16,13 @@ import { getGuideRecords } from "@/lib/guide-store";
 import { isSpeciesRecordActive, speciesDisplayName } from "@/data/species";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import { getHomepageSpotlights } from "@/lib/podscape-spotlights";
+import { isAdminAuthenticated } from "@/lib/admin-auth";
 import styles from "./PodscapeHome.module.css";
 
 type Tile={title:string;label:string;description:string;href:string;image?:string|null;alt?:string};
 function TileCard({item}:{item:Tile}){return <Link href={item.href} className={styles.tile}><div className={styles.tileVisual}>{item.image?<Image src={item.image} alt={item.alt||item.title} fill sizes="(max-width: 720px) 33vw, 300px"/>:<span className={styles.tilePlaceholder}><PodscapeLineIcon name={item.label==="GUIDE"?"book":item.label==="SHOP"?"shop":"podbound"}/></span>}<span className={styles.tileTag}>{item.label}</span></div><div className={styles.tileCopy}><strong>{item.title}</strong><small>{item.description}</small><span className={styles.tileArrow} aria-hidden="true">→</span></div></Link>}
 export async function MarketingSite(){
- const [records,products,guides,spotlights]=await Promise.all([getSpeciesRecords(),getProductRecords(),getGuideRecords(),getHomepageSpotlights()]);
+ const [records,products,guides,spotlights,isOwner]=await Promise.all([getSpeciesRecords(),getProductRecords(),getGuideRecords(),getHomepageSpotlights(),isAdminAuthenticated()]);
  const species=records.filter(r=>isSpeciesRecordActive(r)&&r.image).sort((a,b)=>Date.parse(b.updatedAt)-Date.parse(a.updatedAt));
  const hero=species[0];
  const db=await customerSupabase();
@@ -87,7 +88,7 @@ export async function MarketingSite(){
  <HomeWidgets recent={recent} colony={colony} progress={progress} pinOptions={pinOptions} userId={user?.id||null}
   greeting={<div className={styles.greetingWorkspace}><div className={styles.homeGreetingRow}><Link href="/account" className={styles.welcome}><span className={styles.welcomeMark}><PodscapeLineIcon name="leaf"/></span><HomeGreeting name={name}/><span className={styles.welcomeArrow}>→</span></Link></div><HomeSearch/></div>}
   hero={<section className={styles.hero} aria-label="Discover PodScape">{hero&&<Image src={hero.image!} alt={hero.imageAlt||speciesDisplayName(hero)} fill priority sizes="(max-width: 720px) 100vw, 1100px" className={styles.heroImage}/>}<div className={styles.heroContent}><span className={styles.eyebrow}>EXPLORE PODSCAPE</span><h2>Small creatures.<br/>Big world.</h2><p>Discover species, care guides, community and more.</p></div></section>}
-  shortcuts={<><CustomizableHomeShortcuts/><ShortcutWelcomeTip/><InstallPodscape/></>}
+  shortcuts={<><CustomizableHomeShortcuts isOwner={isOwner}/><ShortcutWelcomeTip/><InstallPodscape/></>}
   spotlight={featured.length ? <section className={styles.section} aria-label="Podscape Spotlight"><div className={styles.heading}><h2>Podscape Spotlight</h2><span className={styles.spotlightHint}>Swipe to explore <span aria-hidden="true">↔</span></span></div><div className={styles.spotlightRail} role="region" aria-roledescription="carousel" aria-label="Curated Podscape highlights" tabIndex={0}>{featured.map(item=><TileCard item={item} key={item.href}/>)}</div></section> : null}
  />
  </main></div>;
