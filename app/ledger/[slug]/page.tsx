@@ -6,6 +6,7 @@ import { PinToHome } from "@/components/PinToHome";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import { Breadcrumbs, PlatformShell } from "@/components/PlatformShell";
 import { SpecimenLeaf } from "@/components/SpecimenLeaf";
+import { SpeciesMoistureGradient, type MoisturePosition } from "@/components/SpeciesMoistureGradient";
 import { SpeciesDiscoveryTracker } from "@/components/SpeciesDiscoveryTracker";
 import styles from "@/components/SpeciesProfile.module.css";
 import { speciesDisplayName, speciesGenus, speciesRecordLabel, speciesScientificName } from "@/data/species";
@@ -44,9 +45,11 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
   const scientificName = speciesScientificName(record);
 
   // Only render explicitly authored species facts. Empty fields never become assumptions.
+  const moisturePositions:MoisturePosition[]=["dry-leaning","dry-balanced","balanced","balanced-moist","moist-leaning"];
+  const moisturePosition = moisturePositions.find(value=>value===record.moistureProfile);
   const quickFacts = [
     ["Care level", record.careLevel],
-    ["Moisture", record.moisture],
+    ...(!moisturePosition ? [["Moisture", record.moisture]] : []),
     ["Temperature", record.temperature],
     ["Ventilation", record.ventilation],
     ["Activity", record.activity],
@@ -110,7 +113,8 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
             </div>
             {quickFacts.length ? <dl className={styles.careGrid}>
               {quickFacts.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
-            </dl> : <p className={styles.empty}>Species characteristics have not been added to this entry yet.</p>}
+            </dl> : !moisturePosition ? <p className={styles.empty}>Species characteristics have not been added to this entry yet.</p> : null}
+            {moisturePosition ? <SpeciesMoistureGradient position={moisturePosition} note={record.moistureNote} /> : null}
           </section>
 
           {feeding ? <section className={styles.section} aria-labelledby="record-feeding-title">
