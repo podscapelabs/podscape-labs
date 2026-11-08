@@ -50,7 +50,18 @@ export async function logKeeperEvent(input:{ id:string; kind:string; note:string
  const { db,user }=await keeperContext(); if(!db || !user) return {success:false,error:"Sign in first."};
  const { data: owner }=await db.from("keeper_enclosures").select("id").eq("id",input.id).eq("user_id",user.id).maybeSingle();
  if(!owner) return {success:false,error:"Enclosure not found."};
- const {error}=await db.from("keeper_events").insert({user_id:user.id,enclosure_id:input.id,kind:input.kind,note:input.note.trim(),...(input.occurredOn?{created_at:input.occurredOn+"T12:00:00Z"}:{})});
- if(error) return {success:false,error:"Couldn't log the activity."};
- revalidatePath("/keeper/"+input.id);return {success:true};
+ const {data:event,error}=await db.from("keeper_events").insert({user_id:user.id,enclosure_id:input.id,kind:input.kind,note:input.note.trim(),...(input.occurredOn?{created_at:input.occurredOn+"T12:00:00Z"}:{})}).select("id").single();
+ if(error||!event) return {success:false,error:"Couldn't log the activity."};
+ revalidatePath("/keeper/"+input.id);revalidatePath("/keeper");revalidatePath("/keeper/activity");return {success:true,id:event.id};
+}
+
+/** Undo a care entry created in the active Quick Care session. Ownership is checked server-side. */
+export async function undoKeeperEvent(input:{id:string;enclosureId:string}):Promise<Result>{
+ await requireCustomerPreviewAccess();
+ if(!/^[a-f\\d-]{36}$/i.test(input.id)||!/^[a-f\\d-]{36}$/i.test(input.enclosureId))return{success:false,error:"Invalid care entry."};
+ const {db,user}=await keeperContext();if(!db||!user)return{success:false,error:"Sign in first."};
+ const {data,error}=await db.from("keeper_events").delete().eq("id",input.id).eq("enclosure_id",input.enclosureId).eq("user_id",user.id).in("kind",["maintenance","feeding","observation"]).select("id").maybeSingle();
+ if(error||!data)return{success:false,error:"Could not undo this entry. Refresh your care history."};
+ revalidatePath("/keeper/"+input.enclosureId);revalidatePath("/keeper");revalidatePath("/keeper/activity");
+ return{success:true};
 }
