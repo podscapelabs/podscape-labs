@@ -34,7 +34,19 @@ export function useWorkspaceDrag<T extends string>(
   scope:string,visible:readonly T[],reorder:(from:T,to:T)=>void
 ){
   const current=useRef<DragState<T>|null>(null);
+  const scrollFrame=useRef<number|null>(null);
   const [dragging,setDragging]=useState<T|null>(null);
+  // Continue auto-scrolling while the finger rests near an edge, not just on move events.
+  const scrollTick=()=>{
+    const drag=current.current;
+    if(!drag?.started){scrollFrame.current=null;return}
+    const upper=145,lower=window.innerHeight-155;
+    const amount=drag.lastY<upper?-Math.min(18,Math.max(3,(upper-drag.lastY)*.16))
+      :drag.lastY>lower?Math.min(18,Math.max(3,(drag.lastY-lower)*.16)):0;
+    if(amount)window.scrollBy(0,amount);
+    scrollFrame.current=requestAnimationFrame(scrollTick);
+  };
+  useEffect(()=>()=>{if(scrollFrame.current!==null)cancelAnimationFrame(scrollFrame.current)},[]);
   const begin=(id:T,event:PointerEvent<HTMLDivElement>)=>{
     if(event.pointerType==="mouse"&&event.button!==0)return;
     // The arrows remain independent of dragging. Only the handle starts a drag.
@@ -49,11 +61,8 @@ export function useWorkspaceDrag<T extends string>(
       if(Math.hypot(event.clientX-drag.startX,event.clientY-drag.startY)<6)return;
       drag.started=true;setDragging(drag.id);
     }
-    // iOS edits happen inside a small viewport with a top toolbar and bottom nav.
-    // Start scrolling before reaching either extreme, in BOTH directions.
-    const topEdge=145,bottomEdge=window.innerHeight-155;
-    if(event.clientY<topEdge)window.scrollBy(0,-Math.min(22,Math.max(7,(topEdge-event.clientY)*.25)));
-    else if(event.clientY>bottomEdge)window.scrollBy(0,Math.min(22,Math.max(7,(event.clientY-bottomEdge)*.25)));
+    // Keep scrolling even when the finger pauses at a viewport edge.
+    if(scrollFrame.current===null)scrollFrame.current=requestAnimationFrame(scrollTick);
 
     const delta=event.clientY-drag.lastY;
     drag.lastY=event.clientY;
@@ -84,7 +93,7 @@ export function useWorkspaceDrag<T extends string>(
     clearDropPreview(scope);
     animatedReorder(scope,()=>reorder(drag.id,visible[to]));
   };
-  const stop=()=>{clearDropPreview(scope);current.current=null;setDragging(null)};
+  const stop=()=>{clearDropPreview(scope);current.current=null;if(scrollFrame.current!==null)cancelAnimationFrame(scrollFrame.current);scrollFrame.current=null;setDragging(null)};
   return {dragging,begin,move,stop};
 }
 export function WorkspaceEditToolbar({title,description,onAdd,onReset,onDone}:{title:string;description:string;onAdd:()=>void;onReset:()=>void;onDone:()=>void}){
