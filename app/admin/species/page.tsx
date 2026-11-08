@@ -102,6 +102,19 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
                 <label><span>Moisture preference</span><select name="moistureProfile" defaultValue={selected.moistureProfile||""}>
                   <option value="">Unspecified</option><option value="dry-leaning">Drier side</option><option value="dry-balanced">Dry to balanced</option><option value="balanced">Balanced</option><option value="balanced-moist">Balanced to moist</option><option value="moist-leaning">Moister side</option>
                 </select><small>Relative preference along a moisture gradient, not a humidity percentage.</small></label>
+                <div className={styles.moistureRangeEditor}>
+                  <strong>Recommended substrate moisture range</strong>
+                  <small>Choose the general range supported by husbandry references. This is not an exact relative humidity percentage or experimentally measured preference.</small>
+                  <div className={styles.moistureRangeFields}>
+                    <label><span>Drier end</span><select name="moistureRangeStart" defaultValue={selected.moistureRangeStart ?? ""}>
+                      <option value="">Not yet reviewed</option><option value="1">1 · Dry</option><option value="2">2 · Slightly damp</option><option value="3">3 · Moderate</option><option value="4">4 · Damp</option><option value="5">5 · Very damp</option>
+                    </select></label>
+                    <label><span>Damper end</span><select name="moistureRangeEnd" defaultValue={selected.moistureRangeEnd ?? ""}>
+                      <option value="">Not yet reviewed</option><option value="1">1 · Dry</option><option value="2">2 · Slightly damp</option><option value="3">3 · Moderate</option><option value="4">4 · Damp</option><option value="5">5 · Very damp</option>
+                    </select></label>
+                  </div>
+                  <small>Set both ends, or leave both unreviewed. Keep a damp refuge available where the species requires one; this scale describes broad substrate conditions, not enclosure percentages.</small>
+                </div>
                 <label><span>Temperature · approximate</span><input name="temperature" defaultValue={selected.temperature} placeholder="e.g. 20–26°C" /></label>
                 <label><span>Ventilation</span><select name="ventilation" defaultValue={selected.ventilation}>{["","Low","Moderate","High"].map(value=><option key={value} value={value}>{value||"Unspecified"}</option>)}{selected.ventilation&&!["","Low","Moderate","High"].includes(selected.ventilation)?<option value={selected.ventilation}>{selected.ventilation} (existing)</option>:null}</select></label>
                 <label><span>Activity</span><select name="activity" defaultValue={selected.activity||""}>{["","Shy","Moderate","Active","Very Active"].map(value=><option key={value} value={value}>{value||"Unspecified"}</option>)}{selected.activity&&!["","Shy","Moderate","Active","Very Active"].includes(selected.activity)?<option value={selected.activity}>{selected.activity} (existing)</option>:null}</select></label>
