@@ -317,3 +317,14 @@
 .colonyBottomLinks{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:18px 0 8px}
 .colonyBottomLinks>a{font-size:.75rem;color:var(--accent);font-weight:700}
 @media(max-width:600px){.colonyWorkspacePage{padding-inline:0}.colonyCompactHero{gap:11px;margin-top:9px;padding:11px}.colonyCompactArt{width:65px;height:65px}.colonyCompactHeading h1{font-size:1.5rem}.colonyCompactHeading p{font-size:.73rem}.colonyDisclosure summary{padding:11px 13px}.colonyDisclosureBody{padding:10px}.colonyMoreHeading h2{font-size:1.35rem}}
+
+/* Care history archive: ensure event labels, notes and dates never collapse together. */
+.list{display:grid;gap:8px;margin:18px 0}
+.entry{display:flex;justify-content:space-between;align-items:center;gap:16px;min-width:0;border:1px solid var(--border);border-radius:10px;padding:12px 15px;background:var(--surface)}
+.entry>span:first-child{min-width:0;display:grid;gap:5px}
+.entry strong{display:block;text-transform:capitalize;font-size:.84rem;font-weight:750}
+.entry small{display:block;font-size:.73rem;line-height:1.45;color:var(--text-secondary);overflow-wrap:anywhere}
+.entry time,.entry>span:last-child{flex:none;font-size:.7rem;color:var(--text-secondary);white-space:nowrap}
+.lead{color:var(--text-secondary);font-size:.82rem;line-height:1.55;margin:12px 0 16px}
+.kicker{font-size:.66rem;letter-spacing:.14em;font-weight:750;color:var(--accent);margin:20px 0 7px}
+@media(max-width:450px){.entry{padding:11px 12px;gap:9px}.entry time{font-size:.64rem}}
