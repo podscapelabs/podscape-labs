@@ -57,7 +57,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  const [zoomRange,setZoomRange]=useState<{min:number;max:number}|null>(null);const [zoom,setZoom]=useState(1);
  const [selected,setSelected]=useState<Bin|null>(()=>bins.find(b=>b.id===initialBinId)||null);const [state,setState]=useState<"idle"|"scanning">(initialBinId||startManual?"idle":"scanning");const [error,setError]=useState("");const [pending,start]=useTransition();
  const [binSearch,setBinSearch]=useState("");
- const [customNote,setCustomNote]=useState("");const [customDate,setCustomDate]=useState("");const [manual,setManual]=useState(initialBinId);
+ const [customNote,setCustomNote]=useState("");const [customDate,setCustomDate]=useState("");
  const [recent,setRecent]=useState<CareRecord[]>([]);
  const [undoneIds,setUndoneIds]=useState<string[]>([]);
  const [lastDates,setLastDates]=useState<Record<string,Record<string,string>>>(careDates);
