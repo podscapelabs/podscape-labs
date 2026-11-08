@@ -4,6 +4,7 @@ import { LedgerExplorer } from "@/components/LedgerExplorer";
 import { LedgerCollectionTabs } from "@/components/LedgerCollectionTabs";
 import { isSpeciesRecordActive, speciesDisplayName } from "@/data/species";
 import { PlatformShell } from "@/components/PlatformShell";
+import {WorkspaceHeader} from "@/components/PodscapeWorkspaceUI";
 import { getMemberCollectionState } from "@/lib/member-collection";
 import { getSpeciesRecords } from "@/lib/species-store";
 import styles from "./discover.module.css";
@@ -18,9 +19,7 @@ export default async function LedgerPage() {
   const featured = records.find(record => record.kind === "species" && record.status === "published" && !!record.image && (record.image.startsWith("/") || record.image.startsWith("https://")));
   return <PlatformShell><main className={styles.page}>
     <header className={styles.hero}><div className={`v2-container ${styles.heroInner}`}>
-      <p className={styles.eyebrow}>PodScape Labs / Species archive</p>
-      <h1 className={styles.title}>Leaf Ledger</h1>
-      <p className={styles.description}>Explore the world of isopods. Discover species and build your personal collection.</p>
+      <WorkspaceHeader section="PODSCAPE / SPECIES ARCHIVE" title="Leaf Ledger" description="Explore the world of isopods. Discover species and build your personal collection."/>
     </div></header>
     <div className={styles.content}><div className="v2-container">
       <LedgerCollectionTabs active="discover" signedIn={member.signedIn} />
