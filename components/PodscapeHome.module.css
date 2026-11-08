@@ -486,3 +486,17 @@
 /* Home top spacing after removing the standalone Edit Home toolbar. */
 .main{padding-top:18px}
 @media(max-width:720px){.main{padding-top:14px}}
+
+
+/* Workspace reordering: only the grip captures touch gestures.
+   The rest of each large widget remains vertically scrollable in edit mode. */
+.homeCanvasEditing .homeCanvasBlockActive,
+.homeCanvasEditing .homeCanvasBlockActive .homeCanvasBlockBar,
+.homeCanvasEditing .homeCanvasBlockActive .homeCanvasContentLocked{
+  touch-action:pan-y;
+}
+.homeCanvasEditing .homeCanvasBlockActive [data-drag-handle]{
+  touch-action:none;
+  -webkit-user-select:none;
+  user-select:none;
+}
