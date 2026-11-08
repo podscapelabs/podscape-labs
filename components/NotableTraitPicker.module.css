@@ -26,3 +26,8 @@
 .custom button:disabled{opacity:.45;cursor:not-allowed}
 .error{margin:0;color:#a12828;font-size:.72rem}
 @media(max-width:500px){.groups{max-height:290px;padding:9px}.option,.active{font-size:.7rem;padding:8px 9px}}
+
+/* Shared selection chips for the Ledger search-tag picker. */
+.tag{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:5px 6px 5px 11px;border-radius:999px;border:1px solid var(--line);background:color-mix(in srgb,var(--forest) 9%,var(--paper));color:var(--ink);font-size:.73rem;font-weight:700;overflow-wrap:anywhere}
+.tag button{display:grid;place-items:center;flex:0 0 24px;width:24px;height:24px;border:0;border-radius:50%;background:transparent;color:var(--forest);font-size:1.2rem;cursor:pointer}
+.tag button:focus-visible{outline:2px solid var(--forest);outline-offset:2px}
