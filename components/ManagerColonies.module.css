@@ -43,3 +43,15 @@
   .filters select { min-width: 90px; font-size: .68rem; }
   .search { padding: 11px 12px; }
 }
+
+/* The species/bin cards intentionally have a dark forest surface in both themes.
+   Keep all text legible independent of the page's light-mode text variables. */
+.card{background:#10271e;border-color:#455f4e;color:#f6f1e5}
+.cardBody>strong{color:#f6f1e5}
+.cardBody em{color:#d7ddc9}
+.cardBody small{color:#aebcac}
+.card .counts>span{border-color:#46614f;color:#d7ddc9}
+.card .counts svg,.card .arrow{color:#b8cc8d}
+.card .status{background:#263d2c;color:#c6d99b}
+.card:hover{border-color:#8eab86}
+.card:focus-visible{outline:2px solid #b8cc8d;outline-offset:3px}
