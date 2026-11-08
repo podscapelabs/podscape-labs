@@ -26,17 +26,15 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  const video=useRef<HTMLVideoElement>(null);const stream=useRef<MediaStream|null>(null);const lock=useRef(false);
  const canvas=useRef<HTMLCanvasElement|null>(null);
  const saving=useRef(false);
- const [selected,setSelected]=useState<Bin|null>(()=>bins.find(b=>b.id===initialBinId)||null);const [state,setState]=useState<"idle"|"scanning">(initialBinId||startManual?"idle":"scanning");const [error,setError]=useState("");const [choice,setChoice]=useState("");const [pending,start]=useTransition();
+ const [selected,setSelected]=useState<Bin|null>(()=>bins.find(b=>b.id===initialBinId)||null);const [state,setState]=useState<"idle"|"scanning">(initialBinId||startManual?"idle":"scanning");const [error,setError]=useState("");const [pending,start]=useTransition();
  const [customNote,setCustomNote]=useState("");const [customDate,setCustomDate]=useState("");const [manual,setManual]=useState(initialBinId);
  const [recent,setRecent]=useState<CareRecord[]>([]);
  const [lastDates,setLastDates]=useState<Record<string,Record<string,string>>>(careDates);
  const [notice,setNotice]=useState("");
  const [undoPending,setUndoPending]=useState(false);
  const [showManual,setShowManual]=useState(false);
- const sessionCount=recent.length;
- const noticeRef=useRef<HTMLDivElement>(null);
  const stop=()=>{stream.current?.getTracks().forEach(t=>t.stop());stream.current=null;canvas.current=null;};
- function match(value:string){const id=readId(value);const found=bins.find(b=>b.id.toLowerCase()===id?.toLowerCase());if(found){lock.current=true;stop();setSelected(found);setState("idle");setCustomNote("");setCustomDate("");setError("");return true;}setError("That code does not match an active bin in your collection.");return false;}
+ function match(value:string){const id=readId(value);const found=bins.find(b=>b.id.toLowerCase()===id?.toLowerCase());if(found){lock.current=true;stop();setSelected(found);setState("idle");setCustomNote("");setCustomDate("");setError("");setNotice("");return true;}setError("That code does not match an active bin in your collection.");return false;}
  useEffect(()=>()=>stop(),[]);
  useEffect(()=>{if(state!=="scanning")return;let live=true;let timer:ReturnType<typeof setInterval>|undefined;
  async function begin(){try{
@@ -70,7 +68,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  if(!selected||pending||saving.current)return;
  // A checked tile is a successful save in this session, not a toggle to delete.
  if(tasks.some(t=>t.label===label)&&recent.some(r=>r.binId===selected.id&&r.label===label)){setNotice(label+" already logged this session. Use Undo to correct it.");return;}
- saving.current=true;setError("");setChoice(label);
+ saving.current=true;setError("");
  const bin=selected;
  start(async()=>{try{
   const result=await logKeeperEvent({id:bin.id,kind,note,occurredOn});
@@ -117,7 +115,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
       <strong>{t.label}</strong><small>{logged?"Saved this session · ":"Last: "}{formatLast(last)}</small>
     </button>;
    })}</div>
-   {notice?<div ref={noticeRef} className={styles.inlineNotice} role="status"><span>✓ {notice}</span>{latest?<button type="button" onClick={undo} disabled={undoPending||pending}>{undoPending?"Undoing…":"Undo"}</button>:null}</div>:null}
+   {notice?<div className={styles.inlineNotice} role="status"><span>✓ {notice}</span>{latest?<button type="button" onClick={undo} disabled={undoPending||pending}>{undoPending?"Undoing…":"Undo"}</button>:null}</div>:null}
    <details className={styles.careDetails}><summary>Add note or custom date</summary><label htmlFor="keeper-care-note">Care note</label><textarea id="keeper-care-note" maxLength={1500} rows={3} value={customNote} onChange={e=>setCustomNote(e.target.value)} placeholder="What did you do or observe?"/><label htmlFor="keeper-care-date">Care date (for notes)</label><input id="keeper-care-date" type="date" value={customDate} max={new Date().toISOString().slice(0,10)} onChange={e=>setCustomDate(e.target.value)}/><button type="button" disabled={pending||!customNote.trim()} onClick={()=>save("observation",customNote.trim(),"Custom note",customDate||undefined)}>Save note</button></details>
    <div className={styles.careFooter}><button type="button" className={styles.nextBin} onClick={beginScan} disabled={pending||undoPending}>▣ Scan next bin →</button><Link href={"/keeper/"+selected.id}>View full colony workspace ↗</Link></div>
    <button className={styles.switchBin} type="button" onClick={()=>setShowManual(v=>!v)}>Choose another bin manually {showManual?"−":"+"}</button>
