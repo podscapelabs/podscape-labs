@@ -52,3 +52,11 @@
 .content :global(nav[aria-label="Leaf Ledger views"] a:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
 .content :global(.v2-species-grid){align-items:stretch}
 @media(max-width:700px){.page{padding-bottom:34px}.content :global(nav[aria-label="Leaf Ledger views"] a){min-height:44px}}
+
+/* Ledger's archive header stays intentionally compact, now with a clear top edge. */
+@media(max-width:720px){
+ .page{padding-top:12px;padding-bottom:36px}
+ .heroInner{padding-top:16px;padding-bottom:17px}
+ .content{padding-top:12px}
+ .content :global(nav[aria-label="Leaf Ledger views"]){margin-bottom:12px}
+}
