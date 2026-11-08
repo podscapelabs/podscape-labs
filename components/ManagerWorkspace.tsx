@@ -22,11 +22,11 @@ const library:Tool[]=[
  {id:"scan",label:"Scan bin",href:"/keeper/scan",icon:"scan"},
  {id:"qr",label:"Create QR",href:"/keeper/qr",icon:"qr"},
  {id:"add",label:"Add bin",href:"/keeper/new",icon:"bin"},
- {id:"care",label:"Log care",href:"/keeper/collection",icon:"droplet"},
+ {id:"care",label:"Log care",href:"/keeper/scan?manual=1",icon:"droplet"},
  {id:"schedule",label:"Schedule",href:"/keeper/schedule",icon:"calendar"},
  {id:"notes",label:"Notes",href:"/keeper/collection",icon:"note"},
  {id:"colonies",label:"All colonies",href:"/keeper/collection",icon:"jar"},
- {id:"history",label:"Care history",href:"/keeper/collection",icon:"note"},
+ {id:"history",label:"Care history",href:"/keeper/activity",icon:"note"},
  {id:"activity",label:"Recent activity",href:"/keeper/activity",icon:"note"}
 ];
 type Layout={order:Section[];visible:Section[];tools:string[]};
@@ -54,7 +54,7 @@ function ManagerQuickShortcuts({ids,change,primaryHref,canvasEditing}:{ids:strin
  const router=useRouter();
  const {editing,selected,setSelected,handlers,done}=useShortcutEditor(ids,change,canvasEditing);
  const current=library.find(tool=>tool.id===ids[selected])||library[0];
- const destination=(tool:Tool)=>tool.id==="care"?"/keeper/scan?manual=1":tool.id==="notes"?(primaryHref!=="/keeper/collection"?primaryHref+"#observation":"/keeper/collection"):tool.id==="history"&&primaryHref!=="/keeper/collection"?primaryHref+"/history":tool.href;
+ const destination=(tool:Tool)=>tool.id==="notes"?(primaryHref!=="/keeper/collection"?primaryHref+"?panel=observation#observation":"/keeper/collection"):tool.href;
  return <>
   {editing&&!canvasEditing?<div className={homeStyles.jiggleToolbar} role="region" aria-label="Customize Manager shortcuts">
     <span className={homeStyles.jiggleHint}>✧ <strong>Arrange your shortcuts</strong><small>Drag icons to move them. Tap one to replace it.</small></span>
