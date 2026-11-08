@@ -159,3 +159,32 @@
 .workspaceHistory>div:first-child{margin-bottom:10px}
 .binPicker>div:first-child{margin-bottom:4px}
 @media(max-width:500px){.actionHead{margin:14px 0 12px}.careSessionCount{font-size:.65rem}}
+
+/* Log Care should open as a compact, searchable tool, not a giant empty state. */
+.quickChoose{margin:13px auto 0;max-width:740px;padding:18px;border:1px solid var(--border);border-radius:17px;background:var(--surface)}
+.quickChooseHeader{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px}
+.quickChooseHeader .kicker{margin:0 0 4px;font-size:.6rem;letter-spacing:.14em;color:var(--accent);font-weight:800}
+.quickChooseHeader h2{margin:0;font:400 clamp(1.65rem,4vw,2rem)/1.08 var(--display);color:var(--text-primary)}
+.quickChooseHeader p:not(.kicker){margin:5px 0 0;font-size:.74rem;color:var(--text-secondary)}
+.quickChooseHeader>span{flex:none;padding:6px 10px;border:1px solid var(--border);border-radius:999px;color:var(--text-secondary);font-size:.67rem}
+.quickChooseSearch{display:flex;align-items:center;gap:10px;min-height:46px;padding:5px 11px;border:1px solid var(--border);border-radius:12px;background:var(--background);color:var(--accent)}
+.quickChooseSearch:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.quickChooseSearch input{flex:1;min-width:0;min-height:36px;padding:0;border:0;outline:0;background:transparent;color:var(--text-primary);font:inherit;font-size:16px}
+.quickChooseSearch input::placeholder{color:var(--text-secondary)}
+.quickChooseSearch button{flex:none;min-width:29px;height:29px;border:0;border-radius:8px;background:var(--surface-secondary);color:var(--accent);font-size:1.2rem;cursor:pointer}
+.quickChooseList{display:grid;gap:7px;max-height:min(45svh,400px);margin-top:11px;overflow-y:auto;overscroll-behavior:contain}
+.quickChooseBin{display:flex;align-items:center;gap:11px;min-width:0;min-height:63px;padding:8px 10px;border:1px solid var(--border);border-radius:11px;background:var(--surface-secondary);color:var(--text-primary);text-align:left;cursor:pointer}
+.quickChooseBin:hover{border-color:var(--accent)}
+.quickChooseBin:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.quickChoosePhoto{position:relative;display:grid;place-items:center;flex:none;width:45px;height:45px;border-radius:9px;overflow:hidden;background:var(--surface);color:var(--accent);font-size:1.6rem}
+.quickChoosePhoto img{object-fit:cover}
+.quickChooseIdentity{display:grid;gap:3px;flex:1;min-width:0}
+.quickChooseIdentity strong{font-size:.83rem;line-height:1.15}
+.quickChooseIdentity small{font-size:.69rem;color:var(--text-secondary);line-height:1.25;overflow-wrap:anywhere}
+.quickChooseArrow{flex:none;color:var(--accent);font-size:1.2rem}
+.quickChooseEmpty{margin:12px 0;padding:12px 9px;color:var(--text-secondary);font-size:.77rem;line-height:1.5}
+.quickChooseEmpty a{color:var(--accent);font-weight:750}
+.quickChooseFooter{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:13px;padding-top:11px;border-top:1px solid var(--border)}
+.quickChooseFooter button,.quickChooseFooter a{border:0;padding:8px 3px;background:transparent;color:var(--accent);font:inherit;font-size:.73rem;font-weight:750;text-decoration:none;cursor:pointer}
+.quickChooseFooter button:focus-visible,.quickChooseFooter a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media(max-width:500px){.quickChoose{padding:13px;margin-top:9px;border-radius:14px}.quickChooseList{max-height:min(49svh,460px)}.quickChooseBin{min-height:61px}.quickChooseHeader h2{font-size:1.65rem}}
