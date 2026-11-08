@@ -59,3 +59,17 @@
 .search:focus-within{border-color:var(--accent);outline:2px solid var(--focus);outline-offset:2px}
 .searchSubmit{flex-shrink:0;min-height:36px;padding:7px 11px;border:0;border-radius:10px;background:var(--accent);color:var(--background);font:inherit;font-size:.74rem;font-weight:750;cursor:pointer}
 .searchSubmit:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+/* App-first mobile spacing: compact opening, generous card content. */
+@media(max-width:720px){
+ .page{padding-top:12px;padding-bottom:36px}
+ .hero{min-height:0;padding:22px 20px 21px;align-items:flex-start;border-radius:20px}
+ .heroCopy{max-width:100%}
+ .hero h1{font-size:clamp(2.15rem,8vw,3.05rem);line-height:1.02}
+ .heroCopy>p:not(.eyebrow){margin:12px 0 0;max-width:32ch;color:#294535;font-size:.82rem;line-height:1.45}
+ .hero .previewTag{margin-top:15px}
+ .search{margin:12px 0;padding:8px 11px;min-height:48px}
+ .paths{margin:0 0 20px}
+ .section{margin-top:21px}
+ .section>div:first-child:has(h2){margin-bottom:12px}
+}
