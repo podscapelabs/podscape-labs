@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 
 function greetingFor(hour:number){
- return hour<12?"Good morning":hour<17?"Good afternoon":"Good evening";
+ return hour<12?"Good Morning":hour<17?"Good Afternoon":"Good Evening";
 }
 
 function TimeIcon({day}:{day:boolean}){
