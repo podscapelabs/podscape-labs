@@ -54,7 +54,7 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
     {label:"Activity",value:record.activity,note:record.activityNote},
     {label:"Reproduction",value:record.reproduction,note:record.reproductionNote},
     {label:"Feeding response",value:record.feedingResponse,note:record.feedingResponseNote},
-  ].filter((entry):entry is {label:string;value:string;note?:string}=>typeof entry.value==="string"&&entry.value.trim().length>0&&entry.value!=="Not established");
+  ].filter(entry=>typeof entry.value==="string"&&entry.value.trim().length>0&&entry.value!=="Not established");
   // Do not publish legacy "Low / High" moisture without gradient context.
   // Existing values remain in the Desk until editors review each record.
   const legacyMoisturePending = !moisturePosition && Boolean(record.moisture?.trim());
