@@ -29,5 +29,7 @@ jobs:
         run: pnpm run lint
       - name: Typecheck application
         run: pnpm run typecheck
+      - name: Leaf Ledger regression checks
+        run: node scripts/verify-ledger.mjs
       - name: Build Next.js application
         run: pnpm run build
