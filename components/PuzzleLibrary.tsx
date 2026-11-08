@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import styles from "./PuzzleLibrary.module.css";
+import {WorkspaceSectionHeader,WorkspaceLinks} from "./PodscapeWorkspaceUI";
 
 export type PuzzleItem = {id:string;title:string;description:string;topic:string;difficulty:string;href?:string;status:"playable"|"upcoming"};
 export function PuzzleLibrary({title,subtitle,eyebrow="Fun Zone / Puzzle Library",puzzles}:{title:string;subtitle:string;eyebrow?:string;puzzles:PuzzleItem[]}){
@@ -15,7 +16,7 @@ export function PuzzleLibrary({title,subtitle,eyebrow="Fun Zone / Puzzle Library
      <div><span className={styles.summaryIcon} aria-hidden="true">▦</span><strong>{puzzles.length}</strong><small>Listed puzzles</small></div>
      <div><span className={styles.summaryIcon} aria-hidden="true">✦</span><strong>{ready}</strong><small>Playable now</small></div>
    </div>
-   <div className={styles.libraryHeading}><div><h2>Choose a puzzle</h2><p>Pick a challenge and explore at your own pace.</p></div><span>{shown.length} shown</span></div>
+   <div className={styles.libraryHeading}><WorkspaceSectionHeader title="Choose a puzzle" description="Pick a challenge and explore at your own pace." meta={shown.length+" shown"}/></div>
    <div className={styles.filters} role="group" aria-label="Filter puzzles">
      {([["all","All"],["playable","Playable"],["upcoming","Coming soon"]] as const).map(([key,label])=><button type="button" key={key} aria-pressed={filter===key} onClick={()=>setFilter(key)}>{label}</button>)}
    </div>
@@ -26,5 +27,6 @@ export function PuzzleLibrary({title,subtitle,eyebrow="Fun Zone / Puzzle Library
    </article>)}</div>
    {shown.length===0?<p className={styles.empty}>No puzzles match this filter yet.</p>:null}
    <p className={styles.note}>Completion tracking and EXP rewards are being developed. The numbers above describe available puzzles, not personal achievements.</p>
+   <WorkspaceLinks items={[{href:"/fun-zone",label:"All games"},{href:"/ledger",label:"Leaf Ledger"}]}/>
  </div></main>;
 }
