@@ -188,3 +188,11 @@
 .quickChooseFooter button,.quickChooseFooter a{border:0;padding:8px 3px;background:transparent;color:var(--accent);font:inherit;font-size:.73rem;font-weight:750;text-decoration:none;cursor:pointer}
 .quickChooseFooter button:focus-visible,.quickChooseFooter a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 @media(max-width:500px){.quickChoose{padding:13px;margin-top:9px;border-radius:14px}.quickChooseList{max-height:min(49svh,460px)}.quickChooseBin{min-height:61px}.quickChooseHeader h2{font-size:1.65rem}}
+
+/* The manual Log Care route is a utility, so its page introduction stays brief. */
+.wrap:has(.quickChoose) .heading{align-items:center;gap:10px;margin-bottom:10px}
+.wrap:has(.quickChoose) .heading h1{font-size:clamp(1.95rem,5.5vw,2.55rem);margin:3px 0}
+.wrap:has(.quickChoose) .heading>div>p:not(.kicker){font-size:.77rem;line-height:1.35;color:var(--text-secondary)}
+.wrap:has(.quickChoose) .heading .kicker{font-size:.59rem}
+.wrap:has(.quickChoose) .heading a{color:var(--accent);font-size:.7rem}
+@media(max-width:500px){.wrap:has(.quickChoose) .heading h1{font-size:2rem}}
