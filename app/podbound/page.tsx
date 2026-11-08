@@ -38,17 +38,12 @@ export default async function PodBoundHome() {
     <a className="skip-link" href="#platform-main">Skip to content</a>
     <Header />
     <main id="platform-main" className={styles.main}>
-      <section className={styles.intro} aria-label="Welcome to PodBound">
-        <span className={styles.introMark}><PodscapeLineIcon name="podbound" /></span>
-        <div><p className={styles.introEyebrow}>A PODSCAPE LABS ORIGINAL</p><h1>Welcome to PodBound <span aria-hidden="true">✦</span></h1><p>Your next little adventure starts here.</p></div>
-      </section>
-
       <section className={styles.hero} aria-labelledby="game-title">
         <div className={styles.heroArt} aria-hidden="true"><span className={styles.cardBack}><PodscapeLineIcon name="podbound" /></span><span className={styles.cardFront}><PodscapeLineIcon name="leaf" /></span><span className={styles.heroDecoration}>✧</span></div>
         <div className={styles.heroCopy}>
           <p className={styles.kicker}>SMALL CREATURES. BIG DECISIONS.</p>
-          <h2 id="game-title">PodBound</h2>
-          <p>Build your colony. Navigate changing environments. Discover a strategy card game inspired by the incredible lives of isopods.</p>
+          <h1 id="game-title">PodBound</h1>
+          <p>Welcome to PodBound. Build your colony, navigate changing environments, and discover a strategy card game inspired by the incredible lives of isopods.</p>
           <a className={styles.heroButton} href="#the-game">Discover the game <span aria-hidden="true">→</span></a>
         </div>
       </section>
