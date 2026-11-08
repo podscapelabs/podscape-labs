@@ -4,6 +4,7 @@ import Link from "next/link";
 import type {Game} from "@/lib/fun-zone-games";
 import {connectionGroups,crosswordClues} from "@/lib/fun-zone-games";
 import styles from "./PlayGame.module.css";
+import {WorkspaceLinks} from "./PodscapeWorkspaceUI";
 
 function Quiz({game}:{game:Game}){
  const [index,setIndex]=useState(0),[answers,setAnswers]=useState<number[]>([]);
@@ -50,5 +51,5 @@ function Crossword(){
  <div className={styles.actions}><button onClick={()=>setChecked(true)}>Check answers</button><button className={styles.secondary} onClick={()=>{setAnswers({});setChecked(false)}}>Reset</button></div>{checked?<p className={styles.feedbackText} role="status">{correct===crosswordClues.length?"All five correct! Crossword complete. ✦":`${correct} of ${crosswordClues.length} correct. Keep going!`}</p>:null}</div>;
 }
 export function PlayGame({game}:{game:Game}){
- return <main className={styles.page}><div className={styles.wrap}><nav className={styles.crumb}><Link href="/fun-zone">Fun Zone</Link><span>/</span><Link href={`/fun-zone/${game.key}`}>{game.title}</Link></nav><header className={styles.hero}><span className={styles.eyebrow}>{game.category} / Sample 01</span><h1>{game.puzzleTitle}</h1><p>{game.description}</p></header><div className={styles.notice}>Practice puzzle · No EXP or Pod Coins awarded · Results are not saved to your account</div>{game.mode==="connections"?<Connections/>:game.mode==="burrow"?<Burrow/>:game.mode==="crossword"?<Crossword/>:<Quiz game={game}/>}<Link className={styles.back} href={`/fun-zone/${game.key}`}>← All {game.title} puzzles</Link></div></main>;
+ return <main className={styles.page}><div className={styles.wrap}><nav className={styles.crumb}><Link href="/fun-zone">Fun Zone</Link><span>/</span><Link href={`/fun-zone/${game.key}`}>{game.title}</Link></nav><header className={styles.hero}><span className={styles.eyebrow}>{game.category} / Sample 01</span><h1>{game.puzzleTitle}</h1><p>{game.description}</p></header><div className={styles.notice}>Practice puzzle · No EXP or Pod Coins awarded · Results are not saved to your account</div>{game.mode==="connections"?<Connections/>:game.mode==="burrow"?<Burrow/>:game.mode==="crossword"?<Crossword/>:<Quiz game={game}/>}<WorkspaceLinks items={[{href:`/fun-zone/${game.key}`,label:`More ${game.title}`},{href:"/fun-zone",label:"All games"},{href:"/ledger",label:"Leaf Ledger"}]}/></div></main>;
 }
