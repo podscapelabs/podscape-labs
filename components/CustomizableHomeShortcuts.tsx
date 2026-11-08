@@ -30,7 +30,7 @@ export function CustomizableHomeShortcuts({isOwner=false}:{isOwner?:boolean}){
       <span>Drag shortcuts to reorder · Tap one to replace</span>
       <label>Replace {current?.label||"shortcut"}
         <select value={current?.id||""} onChange={event=>change(swapNavigationSlot(ids,selected,event.target.value))}>
-          {navigationGroups.map(group=><optgroup label={group} key={group}>{navigationChoices.filter(item=>item.group===group).map(item=><option value={item.id} key={item.id}>{item.label}{item.planned?" (coming later)":""}{ids.includes(item.id)&&item.id!==current?.id?" (swap)":""}</option>)}</optgroup>)}
+          {navigationGroups.filter(group=>accessibleChoices.some(item=>item.group===group)).map(group=><optgroup label={group} key={group}>{accessibleChoices.filter(item=>item.group===group).map(item=><option value={item.id} key={item.id}>{item.label}{item.planned?" (coming later)":""}{ids.includes(item.id)&&item.id!==current?.id?" (swap)":""}</option>)}</optgroup>)}
         </select>
       </label>
       <button type="button" onClick={()=>{reset();setSelected(0)}}>Reset shortcuts</button>
