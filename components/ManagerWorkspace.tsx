@@ -89,6 +89,7 @@ function swapManagerSlot(ids:string[],slot:number,id:string){
 }
 
 export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvailable,scope,primaryHref}:{hero:ReactNode;stats:ReactNode;enclosures:ReactNode;bins:ManagerBin[];events:ManagerEvent[];activityAvailable:boolean;scope:string;primaryHref:string}){
+ const router=useRouter();
  const storageKey=key+":"+scope;
  const [layout,setLayout]=useState<Layout>(initial);
  const [ready,setReady]=useState(false);
