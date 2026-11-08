@@ -55,6 +55,7 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
    try{
     const result=await logKeeperEvent({id:colony.id,kind:action.kind,note:action.note});
     if(!result.success||!result.id){setError(result.error||"Could not save care.");return;}
+    const savedId: string = result.id;
     const now=new Date().toISOString();
     const previousReminder=action.note==="Misted"?syncMisting(colony.id,now):undefined;
     setEvents(old=>[{id:savedId,kind:action.kind,note:action.note,createdAt:now,quantityChange:null},...old]);
@@ -73,8 +74,9 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
    try{
     const result=await logKeeperEvent({id:colony.id,kind:"observation",note:text});
     if(!result.success||!result.id){setError(result.error||"Unable to save observation.");return;}
+    const savedId: string = result.id;
     const now=new Date().toISOString();
-    setEvents(old=>[{id:result.id,kind:"observation",note:text,createdAt:now,quantityChange:null},...old]);
+    setEvents(old=>[{id:savedId,kind:"observation",note:text,createdAt:now,quantityChange:null},...old]);
     setLastSaved({id:savedId,note:text});
     setObservation("");
     setMessage("Observation saved");
