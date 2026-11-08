@@ -61,3 +61,6 @@
  .actions button{min-height:105px;padding:11px}
  .toolGrid a{min-height:99px;padding:11px}
 }
+
+.bulkLink{display:inline-flex;margin-top:13px;padding:5px 0;color:var(--accent);font-size:.73rem;font-weight:750;text-decoration:none}
+.bulkLink:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
