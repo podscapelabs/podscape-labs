@@ -521,9 +521,29 @@
  .homeCanvasEditing .homeCanvasDragging{transition:none}
 }
 
-/* Personalized mobile welcome: search belongs to the greeting, not the art hero. */
+/* One movable homepage greeting card, with distinct Account and Search controls. */
 .greetingWorkspace{min-width:0}
 @media(max-width:720px){
- .greetingWorkspace{display:grid;gap:10px;margin-bottom:10px}
- .greetingWorkspace .homeGreetingRow{margin-bottom:0}
+ .greetingWorkspace{
+   display:grid;
+   gap:11px;
+   margin-bottom:10px;
+   padding:12px;
+   border:1px solid var(--line);
+   border-radius:18px;
+   background:var(--paper);
+ }
+ .greetingWorkspace .homeGreetingRow{margin:0}
+ .greetingWorkspace .welcome{
+   margin:0;
+   padding:0;
+   border:0;
+   border-radius:0;
+   background:transparent;
+ }
+ .greetingWorkspace .welcome:focus-visible{
+   outline:2px solid var(--forest);
+   outline-offset:4px;
+   border-radius:6px;
+ }
 }
