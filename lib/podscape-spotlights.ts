@@ -57,14 +57,13 @@ export async function getSpotlightSelection():Promise<string[]|null>{
 export async function getHomepageSpotlights():Promise<Spotlight[]>{
   const [options,selection]=await Promise.all([getSpotlightOptions(),getSpotlightSelection()]);
   const byHref=new Map(options.map(o=>[o.href,o]));
+  // A saved editorial selection is authoritative. If it is intentionally
+  // empty, or an entry is later unpublished, do NOT fill gaps with new items.
   if(selection!==null) {
-    const curated=selection.flatMap(href=>{const item=byHref.get(href);return item?[item]:[];});
-    if(curated.length)return curated;
+    return selection.flatMap(href=>{const item=byHref.get(href);return item?[item]:[];});
   }
-  // Preserve a useful first-run experience before owner curation.
-  return [
-    options.find(o=>o.label==="SPECIES"&&o.image),
-    options.find(o=>o.label==="SHOP"&&o.image),
-    byHref.get("/podbound")
-  ].filter((o):o is Spotlight=>Boolean(o));
+  // Database not available / migration missing: show stable destinations,
+  // never the newest species or product as a pseudo-curated spotlight.
+  return [byHref.get("/ledger"),byHref.get("/field-guide"),byHref.get("/podbound")]
+    .filter((o):o is Spotlight=>Boolean(o));
 }
