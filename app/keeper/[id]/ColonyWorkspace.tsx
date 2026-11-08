@@ -38,7 +38,7 @@ function syncMisting(id:string,now:string){
  }catch{/* The server care log still saves when local device settings are inaccessible. */}
  return undefined;
 }
-export function ColonyWorkspace({colony,initialEvents,careDates,referenceUrl}:{colony:Colony;initialEvents:CareEvent[];careDates:Record<string,string>;referenceUrl?:string}){
+export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,referenceUrl}:{colony:Colony;initialEvents:CareEvent[];careDates:Record<string,string>;initialPanel?:string;referenceUrl?:string}){
  const router=useRouter();
  const [events,setEvents]=useState(initialEvents);
  const dateFor=(note:string)=>lastCare(events,note)||careDates[note]||"";
@@ -114,7 +114,7 @@ export function ColonyWorkspace({colony,initialEvents,careDates,referenceUrl}:{c
    <p className={styles.description}>Tap an action to save it to this bin's private care history.</p>
    {colony.archived?<p className={styles.warning}>This bin is archived. Restore it in Details before recording care.</p>:null}
    <div className={styles.actions}>{actions.map(action=><button type="button" key={action.note} disabled={pending||undoing||colony.archived} onClick={()=>record(action)}><PodscapeLineIcon name={action.icon}/><strong>{action.label}</strong><small>{dateFor(action.note)?"Last: "+dayLabel(dateFor(action.note)):"Not logged yet"}</small></button>)}</div>
-   <details className={styles.observation} id="observation"><summary>+ Add an observation or care note</summary>
+   <details className={styles.observation} id="observation" defaultOpen={initialPanel==="observation"}><summary>+ Add an observation or care note</summary>
     <form onSubmit={recordObservation}><label htmlFor="colony-observation">What did you notice?</label><textarea id="colony-observation" rows={3} maxLength={1500} value={observation} onChange={event=>setObservation(event.target.value)} placeholder="New mancae spotted, habitat changes, feeding notes…" required/><button type="submit" disabled={pending||undoing||colony.archived||!observation.trim()}>{pending?"Saving…":"Save observation"}</button></form>
    </details>
    <Link className={styles.bulkLink} href="/keeper/scan?manual=1">Log care for multiple bins →</Link>
