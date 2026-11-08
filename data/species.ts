@@ -21,6 +21,8 @@ export type SpeciesRecord = {
   imageZoom: number;
   summary: string;
   tags: string[];
+  /** Up to four concise, editorially verified distinguishing traits. */
+  notableTraits?: string[];
   careLevel: string;
   moisture: string;
   /** Editorially selected general captive moisture tendency; never derived from legacy labels. */
