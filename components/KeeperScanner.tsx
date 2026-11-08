@@ -9,6 +9,9 @@ type Bin = { id:string; name:string; label:string; species:string; quantity:numb
 type DetectedCode = { rawValue:string };
 type QRDetector = { detect:(source:HTMLVideoElement)=>Promise<DetectedCode[]> };
 type QRConstructor = new (options:{formats:string[]})=>QRDetector;
+type CameraCapabilities={focusMode?:string[];torch?:boolean;zoom?:{min:number;max:number;step?:number}};
+type EnhancedTrack=MediaStreamTrack&{getCapabilities:()=>MediaTrackCapabilities&CameraCapabilities};
+type EnhancedConstraints=MediaTrackConstraints&{focusMode?:string;torch?:boolean;zoom?:number};
 function readId(value:string):string|null {
  const raw=value.trim();
  if (/^[a-f\d-]{36}$/i.test(raw)) return raw;
@@ -26,6 +29,8 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  const video=useRef<HTMLVideoElement>(null);const stream=useRef<MediaStream|null>(null);const lock=useRef(false);
  const canvas=useRef<HTMLCanvasElement|null>(null);
  const saving=useRef(false);
+ const [torchAvailable,setTorchAvailable]=useState(false);const [torchOn,setTorchOn]=useState(false);
+ const [zoomRange,setZoomRange]=useState<{min:number;max:number}|null>(null);const [zoom,setZoom]=useState(1);
  const [selected,setSelected]=useState<Bin|null>(()=>bins.find(b=>b.id===initialBinId)||null);const [state,setState]=useState<"idle"|"scanning">(initialBinId||startManual?"idle":"scanning");const [error,setError]=useState("");const [pending,start]=useTransition();
  const [customNote,setCustomNote]=useState("");const [customDate,setCustomDate]=useState("");const [manual,setManual]=useState(initialBinId);
  const [recent,setRecent]=useState<CareRecord[]>([]);
@@ -33,36 +38,72 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  const [notice,setNotice]=useState("");
  const [undoPending,setUndoPending]=useState(false);
  const [showManual,setShowManual]=useState(false);
- const stop=()=>{stream.current?.getTracks().forEach(t=>t.stop());stream.current=null;canvas.current=null;};
+ const stop=()=>{stream.current?.getTracks().forEach(t=>t.stop());stream.current=null;canvas.current=null;setTorchOn(false);};
  function match(value:string){const id=readId(value);const found=bins.find(b=>b.id.toLowerCase()===id?.toLowerCase());if(found){lock.current=true;stop();setSelected(found);setState("idle");setCustomNote("");setCustomDate("");setError("");setNotice("");return true;}setError("That code does not match an active bin in your collection.");return false;}
  useEffect(()=>()=>stop(),[]);
- useEffect(()=>{if(state!=="scanning")return;let live=true;let timer:ReturnType<typeof setInterval>|undefined;
- async function begin(){try{
- const ctor=(window as unknown as {BarcodeDetector?:QRConstructor}).BarcodeDetector;
- const media=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});
- if(!live){media.getTracks().forEach(t=>t.stop());return;}stream.current=media;
- if(!video.current){stop();return;}video.current.srcObject=media;await video.current.play();
- const detector=ctor?new ctor({formats:["qr_code"]}):null;
- if(!detector) canvas.current=document.createElement("canvas");
- let busy=false;
- timer=setInterval(async()=>{if(busy||lock.current||!video.current||video.current.readyState<2)return;busy=true;try{
-   let value:string|undefined;
-   if(detector){const codes=await detector.detect(video.current);value=codes[0]?.rawValue;}
-   else {
-     const frame=canvas.current;const source=video.current;
-     if(frame&&source.videoWidth&&source.videoHeight){
-       const scale=Math.min(1,720/source.videoWidth);
-       frame.width=Math.round(source.videoWidth*scale);frame.height=Math.round(source.videoHeight*scale);
+ useEffect(()=>{if(state!=="scanning")return;
+ let live=true;let timer:ReturnType<typeof setInterval>|undefined;
+ async function begin(){
+  try{
+   const media=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30}},audio:false});
+   if(!live){media.getTracks().forEach(t=>t.stop());return;}
+   stream.current=media;
+   const track=media.getVideoTracks()[0] as EnhancedTrack;
+   try{
+    const caps=track.getCapabilities?.();
+    setTorchAvailable(Boolean(caps?.torch));
+    if(caps?.zoom&&caps.zoom.max>caps.zoom.min){setZoomRange({min:caps.zoom.min,max:Math.min(caps.zoom.max,4)});setZoom(track.getSettings().zoom||caps.zoom.min);}
+    else setZoomRange(null);
+    if(caps?.focusMode?.includes("continuous"))await track.applyConstraints({advanced:[{focusMode:"continuous"} as EnhancedConstraints]});
+   }catch{/* Optional hardware controls differ between iPhone models. */}
+   if(!video.current){stop();return;}
+   video.current.srcObject=media;await video.current.play();
+   const ctor=(window as unknown as {BarcodeDetector?:QRConstructor}).BarcodeDetector;
+   const detector=ctor?new ctor({formats:["qr_code"]}):null;
+   if(!detector)canvas.current=document.createElement("canvas");
+   let busy=false;let attempts=0;
+   timer=setInterval(async()=>{
+    if(busy||lock.current||!video.current||video.current.readyState<2)return;
+    busy=true;
+    try{
+     let value:string|undefined;
+     if(detector){const codes=await detector.detect(video.current);value=codes[0]?.rawValue;}
+     if(!value){
+      const source=video.current;const frame=canvas.current||(canvas.current=document.createElement("canvas"));
+      if(source.videoWidth&&source.videoHeight){
        const context=frame.getContext("2d",{willReadFrequently:true});
-       if(context){context.drawImage(source,0,0,frame.width,frame.height);const pixels=context.getImageData(0,0,frame.width,frame.height);value=jsQR(pixels.data,pixels.width,pixels.height,{inversionAttempts:"attemptBoth"})?.data;}
+       if(context){
+        // Decode center at high resolution first. Tiny printed labels lost detail in the former 720px full-frame downscale.
+        // Periodically decode the whole image so off-center codes are still detected.
+        const full=attempts++%3===2;
+        const crop=full?1:0.7;
+        const sx=Math.round(source.videoWidth*(1-crop)/2),sy=Math.round(source.videoHeight*(1-crop)/2);
+        const sw=Math.round(source.videoWidth*crop),sh=Math.round(source.videoHeight*crop);
+        const scale=Math.min(1,full?1280/sw:1152/sw);
+        frame.width=Math.max(1,Math.round(sw*scale));frame.height=Math.max(1,Math.round(sh*scale));
+        context.drawImage(source,sx,sy,sw,sh,0,0,frame.width,frame.height);
+        const pixels=context.getImageData(0,0,frame.width,frame.height);
+        value=jsQR(pixels.data,pixels.width,pixels.height,{inversionAttempts:"dontInvert"})?.data;
+        if(!value&&full)value=jsQR(pixels.data,pixels.width,pixels.height,{inversionAttempts:"onlyInvert"})?.data;
+       }
+      }
      }
-   }
-   if(live&&value)match(value);
- }catch{}finally{busy=false;}},300);
- }catch{setError("Camera unavailable. Check permissions or choose a bin manually.");setState("idle");}}
- begin();return()=>{live=false;if(timer)clearInterval(timer);stop();};
+     if(live&&value)match(value);
+    }catch{/* Transient camera-frame failures should not interrupt scanning. */}
+    finally{busy=false;}
+   },240);
+  }catch{if(live){setError("Camera unavailable. Check permissions or choose a bin manually.");setState("idle");}}
+ }
+ begin();
+ return()=>{live=false;if(timer)clearInterval(timer);stop();};
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[state]);
+ async function setCameraOption(option:EnhancedConstraints){
+  const track=stream.current?.getVideoTracks()[0];if(!track)return false;
+  try{await track.applyConstraints({advanced:[option]});return true;}catch{return false;}
+ }
+ async function toggleTorch(){if(await setCameraOption({torch:!torchOn}))setTorchOn(v=>!v);}
+ async function updateZoom(value:number){if(await setCameraOption({zoom:value}))setZoom(value);}
  function beginScan(){lock.current=false;setSelected(null);setNotice("");setChoice("");setError("");setState("scanning");}
  function save(kind:string,note:string,label:string,occurredOn?:string){
  if(!selected||pending||saving.current)return;
@@ -97,8 +138,8 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  const loggedForBin=selected?recent.filter(r=>r.binId===selected.id):[];
  return <section className={styles.wrap}>
  {state!=="scanning"&&!selected?<div className={styles.heading}><div><p className={styles.kicker}>PODSCAPE LABS / KEEPER</p><h1>Quick Care</h1><p>Scan a bin, log care, and move on.</p></div><Link href="/ledger/my-collection">My Collection ↗</Link></div>:null}
- {state==="scanning"?<div className={styles.camera}><video ref={video} muted playsInline aria-label="QR scanning camera"/><div className={styles.brackets} aria-hidden="true"><span/><span/><span/><span/></div></div>:null}
- {state==="scanning"?<div className={styles.scanBelow}><p>Position your bin QR code within the corners.</p><button type="button" onClick={()=>setState("idle")}>Choose a bin manually →</button></div>:null}
+ {state==="scanning"?<div className={styles.camera}><video ref={video} muted playsInline aria-label="QR scanning camera"/><div className={styles.brackets} aria-hidden="true"><span/><span/><span/><span/></div>{torchAvailable||zoomRange?<div className={styles.cameraControls}>{torchAvailable?<button type="button" onClick={toggleTorch} aria-pressed={torchOn}>{torchOn?"Light on":"Light off"}</button>:null}{zoomRange?<button type="button" onClick={()=>updateZoom(zoom>zoomRange.min+.1?zoomRange.min:Math.min(2,zoomRange.max))}>{zoom>zoomRange.min+.1?"1×":"2×"}</button>:null}</div>:null}</div>:null}
+ {state==="scanning"?<div className={styles.scanBelow}><p>Hold your label steady inside the corners. Move back slightly if blurry.</p><button type="button" onClick={()=>setState("idle")}>Choose a bin manually →</button></div>:null}
  {state==="idle"&&!selected?<div className={styles.panel}><div className={styles.scanIcon}>▣</div><h2>{startManual?"Choose a bin to log care":"Ready to scan"}</h2><p>Select an enclosure or scan its QR label.</p><div className={styles.manualPicker}><select value={manual} onChange={e=>setManual(e.target.value)} aria-label="Choose enclosure to log care"><option value="">Select a bin</option>{bins.map(b=><option key={b.id} value={b.id}>{b.species} — {b.name}</option>)}</select><button type="button" disabled={!manual} onClick={()=>match(manual)}>Open bin</button></div><button className={styles.primary} type="button" onClick={beginScan}>Scan a QR label</button></div>:null}
  {selected&&state==="idle"?<div className={styles.careWorkspace}>
    <div className={styles.careTopline}><span>PODSCAPE / QUICK CARE</span><span className={styles.recognized}>● BIN RECOGNIZED</span></div>
