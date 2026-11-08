@@ -6,7 +6,7 @@ import Image from "next/image";
 import jsQR from "jsqr";
 import { logKeeperEvent, undoKeeperEvent, logKeeperEventBatch, undoKeeperEventBatch } from "@/app/keeper/actions";
 import styles from "./KeeperScanner.module.css";
-type Bin = { id:string; name:string; label:string; speciesId:string; species:string; quantity:number; image:string|null };
+type Bin = { id:string; name:string; label:string; speciesId:string; species:string; quantity:number; status:string; breeding:string; image:string|null };
 type DetectedCode = { rawValue:string };
 type QRDetector = { detect:(source:HTMLVideoElement)=>Promise<DetectedCode[]> };
 type QRConstructor = new (options:{formats:string[]})=>QRDetector;
@@ -21,6 +21,7 @@ function readId(value:string):string|null {
 const tasks=[{label:"Misted",kind:"maintenance",note:"Misted",icon:"◌"},{label:"Fed",kind:"feeding",note:"Fed",icon:"◈"},{label:"Spot cleaned",kind:"maintenance",note:"Spot cleaned",icon:"✧"},{label:"Leaf litter",kind:"maintenance",note:"Leaf litter added",icon:"❧"}] as const;
 type CareRecord={id:string;binId:string;label:string;note:string;createdAt:string;previous:string|null};
 type LastOperation={records:CareRecord[];label:string};
+type ActivityEntry={id:string;kind:string;note:string;createdAt:string;quantityChange:number|null};
 function formatLast(value:string|null|undefined){
  if(!value)return "Never logged";
  const date=new Date(value);if(Number.isNaN(date.getTime()))return "Never logged";
@@ -185,6 +186,10 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  const loggedForBin=selected?recent.filter(r=>r.binId===selected.id):[];
  const speciesBins=selected?bins.filter(b=>b.speciesId===selected.speciesId):[];
  const speciesPopulation=speciesBins.reduce((sum,bin)=>sum+bin.quantity,0);
+ const historyForBin=selected?[
+  ...recent.filter(r=>r.binId===selected.id).map(r=>({id:r.id,kind:r.label==="Fed"?"feeding":r.label==="Custom note"?"observation":"maintenance",note:r.note,createdAt:r.createdAt,quantityChange:null as number|null})),
+  ...(activity[selected.id]||[])
+ ].sort((a,b)=>new Date(b.createdAt).getTime()-new Date(a.createdAt).getTime()).slice(0,3):[];
  return <section className={styles.wrap}>
  {state!=="scanning"&&!selected?<div className={styles.heading}><div><p className={styles.kicker}>PODSCAPE LABS / KEEPER</p><h1>Quick Care</h1><p>Scan a bin, log care, and move on.</p></div><Link href="/ledger/my-collection">My Collection ↗</Link></div>:null}
  {state==="scanning"?<div className={styles.camera}><video ref={video} muted playsInline aria-label="QR scanning camera"/><div className={styles.brackets} aria-hidden="true"><span/><span/><span/><span/></div>{torchAvailable||zoomRange?<div className={styles.cameraControls}>{torchAvailable?<button type="button" onClick={toggleTorch} aria-pressed={torchOn}>{torchOn?"Light on":"Light off"}</button>:null}{zoomRange?<button type="button" onClick={()=>updateZoom(zoom>zoomRange.min+.1?zoomRange.min:Math.min(2,zoomRange.max))}>{zoom>zoomRange.min+.1?"1×":"2×"}</button>:null}</div>:null}</div>:null}
@@ -194,7 +199,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
    <div className={styles.careTopline}><span>PODSCAPE / QUICK CARE</span><span className={styles.recognized}>● BIN RECOGNIZED</span></div>
    <div className={styles.careIdentity}>
     {selected.image?<div className={styles.careThumb}><Image src={selected.image} alt="" fill sizes="84px"/></div>:<div className={styles.careThumbFallback}>❧</div>}
-    <div className={styles.careIdentityText}><h1>{selected.species}</h1><p><strong>{selected.name}</strong>{selected.label?" · "+selected.label:""}</p><span>~{selected.quantity} isopods · Active</span></div>
+    <div className={styles.careIdentityText}><h1>{selected.species}</h1><p><strong>{selected.name}</strong>{selected.label?" · "+selected.label:""}</p><span>{selected.status.replaceAll("-"," ")} · Breeding: {selected.breeding.replaceAll("-"," ")}</span></div>
    </div>
    <div className={styles.populationStrip} aria-label="Estimated population counts"><div><small>This bin</small><strong>~{selected.quantity.toLocaleString()}</strong></div><div><small>{selected.species} · {speciesBins.length} {speciesBins.length===1?"bin":"bins"}</small><strong>~{speciesPopulation.toLocaleString()} total</strong></div></div>
    <div className={styles.binPicker}>
@@ -220,7 +225,11 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
    {confirmAllCare&&multiCare?<div className={styles.confirmAll} role="group" aria-label="Confirm all-enclosure care"><p>Log <strong>{confirmAllCare.label.toLowerCase()}</strong> for all <strong>{bins.length} enclosures</strong> across your collection?</p><div><button type="button" onClick={()=>setConfirmAllCare(null)} disabled={pending}>Cancel</button><button type="button" onClick={()=>saveMultiple(confirmAllCare.kind,confirmAllCare.note,confirmAllCare.label,true)} disabled={pending}>Log all {bins.length} bins</button></div></div>:null}
    {notice?<div className={styles.inlineNotice} role="status"><span>✓ {notice}</span>{latest?<button type="button" onClick={undo} disabled={undoPending||pending}>{undoPending?"Undoing…":"Undo"}</button>:null}</div>:null}
    {!multiCare?<details className={styles.careDetails}><summary>Add note or custom date</summary><label htmlFor="keeper-care-note">Care note</label><textarea id="keeper-care-note" maxLength={1500} rows={3} value={customNote} onChange={e=>setCustomNote(e.target.value)} placeholder="What did you do or observe?"/><label htmlFor="keeper-care-date">Care date (for notes)</label><input id="keeper-care-date" type="date" value={customDate} max={new Date().toISOString().slice(0,10)} onChange={e=>setCustomDate(e.target.value)}/><button type="button" disabled={pending||!customNote.trim()} onClick={()=>save("observation",customNote.trim(),"Custom note",customDate||undefined)}>Save note</button></details>:null}
-   <div className={styles.careFooter}><button type="button" className={styles.nextBin} onClick={beginScan} disabled={pending||undoPending}>▣ Scan next bin →</button>{!detailNavigation?<Link href={"/keeper/"+selected.id}>View full colony workspace ↗</Link>:null}</div>
+   <div className={styles.workspaceHistory}>
+    <div className={styles.historyHead}><h2>Recent activity</h2><Link href={"/keeper/"+selected.id+"/history"}>Full history →</Link></div>
+    {historyForBin.length?<div className={styles.historyList}>{historyForBin.map(event=><div key={event.id} className={styles.historyEntry}><div><strong>{event.note||event.kind.replaceAll("-"," ")}</strong><small>{event.kind.replaceAll("-"," ")}{event.quantityChange!==null?" · Population "+(event.quantityChange>0?"+":"")+event.quantityChange:""}</small></div><time dateTime={event.createdAt}>{new Date(event.createdAt).toLocaleDateString(undefined,{month:"short",day:"numeric"})}</time></div>)}</div>:<p className={styles.historyEmpty}>No recent records to preview. Open full history for older entries.</p>}
+   </div>
+   <div className={styles.careFooter}><button type="button" className={styles.nextBin} onClick={beginScan} disabled={pending||undoPending}>▣ Scan next bin →</button>{!detailNavigation?<Link href={"/keeper/"+selected.id+"/details"}>Colony settings & QR labels ↗</Link>:null}</div>
    {!multiCare?<button className={styles.switchBin} type="button" onClick={()=>setShowManual(v=>!v)}>Choose another bin manually {showManual?"−":"+"}</button>:null}
    {showManual&&!multiCare?<div className={styles.manualPicker}><select value={manual} onChange={e=>setManual(e.target.value)} aria-label="Choose another bin"><option value="">Select a bin</option>{bins.map(b=><option key={b.id} value={b.id}>{b.species} — {b.name}</option>)}</select><button onClick={()=>{if(manual){match(manual);setShowManual(false);}}} disabled={!manual}>Open bin</button></div>:null}
   </div>:null}
