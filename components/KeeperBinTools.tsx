@@ -21,14 +21,14 @@ export function KeeperBinTools({binId,binName,species,lastRecordedMisting}:Props
  // Resolve the host at interaction time rather than on the server.
  async function openLabel(){
   setMessage("");
-  const target=window.location.origin+"/keeper/scan?bin="+encodeURIComponent(binId);
+  const target=window.location.origin+"/keeper/"+encodeURIComponent(binId);
   const popup=window.open("","_blank","width=560,height=700");
   if(!popup){setMessage("Allow pop-ups to print a label.");return;}
   try {
    const QRCode=(await import("qrcode")).default;
    const qr=await QRCode.toDataURL(target,{width:360,margin:2,errorCorrectionLevel:"M",color:{dark:"#173d2b",light:"#fffaf0"}});
    const safe=(value:string)=>value.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;");
-   popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>PodScape Keeper Label</title><style>body{font:15px Arial,sans-serif;margin:24px;background:#f8f4e8;color:#173d2b;text-align:center}.label{border:1px solid #8d9c7e;background:#fffaf0;padding:23px;max-width:350px;margin:auto}.eyebrow{font-size:11px;font-weight:bold;letter-spacing:2px}h1{font:normal 28px Georgia,serif;margin:9px 0}h2{font:normal 21px Georgia,serif;margin:4px 0}img{width:230px;max-width:100%;display:block;margin:14px auto}.helper{font-size:12px;color:#56705b}.print{margin-top:22px;padding:12px 24px;background:#173d2b;color:white;border:0;cursor:pointer}@media print{body{background:white}.print{display:none}}</style></head><body><div class="label"><div class="eyebrow">PODSCAPE LABS / KEEPER</div><h1>'+safe(species)+'</h1><h2>'+safe(binName)+'</h2><img alt="QR label for '+safe(binName)+'" src="'+qr+'"><p>Scan to open Quick Care</p><p class="helper">A PodScape account is required to edit care records.</p></div><button class="print" onclick="window.print()">Print Label</button></body></html>');
+   popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>PodScape Keeper Label</title><style>body{font:15px Arial,sans-serif;margin:24px;background:#f8f4e8;color:#173d2b;text-align:center}.label{border:1px solid #8d9c7e;background:#fffaf0;padding:23px;max-width:350px;margin:auto}.eyebrow{font-size:11px;font-weight:bold;letter-spacing:2px}h1{font:normal 28px Georgia,serif;margin:9px 0}h2{font:normal 21px Georgia,serif;margin:4px 0}img{width:230px;max-width:100%;display:block;margin:14px auto}.helper{font-size:12px;color:#56705b}.print{margin-top:22px;padding:12px 24px;background:#173d2b;color:white;border:0;cursor:pointer}@media print{body{background:white}.print{display:none}}</style></head><body><div class="label"><div class="eyebrow">PODSCAPE LABS / KEEPER</div><h1>'+safe(species)+'</h1><h2>'+safe(binName)+'</h2><img alt="QR label for '+safe(binName)+'" src="'+qr+'"><p>Scan to open this colony workspace</p><p class="helper">A PodScape account is required to edit care records.</p></div><button class="print" onclick="window.print()">Print Label</button></body></html>');
    popup.document.close();
   }catch{popup.close();setMessage("QR generation failed. Please retry.");}
  }
