@@ -26,7 +26,7 @@ export function LedgerUnsavedGuard(){
       const target=event.target;
       if(!(target instanceof Element)||event.defaultPrevented)return;
       if(form.contains(target))window.setTimeout(changed,0);
-      const anchor=target.closest("a[href]");
+      const anchor=target.closest<HTMLAnchorElement>("a[href]");
       if(!anchor||!anchor.href||anchor.target==="_blank"||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
       const url=new URL(anchor.href);
       const current=new URL(window.location.href);
