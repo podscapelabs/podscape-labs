@@ -68,3 +68,8 @@
 .manualPicker select{width:100%;min-height:45px;border:1px solid var(--border);background:var(--background);color:var(--text-primary);padding:10px;border-radius:8px}
 .manualPicker button{margin-top:0}
 @media(max-width:500px){.careWorkspace{padding:15px;margin:8px 0 0}.careIdentity{gap:12px;padding:14px 0}.careThumb,.careThumbFallback{width:66px;height:66px}.careGrid{gap:8px}.careTile,.careTileLogged{padding:11px;min-height:112px}.careFooter{align-items:stretch;flex-direction:column}.careFooter>a{text-align:center}.careFooter .nextBin{width:100%}}
+
+/* Small-label QR scanner controls: only shown when supported by the active camera. */
+.cameraControls{position:absolute;z-index:3;bottom:12px;left:12px;right:12px;display:flex;gap:8px;justify-content:center;pointer-events:none}
+.cameraControls button{pointer-events:auto;border:1px solid #d3e7d4;background:#112a20de;color:#fff;border-radius:999px;padding:8px 16px;min-height:38px;font-size:.76rem;font-weight:700;cursor:pointer}
+.cameraControls button[aria-pressed="true"]{background:#c9e7b3;color:#142e1f}
