@@ -57,8 +57,8 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
     if(!result.success||!result.id){setError(result.error||"Could not save care.");return;}
     const now=new Date().toISOString();
     const previousReminder=action.note==="Misted"?syncMisting(colony.id,now):undefined;
-    setEvents(old=>[{id:result.id,kind:action.kind,note:action.note,createdAt:now,quantityChange:null},...old]);
-    setLastSaved({id:result.id,note:action.note,previousReminder});
+    setEvents(old=>[{id:savedId,kind:action.kind,note:action.note,createdAt:now,quantityChange:null},...old]);
+    setLastSaved({id:savedId,note:action.note,previousReminder});
     setMessage(action.label+" recorded");
     router.refresh();
    }catch{setError("Could not save care. Please try again.");}
@@ -75,7 +75,7 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
     if(!result.success||!result.id){setError(result.error||"Unable to save observation.");return;}
     const now=new Date().toISOString();
     setEvents(old=>[{id:result.id,kind:"observation",note:text,createdAt:now,quantityChange:null},...old]);
-    setLastSaved({id:result.id,note:text});
+    setLastSaved({id:savedId,note:text});
     setObservation("");
     setMessage("Observation saved");
     router.refresh();
@@ -114,7 +114,7 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
    <p className={styles.description}>Tap an action to save it to this bin&apos;s private care history.</p>
    {colony.archived?<p className={styles.warning}>This bin is archived. Restore it in Details before recording care.</p>:null}
    <div className={styles.actions}>{actions.map(action=><button type="button" key={action.note} disabled={pending||undoing||colony.archived} onClick={()=>record(action)}><PodscapeLineIcon name={action.icon}/><strong>{action.label}</strong><small>{dateFor(action.note)?"Last: "+dayLabel(dateFor(action.note)):"Not logged yet"}</small></button>)}</div>
-   <details className={styles.observation} id="observation" defaultOpen={initialPanel==="observation"}><summary>+ Add an observation or care note</summary>
+   <details className={styles.observation} id="observation" open={initialPanel==="observation"}><summary>+ Add an observation or care note</summary>
     <form onSubmit={recordObservation}><label htmlFor="colony-observation">What did you notice?</label><textarea id="colony-observation" rows={3} maxLength={1500} value={observation} onChange={event=>setObservation(event.target.value)} placeholder="New mancae spotted, habitat changes, feeding notes…" required/><button type="submit" disabled={pending||undoing||colony.archived||!observation.trim()}>{pending?"Saving…":"Save observation"}</button></form>
    </details>
    <Link className={styles.bulkLink} href="/keeper/scan?manual=1">Log care for multiple bins →</Link>
