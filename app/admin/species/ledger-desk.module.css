@@ -33,3 +33,5 @@
   .speciesForm #ledger-care textarea { min-height: 95px; }
   .speciesForm .optionalSection > summary { padding: 14px 16px; }
 }
+
+.tagEditor{min-width:0;grid-column:1/-1;padding:12px 0}
