@@ -2,6 +2,33 @@
 import {useEffect,useRef,useState,type PointerEvent,type MouseEvent,type ReactNode} from "react";
 import styles from "./PodscapeHome.module.css";
 
+/** Animate layout changes without moving or replacing the real interactive widgets. */
+function workspaceNodes(scope:string){
+ return Array.from(document.querySelectorAll<HTMLElement>("[data-workspace-scope]"))
+  .filter(node=>node.dataset.workspaceScope===scope);
+}
+function clearDropPreview(scope:string){
+ for(const node of workspaceNodes(scope))node.removeAttribute("data-workspace-drop-preview");
+}
+function animatedReorder(scope:string,change:()=>void){
+ const nodes=workspaceNodes(scope);
+ const before=new Map(nodes.map(node=>[node,node.getBoundingClientRect().top]));
+ change();
+ requestAnimationFrame(()=>{
+  if(window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  for(const node of nodes){
+   if(!node.isConnected)continue;
+   const previous=before.get(node);
+   if(previous===undefined)continue;
+   const delta=previous-node.getBoundingClientRect().top;
+   if(Math.abs(delta)<3)continue;
+   // FLIP animation: layout has already changed; settle neighbouring cards into place.
+   node.animate([{transform:`translate3d(0,${delta}px,0)`},{transform:"translate3d(0,0,0)"}],
+    {duration:220,easing:"cubic-bezier(.2,.85,.25,1)"});
+  }
+ });
+}
+
 type DragState<T extends string>={id:T;pointerId:number;startX:number;startY:number;lastY:number;started:boolean;lastSwapY:number|null};
 export function useWorkspaceDrag<T extends string>(
   scope:string,visible:readonly T[],reorder:(from:T,to:T)=>void
@@ -50,11 +77,14 @@ export function useWorkspaceDrag<T extends string>(
     const crossed=direction>0
       ?event.clientY>=rect.top+threshold
       :event.clientY<=rect.bottom-threshold;
+    clearDropPreview(scope);
+    neighbor.setAttribute("data-workspace-drop-preview",direction>0?"after":"before");
     if(!crossed)return;
     drag.lastSwapY=event.clientY;
-    reorder(drag.id,visible[to]);
+    clearDropPreview(scope);
+    animatedReorder(scope,()=>reorder(drag.id,visible[to]));
   };
-  const stop=()=>{current.current=null;setDragging(null)};
+  const stop=()=>{clearDropPreview(scope);current.current=null;setDragging(null)};
   return {dragging,begin,move,stop};
 }
 export function WorkspaceEditToolbar({title,description,onAdd,onReset,onDone}:{title:string;description:string;onAdd:()=>void;onReset:()=>void;onDone:()=>void}){
@@ -129,8 +159,8 @@ export function WorkspaceEditBlock<T extends string>({id,scope,label,index,count
   onDragStartCapture={event=>{if(onLongPress)event.preventDefault()}}>
   {editing?<div className={styles.homeCanvasBlockBar}>
     <button type="button" data-drag-handle="true" className={styles.homeCanvasHandle} aria-label={`Drag ${label} to reorder`}><span aria-hidden="true">⠿</span> {label}</button>
-    <div><button type="button" aria-label={`Move ${label} up`} disabled={index===0} onClick={()=>onMove(id,-1)}>↑</button>
-    <button type="button" aria-label={`Move ${label} down`} disabled={index===count-1} onClick={()=>onMove(id,1)}>↓</button>
+    <div><button type="button" aria-label={`Move ${label} up`} disabled={index===0} onClick={()=>animatedReorder(scope,()=>onMove(id,-1))}>↑</button>
+    <button type="button" aria-label={`Move ${label} down`} disabled={index===count-1} onClick={()=>animatedReorder(scope,()=>onMove(id,1))}>↓</button>
     {!required&&onRemove?<button type="button" aria-label={`Remove ${label}`} onClick={()=>onRemove(id)}>×</button>:null}</div>
   </div>:null}
   <div className={editing&&!interactiveChildren?styles.homeCanvasContentLocked:undefined}>{children}</div>
