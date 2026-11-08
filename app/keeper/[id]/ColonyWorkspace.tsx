@@ -111,7 +111,7 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
   </div>
   <section className={styles.care} aria-labelledby="care-heading">
    <div className={styles.sectionTitle}><div><p>DAILY CARE</p><h2 id="care-heading">Quick Care</h2></div><Link href={"/keeper/"+colony.id+"/history"}>View history →</Link></div>
-   <p className={styles.description}>Tap an action to save it to this bin's private care history.</p>
+   <p className={styles.description}>Tap an action to save it to this bin&apos;s private care history.</p>
    {colony.archived?<p className={styles.warning}>This bin is archived. Restore it in Details before recording care.</p>:null}
    <div className={styles.actions}>{actions.map(action=><button type="button" key={action.note} disabled={pending||undoing||colony.archived} onClick={()=>record(action)}><PodscapeLineIcon name={action.icon}/><strong>{action.label}</strong><small>{dateFor(action.note)?"Last: "+dayLabel(dateFor(action.note)):"Not logged yet"}</small></button>)}</div>
    <details className={styles.observation} id="observation" defaultOpen={initialPanel==="observation"}><summary>+ Add an observation or care note</summary>
