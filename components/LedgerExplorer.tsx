@@ -12,7 +12,7 @@ import { speciesDisplayName, speciesScientificName, type SpeciesRecord } from "@
 
 type SortMode = "catalogue" | "common" | "scientific" | "recent";
 
-export function LedgerExplorer({ records, collectedIds = [], signedIn = false, mode = "catalogue", addedAtById = {}, collectionDetailsById = {}, featured }: {
+export function LedgerExplorer({ records, collectedIds = [], signedIn = false, mode = "catalogue", addedAtById = {}, collectionDetailsById = {}, featured, heroMode = false }: {
   records: SpeciesRecord[];
   collectedIds?: string[];
   signedIn?: boolean;
@@ -20,6 +20,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
   addedAtById?: Record<string, string>;
   collectionDetailsById?: Record<string, { quantity: number; colonyStatus: ColonyStatus; binCount?: number }>;
   featured?: { slug: string; name: string; summary: string; image: string | null };
+  heroMode?: boolean;
 }) {
   const [query, setQuery] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -54,9 +55,30 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
 
   const filtersActive = Boolean(query || genus !== "all" || care !== "all" || sort !== (mode === "collection" ? "recent" : "catalogue"));
 
-  return <section className="v2-ledger-explorer" aria-labelledby="ledger-directory-title">
+  return <>
+    {heroMode && mode === "catalogue" ? <header className={spotlight.hero} aria-labelledby="ledger-hero-title">
+      {featured?.image ? <img src={featured.image} alt="" className={spotlight.heroPhoto} /> : null}
+      <div className={spotlight.heroShade} aria-hidden="true" />
+      <div className={spotlight.heroInner}>
+        <p className={spotlight.heroEyebrow}>PODSCAPE / SPECIES ARCHIVE</p>
+        <h1 id="ledger-hero-title">Leaf Ledger</h1>
+        <p className={spotlight.heroDescription}>Discover fascinating species, explore their stories, and grow your own collection.</p>
+        <div className={spotlight.heroSearch} role="search" aria-label="Search the Leaf Ledger">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 5 5"/></svg>
+          <input type="search" aria-label="Search Leaf Ledger species" value={query} onChange={event=>setQuery(event.target.value)} placeholder="Search species, genus, or morph…" autoComplete="off"/>
+          {query ? <button type="button" onClick={()=>setQuery("")} aria-label="Clear species search">×</button> : null}
+        </div>
+        <nav className={spotlight.heroDestinations} aria-label="Leaf Ledger mini dashboard">
+          <a href="#ledger-directory" aria-current="page" className={spotlight.heroDestinationActive}><span aria-hidden="true">❧</span><strong>Discover</strong><small>Explore species</small></a>
+          <Link href={signedIn ? "/keeper/collection" : "/account/login"}><span aria-hidden="true">▤</span><strong>My Collection</strong><small>Your saved species</small></Link>
+        </nav>
+      </div>
+    </header> : null}
+    <div className={heroMode && mode === "catalogue" ? spotlight.content : undefined}>
+    <div className={heroMode && mode === "catalogue" ? "v2-container" : undefined} id={heroMode && mode === "catalogue" ? "ledger-directory" : undefined}>
+    <section className="v2-ledger-explorer" aria-labelledby="ledger-directory-title">
     <div className={`v2-filter-bar ${styles.filterBar}`} role="search" aria-label={mode === "collection" ? "Search and filter your collection" : "Search and filter the species catalogue"}>
-      <div className={styles.searchField}>
+      {!(heroMode && mode === "catalogue") ? <div className={styles.searchField}>
         <svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <circle cx="10.8" cy="10.8" r="6.5" /><path d="m16 16 5 5" />
         </svg>
@@ -65,7 +87,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
           <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2.5" fill="var(--surface)"/><circle cx="16" cy="17" r="2.5" fill="var(--surface)"/></svg>
           {genus !== "all" || care !== "all" || sort !== "catalogue" ? <span className={spotlight.filterDot} /> : null}
         </button> : null}
-      </div>
+      </div> : <button type="button" className={spotlight.catalogueFilterButton} aria-expanded={filtersOpen} aria-controls="ledger-filter-options" onClick={() => setFiltersOpen(value=>!value)}>⚙ {filtersOpen ? "Hide filters" : "Filters & sort"}{genus !== "all" || care !== "all" || sort !== "catalogue" ? " •" : ""}</button>}
       <div id={mode === "catalogue" ? "ledger-filter-options" : undefined} className={`${styles.filterRow} ${mode === "catalogue" ? spotlight.collapsibleFilters : ""}`} hidden={mode === "catalogue" && !filtersOpen}>
         <label className={styles.filterPill} data-active={genus !== "all"}>
           <select className={styles.filterSelect} aria-label="Filter by genus" value={genus} onChange={(event) => setGenus(event.target.value)}>
@@ -114,5 +136,5 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
         <div className={spotlight.featureCopy}><small>❧ Featured species</small><h2>{featured.name}</h2><p>{featured.summary || "Explore this species in the Leaf Ledger."}</p><Link href={`/ledger/${featured.slug}`}>View species →</Link></div>
       </aside> : null}</div>
     ) : <div className="v2-empty-state"><span className="v2-empty-leaf" aria-hidden="true" /><h2>No species match these filters.</h2><p>Try a different name, genus, or care level.</p><button type="button" onClick={clear}>Reset filters</button></div>}
-  </section>;
+  </section></div></div></>;
 }
