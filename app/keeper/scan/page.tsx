@@ -16,7 +16,7 @@ export default async function ScanPage({searchParams}:{searchParams:Promise<{bin
  let enclosures: Awaited<ReturnType<typeof listEnclosures>> = [];
  try { enclosures = (await listEnclosures()).filter(e=>!e.isArchived); } catch { return <PlatformShell><main className="v2-container" style={{padding:"48px 16px"}}><h1>Scan a bin</h1><p role="alert">Keeper storage is not available. Please check the customer database setup.</p></main></PlatformShell>; }
  const species = await getSpeciesRecords();
- const bins = enclosures.map(e=>{const record=species.find(s=>s.id===e.speciesId);return{id:e.id,name:e.name,label:e.label,quantity:e.quantity,species:record?.commonName||"Unlinked species",image:record?.image||null};});
+ const bins = enclosures.map(e=>{const record=species.find(s=>s.id===e.speciesId);return{id:e.id,name:e.name,label:e.label,quantity:e.quantity,speciesId:e.speciesId,species:record?.commonName||"Unlinked species",image:record?.image||null};});
  let careDates:Record<string,Record<string,string>>={};
  try{careDates=await listQuickCareDates(bins.map(b=>b.id));}catch{/* Care logging remains usable if history fails. */}
  const options = await searchParams;
