@@ -5,6 +5,7 @@ import Image from "next/image";
 import jsQR from "jsqr";
 import { logKeeperEvent, undoKeeperEvent, logKeeperEventBatch, undoKeeperEventBatch } from "@/app/keeper/actions";
 import styles from "./KeeperScanner.module.css";
+import {WorkspaceSectionHeader} from "./PodscapeWorkspaceUI";
 type Bin = { id:string; name:string; label:string; speciesId:string; species:string; quantity:number; status:string; breeding:string; image:string|null };
 type DetectedCode = { rawValue:string };
 type QRDetector = { detect:(source:HTMLVideoElement)=>Promise<DetectedCode[]> };
@@ -224,7 +225,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
    </div>
    <div className={styles.populationStrip} aria-label="Estimated population counts"><div><small>This bin</small><strong>~{selected.quantity.toLocaleString()}</strong></div><div><small>{selected.species} · {speciesBins.length} {speciesBins.length===1?"bin":"bins"}</small><strong>~{speciesPopulation.toLocaleString()} total</strong></div></div>
    <div className={styles.binPicker}>
-    <div className={styles.binPickerHead}><div><h2>Enclosures <span className={styles.pickerCount}>{bins.length}</span></h2><p>{multiCare?"Tap to select for group care":"Swipe or tap to switch bins"}</p></div><button type="button" className={styles.modeButton} aria-pressed={multiCare} onClick={toggleMultiCare} disabled={pending||undoPending}>{multiCare?"Done selecting":"Multi-care"}</button></div>
+    <WorkspaceSectionHeader title="Enclosures" meta={bins.length} description={multiCare?"Tap to select for group care":"Swipe or tap to switch bins"} action={<button type="button" className={styles.modeButton} aria-pressed={multiCare} onClick={toggleMultiCare} disabled={pending||undoPending}>{multiCare?"Done selecting":"Multi-care"}</button>}/>
     {multiCare?<div className={styles.selectionLine}>
       <span>{chosenBins.length} of {bins.length} selected</span>
       <div className={styles.selectionActions}><button type="button" onClick={selectSpecies} disabled={pending||undoPending}>All {selected.species} ({speciesBins.length})</button><button type="button" onClick={selectAllEnclosures} disabled={pending||undoPending}>All bins ({bins.length})</button></div>
@@ -234,7 +235,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
     </div>
     {multiCare?<p className={styles.bulkHint}>Each selected enclosure keeps its own care history and population. Undo reverses the batch.</p>:null}
    </div>
-   <div className={styles.actionHead}><div><h2>{multiCare?"Group care":"Quick care"}</h2><p>{multiCare?"Log care across your selected bins.":"Tap an action to log it."}</p></div><span>{multiCare?chosenBins.length+" selected":loggedForBin.length+" this session"}</span></div>
+   <div className={styles.actionHead}><WorkspaceSectionHeader title={multiCare?"Group care":"Quick care"} description={multiCare?"Log care across your selected bins.":"Tap an action to log it."} action={<span className={styles.careSessionCount}>{multiCare?chosenBins.length+" selected":loggedForBin.length+" this session"}</span>}/></div>
    {error?<p className={styles.error} role="alert">{error}</p>:null}
    <div className={styles.careGrid}>{tasks.map(t=>{
     const logged=multiCare?chosenBins.length>0&&chosenBins.every(id=>recent.some(r=>r.binId===id&&r.label===t.label)):recent.some(r=>r.binId===selected.id&&r.label===t.label);
@@ -248,7 +249,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
    {(notice||latest)?<div className={styles.inlineNotice} role="status"><span>{notice||"Care saved."}</span>{latest?<button type="button" onClick={undo} disabled={undoPending||pending}>{undoPending?"Undoing…":"Undo "+latest.label+(latest.records.length>1?" ("+latest.records.length+")":"")}</button>:null}</div>:null}
    {!multiCare?<details className={styles.careDetails}><summary>Add note or custom date</summary><label htmlFor="keeper-care-note">Care note</label><textarea id="keeper-care-note" maxLength={1500} rows={3} value={customNote} onChange={e=>setCustomNote(e.target.value)} placeholder="What did you do or observe?"/><label htmlFor="keeper-care-date">Care date (for notes)</label><input id="keeper-care-date" type="date" value={customDate} max={new Date().toISOString().slice(0,10)} onChange={e=>setCustomDate(e.target.value)}/><button type="button" disabled={pending||!customNote.trim()} onClick={()=>save("observation",customNote.trim(),"Custom note",customDate||undefined)}>Save note</button></details>:null}
    <div className={styles.workspaceHistory}>
-    <div className={styles.historyHead}><h2>Recent activity</h2><Link href={"/keeper/"+selected.id+"/history"}>Full history →</Link></div>
+    <WorkspaceSectionHeader title="Recent activity" action={<Link className={styles.historyFullLink} href={"/keeper/"+selected.id+"/history"}>Full history →</Link>}/>
     {historyForBin.length?<div className={styles.historyList}>{historyForBin.map(event=><div key={event.id} className={styles.historyEntry}><div><strong>{event.note||event.kind.replaceAll("-"," ")}</strong><small>{event.kind.replaceAll("-"," ")}{event.quantityChange!==null?" · Population "+(event.quantityChange>0?"+":"")+event.quantityChange:""}</small></div><time dateTime={event.createdAt}>{new Date(event.createdAt).toLocaleDateString(undefined,{month:"short",day:"numeric"})}</time></div>)}</div>:<p className={styles.historyEmpty}>No recent records to preview. Open full history for older entries.</p>}
    </div>
    <div className={styles.careFooter}><Link className={styles.settingsLink} href={"/keeper/"+selected.id+"/details"}>Colony settings & QR ↗</Link><button type="button" className={styles.nextBin} onClick={beginScan} disabled={pending||undoPending}>▣ Scan next bin</button></div>
