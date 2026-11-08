@@ -23,7 +23,7 @@ export function KeeperQrCreator({bins,initialBinId}:{bins:Bin[];initialBinId:str
  function download(){if(!selected||!svg||!valid)return;const blob=new Blob([svg],{type:"image/svg+xml;charset=utf-8"});const link=document.createElement("a");const objectUrl=URL.createObjectURL(blob);link.href=objectUrl;link.download="podscape-"+selected.name.toLowerCase().replace(/[^a-z0-9]+/g,"-")+"-qr.svg";link.click();setTimeout(()=>URL.revokeObjectURL(objectUrl),1000);}
  return <div className={styles.root} style={{"--label-size":valid?dimension+"cm":"3cm"} as CSSProperties}>
   <header className={styles.heading}><p>MANAGER / BIN LABELS</p><h1>Create QR Code</h1><span>Print a scannable label for a bin you already manage.</span></header>
-  {bins.length===0?<div className={styles.empty}><p>You don&apos;t have any active bins yet.</p><Link href="/keeper/collection">Add a bin in Manager →</Link></div>:<>
+  {bins.length===0?<div className={styles.empty}><p>You don&apos;t have any active bins yet.</p><Link href="/keeper/new">Create your first bin →</Link></div>:<>
    <section className={styles.card}><div className={styles.step}><b>01</b><h2>Select a bin</h2></div>
     <label htmlFor="qr-bin">Your existing bins</label>
     <select id="qr-bin" value={binId} onChange={event=>setBinId(event.target.value)}>{bins.map(bin=><option key={bin.id} value={bin.id}>{bin.species} — {bin.name}{bin.label?" · "+bin.label:""}</option>)}</select>
