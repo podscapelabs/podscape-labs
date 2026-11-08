@@ -2,7 +2,7 @@
 import {useEffect,useRef,useState,type PointerEvent,type MouseEvent,type ReactNode} from "react";
 import styles from "./PodscapeHome.module.css";
 
-type DragState<T extends string>={id:T;pointerId:number;startX:number;startY:number;started:boolean};
+type DragState<T extends string>={id:T;pointerId:number;startX:number;startY:number;lastY:number;started:boolean;lastSwapY:number|null};
 export function useWorkspaceDrag<T extends string>(
   scope:string,visible:readonly T[],reorder:(from:T,to:T)=>void
 ){
@@ -10,33 +10,49 @@ export function useWorkspaceDrag<T extends string>(
   const [dragging,setDragging]=useState<T|null>(null);
   const begin=(id:T,event:PointerEvent<HTMLDivElement>)=>{
     if(event.pointerType==="mouse"&&event.button!==0)return;
-    if((event.target as HTMLElement).closest("button:not([data-drag-handle])"))return;
-    current.current={id,pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,started:false};
+    // The arrows remain independent of dragging. Only the handle starts a drag.
+    if(!(event.target as HTMLElement).closest("[data-drag-handle]"))return;
+    current.current={id,pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,lastY:event.clientY,started:false,lastSwapY:null};
     event.currentTarget.setPointerCapture(event.pointerId);
   };
   const move=(event:PointerEvent<HTMLDivElement>)=>{
     const drag=current.current;
     if(!drag||drag.pointerId!==event.pointerId)return;
     if(!drag.started){
-      if(Math.hypot(event.clientX-drag.startX,event.clientY-drag.startY)<7)return;
+      if(Math.hypot(event.clientX-drag.startX,event.clientY-drag.startY)<6)return;
       drag.started=true;setDragging(drag.id);
     }
-    const edge=88;
-    if(event.clientY<edge)window.scrollBy(0,-12);
-    else if(event.clientY>window.innerHeight-edge)window.scrollBy(0,12);
-    const nodes=Array.from(document.querySelectorAll<HTMLElement>("[data-workspace-scope]"));
-    const target=nodes.find(node=>{
-      if(node.dataset.workspaceScope!==scope||node.dataset.workspaceBlock===drag.id)return false;
-      const rect=node.getBoundingClientRect();
-      return event.clientY>=rect.top&&event.clientY<=rect.bottom;
-    });
-    const targetId=target?.dataset.workspaceBlock as T|undefined;
-    if(!targetId||!visible.includes(targetId))return;
-    const rect=target!.getBoundingClientRect();
-    const from=visible.indexOf(drag.id),to=visible.indexOf(targetId);
-    if((from<to&&event.clientY<rect.top+rect.height*.52)||
-       (from>to&&event.clientY>rect.top+rect.height*.48))return;
-    reorder(drag.id,targetId);
+    // iOS edits happen inside a small viewport with a top toolbar and bottom nav.
+    // Start scrolling before reaching either extreme, in BOTH directions.
+    const topEdge=145,bottomEdge=window.innerHeight-155;
+    if(event.clientY<topEdge)window.scrollBy(0,-Math.min(22,Math.max(7,(topEdge-event.clientY)*.25)));
+    else if(event.clientY>bottomEdge)window.scrollBy(0,Math.min(22,Math.max(7,(event.clientY-bottomEdge)*.25)));
+
+    const delta=event.clientY-drag.lastY;
+    drag.lastY=event.clientY;
+    if(Math.abs(delta)<1.5)return;
+    const direction=delta>0?1:-1;
+    // Prevent a swap from immediately flipping back when React reflows blocks
+    // beneath a stationary finger. A deliberate reverse movement still works.
+    if(drag.lastSwapY!==null&&direction*(event.clientY-drag.lastSwapY)<0&&Math.abs(event.clientY-drag.lastSwapY)<32)return;
+
+    const nodes=Array.from(document.querySelectorAll<HTMLElement>("[data-workspace-scope]"))
+      .filter(node=>node.dataset.workspaceScope===scope);
+    const from=visible.indexOf(drag.id);
+    const to=from+direction;
+    if(from<0||to<0||to>=visible.length)return;
+    const neighbor=nodes.find(node=>node.dataset.workspaceBlock===visible[to]);
+    if(!neighbor)return;
+    const rect=neighbor.getBoundingClientRect();
+    // Trigger near the neighboring block's EDGE, not at the midpoint.
+    // Large widgets may be hundreds of pixels tall; halfway was far too deep.
+    const threshold=Math.min(36,rect.height*.12);
+    const crossed=direction>0
+      ?event.clientY>=rect.top+threshold
+      :event.clientY<=rect.bottom-threshold;
+    if(!crossed)return;
+    drag.lastSwapY=event.clientY;
+    reorder(drag.id,visible[to]);
   };
   const stop=()=>{current.current=null;setDragging(null)};
   return {dragging,begin,move,stop};
