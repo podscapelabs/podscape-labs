@@ -13,12 +13,12 @@ export default async function SpotlightDesk({searchParams}:{searchParams:Promise
   const [options,selected,query]=await Promise.all([getSpotlightOptions(),getSpotlightSelection(),searchParams]);
   return <main className={styles.page}><div className={styles.wrap}>
     <Link className={styles.back} href="/account/owner-tools">← Owner Tools</Link>
-    <header className={styles.header}><p>PODSCAPE LABS / EDITORIAL</p><h1>Spotlight Desk</h1><span>Choose up to five highlights for the homepage carousel. Arrange them in the order you want visitors to see them.</span></header>
-    {query.saved&&<p role="status" className={styles.success}>Spotlight selection saved. Your changes will appear on the homepage after this release is deployed.</p>}
+    <header className={styles.header}><p>PODSCAPE LABS / EDITORIAL</p><h1>Spotlight Desk</h1><span>Choose up to five fixed homepage highlights and their order. New species and products will never be inserted automatically.</span></header>
+    {query.saved&&<p role="status" className={styles.success}>Spotlight selection saved. The homepage reads these exact choices; new content does not replace them.</p>}
     {query.error&&<p role="alert" className={styles.error}>Could not save Spotlights. Check for duplicate choices and ensure the database migration is installed.</p>}
     {selected===null&&<p role="status" className={styles.error}>Spotlight storage isn&apos;t installed yet. The homepage keeps its existing highlights until the release migration is applied.</p>}
     <form action={saveSpotlightSelection} className={styles.form}>
-      <div className={styles.sectionHead}><h2>Homepage rotation</h2><small>Swipeable · Manual · No automatic advancement</small></div>
+      <div className={styles.sectionHead}><h2>Homepage rotation</h2><small>Swipeable · Manually curated · No automatic replacements</small></div>
       {Array.from({length:5},(_,i)=><label className={styles.slot} key={i}>
         <span className={styles.number}>{String(i+1).padStart(2,"0")}</span>
         <span className={styles.slotBody}><strong>{i===0?"First highlight":`Highlight ${i+1}`}</strong>
@@ -30,6 +30,6 @@ export default async function SpotlightDesk({searchParams}:{searchParams:Promise
       </label>)}
       <div className={styles.actions}><button type="submit" disabled={selected===null}>Save Spotlight</button><Link href="/app">View homepage →</Link></div>
     </form>
-    <p className={styles.foot}>Only published, active content is eligible. If something is unpublished later, it won&apos;t appear in the carousel. Empty slots are skipped. Existing highlights remain visible until you save a selection.</p>
+    <p className={styles.foot}>Only published, active content is eligible. Unpublished items are skipped rather than replaced. Leave all slots empty and save to hide Spotlight; Recent &amp; Noteworthy remains independent and automatic.</p>
   </div></main>;
 }
