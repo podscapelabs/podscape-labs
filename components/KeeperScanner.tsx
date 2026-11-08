@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import jsQR from "jsqr";
-import { logKeeperEvent, undoKeeperEvent } from "@/app/keeper/actions";
+import { logKeeperEvent, undoKeeperEvent, logKeeperEventBatch, undoKeeperEventBatch } from "@/app/keeper/actions";
 import styles from "./KeeperScanner.module.css";
 type Bin = { id:string; name:string; label:string; species:string; quantity:number; image:string|null };
 type DetectedCode = { rawValue:string };
@@ -19,6 +19,7 @@ function readId(value:string):string|null {
 }
 const tasks=[{label:"Misted",kind:"maintenance",note:"Misted",icon:"◌"},{label:"Fed",kind:"feeding",note:"Fed",icon:"◈"},{label:"Spot cleaned",kind:"maintenance",note:"Spot cleaned",icon:"✧"},{label:"Leaf litter",kind:"maintenance",note:"Leaf litter added",icon:"❧"}] as const;
 type CareRecord={id:string;binId:string;label:string;note:string;createdAt:string;previous:string|null};
+type LastOperation={records:CareRecord[];label:string};
 function formatLast(value:string|null|undefined){
  if(!value)return "Never logged";
  const date=new Date(value);if(Number.isNaN(date.getTime()))return "Never logged";
@@ -38,8 +39,11 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  const [notice,setNotice]=useState("");
  const [undoPending,setUndoPending]=useState(false);
  const [showManual,setShowManual]=useState(false);
+ const [multiCare,setMultiCare]=useState(false);
+ const [chosenBins,setChosenBins]=useState<string[]>([]);
+ const [lastOperation,setLastOperation]=useState<LastOperation|null>(null);
  const stop=()=>{stream.current?.getTracks().forEach(t=>t.stop());stream.current=null;canvas.current=null;setTorchOn(false);};
- function match(value:string){const id=readId(value);const found=bins.find(b=>b.id.toLowerCase()===id?.toLowerCase());if(found){lock.current=true;stop();setSelected(found);setState("idle");setCustomNote("");setCustomDate("");setError("");setNotice("");return true;}setError("That code does not match an active bin in your collection.");return false;}
+ function match(value:string){const id=readId(value);const found=bins.find(b=>b.id.toLowerCase()===id?.toLowerCase());if(found){lock.current=true;stop();setSelected(found);setState("idle");setCustomNote("");setCustomDate("");setError("");setNotice("");setMultiCare(false);setChosenBins([found.id]);return true;}setError("That code does not match an active bin in your collection.");return false;}
  useEffect(()=>()=>stop(),[]);
  useEffect(()=>{if(state!=="scanning")return;
  let live=true;let timer:ReturnType<typeof setInterval>|undefined;
@@ -104,7 +108,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  }
  async function toggleTorch(){if(await setCameraOption({torch:!torchOn}))setTorchOn(v=>!v);}
  async function updateZoom(value:number){if(await setCameraOption({zoom:value}))setZoom(value);}
- function beginScan(){lock.current=false;setSelected(null);setNotice("");setChoice("");setError("");setState("scanning");}
+ function beginScan(){lock.current=false;setSelected(null);setNotice("");setError("");setMultiCare(false);setChosenBins([]);setState("scanning");}
  function save(kind:string,note:string,label:string,occurredOn?:string){
  if(!selected||pending||saving.current)return;
  // A checked tile is a successful save in this session, not a toggle to delete.
@@ -116,25 +120,61 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
   if(result.success&&result.id){
    const previous=lastDates[bin.id]?.[note]||null;
    const createdAt=occurredOn?occurredOn+"T12:00:00Z":new Date().toISOString();
-   setRecent(r=>[...r,{id:result.id!,binId:bin.id,label,note,createdAt,previous}]);
+   const entry:CareRecord={id:result.id,binId:bin.id,label,note,createdAt,previous};
+   setRecent(r=>[...r,entry]);setLastOperation({records:[entry],label});
    setLastDates(d=>({...d,[bin.id]:{...(d[bin.id]||{}),[note]:createdAt}}));
    setNotice(label+" saved");
    if(kind==="observation")setCustomNote("");
   }else setError(result.error||"Save failed. Please retry.");
  }catch{setError("Unable to save care. Please retry.");}finally{saving.current=false;}});
  }
+ function switchBin(bin:Bin){
+  if(pending||undoPending)return;
+  setSelected(bin);setNotice("");setError("");setShowManual(false);setCustomNote("");setCustomDate("");setChosenBins([bin.id]);
+ }
+ function toggleMultiCare(){
+  if(pending||undoPending)return;
+  setMultiCare(v=>!v);setChosenBins(selected?[selected.id]:[]);setNotice("");setError("");
+ }
+ function toggleChosen(id:string){setChosenBins(ids=>ids.includes(id)?ids.filter(v=>v!==id):[...ids,id]);}
+ function selectSpecies(){
+  if(!selected)return;
+  setChosenBins(bins.filter(b=>b.species===selected.species).map(b=>b.id));
+ }
+ function saveMultiple(kind:string,note:string,label:string){
+  if(!multiCare||pending||undoPending||saving.current)return;
+  if(!chosenBins.length){setError("Select at least one enclosure.");return;}
+  if(chosenBins.some(id=>recent.some(r=>r.binId===id&&r.label===label))){
+   setError("This action was already logged for one of your selected bins this session. Adjust the selection or undo first.");return;
+  }
+  saving.current=true;setError("");setNotice("");
+  start(async()=>{try{
+   const result=await logKeeperEventBatch({ids:chosenBins,kind,note});
+   if(!result.success||!result.events){setError(result.error||"Could not save care for these bins.");return;}
+   const createdAt=new Date().toISOString();
+   const entries:CareRecord[]=result.events.map(event=>({id:event.id,binId:event.enclosureId,label,note,createdAt,previous:lastDates[event.enclosureId]?.[note]||null}));
+   setRecent(r=>[...r,...entries]);
+   setLastOperation({records:entries,label});
+   setLastDates(d=>{const updated={...d};for(const entry of entries)updated[entry.binId]={...(updated[entry.binId]||{}),[note]:createdAt};return updated;});
+   setNotice(label+" logged for "+entries.length+" "+(entries.length===1?"bin":"bins"));
+  }catch{setError("Unable to save bulk care. Check your history before retrying.");}finally{saving.current=false;}});
+ }
  async function undo(){
-  const entry=recent[recent.length-1];if(!entry||undoPending||pending)return;
+  const operation=lastOperation;if(!operation||undoPending||pending)return;
   setUndoPending(true);setError("");
   try{
-   const result=await undoKeeperEvent({id:entry.id,enclosureId:entry.binId});
+   const result=operation.records.length>1
+    ?await undoKeeperEventBatch({eventIds:operation.records.map(r=>r.id)})
+    :await undoKeeperEvent({id:operation.records[0].id,enclosureId:operation.records[0].binId});
    if(!result.success){setError(result.error||"Undo failed.");return;}
-   setRecent(r=>r.filter(x=>x.id!==entry.id));
-   setLastDates(d=>({...d,[entry.binId]:{...(d[entry.binId]||{}),[entry.note]:entry.previous||""}}));
-   setNotice(entry.label+" undone");
+   const ids=new Set(operation.records.map(r=>r.id));
+   setRecent(r=>r.filter(x=>!ids.has(x.id)));
+   setLastDates(d=>{const updated={...d};for(const entry of operation.records)updated[entry.binId]={...(updated[entry.binId]||{}),[entry.note]:entry.previous||""};return updated;});
+   setNotice(operation.label+" undone for "+operation.records.length+" "+(operation.records.length===1?"bin":"bins"));
+   setLastOperation(null);
   }catch{setError("Undo failed. Please retry.");}finally{setUndoPending(false);}
  }
- const latest=recent[recent.length-1]||null;
+ const latest=lastOperation;
  const loggedForBin=selected?recent.filter(r=>r.binId===selected.id):[];
  return <section className={styles.wrap}>
  {state!=="scanning"&&!selected?<div className={styles.heading}><div><p className={styles.kicker}>PODSCAPE LABS / KEEPER</p><h1>Quick Care</h1><p>Scan a bin, log care, and move on.</p></div><Link href="/ledger/my-collection">My Collection ↗</Link></div>:null}
@@ -147,20 +187,28 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
     {selected.image?<div className={styles.careThumb}><Image src={selected.image} alt="" fill sizes="84px"/></div>:<div className={styles.careThumbFallback}>❧</div>}
     <div className={styles.careIdentityText}><h1>{selected.species}</h1><p><strong>{selected.name}</strong>{selected.label?" · "+selected.label:""}</p><span>~{selected.quantity} isopods · Active</span></div>
    </div>
-   <div className={styles.actionHead}><div><h2>Log care</h2><p>Tap to save. Stay here to log more.</p></div><span>{loggedForBin.length} this session</span></div>
+   <div className={styles.actionHead}><div><h2>{multiCare?"Multi-care":"Log care"}</h2><p>{multiCare?"Actions apply to the highlighted enclosures.":"Tap to save. Stay here to log more."}</p></div><span>{multiCare?chosenBins.length+" selected":loggedForBin.length+" this session"}</span></div>
    <div className={styles.careGrid}>{tasks.map(t=>{
-    const logged=recent.some(r=>r.binId===selected.id&&r.label===t.label);
+    const logged=multiCare?chosenBins.length>0&&chosenBins.every(id=>recent.some(r=>r.binId===id&&r.label===t.label)):recent.some(r=>r.binId===selected.id&&r.label===t.label);
     const last=lastDates[selected.id]?.[t.note];
-    return <button type="button" key={t.label} className={logged?styles.careTileLogged:styles.careTile} disabled={pending||undoPending} onClick={()=>save(t.kind,t.note,t.label)}>
+    return <button type="button" key={t.label} className={logged?styles.careTileLogged:styles.careTile} disabled={pending||undoPending||(multiCare&&chosenBins.length===0)} onClick={()=>multiCare?saveMultiple(t.kind,t.note,t.label):save(t.kind,t.note,t.label)}>
       <span className={styles.careTileTop}><span aria-hidden="true">{t.icon}</span><span aria-hidden="true">{logged?"✓":""}</span></span>
-      <strong>{t.label}</strong><small>{logged?"Saved this session · ":"Last: "}{formatLast(last)}</small>
+      <strong>{t.label}</strong><small>{multiCare?(logged?"Saved for selected bins":chosenBins.length+" "+(chosenBins.length===1?"bin":"bins")+" selected"):(logged?"Saved this session · ":"Last: ")+formatLast(last)}</small>
     </button>;
    })}</div>
    {notice?<div className={styles.inlineNotice} role="status"><span>✓ {notice}</span>{latest?<button type="button" onClick={undo} disabled={undoPending||pending}>{undoPending?"Undoing…":"Undo"}</button>:null}</div>:null}
-   <details className={styles.careDetails}><summary>Add note or custom date</summary><label htmlFor="keeper-care-note">Care note</label><textarea id="keeper-care-note" maxLength={1500} rows={3} value={customNote} onChange={e=>setCustomNote(e.target.value)} placeholder="What did you do or observe?"/><label htmlFor="keeper-care-date">Care date (for notes)</label><input id="keeper-care-date" type="date" value={customDate} max={new Date().toISOString().slice(0,10)} onChange={e=>setCustomDate(e.target.value)}/><button type="button" disabled={pending||!customNote.trim()} onClick={()=>save("observation",customNote.trim(),"Custom note",customDate||undefined)}>Save note</button></details>
+   {!multiCare?<details className={styles.careDetails}><summary>Add note or custom date</summary><label htmlFor="keeper-care-note">Care note</label><textarea id="keeper-care-note" maxLength={1500} rows={3} value={customNote} onChange={e=>setCustomNote(e.target.value)} placeholder="What did you do or observe?"/><label htmlFor="keeper-care-date">Care date (for notes)</label><input id="keeper-care-date" type="date" value={customDate} max={new Date().toISOString().slice(0,10)} onChange={e=>setCustomDate(e.target.value)}/><button type="button" disabled={pending||!customNote.trim()} onClick={()=>save("observation",customNote.trim(),"Custom note",customDate||undefined)}>Save note</button></details>:null}
+   <div className={styles.binPicker}>
+    <div className={styles.binPickerHead}><div><h2>My enclosures</h2><p>{multiCare?"Tap bins to highlight them for care.":"Tap a bin to switch without scanning again."}</p></div><button type="button" className={styles.modeButton} aria-pressed={multiCare} onClick={toggleMultiCare} disabled={pending||undoPending}>{multiCare?"Done selecting":"Multi-care"}</button></div>
+    {multiCare?<div className={styles.selectionLine}><span>{chosenBins.length} selected</span><button type="button" onClick={selectSpecies}>Select all {selected.species}</button></div>:null}
+    <div className={styles.binCarousel} role="group" aria-label={multiCare?"Choose bins for bulk care":"Choose a bin to view"}>
+     {bins.map(bin=>{const marked=multiCare?chosenBins.includes(bin.id):bin.id===selected.id;return <button type="button" key={bin.id} className={marked?styles.binCardSelected:styles.binCard} onClick={()=>multiCare?toggleChosen(bin.id):switchBin(bin)} aria-pressed={marked} disabled={pending||undoPending}><span className={styles.binCardHeading}>{bin.species}<span aria-hidden="true">{marked?"✓":""}</span></span><strong>{bin.name}</strong><small>{bin.label||"No shelf assigned"}</small></button>;})}
+    </div>
+    {multiCare?<p className={styles.bulkHint}>Each selected enclosure receives its own care record. Undo reverses the whole batch.</p>:null}
+   </div>
    <div className={styles.careFooter}><button type="button" className={styles.nextBin} onClick={beginScan} disabled={pending||undoPending}>▣ Scan next bin →</button><Link href={"/keeper/"+selected.id}>View full colony workspace ↗</Link></div>
-   <button className={styles.switchBin} type="button" onClick={()=>setShowManual(v=>!v)}>Choose another bin manually {showManual?"−":"+"}</button>
-   {showManual?<div className={styles.manualPicker}><select value={manual} onChange={e=>setManual(e.target.value)} aria-label="Choose another bin"><option value="">Select a bin</option>{bins.map(b=><option key={b.id} value={b.id}>{b.species} — {b.name}</option>)}</select><button onClick={()=>{if(manual){match(manual);setShowManual(false);}}} disabled={!manual}>Open bin</button></div>:null}
+   {!multiCare?<button className={styles.switchBin} type="button" onClick={()=>setShowManual(v=>!v)}>Choose another bin manually {showManual?"−":"+"}</button>:null}
+   {showManual&&!multiCare?<div className={styles.manualPicker}><select value={manual} onChange={e=>setManual(e.target.value)} aria-label="Choose another bin"><option value="">Select a bin</option>{bins.map(b=><option key={b.id} value={b.id}>{b.species} — {b.name}</option>)}</select><button onClick={()=>{if(manual){match(manual);setShowManual(false);}}} disabled={!manual}>Open bin</button></div>:null}
   </div>:null}
  {error?<p className={styles.error} role="alert">{error}</p>:null}
  </section>;
