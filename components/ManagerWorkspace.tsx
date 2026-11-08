@@ -54,7 +54,7 @@ function ManagerQuickShortcuts({ids,change,primaryHref,canvasEditing}:{ids:strin
  const router=useRouter();
  const {editing,selected,setSelected,handlers,done}=useShortcutEditor(ids,change,canvasEditing);
  const current=library.find(tool=>tool.id===ids[selected])||library[0];
- const destination=(tool:Tool)=>tool.id==="care"?"/keeper/scan?manual=1":tool.id==="notes"?primaryHref:tool.id==="history"&&primaryHref!=="/keeper/collection"?primaryHref+"/history":tool.href;
+ const destination=(tool:Tool)=>tool.id==="care"?"/keeper/scan?manual=1":tool.id==="notes"?(primaryHref!=="/keeper/collection"?primaryHref+"#observation":"/keeper/collection"):tool.id==="history"&&primaryHref!=="/keeper/collection"?primaryHref+"/history":tool.href;
  return <>
   {editing&&!canvasEditing?<div className={homeStyles.jiggleToolbar} role="region" aria-label="Customize Manager shortcuts">
     <span className={homeStyles.jiggleHint}>✧ <strong>Arrange your shortcuts</strong><small>Drag icons to move them. Tap one to replace it.</small></span>
@@ -164,6 +164,6 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
   {ready&&layout.visible.length===0?<div className={styles.managerHint}>All Manager sections are hidden. <button type="button" className={styles.managerTextButton} onClick={()=>{setEditing(true);setSlot(null)}}>Open Widget Library</button></div>:null}
   <div className={styles.managerFooterNav}><button type="button" aria-expanded={showDirectory} aria-controls="manager-tool-directory" onClick={()=>setShowDirectory(value=>!value)}><PodscapeLineIcon name="menu"/><span>{showDirectory?"Hide all tools":"Explore all Manager tools"}</span><b aria-hidden="true">{showDirectory?"−":"+"}</b></button></div>
   {ready&&!canvasEditing?<div className={homeStyles.addWidgetFooter}><button type="button" className={homeStyles.addWidgetButton} onClick={()=>{setEditing(true);setSlot(null)}}><span aria-hidden="true">＋</span> Add Widget</button></div>:null}
-  {showDirectory?<nav id="manager-tool-directory" className={styles.managerDirectory} aria-label="All Manager tools">{library.map(tool=><Link key={tool.id} href={tool.id==="care"?"/keeper/scan?manual=1":tool.id==="notes"?primaryHref:tool.id==="history"?"/keeper/activity":tool.href}><PodscapeLineIcon name={tool.icon}/><span>{tool.label}</span><b aria-hidden="true">→</b></Link>)}</nav>:null}
+  {showDirectory?<nav id="manager-tool-directory" className={styles.managerDirectory} aria-label="All Manager tools">{library.map(tool=><Link key={tool.id} href={tool.id==="care"?"/keeper/scan?manual=1":tool.id==="notes"?(primaryHref!=="/keeper/collection"?primaryHref+"#observation":"/keeper/collection"):tool.id==="history"?"/keeper/activity":tool.href}><PodscapeLineIcon name={tool.icon}/><span>{tool.label}</span><b aria-hidden="true">→</b></Link>)}</nav>:null}
  </div></HomeCanvasEditContext.Provider>;
 }
