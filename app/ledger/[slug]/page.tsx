@@ -48,13 +48,16 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
   const moisturePositions:MoisturePosition[]=["dry-leaning","dry-balanced","balanced","balanced-moist","moist-leaning"];
   const moisturePosition = moisturePositions.find(value=>value===record.moistureProfile);
   const quickFacts = [
-    ["Care level", record.careLevel],
-    ...(!moisturePosition ? [["Moisture", record.moisture]] : []),
-    ["Temperature", record.temperature],
-    ["Ventilation", record.ventilation],
-    ["Activity", record.activity],
-    ["Reproduction", record.reproduction],
-  ].filter((entry): entry is [string, string] => typeof entry[1] === "string" && entry[1].trim().length > 0);
+    {label:"Care level",value:record.careLevel},
+    {label:"Temperature",value:record.temperature,note:record.temperatureNote},
+    {label:"Ventilation",value:record.ventilation,note:record.ventilationNote},
+    {label:"Activity",value:record.activity,note:record.activityNote},
+    {label:"Reproduction",value:record.reproduction,note:record.reproductionNote},
+    {label:"Feeding response",value:record.feedingResponse,note:record.feedingResponseNote},
+  ].filter((entry):entry is {label:string;value:string;note?:string}=>typeof entry.value==="string"&&entry.value.trim().length>0&&entry.value!=="Not established");
+  // Do not publish legacy "Low / High" moisture without gradient context.
+  // Existing values remain in the Desk until editors review each record.
+  const legacyMoisturePending = !moisturePosition && Boolean(record.moisture?.trim());
 
   // Legacy preview copy must never masquerade as a published species description.
   const isPlaceholder = (value: string) => /temporary (?:visual )?record for testing|placeholder (?:text|description)|lorem ipsum/i.test(value);
@@ -112,9 +115,9 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
               <h2 id="record-care-title">At a glance</h2>
             </div>
             {quickFacts.length ? <dl className={styles.careGrid}>
-              {quickFacts.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
+              {quickFacts.map(({label,value,note})=><div key={label}><dt>{label}</dt><dd>{value}</dd>{note?.trim()?<p className={styles.factNote}>{note.trim()}</p>:null}</div>)}
             </dl> : !moisturePosition ? <p className={styles.empty}>Species characteristics have not been added to this entry yet.</p> : null}
-            {moisturePosition ? <SpeciesMoistureGradient position={moisturePosition} note={record.moistureNote} /> : null}
+            {moisturePosition ? <SpeciesMoistureGradient position={moisturePosition} note={record.moistureNote} /> : legacyMoisturePending ? <p className={styles.moisturePending}>Moisture profile awaiting review. Species care can depend on access to both moist and drier areas; the old “{record.moisture}” label does not describe a gradient.</p> : null}
           </section>
 
           {feeding ? <section className={styles.section} aria-labelledby="record-feeding-title">
