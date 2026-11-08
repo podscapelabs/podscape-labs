@@ -59,3 +59,47 @@
  .sectionNav{padding:10px 13px}
  .sectionNav a{padding:8px 10px}
 }
+
+
+/* Guided Ledger entry: one clear panel per step, with all form controls retained
+   in the DOM so Save still submits the complete species record. */
+.workflow{scroll-margin-top:16px;min-width:0}
+.workflowNav{display:flex;gap:7px;padding:12px clamp(18px,4vw,42px);overflow-x:auto;scrollbar-width:thin;border-bottom:1px solid var(--line)}
+.workflowNav>button{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto;min-height:43px;padding:7px 12px;border:1px solid var(--line);border-radius:99px;background:var(--paper);color:var(--forest);font-size:.73rem;font-weight:750;cursor:pointer}
+.workflowNav>button.workflowCurrent{background:color-mix(in srgb,var(--forest) 13%,var(--paper));border-color:var(--forest);color:var(--ink)}
+.workflowStepNumber{display:grid;place-items:center;min-width:22px;height:22px;padding:0 3px;border:1px solid currentColor;border-radius:50%;font-size:.63rem}
+.workflowProgress{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px clamp(18px,4vw,42px) 10px}
+.workflowProgress>div{display:grid;gap:4px}
+.workflowProgress>div>span{color:var(--forest);font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em}
+.workflowProgress strong{font:500 clamp(1.4rem,4vw,1.85rem)/1.15 var(--serif);color:var(--ink)}
+.workflowProgress small{font-size:.73rem;color:var(--muted)}
+.workflowProgress>span{white-space:nowrap;padding:6px 9px;border-radius:999px;background:color-mix(in srgb,var(--forest) 8%,var(--paper));font-size:.67rem;color:var(--forest);font-weight:750}
+.workflowContent>[data-ledger-stage]{display:none}
+.workflow[data-active-step="identity"] .workflowContent>[data-ledger-stage="identity"],
+.workflow[data-active-step="profile"] .workflowContent>[data-ledger-stage="profile"],
+.workflow[data-active-step="status"] .workflowContent>[data-ledger-stage="status"],
+.workflow[data-active-step="photo"] .workflowContent>[data-ledger-stage="photo"],
+.workflow[data-active-step="traits"] .workflowContent>[data-ledger-stage="traits"],
+.workflow[data-active-step="care"] .workflowContent>[data-ledger-stage="care"],
+.workflow[data-active-step="notes"] .workflowContent>[data-ledger-stage="notes"]{display:block}
+.workflowContent fieldset[id],.workflowSection{border-top:0}
+.workflowSectionHeading{display:grid;gap:6px;padding:14px clamp(18px,4vw,42px) 4px;font-family:var(--serif);font-size:1.12rem;color:var(--ink)}
+.workflowSectionHeading small{font:400 .7rem/1.4 var(--sans);color:var(--muted)}
+.workflowSection fieldset{border-top:0}
+.workflowFooter{display:grid;gap:10px;padding:14px clamp(18px,4vw,42px) 19px;border-top:1px solid var(--line)}
+.workflowFooter p{margin:0;color:var(--muted);font-size:.72rem;line-height:1.4}
+.workflowFooterActions{display:flex;justify-content:flex-end;gap:9px}
+.workflowFooterActions>button{min-height:45px;padding:9px 16px;border-radius:12px;font-size:.75rem;font-weight:780;cursor:pointer}
+.workflowBack{background:var(--paper);color:var(--forest);border:1px solid var(--line)}
+.workflowNext{background:var(--forest);color:var(--paper);border:1px solid var(--forest)}
+.workflowNext:focus-visible,.workflowBack:focus-visible,.workflowNav button:focus-visible{outline:2px solid var(--forest);outline-offset:3px}
+:global([data-theme="dark"]) .workflowNext{color:var(--forest-deep)}
+@media(max-width:859px){
+ .workflowNav{padding:9px 13px;gap:6px}
+ .workflowNav>button{padding:7px 10px;min-height:42px;font-size:.69rem}
+ .workflowProgress{padding:14px 16px 7px}
+ .workflowProgress>span{font-size:.63rem}
+ .workflowSectionHeading{padding:12px 16px 2px}
+ .workflowFooter{padding:12px 16px 18px}
+ .workflowFooterActions>button{flex:1}
+}
