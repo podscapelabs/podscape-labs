@@ -45,8 +45,8 @@ export function ManagerCareOverview({bins}:{bins:ManagerBin[]}){
   {!bins.length?<p className={styles.managerModuleEmpty}>Add your first enclosure to start tracking routines.</p>
    :!loaded?<p className={styles.managerModuleEmpty}>Loading your saved schedules…</p>
    :due.length?<div className={styles.managerModuleList}>{due.slice(0,4).map(bin=><Link href={"/keeper/"+bin.id} key={bin.id}><span><strong>{bin.name}</strong><small>{bin.species}</small></span><em>{dueLabel(bin.days)}</em></Link>)}</div>
-   :<p className={styles.managerModuleEmpty}>{unconfigured.length?"No scheduled misting due. Set up any remaining schedules to track them here.":"No misting scheduled for today. You're up to date with your saved intervals."}</p>}
-  <p className={styles.managerModuleFine}>Misting estimates only, based on schedules saved on this device. These are not automatic reminders or care recommendations.</p>
+   :<p className={styles.managerModuleEmpty}>{unconfigured.length?"No misting due. Set schedules for the remaining colonies.":"Nothing due today. You're up to date."}</p>}
+  <p className={styles.managerModuleFine}>Based on schedules saved on this device · Not automatic reminders or care advice.</p>
  </section>;
 }
 
