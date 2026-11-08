@@ -56,6 +56,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  const [torchAvailable,setTorchAvailable]=useState(false);const [torchOn,setTorchOn]=useState(false);
  const [zoomRange,setZoomRange]=useState<{min:number;max:number}|null>(null);const [zoom,setZoom]=useState(1);
  const [selected,setSelected]=useState<Bin|null>(()=>bins.find(b=>b.id===initialBinId)||null);const [state,setState]=useState<"idle"|"scanning">(initialBinId||startManual?"idle":"scanning");const [error,setError]=useState("");const [pending,start]=useTransition();
+ const [binSearch,setBinSearch]=useState("");
  const [customNote,setCustomNote]=useState("");const [customDate,setCustomDate]=useState("");const [manual,setManual]=useState(initialBinId);
  const [recent,setRecent]=useState<CareRecord[]>([]);
  const [undoneIds,setUndoneIds]=useState<string[]>([]);
@@ -204,6 +205,8 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
    setLastOperation(null);
   }catch{setError("Undo failed. Please retry; your entry remains saved.");setNotice("");}finally{setUndoPending(false);}
  }
+ const filteredBins=bins.filter(bin=>[bin.species,bin.name,bin.label].some(value=>value.toLocaleLowerCase().includes(binSearch.trim().toLocaleLowerCase())))
+  .sort((a,b)=>a.species.localeCompare(b.species)||a.name.localeCompare(b.name));
  const latest=lastOperation;
  const loggedForBin=selected?recent.filter(r=>r.binId===selected.id):[];
  const speciesBins=selected?bins.filter(b=>b.speciesId===selected.speciesId):[];
@@ -216,7 +219,13 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  {state!=="scanning"&&!selected?<div className={styles.heading}><div><p className={styles.kicker}>PODSCAPE LABS / KEEPER</p><h1>Quick Care</h1><p>Scan a bin, log care, and move on.</p></div><Link href="/ledger/my-collection">My Collection ↗</Link></div>:null}
  {state==="scanning"?<div className={styles.camera}><video ref={video} muted playsInline aria-label="QR scanning camera"/><div className={styles.brackets} aria-hidden="true"><span/><span/><span/><span/></div>{torchAvailable||zoomRange?<div className={styles.cameraControls}>{torchAvailable?<button type="button" onClick={toggleTorch} aria-pressed={torchOn}>{torchOn?"Light on":"Light off"}</button>:null}{zoomRange?<button type="button" onClick={()=>updateZoom(zoom>zoomRange.min+.1?zoomRange.min:Math.min(2,zoomRange.max))}>{zoom>zoomRange.min+.1?"1×":"2×"}</button>:null}</div>:null}</div>:null}
  {state==="scanning"?<div className={styles.scanBelow}><p>Hold your label steady inside the corners. Move back slightly if blurry.</p><button type="button" onClick={()=>setState("idle")}>Choose a bin manually →</button></div>:null}
- {state==="idle"&&!selected?<div className={styles.panel}><div className={styles.scanIcon}>▣</div><h2>{startManual?"Choose a bin to log care":"Ready to scan"}</h2><p>Select an enclosure or scan its QR label.</p><div className={styles.manualPicker}><select value={manual} onChange={e=>setManual(e.target.value)} aria-label="Choose enclosure to log care"><option value="">Select a bin</option>{bins.map(b=><option key={b.id} value={b.id}>{b.species} — {b.name}</option>)}</select><button type="button" disabled={!manual} onClick={()=>match(manual)}>Open bin</button></div><button className={styles.primary} type="button" onClick={beginScan}>Scan a QR label</button></div>:null}
+ {state==="idle"&&!selected?<section className={styles.quickChoose} aria-label="Choose a bin to log care">
+   <div className={styles.quickChooseHeader}><div><p className={styles.kicker}>YOUR ENCLOSURES</p><h2>Choose a bin</h2><p>Tap a colony to start logging care.</p></div><span>{bins.length} {bins.length===1?"bin":"bins"}</span></div>
+   {bins.length?<><div className={styles.quickChooseSearch}><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" aria-label="Find a bin to log care" placeholder="Search species or bin name…" value={binSearch} onChange={event=>setBinSearch(event.target.value)} autoComplete="off"/>{binSearch?<button type="button" aria-label="Clear bin search" onClick={()=>setBinSearch("")}>×</button>:null}</div>
+    <div className={styles.quickChooseList}>{filteredBins.length?filteredBins.map(bin=><button key={bin.id} type="button" className={styles.quickChooseBin} onClick={()=>match(bin.id)}><span className={styles.quickChoosePhoto}>{bin.image?<Image src={bin.image} alt="" fill sizes="46px"/>:<span aria-hidden="true">❧</span>}</span><span className={styles.quickChooseIdentity}><strong>{bin.species}</strong><small>{bin.name}{bin.label?" · "+bin.label:""}</small></span><span aria-hidden="true" className={styles.quickChooseArrow}>→</span></button>):<p className={styles.quickChooseEmpty}>No matching bins. Try another species or enclosure name.</p>}</div></>
+    :<div className={styles.quickChooseEmpty}>You don't have any active bins yet. <Link href="/keeper/new">Add your first bin →</Link></div>}
+   <div className={styles.quickChooseFooter}><button type="button" onClick={beginScan}>▣ Scan a QR label instead</button><Link href="/keeper/new">+ Add bin</Link></div>
+  </section>:null}
  {selected&&state==="idle"?<div className={styles.careWorkspace}>
    <div className={styles.careTopline}><span>MANAGER / COLONY WORKSPACE</span><Link href="/keeper">← Manager</Link></div>
    <div className={styles.careIdentity}>
