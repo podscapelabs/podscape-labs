@@ -21,7 +21,7 @@ const key="podscape-manager-layout-v1";
 const library:Tool[]=[
  {id:"scan",label:"Scan bin",href:"/keeper/scan",icon:"scan"},
  {id:"qr",label:"Create QR",href:"/keeper/qr",icon:"qr"},
- {id:"add",label:"Add bin",href:"/keeper/collection",icon:"bin"},
+ {id:"add",label:"Add bin",href:"/keeper/new",icon:"bin"},
  {id:"care",label:"Log care",href:"/keeper/collection",icon:"droplet"},
  {id:"schedule",label:"Schedule",href:"/keeper/schedule",icon:"calendar"},
  {id:"notes",label:"Notes",href:"/keeper/collection",icon:"note"},
