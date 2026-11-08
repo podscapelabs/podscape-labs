@@ -564,3 +564,26 @@
  .shortcuts>.shortcut{min-width:0;min-height:74px}
  .shortcuts>.shortcut>span:last-child{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;white-space:normal;overflow:hidden;overflow-wrap:anywhere;line-height:1.14;padding-inline:2px}
 }
+
+/* Spotlight placeholders are deliberate graphic treatments, not vacant image blocks. */
+.spotlightRail .tileVisual:has(.tilePlaceholder){
+ isolation:isolate;
+ background:radial-gradient(circle at 79% 17%,color-mix(in srgb,var(--moss) 25%,transparent),transparent 43%),
+ linear-gradient(130deg,color-mix(in srgb,var(--forest) 13%,var(--paper)),color-mix(in srgb,var(--moss) 24%,var(--paper)));
+}
+.spotlightRail .tileVisual:has(.tilePlaceholder)::before{
+ content:"";position:absolute;inset:-35% 12% -90% 34%;
+ border:1px solid color-mix(in srgb,var(--forest) 25%,transparent);
+ border-radius:46% 54% 52% 48%;transform:rotate(-26deg);pointer-events:none;
+}
+.spotlightRail .tileVisual:has(.tilePlaceholder)::after{
+ content:"";position:absolute;right:10%;top:14%;
+ width:44px;height:44px;border:1px solid color-mix(in srgb,var(--forest) 22%,transparent);
+ border-radius:50%;pointer-events:none;
+}
+.spotlightRail .tilePlaceholder{position:relative;z-index:1}
+.spotlightRail .tilePlaceholder svg{width:58px;height:58px;filter:drop-shadow(0 4px 7px color-mix(in srgb,var(--forest) 15%,transparent))}
+@media(max-width:720px){
+ .spotlightRail .tileVisual:has(.tilePlaceholder)::after{width:28px;height:28px;right:15%;top:17%}
+ .spotlightRail .tilePlaceholder svg{width:44px;height:44px}
+}
