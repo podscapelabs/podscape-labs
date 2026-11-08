@@ -108,3 +108,17 @@
 .confirmAll button:last-child{background:var(--accent);color:var(--background)}
 .confirmAll button:disabled{opacity:.55}
 @media(max-width:500px){.populationStrip{gap:7px}.populationStrip>div{padding:10px}.selectionLine{align-items:flex-start;flex-direction:column}.selectionActions{justify-content:flex-start;width:100%}.selectionActions button{flex:1;max-width:none}}
+
+/* A concise care timeline inside the bin workspace; full history remains its own archive. */
+.workspaceHistory{border-top:1px solid var(--border);margin-top:17px;padding-top:16px}
+.historyHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.historyHead h2{font-family:Georgia,serif;font-size:1.2rem;font-weight:550;margin:0}
+.historyHead a{font-size:.72rem;color:var(--accent);font-weight:750}
+.historyList{border:1px solid var(--border);border-radius:9px;overflow:hidden}
+.historyEntry{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;background:var(--surface)}
+.historyEntry+.historyEntry{border-top:1px solid var(--border)}
+.historyEntry>div{min-width:0;display:grid;gap:3px}
+.historyEntry strong{font-size:.8rem;font-weight:750;overflow-wrap:anywhere}
+.historyEntry small{font-size:.67rem;color:var(--text-secondary);text-transform:capitalize}
+.historyEntry time{flex:none;font-size:.7rem;color:var(--text-secondary)}
+.historyEmpty{margin:8px 0;font-size:.75rem;color:var(--text-secondary)}
