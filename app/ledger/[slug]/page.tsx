@@ -4,9 +4,9 @@ import { notFound } from "next/navigation";
 import { CollectionButton } from "@/components/CollectionButton";
 import { PinToHome } from "@/components/PinToHome";
 import { customerSupabase } from "@/lib/customer-auth/server";
-import { Breadcrumbs, PlatformShell } from "@/components/PlatformShell";
-import { SpecimenLeaf } from "@/components/SpecimenLeaf";
-import { SpeciesMoistureGradient, type MoisturePosition } from "@/components/SpeciesMoistureGradient";
+import { PlatformShell } from "@/components/PlatformShell";
+import Image from "next/image";
+import { type MoisturePosition } from "@/components/SpeciesMoistureGradient";
 import { SpeciesDiscoveryTracker } from "@/components/SpeciesDiscoveryTracker";
 import styles from "@/components/SpeciesProfile.module.css";
 import { speciesDisplayName, speciesGenus, speciesRecordLabel, speciesScientificName } from "@/data/species";
@@ -65,6 +65,8 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
   const authoredAbout = isPlaceholder(record.about || "") ? "" : record.about || "";
   const about = introText(authoredAbout || summary);
   const feeding = introText(record.feeding || "");
+  const moistureLabels:Record<MoisturePosition,string>={"dry-leaning":"Dry-leaning","dry-balanced":"Dry to balanced","balanced":"Balanced","balanced-moist":"Balanced to moist","moist-leaning":"Moist-leaning"};
+  const moistureIndex = moisturePosition ? moisturePositions.indexOf(moisturePosition) : -1;
   const notableTraits = [...new Set((record.notableTraits || []).map(trait => trait.trim()).filter(Boolean))].slice(0, 5);
   let relatedGuides: { slug: string; title: string; summary: string }[] = [];
   try {
@@ -77,105 +79,66 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
   }
 
   return <PlatformShell>
-    <section className={styles.page}>
+    <main className={styles.page}>
       <div className="v2-container">
-        <Breadcrumbs items={[{ label: "Leaf Ledger", href: "/ledger" }, { label: displayName }]} />
         {member.signedIn && record.kind === "species" ? <SpeciesDiscoveryTracker speciesId={record.id} /> : null}
+        <div className={styles.profileTopline}>
+          <Link href="/ledger" className={styles.ledgerBack}>← Leaf Ledger</Link>
+          <span className={styles.catalogueLabel}>{record.catalogueNumber}</span>
+        </div>
 
-        <header className={styles.hero}>
-          <div className={styles.intro}>
-            <p className={styles.kicker}>Leaf Ledger · {record.catalogueNumber}</p>
+        <header className={styles.compactHero}>
+          <div className={styles.identity}>
             <h1>{displayName}</h1>
             <p className={styles.scientific}><em>{scientificName}</em></p>
-            <div className={styles.metadata} aria-label="Record identity">
-              <span>{speciesGenus(record)}</span><span>{speciesRecordLabel(record)}</span>
-            </div>
-            {record.kind === "species" && record.status === "published"
-              ? <div className={styles.heroAction}><PinToHome pin={{ kind: "species", id: record.slug }} userId={user?.id || null} /></div>
-              : null}
+            <p className={styles.identityLine}>{speciesGenus(record)} <span aria-hidden="true">·</span> {speciesRecordLabel(record)}</p>
           </div>
-          <div className={styles.artwork}>
-            <SpecimenLeaf image={record.image} alt={record.imageAlt || scientificName}
-              number={record.catalogueNumber} size="profile"
-              positionX={record.imagePositionX} positionY={record.imagePositionY} zoom={record.imageZoom} />
+          <div className={styles.compactPhoto}>
+            {record.image ? <Image src={record.image} alt={record.imageAlt || scientificName} fill sizes="(max-width:600px) 104px, 144px" style={{objectFit:"cover",objectPosition:`${record.imagePositionX}% ${record.imagePositionY}%`,transform:`scale(${record.imageZoom})`}} /> : <span aria-label="Species photograph pending">Photo pending</span>}
           </div>
         </header>
 
-        <div className={styles.body}>
-          {about ? <section className={styles.section} aria-labelledby="record-about-title">
-            <div className={styles.sectionHeading}>
-              <p className={styles.sectionKicker}>Species overview</p>
-              <h2 id="record-about-title">About {displayName}</h2>
-            </div>
-            <div className={styles.aboutCard}><p>{about}</p></div>
-          </section> : null}
-
-          {notableTraits.length ? <section className={styles.section} aria-labelledby="record-traits-title">
-            <div className={styles.sectionHeading}>
-              <p className={styles.sectionKicker}>Distinguishing features</p>
-              <h2 id="record-traits-title">Notable traits</h2>
-            </div>
-            <div className={styles.traitsCard}>
-              <ul className={styles.traitList}>{notableTraits.map(trait => <li key={trait}>{trait}</li>)}</ul>
-            </div>
-          </section> : null}
-
-          <section className={styles.section} aria-labelledby="record-care-title">
-            <div className={styles.sectionHeading}>
-              <p className={styles.sectionKicker}>Quick reference</p>
-              <h2 id="record-care-title">At a glance</h2>
-            </div>
-            {quickFacts.length ? <dl className={styles.careGrid}>
-              {quickFacts.map(({label,value,note})=><div key={label}><dt>{label}</dt><dd>{value}</dd>{note?.trim()?<p className={styles.factNote}>{note.trim()}</p>:null}</div>)}
-            </dl> : !moisturePosition ? <p className={styles.empty}>Species characteristics have not been added to this entry yet.</p> : null}
-            {moisturePosition ? <SpeciesMoistureGradient position={moisturePosition} note={record.moistureNote} /> : legacyMoisturePending ? <p className={styles.moisturePending}>Moisture profile awaiting review. Species care can depend on access to both moist and drier areas; the old “{record.moisture}” label does not describe a gradient.</p> : null}
+        <div className={styles.compactBody}>
+          <section className={styles.snapshot} aria-labelledby="record-care-title">
+            <div className={styles.snapshotTitle}><div><p className={styles.sectionKicker}>Species quick reference</p><h2 id="record-care-title">At a glance</h2></div></div>
+            {about ? <div className={styles.snapshotAbout}><p>{about}</p></div> : null}
+            {notableTraits.length ? <ul className={styles.compactTraits} aria-label="Notable traits">{notableTraits.map(trait=><li key={trait}>{trait}</li>)}</ul> : null}
+            {quickFacts.length ? <dl className={styles.compactFacts}>
+              {quickFacts.map(({label,value})=><div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
+            </dl> : null}
+            {moisturePosition ? <div className={styles.compactMoisture} aria-label={"Moisture tendency: "+moistureLabels[moisturePosition]}>
+              <div className={styles.moistureTop}><strong>Moisture tendency</strong><span>{moistureLabels[moisturePosition]}</span></div>
+              <div className={styles.moistureTrack} aria-hidden="true">{moisturePositions.map((item,index)=><span key={item} className={index===moistureIndex?styles.moistureSelected:""}/>)}</div>
+              <div className={styles.moistureEnds}><span>Drier</span><span>Moister</span></div>
+            </div> : legacyMoisturePending ? <p className={styles.moisturePending}>Moisture tendency awaiting review.</p> : null}
+            {feeding ? <div className={styles.feedingPreview}><strong>Feeding</strong><p>{feeding}</p></div> : null}
+            {!quickFacts.length&&!moisturePosition&&!about&&!feeding ? <p className={styles.empty}>Species information is being prepared.</p> : null}
           </section>
 
-          {feeding ? <section className={styles.section} aria-labelledby="record-feeding-title">
-            <div className={styles.sectionHeading}>
-              <p className={styles.sectionKicker}>General information</p>
-              <h2 id="record-feeding-title">Feeding</h2>
-            </div>
-            <div className={styles.aboutCard}><p>{feeding}</p></div>
-          </section> : null}
+          <div className={styles.profileActions}>
+            {record.kind === "species" && record.status === "published" ? <PinToHome pin={{ kind: "species", id: record.slug }} userId={user?.id || null} /> : null}
+            {record.kind === "species" ? collectionEntry
+              ? <Link href="/keeper/collection">✓ In your collection · View bins →</Link>
+              : <CollectionButton speciesId={record.id} speciesName={displayName} initialCollected={false} signedIn={member.signedIn} detail />
+              : null}
+          </div>
 
-          <section className={styles.section} aria-labelledby="record-guides-title">
-            <div className={styles.sectionHeading}>
-              <p className={styles.sectionKicker}>Want to learn more?</p>
-              <h2 id="record-guides-title">Explore guides</h2>
+          {(quickFacts.some(fact=>Boolean(fact.note?.trim()))||record.moistureNote?.trim()||record.substrate?.trim()||relatedGuides.length>0) ? <details className={styles.moreDetails}>
+            <summary>More species details <span>Care context &amp; guides</span></summary>
+            <div className={styles.detailContents}>
+              {quickFacts.filter(fact=>Boolean(fact.note?.trim())).map(fact=><div className={styles.detailItem} key={fact.label}><strong>{fact.label}</strong><p>{fact.note}</p></div>)}
+              {record.moistureNote?.trim() ? <div className={styles.detailItem}><strong>Moisture context</strong><p>{record.moistureNote}</p></div> : null}
+              {moisturePosition ? <p className={styles.detailDisclaimer}>Moisture tendency is a broad captive-care reference, not a humidity percentage or an instruction to keep an enclosure entirely dry.</p> : null}
+              {record.substrate?.trim() ? <div className={styles.detailItem}><strong>Substrate</strong><p>{introText(record.substrate)}</p></div> : null}
+              {relatedGuides.length ? <div className={styles.relatedGuides}>{relatedGuides.map(guide=><Link href={`/field-guide/${guide.slug}`} key={guide.slug}><span><strong>{guide.title}</strong>{guide.summary?<small>{guide.summary}</small>:null}</span><b aria-hidden="true">→</b></Link>)}</div> : null}
             </div>
-            <div className={styles.guidePanel}>
-              <div className={styles.guideIntro}>
-                <strong>Go beyond the snapshot</strong>
-                <p>For detailed habitat setup, feeding, and colony care, explore the Field Guide.</p>
-              </div>
-              {relatedGuides.length ? <div className={styles.relatedGuides}>
-                {relatedGuides.map(guide => <Link href={`/field-guide/${guide.slug}`} key={guide.slug}>
-                  <span><strong>{guide.title}</strong>{guide.summary ? <small>{guide.summary}</small> : null}</span><b aria-hidden="true">→</b>
-                </Link>)}
-              </div> : null}
-              <Link className={styles.guideLink} href="/field-guide?topic=Species#all-guides">Browse species guides →</Link>
-            </div>
-          </section>
-
-          {record.kind === "species" ? <section className={styles.section} id="keeper-record" aria-labelledby="record-collection-title">
-            <div className={styles.sectionHeading}>
-              <p className={styles.sectionKicker}>Your PodScape</p>
-              <h2 id="record-collection-title">My collection</h2>
-            </div>
-            <div className={styles.collectionCard}>
-              {collectionEntry
-                ? <><p>This species is in your collection.</p><Link href="/keeper/collection">View your colonies →</Link></>
-                : <><p>Keep track of the species you own in My Collection.</p><CollectionButton speciesId={record.id} speciesName={displayName} initialCollected={false} signedIn={member.signedIn} detail /></>}
-            </div>
-          </section> : null}
-
-          <nav className={styles.bottomNav} aria-label="Continue exploring">
-            <Link href="/ledger">← Back to Leaf Ledger</Link>
-            <Link href="/keeper/collection">My Colonies →</Link>
+          </details> : null}
+          <nav className={styles.compactFooter} aria-label="Explore more">
+            <Link href="/field-guide?topic=Species#all-guides">Explore species guides →</Link>
+            <Link href="/ledger">← All species</Link>
           </nav>
         </div>
       </div>
-    </section>
+    </main>
   </PlatformShell>;
 }
