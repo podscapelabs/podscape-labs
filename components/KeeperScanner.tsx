@@ -52,7 +52,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
    try{
     const caps=track.getCapabilities?.();
     setTorchAvailable(Boolean(caps?.torch));
-    if(caps?.zoom&&caps.zoom.max>caps.zoom.min){setZoomRange({min:caps.zoom.min,max:Math.min(caps.zoom.max,4)});setZoom(track.getSettings().zoom||caps.zoom.min);}
+    if(caps?.zoom&&caps.zoom.max>caps.zoom.min&&Math.min(caps.zoom.max,4)>caps.zoom.min){setZoomRange({min:caps.zoom.min,max:Math.min(caps.zoom.max,4)});setZoom((track.getSettings() as MediaTrackSettings&{zoom?:number}).zoom||caps.zoom.min);}
     else setZoomRange(null);
     if(caps?.focusMode?.includes("continuous"))await track.applyConstraints({advanced:[{focusMode:"continuous"} as EnhancedConstraints]});
    }catch{/* Optional hardware controls differ between iPhone models. */}
