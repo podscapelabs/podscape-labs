@@ -120,19 +120,21 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
               <summary><span className={styles.aboutSymbol} aria-hidden="true">❧</span><span className={styles.aboutSummary}><strong>About {displayName}</strong><span className={styles.aboutPreview}>{about}</span></span><span className={styles.aboutChevron} aria-hidden="true">⌄</span></summary>
               <div className={styles.aboutFull}><p>{authoredAbout || summary}</p></div>
             </details> : null,
-            care:quickFacts.some(fact=>["Care level","Temperature","Ventilation"].includes(fact.label)) ? <section className={styles.dashboardCare} aria-label="Basic care">
-              <div className={styles.dashboardSectionHead}><p className={styles.sectionKicker}>Species quick reference</p><h2>Basic care</h2></div>
-              <dl className={styles.dashboardFacts}>{quickFacts.filter(fact=>["Care level","Temperature","Ventilation"].includes(fact.label)).map(({label,value})=><div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
-            </section> : null,
-            behaviour:quickFacts.some(fact=>["Activity","Reproduction","Feeding response"].includes(fact.label)) ? <section className={styles.dashboardCare} aria-label="Behaviour and breeding">
-              <div className={styles.dashboardSectionHead}><p className={styles.sectionKicker}>Behaviour &amp; growth</p><h2>At a glance</h2></div>
-              <dl className={styles.dashboardFacts}>{quickFacts.filter(fact=>["Activity","Reproduction","Feeding response"].includes(fact.label)).map(({label,value})=><div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+            care:quickFacts.length ? <section className={styles.dashboardCare} aria-label="Basic care and behaviour">
+              <div className={styles.dashboardSectionHead}><h2>Basic Care &amp; Behaviour</h2></div>
+              <dl className={styles.dashboardFacts}>{quickFacts.map(({label,value})=><div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
             </section> : null,
             moisture: moisturePosition ? <div className={styles.dashboardMoisture} aria-label={"Moisture preference: "+moistureLabels[moisturePosition]}>
               <div className={styles.moistureTop}><strong>Moisture preference</strong><span>{moistureLabels[moisturePosition]}</span></div>
               <div className={styles.moistureTrack} aria-hidden="true">{moisturePositions.map((item,index)=><span key={item} className={index===moistureIndex?styles.moistureSelected:""}/>)}</div>
               <div className={styles.moistureEnds}><span>Dry</span><span>Moist</span></div>
             </div> : legacyMoisturePending ? <p className={styles.moisturePending}>Moisture preference awaiting review.</p> : null,
+            advanced: feeding || record.substrate?.trim() ? <section className={styles.speciesInfoCard} aria-label="Advanced care">
+              <h2>Advanced Care</h2>
+              {feeding ? <div className={styles.advancedCareDetail}><strong>Feeding</strong><p>{feeding}</p></div> : null}
+              {record.substrate?.trim() ? <div className={styles.advancedCareDetail}><strong>Substrate &amp; habitat</strong><p>{introText(record.substrate)}</p></div> : null}
+              <p className={styles.advancedCareNote}>General observations, not a complete husbandry prescription. Consult species-specific guides for details.</p>
+            </section> : null,
             feeding: feeding ? <section className={styles.speciesInfoCard}><h2>Feeding overview</h2><p>{feeding}</p></section> : null,
             habitat: record.substrate?.trim() ? <section className={styles.speciesInfoCard}><h2>Habitat &amp; substrate</h2><p>{introText(record.substrate)}</p></section> : null,
             traits: notableTraits.length ? <section className={styles.speciesInfoCard}><h2>Notable traits</h2><ul className={styles.compactTraits}>{notableTraits.map(trait=><li key={trait}>{trait}</li>)}</ul></section> : null,
