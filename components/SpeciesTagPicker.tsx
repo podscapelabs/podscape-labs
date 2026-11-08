@@ -8,13 +8,14 @@ const PRESETS=[
  {group:"Behaviour",values:["active","secretive","burrowing","climbing","conglobating"]},
  {group:"Reference",values:["porcellio","armadillidium","cubaris","terrestrial","provisional-id"]}
 ];
-function norm(v:string){return v.trim().toLowerCase().replace(/\s+/g,"-").slice(0,35);}
+function norm(v:string){return v.trim().replace(/\s+/g," ").slice(0,60);}
+function key(v:string){return v.toLocaleLowerCase();}
 export function SpeciesTagPicker({initialTags=[]}:{initialTags?:string[]}){
- const [selected,setSelected]=useState<string[]>(()=>Array.from(new Set(initialTags.map(norm).filter(Boolean))));
+ const [selected,setSelected]=useState<string[]>(()=>Array.from(new Map(initialTags.map(norm).filter(Boolean).map(tag=>[key(tag),tag])).values()));
  const [search,setSearch]=useState("");
  const [custom,setCustom]=useState("");
  const options=useMemo(()=>PRESETS.map(group=>({...group,values:group.values.filter(x=>x.includes(search.toLowerCase().trim()))})).filter(g=>g.values.length),[search]);
- const add=(value:string)=>{const tag=norm(value);if(tag&&selected.length<20)setSelected(s=>s.includes(tag)?s:[...s,tag]);};
+ const add=(value:string)=>{const tag=norm(value);if(tag&&selected.length<20)setSelected(s=>s.some(existing=>key(existing)===key(tag))?s:[...s,tag]);};
  const remove=(value:string)=>setSelected(s=>s.filter(tag=>tag!==value));
  return <div className={styles.root}>
   <input type="hidden" name="tags" value={selected.join(", ")}/>
