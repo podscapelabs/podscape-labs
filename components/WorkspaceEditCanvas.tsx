@@ -29,7 +29,7 @@ function animatedReorder(scope:string,change:()=>void){
  });
 }
 
-type DragState<T extends string>={id:T;pointerId:number;startX:number;startY:number;lastY:number;started:boolean;lastSwapY:number|null};
+type DragState<T extends string>={id:T;pointerId:number;startX:number;startY:number;lastY:number;started:boolean;swapAnchorY:number};
 export function useWorkspaceDrag<T extends string>(
   scope:string,visible:readonly T[],reorder:(from:T,to:T)=>void
 ){
@@ -51,8 +51,11 @@ export function useWorkspaceDrag<T extends string>(
     if(event.pointerType==="mouse"&&event.button!==0)return;
     // The arrows remain independent of dragging. Only the handle starts a drag.
     if(!(event.target as HTMLElement).closest("[data-drag-handle]"))return;
-    current.current={id,pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,lastY:event.clientY,started:false,lastSwapY:null};
-    event.currentTarget.setPointerCapture(event.pointerId);
+    current.current={id,pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,lastY:event.clientY,started:false,swapAnchorY:event.clientY};
+    // Capture on the stationary workspace rather than the widget itself:
+    // React reorders the widget nodes and iOS drops pointer capture on moved nodes.
+    const root=event.currentTarget.closest<HTMLElement>("[data-workspace-root]");
+    (root||event.currentTarget).setPointerCapture(event.pointerId);
   };
   const move=(event:PointerEvent<HTMLDivElement>)=>{
     const drag=current.current;
@@ -68,28 +71,20 @@ export function useWorkspaceDrag<T extends string>(
     drag.lastY=event.clientY;
     if(Math.abs(delta)<1.5)return;
     const direction=delta>0?1:-1;
-    // Prevent a swap from immediately flipping back when React reflows blocks
-    // beneath a stationary finger. A deliberate reverse movement still works.
-    if(drag.lastSwapY!==null&&direction*(event.clientY-drag.lastSwapY)<0&&Math.abs(event.clientY-drag.lastSwapY)<32)return;
-
-    const nodes=Array.from(document.querySelectorAll<HTMLElement>("[data-workspace-scope]"))
-      .filter(node=>node.dataset.workspaceScope===scope);
+    // Gesture distance is measured from the last swap, NOT from the neighboring
+    // block's physical edge. The latter can be far below a very tall hero.
+    const distance=event.clientY-drag.swapAnchorY;
+    const requiredDistance=42;
+    const nodes=workspaceNodes(scope);
     const from=visible.indexOf(drag.id);
     const to=from+direction;
-    if(from<0||to<0||to>=visible.length)return;
+    if(from<0||to<0||to>=visible.length){clearDropPreview(scope);return}
     const neighbor=nodes.find(node=>node.dataset.workspaceBlock===visible[to]);
     if(!neighbor)return;
-    const rect=neighbor.getBoundingClientRect();
-    // Trigger near the neighboring block's EDGE, not at the midpoint.
-    // Large widgets may be hundreds of pixels tall; halfway was far too deep.
-    const threshold=Math.min(36,rect.height*.12);
-    const crossed=direction>0
-      ?event.clientY>=rect.top+threshold
-      :event.clientY<=rect.bottom-threshold;
     clearDropPreview(scope);
     neighbor.setAttribute("data-workspace-drop-preview",direction>0?"after":"before");
-    if(!crossed)return;
-    drag.lastSwapY=event.clientY;
+    if(direction*distance<requiredDistance)return;
+    drag.swapAnchorY=event.clientY;
     clearDropPreview(scope);
     animatedReorder(scope,()=>reorder(drag.id,visible[to]));
   };
