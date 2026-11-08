@@ -547,3 +547,12 @@
    border-radius:6px;
  }
 }
+
+/* Home shares portal gutters without shrinking its signature photo hero. */
+@media(max-width:720px){
+ .main{padding-top:12px}
+ .hero{border-radius:20px}
+ .homeGreetingRow{margin-bottom:0}
+ .greetingWorkspace{margin-bottom:12px}
+ .widgetArea>.section{margin-top:20px}
+}
