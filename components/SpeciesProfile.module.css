@@ -194,3 +194,34 @@
  .dashboardFacts dd{font-size:.84rem}
 }
 @media(max-width:370px){.compactHero .compactPhoto{flex-basis:83px;width:83px;height:83px}.heroTraits li{font-size:.59rem}}
+
+
+/* Harmonize with PodScape's shared surfaces, reducing the separate green-card look. */
+.compactHero{background:linear-gradient(140deg,var(--surface),color-mix(in srgb,var(--surface-secondary) 55%,var(--surface)));border-color:var(--border)}
+.compactHero:before{border-color:color-mix(in srgb,var(--accent) 13%,transparent)}
+.dashboardAbout,.dashboardFacts>div,.dashboardMoisture,.dashboardExplore{background:var(--surface);box-shadow:none;border-color:color-mix(in srgb,var(--border) 80%,transparent)}
+.dashboardFacts>div{border-radius:var(--radius-small,12px)}
+.dashboardExplore{background:var(--surface)}
+.dashboardBody{gap:12px}
+.dashboardSectionHead h2{font-size:clamp(1.45rem,4.5vw,1.85rem)}
+.dashboardAbout{display:block;padding:0;overflow:hidden}
+.dashboardAbout>summary{display:flex;align-items:center;gap:12px;list-style:none;cursor:pointer;padding:12px 14px}
+.dashboardAbout>summary::-webkit-details-marker{display:none}
+.aboutSymbol{align-self:center;flex:0 0 34px;width:34px;height:34px;font-size:1.1rem}
+.aboutSummary{display:grid;gap:3px;min-width:0;flex:1}
+.aboutSummary strong{font-family:var(--display);font-size:1.16rem;font-weight:560;line-height:1.2;color:var(--text-primary)}
+.aboutPreview{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;color:var(--text-secondary);font-size:.76rem;line-height:1.4}
+.aboutChevron{flex:none;color:var(--accent);font-size:1.2rem;transition:transform .18s}
+.dashboardAbout[open] .aboutChevron{transform:rotate(180deg)}
+.dashboardAbout[open] .aboutPreview{display:none}
+.aboutFull{padding:0 16px 14px 60px}
+.aboutFull p{margin:0;white-space:pre-line;color:var(--text-secondary);font-size:.8rem;line-height:1.52}
+.dashboardAbout>summary:focus-visible{outline:2px solid var(--accent);outline-offset:-3px}
+@media(max-width:600px){
+ .dashboardBody{gap:11px}
+ .dashboardAbout{padding:0}
+ .dashboardAbout>summary{padding:12px}
+ .aboutFull{padding:0 12px 12px 57px}
+ .dashboardFacts>div{min-height:58px}
+ .dashboardSectionHead h2{font-size:1.58rem}
+}
