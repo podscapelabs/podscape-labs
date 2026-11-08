@@ -52,3 +52,12 @@
 .library{margin-top:20px}
 .library>div:first-child{margin-bottom:12px}
 @media(max-width:680px){.page{padding:15px 0 68px}.wrap{width:calc(100% - 28px)}.balance{min-width:108px;max-width:128px}.funLinks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.funLinks a{padding:8px 10px;font-size:.69rem}.library{margin-top:16px}}
+
+/* Shared mobile portal vertical rhythm. Keep the playful carousel substantial. */
+@media(max-width:720px){
+ .page{padding-top:12px;padding-bottom:36px}
+ .heading{margin-bottom:14px}
+ .carousel{border-radius:20px}
+ .library{margin-top:22px}
+ .library>div:first-child{margin-bottom:12px}
+}
