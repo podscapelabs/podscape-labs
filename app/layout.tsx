@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { siteContent } from "@/content/site";
 import "./globals.css";
-import { GlobalMobileNav } from "@/components/GlobalMobileNav";
+import { OwnerAwareMobileNav } from "@/components/OwnerAwareMobileNav";
 import { AchievementToast } from "@/components/AchievementToast";
 
 export const viewport: Viewport = {
@@ -48,7 +48,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body>{children}<AchievementToast /><GlobalMobileNav /></body>
+      <body>{children}<AchievementToast /><OwnerAwareMobileNav /></body>
     </html>
   );
 }
