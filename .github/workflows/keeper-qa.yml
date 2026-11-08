@@ -1,0 +1,26 @@
+name: Keeper workspace QA
+on:
+  push:
+    branches:
+      - codex/unified-home-manager-customization
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9eaf683
+      - name: Set up Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Enable pnpm
+        run: corepack enable && corepack prepare pnpm@10.14.0 --activate
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck application
+        run: pnpm run typecheck
+      - name: Lint keeper workflow
+        run: pnpm exec eslint components/KeeperScanner.tsx components/KeeperBinTools.tsx components/KeeperWorkspace.tsx app/keeper/scan/page.tsx app/keeper/actions.ts 'app/keeper/[id]/page.tsx' 'app/keeper/[id]/details/page.tsx' lib/keeper.ts
