@@ -41,7 +41,8 @@ function normalize(value:unknown):Layout{
  const previousCompactVisible=["tools","enclosures","care","activity","stats"];
  const untouchedVisibility=Array.isArray(raw.visible)&&[previousLaunchVisible,previousCompactVisible].some(items=>items.length===raw.visible!.length&&items.every(item=>raw.visible!.includes(item as Section)));
  const untouchedTools=Array.isArray(raw.tools)&&raw.tools.join("|")==="scan|qr|add|care|schedule|notes";
- const order=oldUntouched?[...defaults]:[...uniqueAllowed(Array.isArray(raw.order)?raw.order:[],defaults),...defaults].filter((v,i,a)=>a.indexOf(v)===i);
+ const savedOrder=oldUntouched?[...defaults]:[...uniqueAllowed(Array.isArray(raw.order)?raw.order:[],defaults),...defaults].filter((v,i,a)=>a.indexOf(v)===i);
+ const order:Section[]=["hero","tools",...savedOrder.filter(v=>!required.includes(v))];
  // Existing layouts keep their custom selections, but gain the new care/activity widgets on upgrade.
  const legacy=Array.isArray(raw.order)&&!raw.order.some(v=>v==="care"||v==="activity"||v==="insights");
  const visible=Array.isArray(raw.visible)?(oldUntouched&&untouchedVisibility?initial.visible:defaults.filter(v=>required.includes(v)||raw.visible!.includes(v)||(legacy&&(v==="care"||v==="activity")))):initial.visible;
