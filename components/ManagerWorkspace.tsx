@@ -24,7 +24,7 @@ const library:Tool[]=[
  {id:"add",label:"Add bin",href:"/keeper/new",icon:"bin"},
  {id:"care",label:"Log care",href:"/keeper/scan?manual=1",icon:"droplet"},
  {id:"schedule",label:"Schedule",href:"/keeper/schedule",icon:"calendar"},
- {id:"notes",label:"Notes",href:"/keeper/collection",icon:"note"},
+ {id:"notes",label:"Observations",href:"/keeper/collection?intent=notes",icon:"note"},
  {id:"colonies",label:"All colonies",href:"/keeper/collection",icon:"jar"},
  {id:"history",label:"Care history",href:"/keeper/activity",icon:"note"},
  {id:"activity",label:"Recent activity",href:"/keeper/activity",icon:"note"}
@@ -54,7 +54,7 @@ function ManagerQuickShortcuts({ids,change,primaryHref,canvasEditing}:{ids:strin
  const router=useRouter();
  const {editing,selected,setSelected,handlers,done}=useShortcutEditor(ids,change,canvasEditing);
  const current=library.find(tool=>tool.id===ids[selected])||library[0];
- const destination=(tool:Tool)=>tool.id==="notes"?(primaryHref!=="/keeper/collection"?primaryHref+"?panel=observation#observation":"/keeper/collection"):tool.href;
+ const destination=(tool:Tool)=>tool.href;
  return <>
   {editing&&!canvasEditing?<div className={homeStyles.jiggleToolbar} role="region" aria-label="Customize Manager shortcuts">
     <span className={homeStyles.jiggleHint}>✧ <strong>Arrange your shortcuts</strong><small>Drag icons to move them. Tap one to replace it.</small></span>
