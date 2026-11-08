@@ -122,6 +122,9 @@ export function WorkspaceEditBlock<T extends string>({id,scope,label,index,count
  const onPressStart=(event:PointerEvent<HTMLDivElement>)=>{
   if(editing){begin(id,event);return}
   if(!onLongPress||(event.pointerType==="mouse"&&event.button!==0))return;
+  // Shortcut tiles own their jiggle gesture. Do not let the parent widget's
+  // long-press timer intercept them before their shortcut editor activates.
+  if((event.target as HTMLElement).closest("[data-shortcut-index]"))return;
   // Do not intercept controls such as forms, selection, or nested editable areas.
   if((event.target as HTMLElement).closest("input,textarea,select,[contenteditable='true']"))return;
   cancelPress();
