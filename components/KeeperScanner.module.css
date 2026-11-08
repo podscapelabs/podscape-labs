@@ -151,3 +151,11 @@
  .workspaceHistory{margin-top:15px}
  .historyEntry{padding:9px 11px}
 }
+
+/* Shared PodScape workspace section headings. */
+.actionHead>div{flex:1;min-width:0}
+.careSessionCount{color:var(--accent);font-size:.7rem;font-weight:750;white-space:nowrap}
+.historyFullLink{font-size:.72rem;font-weight:750;color:var(--accent);white-space:nowrap}
+.workspaceHistory>div:first-child{margin-bottom:10px}
+.binPicker>div:first-child{margin-bottom:4px}
+@media(max-width:500px){.actionHead{margin:14px 0 12px}.careSessionCount{font-size:.65rem}}
