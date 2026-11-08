@@ -57,6 +57,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  const [selected,setSelected]=useState<Bin|null>(()=>bins.find(b=>b.id===initialBinId)||null);const [state,setState]=useState<"idle"|"scanning">(initialBinId||startManual?"idle":"scanning");const [error,setError]=useState("");const [pending,start]=useTransition();
  const [customNote,setCustomNote]=useState("");const [customDate,setCustomDate]=useState("");const [manual,setManual]=useState(initialBinId);
  const [recent,setRecent]=useState<CareRecord[]>([]);
+ const [undoneIds,setUndoneIds]=useState<string[]>([]);
  const [lastDates,setLastDates]=useState<Record<string,Record<string,string>>>(careDates);
  const [notice,setNotice]=useState("");
  const [undoPending,setUndoPending]=useState(false);
@@ -193,14 +194,15 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
    const result=operation.records.length>1
     ?await undoKeeperEventBatch({eventIds:operation.records.map(r=>r.id)})
     :await undoKeeperEvent({id:operation.records[0].id,enclosureId:operation.records[0].binId});
-   if(!result.success){setError(result.error||"Undo failed.");return;}
+   if(!result.success){setError(result.error||"Undo failed. Your care entry remains saved.");setNotice("");return;}
    for(const entry of operation.records)restoreMistingReminder(entry);
    const ids=new Set(operation.records.map(r=>r.id));
    setRecent(r=>r.filter(x=>!ids.has(x.id)));
+   setUndoneIds(previous=>[...previous,...ids]);
    setLastDates(d=>{const updated={...d};for(const entry of operation.records)updated[entry.binId]={...(updated[entry.binId]||{}),[entry.note]:entry.previous||""};return updated;});
    setNotice(operation.label+" undone for "+operation.records.length+" "+(operation.records.length===1?"bin":"bins"));
    setLastOperation(null);
-  }catch{setError("Undo failed. Please retry.");}finally{setUndoPending(false);}
+  }catch{setError("Undo failed. Please retry; your entry remains saved.");setNotice("");}finally{setUndoPending(false);}
  }
  const latest=lastOperation;
  const loggedForBin=selected?recent.filter(r=>r.binId===selected.id):[];
@@ -208,7 +210,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careDates=
  const speciesPopulation=speciesBins.reduce((sum,bin)=>sum+bin.quantity,0);
  const historyForBin=selected?[
   ...recent.filter(r=>r.binId===selected.id).map(r=>({id:r.id,kind:r.label==="Fed"?"feeding":r.label==="Custom note"?"observation":"maintenance",note:r.note,createdAt:r.createdAt,quantityChange:null as number|null})),
-  ...(activity[selected.id]||[])
+  ...(activity[selected.id]||[]).filter(event=>!undoneIds.includes(event.id))
  ].sort((a,b)=>new Date(b.createdAt).getTime()-new Date(a.createdAt).getTime()).slice(0,3):[];
  return <section className={styles.wrap}>
  {state!=="scanning"&&!selected?<div className={styles.heading}><div><p className={styles.kicker}>PODSCAPE LABS / KEEPER</p><h1>Quick Care</h1><p>Scan a bin, log care, and move on.</p></div><Link href="/ledger/my-collection">My Collection ↗</Link></div>:null}
