@@ -64,3 +64,12 @@
 
 .bulkLink{display:inline-flex;margin-top:13px;padding:5px 0;color:var(--accent);font-size:.73rem;font-weight:750;text-decoration:none}
 .bulkLink:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+.observation{margin-top:13px;padding:12px 13px;border:1px solid var(--border);border-radius:11px;background:var(--surface-secondary)}
+.observation>summary{color:var(--accent);font-size:.76rem;font-weight:750;cursor:pointer}
+.observation form{display:grid;gap:9px;margin-top:14px}
+.observation label{font-size:.71rem;font-weight:750}
+.observation textarea{min-width:0;width:100%;padding:11px;border:1px solid var(--border);border-radius:10px;background:var(--background);color:var(--text-primary);font:inherit;font-size:16px;resize:vertical}
+.observation textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.observation button{justify-self:start;padding:10px 14px;min-height:42px;border:0;border-radius:10px;background:var(--accent);color:var(--background);font:inherit;font-size:.73rem;font-weight:750;cursor:pointer}
+.observation button:disabled{opacity:.55;cursor:wait}
