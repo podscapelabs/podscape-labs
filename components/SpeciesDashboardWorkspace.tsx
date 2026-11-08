@@ -68,7 +68,7 @@ export function SpeciesDashboardWorkspace({widgets,scope,preview=false}:{widgets
  };
  const toggle=(id:SpeciesWidgetId)=>update({...layout,visible:layout.visible.includes(id)?layout.visible.filter(v=>v!==id):[...layout.visible,id]});
  const reveal=(id:SpeciesWidgetId)=>{if(!layout.visible.includes(id))toggle(id);setLibraryOpen(false)};
- return <div className={styles.speciesWorkspace} data-workspace-root="species" onPointerMove={event=>{if(canvasEditing)dragMove(event)}} onPointerUp={()=>{if(canvasEditing)stop()}} onPointerCancel={()=>{if(canvasEditing)stop()}}>
+ return <div className={`${styles.speciesWorkspace} ${canvasEditing?homeStyles.homeCanvasEditing:""}`} data-workspace-root="species" onPointerMove={event=>{if(canvasEditing)dragMove(event)}} onPointerUp={()=>{if(canvasEditing)stop()}} onPointerCancel={()=>{if(canvasEditing)stop()}}>
   {!preview&&<div className={styles.speciesCustomizeIntro}>
    <span><strong>Your Species Dashboard</strong><small>{hydrated?"Your layout follows you across Leaf Ledger species.":"A personal space for species discovery."}</small></span>
    <button type="button" onClick={()=>enterCanvas()} aria-label="Customize Species Dashboard">✧ Customize</button>
