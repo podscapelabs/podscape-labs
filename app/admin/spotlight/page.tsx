@@ -27,7 +27,7 @@ export default async function SpotlightDesk({searchParams}:{searchParams:Promise
         <span className={styles.slotBody}><strong>{i===0?"First highlight":`Highlight ${i+1}`}</strong>
           <select name={`slot${i+1}`} defaultValue={selected?.[i]||""}>
             <option value="">Not used</option>
-            {selected?.[i]&&!optionHrefs.has(selected[i])?<option value={selected[i]} disabled>Unavailable · choose replacement</option>:null}
+            {selected?.[i]&&!optionHrefs.has(selected?.[i] || "")?<option value={selected[i]} disabled>Unavailable · choose replacement</option>:null}
             {options.map(o=><option value={o.href} key={o.href}>{o.label} · {o.title}</option>)}
           </select>
         </span>
