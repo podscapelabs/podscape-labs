@@ -34,10 +34,16 @@
   .active { color: var(--accent, var(--forest)); }
   .active small { font-weight: 800; }
   .primary {
-    width: 58px;
-    height: 58px;
-    min-height: 58px;
-    margin: -22px auto 0;
+    /* Reserve room for both the icon and up to two lines of label text.
+       Auto-sized grid rows previously pushed the label below the raised button. */
+    width: 70px;
+    height: 70px;
+    min-height: 70px;
+    margin: -28px auto 0;
+    padding: 5px 3px;
+    grid-template-rows: 29px minmax(0, auto);
+    align-content: center;
+    row-gap: 3px;
     align-self: center;
     border: 3px solid var(--surface, var(--paper));
     border-radius: 22px;
@@ -90,3 +96,8 @@
 
 /* Long custom destination names must not push the five-icon toolbar out of shape. */
 @media(max-width:720px){.nav>.item{min-width:0}.nav>.item small{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;overflow-wrap:anywhere;max-width:100%;line-height:1.1;text-align:center}}
+/* Apply identical label metrics to the raised action; keep text inside its face. */
+@media(max-width:720px){
+ .nav>.primary small{width:100%;margin:0;font-size:.57rem;line-height:1.15;align-self:center}
+ .nav>.primary span{align-self:center}
+}
