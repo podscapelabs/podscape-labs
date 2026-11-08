@@ -1,6 +1,6 @@
 "use client";
 
-import {useState,useTransition} from "react";
+import {useState,useTransition,type FormEvent} from "react";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -44,6 +44,7 @@ export function ColonyWorkspace({colony,initialEvents,referenceUrl}:{colony:Colo
  const [pending,start]=useTransition();
  const [message,setMessage]=useState("");
  const [error,setError]=useState("");
+ const [observation,setObservation]=useState("");
  const [lastSaved,setLastSaved]=useState<{id:string;note:string;previousReminder?:string}|null>(null);
  const [undoing,setUndoing]=useState(false);
  function record(action:Action){
@@ -60,6 +61,24 @@ export function ColonyWorkspace({colony,initialEvents,referenceUrl}:{colony:Colo
     setMessage(action.label+" recorded");
     router.refresh();
    }catch{setError("Could not save care. Please try again.");}
+  });
+ }
+ function recordObservation(event:FormEvent<HTMLFormElement>){
+  event.preventDefault();
+  if(pending||undoing||colony.archived||!observation.trim())return;
+  const text=observation.trim();
+  setError("");setMessage("");
+  start(async()=>{
+   try{
+    const result=await logKeeperEvent({id:colony.id,kind:"observation",note:text});
+    if(!result.success||!result.id){setError(result.error||"Unable to save observation.");return;}
+    const now=new Date().toISOString();
+    setEvents(old=>[{id:result.id,kind:"observation",note:text,createdAt:now,quantityChange:null},...old]);
+    setLastSaved({id:result.id,note:text});
+    setObservation("");
+    setMessage("Observation saved");
+    router.refresh();
+   }catch{setError("Unable to save observation. Please retry.");}
   });
  }
  async function undo(){
@@ -94,6 +113,9 @@ export function ColonyWorkspace({colony,initialEvents,referenceUrl}:{colony:Colo
    <p className={styles.description}>Tap an action to save it to this bin's private care history.</p>
    {colony.archived?<p className={styles.warning}>This bin is archived. Restore it in Details before recording care.</p>:null}
    <div className={styles.actions}>{actions.map(action=><button type="button" key={action.note} disabled={pending||undoing||colony.archived} onClick={()=>record(action)}><PodscapeLineIcon name={action.icon}/><strong>{action.label}</strong><small>{lastCare(events,action.note)?"Last: "+dayLabel(lastCare(events,action.note)!):"Not logged yet"}</small></button>)}</div>
+   <details className={styles.observation} id="observation"><summary>+ Add an observation or care note</summary>
+    <form onSubmit={recordObservation}><label htmlFor="colony-observation">What did you notice?</label><textarea id="colony-observation" rows={3} maxLength={1500} value={observation} onChange={event=>setObservation(event.target.value)} placeholder="New mancae spotted, habitat changes, feeding notes…" required/><button type="submit" disabled={pending||undoing||colony.archived||!observation.trim()}>{pending?"Saving…":"Save observation"}</button></form>
+   </details>
    <Link className={styles.bulkLink} href="/keeper/scan?manual=1">Log care for multiple bins →</Link>
    {error?<p className={styles.warning} role="alert">{error}</p>:null}
    {message?<div className={styles.notice} role="status"><span>{message}</span>{lastSaved?<button type="button" onClick={undo} disabled={pending||undoing}>{undoing?"Undoing…":"Undo"}</button>:null}</div>:null}
