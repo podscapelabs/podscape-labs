@@ -122,3 +122,32 @@
 .historyEntry small{font-size:.67rem;color:var(--text-secondary);text-transform:capitalize}
 .historyEntry time{flex:none;font-size:.7rem;color:var(--text-secondary)}
 .historyEmpty{margin:8px 0;font-size:.75rem;color:var(--text-secondary)}
+
+/* Manager family: compact, native PodScape surfaces instead of a standalone form stack. */
+.careWorkspace{max-width:740px;background:var(--surface);box-shadow:var(--shadow-soft)}
+.careTopline{letter-spacing:.09em}
+.careTopline a{color:var(--accent);text-decoration:none;font-size:.71rem;letter-spacing:0}
+.pickerCount{display:inline-block;margin-left:4px;padding:2px 7px;border-radius:999px;border:1px solid var(--border);font:700 .66rem/1.3 system-ui,sans-serif;color:var(--text-secondary);vertical-align:middle}
+.binCard,.binCardSelected{border-radius:var(--radius-small);background:var(--surface-secondary)}
+.binCardSelected{background:color-mix(in srgb,var(--accent) 12%,var(--surface));box-shadow:inset 0 0 0 1px var(--accent)}
+.careTile,.careTileLogged{background:var(--surface-secondary);border-radius:var(--radius-small)}
+.careTileLogged{background:color-mix(in srgb,var(--accent) 13%,var(--surface))}
+.careFooter{border-top:1px solid var(--border);padding-top:14px;display:grid;grid-template-columns:1fr auto;gap:10px}
+.careFooter .settingsLink{display:flex;align-items:center;justify-content:center;min-height:44px;padding:10px 12px;border:1px solid var(--border);background:var(--surface-secondary);border-radius:var(--radius-small);font-size:.75rem;font-weight:750;color:var(--accent);text-align:center;text-decoration:none}
+.careFooter .nextBin{min-height:44px;padding:10px 13px;border-radius:var(--radius-small);font-size:.76rem}
+.careGrid+.error,.careGrid~.error{margin:10px 0}
+@media(max-width:600px){
+ .careWorkspace{max-width:none;box-shadow:none;padding:12px;margin:0;border-radius:var(--radius-small)}
+ .careIdentity{padding:11px 0}
+ .populationStrip>div{background:var(--surface-secondary)}
+ .binPicker{margin-top:13px;padding-top:13px}
+ .binCarousel{margin-right:-12px;padding-right:12px;scroll-padding-left:2px}
+ .binCard,.binCardSelected{flex-basis:122px;min-height:94px}
+ .careTile,.careTileLogged{min-height:98px}
+ .careFooter{grid-template-columns:1fr 1fr;align-items:stretch}
+ .careFooter .nextBin{width:auto}
+ .careFooter>a{text-align:center}
+ .actionHead{margin-top:12px}
+ .workspaceHistory{margin-top:15px}
+ .historyEntry{padding:9px 11px}
+}
