@@ -477,3 +477,15 @@
  .managerModule[aria-label="Care overview"] .managerModuleEmpty{margin:9px 0 2px;font-size:.72rem;line-height:1.4}
  .managerModule[aria-label="Care overview"] .managerModuleFine{margin-top:10px;padding-top:9px;border-top:1px solid var(--border);font-size:.61rem;line-height:1.35}
 }
+
+/* One permanent Manager search directly below its hero; no extra widget card. */
+.managerPrimarySearch{min-width:0;margin:11px 0 0}
+.managerPrimarySearch .managerFinder{margin:0}
+.managerPrimarySearch .managerSearchField{min-height:48px;border-radius:14px}
+.managerPrimarySearch .managerSearchField input{font-size:16px}
+.managerPrimarySearch .managerSearchResults{position:relative;z-index:5}
+@media(max-width:720px){
+ .managerPrimarySearch{margin-top:9px}
+ .managerPrimarySearch .managerSearchField{min-height:46px;border-radius:13px}
+ .managerWorkspace [data-workspace-block="hero"] + [data-workspace-block="tools"] .section{margin-top:12px}
+}
