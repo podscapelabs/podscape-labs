@@ -500,3 +500,23 @@
   -webkit-user-select:none;
   user-select:none;
 }
+
+
+/* Preview the next landing position without overlaying or hiding card content. */
+.homeCanvasEditing [data-workspace-drop-preview]{
+ border-color:var(--forest);
+ background:color-mix(in srgb,var(--forest) 7%,var(--paper));
+}
+.homeCanvasEditing [data-workspace-drop-preview="before"]{
+ box-shadow:inset 0 4px 0 color-mix(in srgb,var(--forest) 68%,transparent);
+}
+.homeCanvasEditing [data-workspace-drop-preview="after"]{
+ box-shadow:inset 0 -4px 0 color-mix(in srgb,var(--forest) 68%,transparent);
+}
+.homeCanvasEditing .homeCanvasDragging{
+ border-color:var(--forest);
+ box-shadow:0 12px 28px color-mix(in srgb,var(--forest) 16%,transparent);
+}
+@media(prefers-reduced-motion:reduce){
+ .homeCanvasEditing .homeCanvasDragging{transition:none}
+}
