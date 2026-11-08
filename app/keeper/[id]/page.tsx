@@ -1,12 +1,30 @@
-import { notFound, redirect } from "next/navigation";
-import { getEnclosure } from "@/lib/keeper";
+import type {Metadata} from "next";
+import {notFound} from "next/navigation";
+import {PlatformShell} from "@/components/PlatformShell";
+import {KeeperMobileNav} from "@/components/KeeperMobileNav";
+import {getEnclosure} from "@/lib/keeper";
+import {getSpeciesRecords} from "@/lib/species-store";
+import {speciesDisplayName} from "@/data/species";
+import {ColonyWorkspace} from "./ColonyWorkspace";
+import styles from "./ColonyWorkspace.module.css";
+
 export const dynamic="force-dynamic";
-/** One primary enclosure workspace, whether opened from Manager or an existing QR label. */
+export const metadata:Metadata={title:"Colony Workspace | PodScape Manager",robots:{index:false,follow:false}};
+
+/** All routes to a bin land on the same signed-in, privately owned colony record. */
 export default async function EnclosurePage({params}:{params:Promise<{id:string}>}){
  const {id}=await params;
  if(!/^[a-f0-9-]{36}$/i.test(id))notFound();
  const data=await getEnclosure(id);
  if(!data)notFound();
- if(data.enclosure.isArchived)redirect("/keeper/"+id+"/details");
- redirect("/keeper/scan?bin="+encodeURIComponent(id));
+ const {enclosure,events}=data;
+ const species=await getSpeciesRecords();
+ const record=species.find(item=>item.id===enclosure.speciesId);
+ return <PlatformShell><main className={styles.page}>
+  <ColonyWorkspace
+   colony={{id:enclosure.id,name:enclosure.name,label:enclosure.label,species:record?speciesDisplayName(record):"Unlinked species",image:record?.image||null,status:enclosure.status,breeding:enclosure.breeding,quantity:enclosure.quantity,archived:enclosure.isArchived}}
+   initialEvents={events}
+   referenceUrl={record?"/ledger/"+record.slug:undefined}
+  />
+ </main><KeeperMobileNav active="keeper"/></PlatformShell>;
 }
