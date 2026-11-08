@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Header } from "@/components/Header";
+import {PlatformShell} from "@/components/PlatformShell";
+import {WorkspaceSectionHeader} from "@/components/PodscapeWorkspaceUI";
 import { PodscapeLineIcon, type PodscapeIconName } from "@/components/PodscapeLineIcon";
 import styles from "./community.module.css";
 
@@ -30,9 +31,7 @@ const socials:{name:string;copy:string;href:string}[]=[
 ];
 
 export default function CommunityPage(){
-  return <div className={styles.site}>
-    <a className="skip-link" href="#community-main">Skip to content</a>
-    <Header/>
+  return <PlatformShell><div className={styles.site}>
     <main className={styles.main} id="community-main">
       
       <header className={styles.hero}>
@@ -53,23 +52,23 @@ export default function CommunityPage(){
         <div><p className={styles.eyebrow}>A COMMUNITY IN THE MAKING</p><h2 id="community-intro">More than a collection.</h2></div>
         <p>Podscape began with a fascination for tiny creatures. The community is where that curiosity extends beyond our own enclosures—from first-time keepers to breeders, artists and people who just love discovering something new.</p>
       </section>
-      <section className={styles.section} id="explore" aria-labelledby="explore-heading">
-        <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>EXPLORE NOW</p><h2 id="explore-heading">Find your corner of Podscape.</h2></div><span className={styles.sideNote}>Open and ready to explore</span></div>
+      <section className={styles.section} id="explore" aria-label="Explore PodScape">
+        <div className={styles.sectionHeading}><WorkspaceSectionHeader title="Find your corner of PodScape" description="Explore the experiences that are available now." meta="Open now"/></div>
         <div className={styles.exploreGrid}>{explore.map(item=><Link className={styles.exploreCard} href={item.href} key={item.href}>
           <span className={styles.exploreIcon}><PodscapeLineIcon name={item.icon}/></span>
           <strong>{item.title}</strong><p>{item.copy}</p><span className={styles.cardLink}>{item.cta} <span aria-hidden="true">↗</span></span>
         </Link>)}</div>
       </section>
-      <section className={styles.section} aria-labelledby="socials-heading">
-        <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>CONNECT WITH US</p><h2 id="socials-heading">Find Podscape beyond the portal.</h2></div></div>
+      <section className={styles.section} aria-label="PodScape social channels">
+        <div className={styles.sectionHeading}><WorkspaceSectionHeader title="Find PodScape beyond the portal" description="Follow along and join the conversation."/></div>
         <p className={styles.sectionDescription}>Follow along, say hello and join the little world we&apos;re growing together.</p>
         <div className={styles.exploreGrid}>{socials.map(item=><a className={styles.exploreCard} href={item.href} target="_blank" rel="noopener noreferrer" key={item.name}>
           <span className={styles.exploreIcon} aria-hidden="true"><PodscapeLineIcon name="community"/></span>
           <strong>{item.name}</strong><p>{item.copy}</p><span className={styles.cardLink}>Visit {item.name} <span aria-hidden="true">↗</span></span>
         </a>)}</div>
       </section>
-      <section className={styles.section} aria-labelledby="coming-heading">
-        <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>GROWING NEXT</p><h2 id="coming-heading">Room for everyone.</h2></div></div>
+      <section className={styles.section} aria-label="Future community spaces">
+        <div className={styles.sectionHeading}><WorkspaceSectionHeader title="Room for everyone" description="Future spaces for keepers, vendors, and creators."/></div>
         <p className={styles.sectionDescription}>These are the spaces we want to grow into. They aren&apos;t open yet, but this is where they&apos;ll live as we build them.</p>
         <div className={styles.futureGrid}>{upcoming.map(item=><article className={styles.futureCard} key={item.title}>
           <span className={styles.futureIcon}><PodscapeLineIcon name={item.icon}/></span>
@@ -78,5 +77,5 @@ export default function CommunityPage(){
       </section>
       <section className={styles.close}><span aria-hidden="true">❧</span><div><p className={styles.eyebrow}>THE LITTLE WORLD WE SHARE</p><h2>Every keeper starts somewhere.</h2><p>There&apos;s always something new to learn, create or discover. We&apos;re building a place where all of it belongs.</p></div><Link href="/app">Back to Podscape <span aria-hidden="true">→</span></Link></section>
     </main>
-  </div>;
+  </div></PlatformShell>;
 }
