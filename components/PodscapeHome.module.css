@@ -556,3 +556,11 @@
  .greetingWorkspace{margin-bottom:12px}
  .widgetArea>.section{margin-top:20px}
 }
+
+/* Shared five-shortcut workspace layout: no extra row on smaller screens. */
+.shortcuts{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media(max-width:720px){
+ .shortcuts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+ .shortcuts>.shortcut{min-width:0;min-height:74px}
+ .shortcuts>.shortcut>span:last-child{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;white-space:normal;overflow:hidden;overflow-wrap:anywhere;line-height:1.14;padding-inline:2px}
+}
