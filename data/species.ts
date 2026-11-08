@@ -23,6 +23,9 @@ export type SpeciesRecord = {
   tags: string[];
   careLevel: string;
   moisture: string;
+  /** Editorially selected general captive moisture tendency; never derived from legacy labels. */
+  moistureProfile?: "dry-leaning" | "dry-balanced" | "balanced" | "balanced-moist" | "moist-leaning" | "";
+  moistureNote?: string;
   temperature: string;
   ventilation: string;
   reproduction?: string;
