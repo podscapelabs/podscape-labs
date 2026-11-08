@@ -9,7 +9,6 @@ const TRAIT_OPTIONS=[
  {group:"Reproduction & development",values:["Prolific breeder","Slow colony growth","Rapid colony growth","Distinctive juveniles","Notable colour variation"]},
  {group:"Hobby & identity",values:["Captive-bred morph","Provisional identification","Recognizable hobby morph"]}
 ] as const;
-const ALL=TRAIT_OPTIONS.flatMap(group=>[...group.values]);
 const MAX=5;
 function tidy(trait:string){return trait.trim().replace(/\s+/g," ").slice(0,65);}
 export function NotableTraitPicker({initialTraits=[]}:{initialTraits?:string[]}){
