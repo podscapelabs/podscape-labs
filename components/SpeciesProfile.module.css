@@ -252,3 +252,10 @@
 .speciesWorkspace :global(.widgetLibrary){width:min(100%,590px)}
 .speciesCustomizeIntro button:focus-visible,.speciesHiddenSection button:focus-visible,.speciesAllDetails>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media(max-width:600px){.speciesCustomizeIntro{padding:9px 11px}.speciesCustomizeIntro small{font-size:.63rem}.speciesInfoCard{padding:12px}.speciesWorkspace{gap:10px}}
+
+
+/* Species widget clarity: one straightforward heading with optional advanced detail. */
+.dashboardCare .dashboardSectionHead h2{font-size:clamp(1.42rem,4.7vw,1.8rem);line-height:1.2}
+.advancedCareDetail{display:grid;gap:4px;padding-top:9px;border-top:1px solid var(--border)}
+.advancedCareDetail strong{font-size:.72rem;color:var(--text-primary)}
+.advancedCareNote{padding-top:8px;border-top:1px solid var(--border);font-size:.7rem!important;color:var(--text-secondary)}
