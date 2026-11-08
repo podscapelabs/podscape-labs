@@ -94,10 +94,50 @@
 }
 @media(prefers-reduced-motion:reduce){.nav.editing>.item.jiggling{animation:none}}
 
-/* Long custom destination names must not push the five-icon toolbar out of shape. */
-@media(max-width:720px){.nav>.item{min-width:0}.nav>.item small{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;overflow-wrap:anywhere;max-width:100%;line-height:1.1;text-align:center}}
-/* Apply identical label metrics to the raised action; keep text inside its face. */
-@media(max-width:720px){
- .nav>.primary small{width:100%;margin:0;font-size:.57rem;line-height:1.15;align-self:center}
- .nav>.primary span{align-self:center}
+/* Every customizable slot uses the same fixed icon/label tracks. A one-line
+   label occupies the same space as a two-line label, so swapping shortcuts
+   cannot shift icons or text. The raised middle action only changes its shell. */
+@media (max-width: 720px) {
+  .nav > .item {
+    min-width: 0;
+    min-height: 64px;
+    display: grid;
+    grid-template-rows: 29px 2.4em;
+    align-content: center;
+    justify-items: center;
+    row-gap: 4px;
+    padding: 4px 2px;
+  }
+  .nav > .item span {
+    width: 29px;
+    height: 29px;
+    align-self: center;
+  }
+  .nav > .item small {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    width: 100%;
+    max-width: 100%;
+    height: 2.4em;
+    margin: 0;
+    line-height: 1.2;
+    font-size: .57rem;
+    text-align: center;
+    align-self: center;
+    align-content: center;
+  }
+  .nav > .primary {
+    width: 74px;
+    height: 74px;
+    min-height: 74px;
+    margin: -25px auto 0;
+    padding: 5px 4px;
+    grid-template-rows: 29px 2.4em;
+    align-content: center;
+    row-gap: 4px;
+  }
 }
