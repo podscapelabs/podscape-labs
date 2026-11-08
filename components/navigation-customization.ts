@@ -35,15 +35,15 @@ export const navigationChoices:NavChoice[]=[
 ];
 export const navigationGroups:NavGroup[]=["Main","Discover","Keeper tools","Play & projects","Community & studio","Coming later"];
 export const initialBottom=["home","shop","scan","manager","menu"];
-export const initialHome=["ledger","shop","fun-zone","community","guides"];
+export const initialHome=["ledger","shop","fun-zone","community","guides","podbound"];
 export const choiceById=new Map(navigationChoices.map(item=>[item.id,item]));
 export type PreferenceArea="bottom"|"home";
 export function cleanPreference(value:unknown,area:PreferenceArea):string[]{
   const defaults=area==="bottom"?initialBottom:initialHome;
   const expected=defaults.length;
   if(!Array.isArray(value)||value.some(id=>typeof id!=="string"||!choiceById.has(id))||new Set(value).size!==value.length)return [...defaults];
-  // Migrate six-slot home layouts by retaining the first five custom choices.
-  if(area==="home"&&value.length===6)return value.slice(0,expected) as string[];
+  // Restore a sixth slot without discarding existing five-slot preferences.
+  if(area==="home"&&value.length===5)return [...value,...defaults.filter(id=>!value.includes(id))].slice(0,expected) as string[];
   if(value.length!==expected)return [...defaults];
   return value as string[];
 }
