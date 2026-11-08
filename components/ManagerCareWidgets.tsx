@@ -39,8 +39,8 @@ export function ManagerCareOverview({bins}:{bins:ManagerBin[]}){
  return <section className={styles.managerModule} aria-label="Care overview">
   <header><div><p className={styles.managerEyebrow}>YOUR ROUTINE</p><h2>Care overview</h2></div><Link href="/keeper/schedule">Full schedule →</Link></header>
   <div className={styles.managerPulse}>
-   <div><strong>{loaded?due.length:"—"}</strong><span>Due or overdue</span></div>
-   <div><strong>{loaded?unconfigured.length:"—"}</strong><span>Needs scheduling</span></div>
+   <Link href="/keeper/schedule" aria-label={loaded?`View schedule: ${due.length} colonies due or overdue`:"View colony care schedule"}><strong>{loaded?due.length:"—"}</strong><span>Due or overdue <span aria-hidden="true">↗</span></span></Link>
+   <Link href="/keeper/schedule" aria-label={loaded?`Set schedules for ${unconfigured.length} colonies`:"Set colony care schedules"}><strong>{loaded?unconfigured.length:"—"}</strong><span>Needs scheduling <span aria-hidden="true">↗</span></span></Link>
   </div>
   {!bins.length?<p className={styles.managerModuleEmpty}>Add your first enclosure to start tracking routines.</p>
    :!loaded?<p className={styles.managerModuleEmpty}>Loading your saved schedules…</p>
