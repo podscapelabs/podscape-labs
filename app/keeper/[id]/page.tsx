@@ -12,8 +12,9 @@ export const dynamic="force-dynamic";
 export const metadata:Metadata={title:"Colony Workspace | PodScape Manager",robots:{index:false,follow:false}};
 
 /** All routes to a bin land on the same signed-in, privately owned colony record. */
-export default async function EnclosurePage({params}:{params:Promise<{id:string}>}){
+export default async function EnclosurePage({params,searchParams}:{params:Promise<{id:string}>;searchParams:Promise<{panel?:string}>}){
  const {id}=await params;
+ const panel=(await searchParams).panel==="observation"?"observation":undefined;
  if(!/^[a-f0-9-]{36}$/i.test(id))notFound();
  const data=await getEnclosure(id);
  if(!data)notFound();
@@ -27,6 +28,7 @@ export default async function EnclosurePage({params}:{params:Promise<{id:string}
    colony={{id:enclosure.id,name:enclosure.name,label:enclosure.label,species:record?speciesDisplayName(record):"Unlinked species",image:record?.image||null,status:enclosure.status,breeding:enclosure.breeding,quantity:enclosure.quantity,archived:enclosure.isArchived}}
    initialEvents={events}
    careDates={careDates}
+   initialPanel={panel}
    referenceUrl={record?"/ledger/"+record.slug:undefined}
   />
  </main><KeeperMobileNav active="keeper"/></PlatformShell>;
