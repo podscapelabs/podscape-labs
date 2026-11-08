@@ -24,8 +24,8 @@ export default async function ColonyDetails({params}:{params:Promise<{id:string}
  const record=(await getSpeciesRecords()).find(x=>x.id===enclosure.speciesId);
  const species=record?speciesDisplayName(record):"Unlinked species";
  return <PlatformShell><main className={styles.page}><div className="v2-container">
-  <Breadcrumbs items={[{label:"Manager",href:"/keeper"},{label:enclosure.name,href:"/keeper/"+id},{label:"Settings"}]}/>
-  <div className={styles.header}><div><p className={styles.kicker}>PODSCAPE / COLONY SETTINGS</p><h1>{enclosure.name}</h1><p>{species}{enclosure.label?" · "+enclosure.label:""}</p></div><Link className={styles.back} href={"/keeper/scan?bin="+id}>← Back to bin workspace</Link></div>
+  <Breadcrumbs items={[{label:"Manager",href:"/keeper"},{label:enclosure.name,href:enclosure.isArchived?"/keeper":"/keeper/"+id},{label:"Settings"}]}/>
+  <div className={styles.header}><div><p className={styles.kicker}>PODSCAPE / COLONY SETTINGS</p><h1>{enclosure.name}</h1><p>{species}{enclosure.label?" · "+enclosure.label:""}</p></div><Link className={styles.back} href={enclosure.isArchived?"/keeper":"/keeper/scan?bin="+id}>{enclosure.isArchived?"← Back to Manager":"← Back to bin workspace"}</Link></div>
   <div className={styles.extras}><PinToHome pin={{kind:"colony",id}} userId={user?.id||null}/>{record?<Link href={"/ledger/"+record.slug}>Species reference ↗</Link>:null}</div>
   <p className={styles.intro}>The bin workspace is for daily care. Use these settings when you need to edit colony information, print a QR label, or adjust a reminder.</p>
   <details className={styles.section}><summary><strong>Colony profile & population</strong><span>Edit counts, status and setup</span></summary><div className={styles.sectionBody}><KeeperControls entry={enclosure} showLogForm={false}/></div></details>
