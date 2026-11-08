@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AdminPhotoEditor } from "@/components/AdminPhotoEditor";
+import { LedgerUnsavedGuard } from "@/components/LedgerUnsavedGuard";
 import { NotableTraitPicker } from "@/components/NotableTraitPicker";
 import { SpecimenLeaf } from "@/components/SpecimenLeaf";
 import { speciesDisplayName, speciesRecordLabel, speciesScientificName } from "@/data/species";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getSpeciesRecords } from "@/lib/species-store";
+import { speciesReadiness } from "@/lib/species-readiness";
 import { createSpeciesRecord, saveSpeciesRecord, toggleSpeciesArchive } from "./actions";
 import styles from "./ledger-desk.module.css";
 
@@ -24,6 +26,7 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
   const archivedRecords = records.filter((record) => Boolean(record.archivedAt));
   const visibleRecords = archivedView ? archivedRecords : activeRecords;
   const selected = params.record ? visibleRecords.find((record) => record.id === params.record) : visibleRecords[0];
+  const readiness = selected ? speciesReadiness(selected) : null;
 
   return <main className="admin-shell admin-ledger-desk">
     <header className="admin-dashboard-head admin-ledger-head">
@@ -50,9 +53,17 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
         {params.saved ? <p className="admin-save-message is-success">Record saved. The Ledger and search index now use this version.</p> : null}
         {params.created ? <p className="admin-save-message is-success">Blank record created. Its permanent ID will not change.</p> : null}
         {params.error ? <p className="admin-save-message is-error">{params.error}</p> : null}
-        <form className={`admin-species-form ${styles.speciesForm}`} action={saveSpeciesRecord} key={selected.id}>
+        <form id="ledger-species-editor" className={`admin-species-form ${styles.speciesForm}`} action={saveSpeciesRecord} key={selected.id}>
+          <LedgerUnsavedGuard />
           <input type="hidden" name="id" value={selected.id} />
           <p className={styles.editingNotice}>Editing <strong>{speciesDisplayName(selected)}</strong> · {selected.catalogueNumber}</p>
+          <div className={styles.deskQuickBar}>
+            <div className={styles.deskCompletion} role="status"><strong>{readiness?.ready ? "Ready for review" : "Entry in progress"}</strong><span>{readiness?.ready ? "Core snapshot filled — verify accuracy before publishing." : `Still useful to add: ${readiness?.missing.slice(0,3).join(", ")}${(readiness?.missing.length||0)>3?"…":""}`}</span></div>
+            <div className={styles.deskQuickActions}>
+              <Link className={styles.previewLink} href={`/ledger/${selected.slug}?ownerPreview=1`} target="_blank" rel="noopener noreferrer">Preview species ↗</Link>
+              <button className="button button-primary" type="submit">Save changes</button>
+            </div>
+          </div>
           <nav className={styles.sectionNav} aria-label="Jump to species record sections"><a href="#ledger-identity">Identity</a><a href="#ledger-profile">Profile</a><a href="#ledger-status">Status</a><a href="#ledger-photo">Photos</a><a href="#ledger-traits">Traits</a><a href="#ledger-care">Care</a><a href="#ledger-notes">Notes</a></nav>
           <fieldset id="ledger-status"><legend>Record control</legend><div className="admin-form-grid three"><label><span>Record type</span><select name="kind" defaultValue={selected.kind}><option value="species">Species record</option><option value="photo-test">Temporary photo test</option></select></label><label><span>Identity status</span><select name="identityStatus" defaultValue={selected.identityStatus}><option value="unassigned">Unassigned</option><option value="provisional">Provisional</option><option value="verified">Verified</option></select></label><label><span>Publication</span><select name="status" defaultValue={selected.archivedAt ? "archived" : selected.status}><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></label></div><div className="admin-form-grid two"><label><span>Catalogue number</span><input name="catalogueNumber" defaultValue={selected.catalogueNumber} /></label><label><span>URL slug</span><input name="slug" defaultValue={selected.slug} /></label></div></fieldset>
           <fieldset id="ledger-identity"><legend>Identity</legend><div className="admin-form-grid two"><label><span>Common name</span><input name="commonName" defaultValue={selected.commonName} placeholder="Leave blank until assigned" /></label><label><span>Scientific name</span><input name="scientificName" defaultValue={selected.scientificName} placeholder="Leave blank until assigned" /></label><label><span>Genus</span><input name="genus" list="ledger-genus-options" defaultValue={selected.genus} placeholder="Select or type confirmed genus" /><datalist id="ledger-genus-options">{[...new Set(records.map(r=>r.genus).filter(Boolean))].sort().map(genus=><option key={genus} value={genus}/>)}</datalist><small>Suggestions from your existing records. Verify scientific identification before selecting.</small></label><label><span>Species</span><input name="species" defaultValue={selected.species} /></label><label><span>Morph or variety</span><input name="morph" defaultValue={selected.morph} /></label></div></fieldset>
