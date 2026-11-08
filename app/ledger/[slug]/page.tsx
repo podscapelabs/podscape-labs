@@ -65,6 +65,7 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
   const authoredAbout = isPlaceholder(record.about || "") ? "" : record.about || "";
   const about = introText(authoredAbout || summary);
   const feeding = introText(record.feeding || "");
+  const notableTraits = [...new Set((record.notableTraits || []).map(trait => trait.trim()).filter(Boolean))].slice(0, 4);
   let relatedGuides: { slug: string; title: string; summary: string }[] = [];
   try {
     const guides = await getGuideRecords();
@@ -107,6 +108,16 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
               <h2 id="record-about-title">About {displayName}</h2>
             </div>
             <div className={styles.aboutCard}><p>{about}</p></div>
+          </section> : null}
+
+          {notableTraits.length ? <section className={styles.section} aria-labelledby="record-traits-title">
+            <div className={styles.sectionHeading}>
+              <p className={styles.sectionKicker}>Distinguishing features</p>
+              <h2 id="record-traits-title">Notable traits</h2>
+            </div>
+            <div className={styles.traitsCard}>
+              <ul className={styles.traitList}>{notableTraits.map(trait => <li key={trait}>{trait}</li>)}</ul>
+            </div>
           </section> : null}
 
           <section className={styles.section} aria-labelledby="record-care-title">
