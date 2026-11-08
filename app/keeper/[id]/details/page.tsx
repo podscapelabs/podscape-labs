@@ -21,7 +21,7 @@ export default async function ColonyDetails({params}:{params:Promise<{id:string}
   <Breadcrumbs items={[{label:"Manager",href:"/keeper"},{label:enclosure.name,href:"/keeper/"+id},{label:"Settings"}]}/>
   <div className={styles.header}><div><p className={styles.kicker}>PODSCAPE / COLONY SETTINGS</p><h1>{enclosure.name}</h1><p>{species}{enclosure.label?" · "+enclosure.label:""}</p></div><Link className={styles.back} href={"/keeper/scan?bin="+id}>← Back to bin workspace</Link></div>
   <p className={styles.intro}>The bin workspace is for daily care. Use these settings when you need to edit colony information, print a QR label, or adjust a reminder.</p>
-  <details className={styles.section} open><summary><strong>Colony profile & population</strong><span>Edit counts, status and setup</span></summary><div className={styles.sectionBody}><KeeperControls entry={enclosure} showLogForm={false}/></div></details>
+  <details className={styles.section}><summary><strong>Colony profile & population</strong><span>Edit counts, status and setup</span></summary><div className={styles.sectionBody}><KeeperControls entry={enclosure} showLogForm={false}/></div></details>
   <details className={styles.section}><summary><strong>QR label & misting schedule</strong><span>Print labels and manage this device's reminders</span></summary><div className={styles.sectionBody}><KeeperBinTools binId={id} binName={enclosure.name} species={species}/></div></details>
   <div className={styles.links}><Link href={"/keeper/"+id+"/history"}>Complete care history →</Link><Link href="/keeper/schedule">All care schedules →</Link></div>
  </div></main><KeeperMobileNav active="keeper"/></PlatformShell>;
