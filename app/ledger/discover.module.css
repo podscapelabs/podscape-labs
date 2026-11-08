@@ -60,3 +60,46 @@
  .content{padding-top:12px}
  .content :global(nav[aria-label="Leaf Ledger views"]){margin-bottom:12px}
 }
+
+/* The Ledger welcomes keepers with one photographic hero and three clear actions.
+   The catalogue search stays the single source of truth, linked from the hero. */
+.page{padding-top:0}
+.hero{
+ position:relative;
+ isolation:isolate;
+ width:min(1100px,calc(100% - 32px));
+ min-height:280px;
+ margin:18px auto 0;
+ overflow:hidden;
+ border:1px solid color-mix(in srgb,#b9d2ad 28%,transparent);
+ border-radius:24px;
+ background:radial-gradient(circle at 84% 22%,#6f9567 0%,transparent 48%),linear-gradient(110deg,#102d22,#31593c);
+ color:#f8f4e9;
+}
+.heroPhoto{position:absolute;z-index:-2;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 48%}
+.heroShade{position:absolute;z-index:-1;inset:0;background:linear-gradient(90deg,rgba(9,31,23,.95) 0%,rgba(12,36,25,.85) 45%,rgba(14,38,26,.25) 100%)}
+.heroInner{position:relative;width:100%;max-width:720px;padding:35px 36px 31px}
+.heroInner::after{display:none}
+.heroEyebrow{margin:0;color:#d3e3c8;font-size:.63rem;letter-spacing:.14em;font-weight:800}
+.hero h1{margin:9px 0 10px;font:400 clamp(2.9rem,6vw,4.6rem)/.98 var(--display);letter-spacing:-.045em;color:#fff8ec}
+.heroDescription{max-width:43ch;margin:0;color:#edf2e6;font-size:.86rem;line-height:1.48}
+.heroActions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:22px}
+.heroActions a{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:43px;padding:10px 16px;border:1px solid #e2e9d899;border-radius:999px;text-decoration:none;font-size:.72rem;font-weight:800;color:#fbf8ed;background:#153c2b88;white-space:nowrap}
+.heroActions a.heroActionPrimary{background:#f6f1e6;border-color:#f6f1e6;color:#173829}
+.heroActions a:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.content{padding-top:18px}
+#ledger-directory{scroll-margin-top:18px}
+.content :global(.v2-ledger-explorer){scroll-margin-top:16px}
+@media(max-width:720px){
+ .page{padding-top:0}
+ .hero{width:calc(100% - 28px);min-height:0;margin-top:12px;border-radius:20px}
+ .heroPhoto{object-position:62% center}
+ .heroShade{background:linear-gradient(90deg,rgba(9,31,23,.96),rgba(12,36,25,.83) 61%,rgba(14,38,26,.49))}
+ .heroInner{padding:23px 18px 20px}
+ .heroEyebrow{font-size:.54rem}
+ .hero h1{font-size:clamp(2.5rem,10vw,3.15rem);margin:7px 0 8px}
+ .heroDescription{max-width:30ch;font-size:.76rem;line-height:1.4}
+ .heroActions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:18px}
+ .heroActions a{min-width:0;min-height:44px;padding:9px 5px;font-size:clamp(.57rem,2.35vw,.71rem);text-align:center;white-space:normal;line-height:1.15}
+ .content{padding-top:15px}
+}
