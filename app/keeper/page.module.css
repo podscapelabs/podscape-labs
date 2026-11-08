@@ -463,3 +463,17 @@
  .managerWorkspace .managerHomeShortcuts>button{min-width:0;width:100%;min-height:74px;padding:7px 2px;font-size:clamp(.55rem,2.15vw,.66rem)}
  .managerWorkspace .managerHomeShortcuts>button span:last-child{font-size:inherit;line-height:1.14}
 }
+
+/* Manager mobile refinement: reduce dead space, preserve actionable overview. */
+@media(max-width:720px){
+ .managerWorkspace [data-workspace-block="hero"] + [data-workspace-block="tools"] .section{margin-top:9px}
+ .managerWorkspace [data-workspace-block="hero"] + [data-workspace-block="tools"] .section header{margin-bottom:8px}
+ .managerWorkspace .managerHero{margin-bottom:0}
+ .managerWorkspace .managerModule[aria-label="Care overview"]{margin-top:12px;padding:14px 13px}
+ .managerModule[aria-label="Care overview"] header{margin-bottom:9px}
+ .managerModule[aria-label="Care overview"] .managerPulse{gap:7px}
+ .managerModule[aria-label="Care overview"] .managerPulse>div{padding:9px 10px;gap:2px}
+ .managerModule[aria-label="Care overview"] .managerPulse strong{font-size:1.28rem}
+ .managerModule[aria-label="Care overview"] .managerModuleEmpty{margin:9px 0 2px;font-size:.72rem;line-height:1.4}
+ .managerModule[aria-label="Care overview"] .managerModuleFine{margin-top:10px;padding-top:9px;border-top:1px solid var(--border);font-size:.61rem;line-height:1.35}
+}
