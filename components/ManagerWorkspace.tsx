@@ -124,7 +124,8 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
  const reorder=(from:Section,to:Section)=>update({...layout,order:dropBlock(layout.order,from,to)});
  const visible=layout.order.filter(id=>layout.visible.includes(id));
  const matching=query.trim().toLocaleLowerCase();
- const searchResults=matching?bins.filter(bin=>[bin.name,bin.label,bin.species,bin.status].some(value=>value?.toLocaleLowerCase().includes(matching))).slice(0,8):[];
+ const matchingBins=matching?bins.filter(bin=>[bin.name,bin.label,bin.species,bin.status].some(value=>value?.toLocaleLowerCase().includes(matching))).sort((a,b)=>Date.parse(b.updatedAt)-Date.parse(a.updatedAt)):[];
+ const searchResults=matchingBins.slice(0,8);
  const {dragging,begin,move:dragMove,stop}=useWorkspaceDrag<Section>("manager",visible,reorder);
  const finishCanvas=()=>{stop();editAnchor.current=null;setCanvasEditing(false)};
  const resetToDefault=()=>{if(!window.confirm("Restore the default Manager dashboard? Your colony records will not be affected."))return;stop();update({...initial,order:[...defaults],visible:[...initial.visible],tools:[...initial.tools]});setSlot(null)};
@@ -132,8 +133,8 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
  const sections:Record<Section,ReactNode>={
   hero:<>{hero}
   <section className={styles.managerPrimarySearch} role="search" aria-label="Search your colonies"><div className={styles.managerFinder}>
-    <div className={styles.managerSearchField}><span aria-hidden="true">⌕</span><input id="manager-collection-search" aria-label="Search your collection" type="search" value={query} onChange={event=>setQuery(event.target.value)} placeholder="Find a species, bin or enclosure…" autoComplete="off"/>{query?<button type="button" onClick={()=>setQuery("")} aria-label="Clear collection search">×</button>:null}</div>
-    {matching?<div className={styles.managerSearchResults} role="region" aria-live="polite" aria-label="Matching colonies">{searchResults.length?searchResults.map(bin=><Link key={bin.id} href={`/keeper/${bin.id}`}><strong>{bin.species}</strong><span>{bin.name}{bin.label?" · "+bin.label:""} · {bin.quantity} recorded</span><b aria-hidden="true">→</b></Link>):<p>No colonies match “{query}”. <Link href="/keeper/collection">Browse all colonies →</Link></p>}</div>:null}
+    <div className={styles.managerSearchField}><span aria-hidden="true">⌕</span><input id="manager-collection-search" aria-label="Search your collection" type="search" enterKeyHint="search" value={query} onChange={event=>setQuery(event.target.value)} onKeyDown={event=>{if(event.key==="Escape"){setQuery("");event.currentTarget.blur()}else if(event.key==="Enter"&&searchResults.length){event.preventDefault();router.push("/keeper/"+searchResults[0].id)}}} placeholder="Find a species, bin or enclosure…" autoComplete="off"/>{query?<button type="button" onClick={()=>setQuery("")} aria-label="Clear collection search">×</button>:null}</div>
+    {matching?<div className={styles.managerSearchResults} role="region" aria-live="polite" aria-label="Matching colonies">{searchResults.length?<p className={styles.managerSearchCount}>{matchingBins.length} matching {matchingBins.length===1?"colony":"colonies"}{matchingBins.length>8?" · Showing 8 most recently updated":""}</p>:null}{searchResults.length?searchResults.map(bin=><Link key={bin.id} href={`/keeper/${bin.id}`}><strong>{bin.species}</strong><span>{bin.name}{bin.label?" · "+bin.label:""} · {bin.quantity} recorded</span><b aria-hidden="true">→</b></Link>):<p>No colonies match “{query}”. <Link href="/keeper/collection">Browse all colonies →</Link></p>}</div>:null}
   </div></section>
   </>,
   stats,
