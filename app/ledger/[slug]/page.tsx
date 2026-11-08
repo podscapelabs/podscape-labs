@@ -111,7 +111,6 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
               <div className={styles.moistureTrack} aria-hidden="true">{moisturePositions.map((item,index)=><span key={item} className={index===moistureIndex?styles.moistureSelected:""}/>)}</div>
               <div className={styles.moistureEnds}><span>Drier</span><span>Moister</span></div>
             </div> : legacyMoisturePending ? <p className={styles.moisturePending}>Moisture tendency awaiting review.</p> : null}
-            {feeding ? <div className={styles.feedingPreview}><strong>Feeding</strong><p>{feeding}</p></div> : null}
             {!quickFacts.length&&!moisturePosition&&!about&&!feeding ? <p className={styles.empty}>Species information is being prepared.</p> : null}
           </section>
 
@@ -123,16 +122,15 @@ export default async function SpeciesPage({ params }: { params: Promise<{ slug: 
               : null}
           </div>
 
-          {(quickFacts.some(fact=>Boolean(fact.note?.trim()))||record.moistureNote?.trim()||record.substrate?.trim()||relatedGuides.length>0) ? <details className={styles.moreDetails}>
-            <summary>More species details <span>Care context &amp; guides</span></summary>
+          <details className={styles.moreDetails}>
+            <summary>More details <span>Feeding, habitat &amp; guides</span></summary>
             <div className={styles.detailContents}>
-              {quickFacts.filter(fact=>Boolean(fact.note?.trim())).map(fact=><div className={styles.detailItem} key={fact.label}><strong>{fact.label}</strong><p>{fact.note}</p></div>)}
-              {record.moistureNote?.trim() ? <div className={styles.detailItem}><strong>Moisture context</strong><p>{record.moistureNote}</p></div> : null}
-              {moisturePosition ? <p className={styles.detailDisclaimer}>Moisture tendency is a broad captive-care reference, not a humidity percentage or an instruction to keep an enclosure entirely dry.</p> : null}
-              {record.substrate?.trim() ? <div className={styles.detailItem}><strong>Substrate</strong><p>{introText(record.substrate)}</p></div> : null}
+              {feeding ? <div className={styles.detailItem}><strong>Feeding overview</strong><p>{feeding}</p></div> : null}
+              {record.substrate?.trim() ? <div className={styles.detailItem}><strong>Substrate overview</strong><p>{introText(record.substrate)}</p></div> : null}
               {relatedGuides.length ? <div className={styles.relatedGuides}>{relatedGuides.map(guide=><Link href={`/field-guide/${guide.slug}`} key={guide.slug}><span><strong>{guide.title}</strong>{guide.summary?<small>{guide.summary}</small>:null}</span><b aria-hidden="true">→</b></Link>)}</div> : null}
+              <p className={styles.detailDisclaimer}>This snapshot describes general tendencies, not exact husbandry requirements. Moisture indicates a relative preference along a gradient, not a target humidity percentage. Research individual species and consult keeper guides for specific care.</p>
             </div>
-          </details> : null}
+          </details>
           <nav className={styles.compactFooter} aria-label="Explore more">
             <Link href="/field-guide?topic=Species#all-guides">Explore species guides →</Link>
             <Link href="/ledger">← All species</Link>
