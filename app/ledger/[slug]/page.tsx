@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CollectionButton } from "@/components/CollectionButton";
 import { SpeciesDashboardWorkspace } from "@/components/SpeciesDashboardWorkspace";
+import {MoistureAndHumidityWidget,BreedingDevelopmentWidget,TaxonomyOriginWidget,FeedingEcologyWidget,HabitatSetupWidget,ResearchSourcesWidget} from "@/components/SpeciesResearchWidgets";
 import { PinToHome } from "@/components/PinToHome";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import { PlatformShell } from "@/components/PlatformShell";
@@ -154,7 +155,13 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
             feeding: feeding ? <section className={styles.speciesInfoCard}><h2>Feeding overview</h2><p>{feeding}</p></section> : null,
             habitat: record.substrate?.trim() ? <section className={styles.speciesInfoCard}><h2>Habitat &amp; substrate</h2><p>{introText(record.substrate)}</p></section> : null,
             traits: notableTraits.length ? <section className={styles.speciesInfoCard}><h2>Notable traits</h2><ul className={styles.compactTraits}>{notableTraits.map(trait=><li key={trait}>{trait}</li>)}</ul></section> : null,
-            guides: relatedGuides.length ? <section className={styles.speciesInfoCard}><h2>Related Field Guides</h2><div className={styles.relatedGuides}>{relatedGuides.map(guide=><Link href={`/field-guide/${guide.slug}`} key={guide.slug}><span><strong>{guide.title}</strong>{guide.summary?<small>{guide.summary}</small>:null}</span><b aria-hidden="true">→</b></Link>)}</div></section> : null
+            guides: relatedGuides.length ? <section className={styles.speciesInfoCard}><h2>Related Field Guides</h2><div className={styles.relatedGuides}>{relatedGuides.map(guide=><Link href={`/field-guide/${guide.slug}`} key={guide.slug}><span><strong>{guide.title}</strong>{guide.summary?<small>{guide.summary}</small>:null}</span><b aria-hidden="true">→</b></Link>)}</div></section> : null,
+            environment: <MoistureAndHumidityWidget record={record}/>,
+            breeding: <BreedingDevelopmentWidget record={record}/>,
+            taxonomy: <TaxonomyOriginWidget record={record}/>,
+            nutrition: <FeedingEcologyWidget record={record}/>,
+            habitatAdvanced: <HabitatSetupWidget record={record}/>,
+            sources: <ResearchSourcesWidget record={record}/>
           }} />
 
           <details className={styles.dashboardExplore}>
