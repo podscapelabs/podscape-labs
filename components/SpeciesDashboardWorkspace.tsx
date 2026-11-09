@@ -6,19 +6,19 @@ import {moveBlock,dropBlock,uniqueAllowed} from "./workspace-layout";
 import homeStyles from "./PodscapeHome.module.css";
 import styles from "./SpeciesProfile.module.css";
 
-export const speciesWidgetIds=["care","moisture","about","advanced","feeding","habitat","traits","guides","environment","breeding","taxonomy","nutrition","habitatAdvanced","sources","personal","navigation"] as const;
+export const speciesWidgetIds=["care","moisture","about","feeding","habitat","traits","guides","environment","breeding","taxonomy","nutrition","behaviour","habitatAdvanced","sources","personal","navigation"] as const;
 export type SpeciesWidgetId=(typeof speciesWidgetIds)[number];
 export const speciesWidgetLabels:Record<SpeciesWidgetId,string>={
- about:"Species overview",care:"Basic Care & Behaviour",moisture:"Moisture preference",advanced:"Advanced Care",
+ about:"Species overview",care:"Basic Care & Behaviour",moisture:"Moisture preference",
  feeding:"Feeding overview",habitat:"Habitat & substrate",traits:"Notable traits",guides:"Related Field Guides",
- environment:"Moisture & Humidity",breeding:"Breeding & Development",taxonomy:"Taxonomy & Origin",nutrition:"Feeding & Ecology",habitatAdvanced:"Habitat & Setup",sources:"Research & Sources",personal:"My Species Tools",navigation:"Explore Species"
+ environment:"Moisture & Humidity",breeding:"Breeding & Development",taxonomy:"Taxonomy & Origin",nutrition:"Feeding & Ecology",habitatAdvanced:"Habitat & Setup",behaviour:"Behaviour & Ecology",sources:"Research & Sources",personal:"My Species Tools",navigation:"Explore Species"
 };
 const descriptions:Record<SpeciesWidgetId,string>={
- about:"A short introduction to the species",care:"Essential care, activity and breeding at a glance",advanced:"Feeding and substrate details when you want more depth",
+ about:"A short introduction to the species",care:"Essential care, activity and breeding at a glance",
  moisture:"Its relative dry-to-moist tendency",feeding:"General feeding information",habitat:"Substrate and habitat notes",
  traits:"Distinctive characteristics",guides:"Supporting species-specific guides",
  environment:"Relative humidity, moist-zone coverage and moist-refuge substrate",breeding:"Brood measurements, reproduction and maturity",
- taxonomy:"Identification, scientific names, origins and morphology",nutrition:"Diet, supplements and feeding cautions",
+ taxonomy:"Identification, scientific names, origins and morphology",nutrition:"Staple diet, supplements and dietary cautions",behaviour:"Defensive behaviour, activity and bioactive suitability",
  habitatAdvanced:"Enclosure setup and natural microhabitat",sources:"Reference links, evidence and review scope",personal:"Collection and pin-to-home shortcuts",navigation:"Related species guides and catalogue navigation"
 };
 const defaultOrder:SpeciesWidgetId[]=[...speciesWidgetIds];
