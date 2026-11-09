@@ -34,6 +34,20 @@ const options:Partial<Record<ImportField,readonly string[]>>={
  activity:["Shy","Moderate","Active","Very Active"],
  reproduction:["Slow","Moderate","Fast","Prolific"]
 };
+export const IMPORT_MAX_CHARACTERS=100000;
+export const IMPORT_RESEARCH_PROMPT=[
+ "PodScape Leaf Ledger — COMPLETE species Quick Import research.",
+ "Research EVERY applicable field listed below; return ONE valid JSON object using exactly these keys and allowed values.",
+ "Research at least 15 relevant, independently checked sources. Prioritize taxonomy databases and peer-reviewed scientific studies, then reputable captive-care literature. Sources must be real, relevant, accessible HTTP(S) URLs, one per line in researchSources; do not invent links or pad with duplicates.",
+ "Separate species-level science from hobby morph observations and breeder recommendations in evidenceNotes. Do not invent exact numerical ranges. Omit genuinely unsupported values; no placeholders, guesses or generic disclaimers inside temperature.",
+ "Temperature format ONLY: 20–26°C (68–79°F) using appropriate researched range and correct conversion, without extra commentary. About should be approximately 40–45 words.",
+ "Use only canonical Notable Traits (up to five); supported dropdowns only: careLevel Beginner/Intermediate/Advanced/Expert; ventilation Low/Moderate/High; activity Shy/Moderate/Active/Very Active; reproduction Slow/Moderate/Fast/Prolific.",
+ "moistureRangeStart/moistureRangeEnd are each integers 1–5; moistRefugeCondition is Lightly damp/Moist/Very moist; evidenceScope is species-level/morph-specific/mixed; evidenceQuality is scientific/breeder-consensus/limited.",
+ "Output valid JSON without markdown fences. Do not abbreviate text mid-word, truncate any source URL or place research essays into quick-glance fields.",
+ "Exact field names and maximum lengths (characters):",
+ ...IMPORT_FIELDS.map(([key,label,limit])=>key+" — "+label+" — max "+limit),
+ "Skip record identity verification, photos, publication status, slug and catalogue ID. Imported values are reviewed before saving."
+].join("\n");
 export const IMPORT_TEMPLATE=JSON.stringify({
  commonName:"",scientificName:"",genus:"",species:"",morph:"",
  about:"",careLevel:"",temperature:"",ventilation:"",
@@ -46,7 +60,7 @@ export const IMPORT_TEMPLATE=JSON.stringify({
 /** Treat all imported values as untrusted, even when they came from an assistant. */
 export function parseSpeciesImport(source:string):ParsedImport{
  const warnings:string[]=[];
- if(source.length>30000)return {values:{},warnings,error:"Import is too large (maximum 30,000 characters)."};
+ if(source.length>IMPORT_MAX_CHARACTERS)return {values:{},warnings,error:"Import exceeds the "+IMPORT_MAX_CHARACTERS.toLocaleString("en-CA")+" character limit. No fields were applied."};
  let decoded:unknown;
  try{
   let trimmed=source.trim();
@@ -59,6 +73,7 @@ export function parseSpeciesImport(source:string):ParsedImport{
  const input=decoded as Record<string,unknown>;
  const values:Partial<Record<ImportField,string>>={};
  const accepted=new Set<string>(IMPORT_FIELDS.map(row=>row[0]));
+ const rejected:string[]=[];
  for(const [field,label,limit] of IMPORT_FIELDS){
   const raw=input[field];
   if(raw===undefined||raw===null||raw==="")continue;
@@ -74,10 +89,12 @@ export function parseSpeciesImport(source:string):ParsedImport{
    if(!items.every(item=>typeof item==="string")){warnings.push(label+": all items must be text.");continue;}
    const cleaned=items.map((item:string)=>item.trim()).filter(Boolean);
    if(field==="notableTraits"){
-    if(cleaned.length>5)warnings.push("Notable traits: limited to the first five entries.");
+    if(cleaned.length>5){rejected.push("Notable traits: provide no more than five; none were imported.");continue;}
     values[field]=[...new Set(cleaned.map((item:string)=>normalizeSpeciesTrait(item)))].slice(0,5).join("\n");
    }else{
-    values[field]=cleaned.join("\n").slice(0,limit);
+    const joined=cleaned.join("\n");
+    if(joined.length>limit){rejected.push(label+": "+joined.length+" characters exceeds "+limit+"; no text was truncated.");continue;}
+    values[field]=joined;
    }
    continue;
   }
@@ -88,12 +105,12 @@ export function parseSpeciesImport(source:string):ParsedImport{
   }else if(typeof raw!=="string"){warnings.push(label+": expected text; skipped.");continue;}
   const clean=String(raw).trim();
   if(!clean)continue;
-  if(clean.length>limit)warnings.push(label+": truncated to "+limit+" characters.");
+  if(clean.length>limit){rejected.push(label+": "+clean.length+" characters exceeds "+limit+"; no text was truncated.");continue;}
   const researchError=validateSpeciesResearchField(field,clean);
   if(researchError){warnings.push(label+": "+researchError);continue;}
   const choices=options[field];
   if(choices&&!choices.includes(clean)){warnings.push(label+": unsupported choice “"+clean+"”; skipped.");continue;}
-  values[field]=clean.slice(0,limit);
+  values[field]=clean;
  }
  const start=values.moistureRangeStart,end=values.moistureRangeEnd;
  if(Boolean(start)!==Boolean(end)||(start&&end&&Number(start)>Number(end))){
@@ -110,5 +127,5 @@ export function parseSpeciesImport(source:string):ParsedImport{
  }
  const unknown=Object.keys(input).filter(key=>!accepted.has(key));
  if(unknown.length)warnings.push("Ignored unsupported keys: "+unknown.slice(0,10).join(", ")+(unknown.length>10?"…":"")+".");
- return {values,warnings,error:Object.keys(values).length===0?"No supported, nonempty fields were found.":null};
+ return {values,warnings:[...rejected,...warnings],error:rejected.length?"Import blocked: "+rejected.length+" field(s) exceed their supported limits or trait capacity. Fix the listed fields and paste again; nothing will be applied.":Object.keys(values).length===0?"No supported, nonempty fields were found.":null};
 }
