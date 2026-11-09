@@ -1,24 +1,24 @@
 # Leaf Ledger V1 — canonical field ownership and forward-compatibility
 
 ## Principle
-A species fact has **one canonical stored field** and **one detailed home**. It may also appear in Basic Care or the species hero as a short at-a-glance summary. Widgets never copy or persist a second value.
+A species fact has **one canonical stored field** and **one detailed home**. It may also appear in At a Glance or the species hero as a short at-a-glance summary. Widgets never copy or persist a second value.
 
 ## Current research fact owners
 
 | Canonical owner | Fields |
 | --- | --- |
-| Identity & Taxonomy | Common/scientific name, genus, species, morph, taxonomic status, synonyms, native distribution, captive morph origin, identification/lookalikes, adult size, lifespan |
-| Habitat & Setup | Natural microhabitat, substrate composition (existing overview field, rendered in Habitat & Setup), substrate depth, enclosure setup guidance |
+| Origins & Identity | Common/scientific name, genus, species, morph, taxonomic status, synonyms, native distribution, captive morph origin, identification/lookalikes |
+| Habitat & Setup | Ventilation, natural microhabitat, substrate composition, substrate depth, enclosure setup guidance, bioactive suitability |
 | Moisture & Humidity | Broad moisture tendency / reviewed ordinal substrate gradient, RH bounds, moist-area floor coverage, moist refuge dampness, moisture gradient guidance |
 | Feeding & Nutrition | Staple diet, protein guidance, calcium guidance, dietary cautions, legacy feeding overview only as fallback when structured nutrition has not yet been reviewed |
-| Behaviour & Ecology | Defensive behaviour, activity & visibility notes, bioactive suitability |
-| Breeding & Development | Brood average and observed range, brooding duration, maturity age, breeding season |
+| Species Characteristics | Adult size, lifespan, defensive behaviour, activity & visibility notes |
+| Breeding & Growth | Brood average and observed range, brooding duration, maturity age, breeding season |
 | Research & Sources | Original source URLs, evidence scope, quality basis, claim-to-source notes, last reviewed |
 | Notable Traits | Up to five characteristics identified by stable canonical trait IDs for future comparisons |
-| Basic Care & Behaviour | Care level, preferred temperature, ventilation, activity classification, reproduction classification; lightweight overview, not a second detailed description |
+| At a Glance | Care level, preferred temperature, activity classification, reproduction classification; lightweight overview, not a second detailed description |
 | Species About | One concise original narrative about the specimen; never a second care guide |
 
-**Deliberate at-a-glance overlap:** Reproduction/activity labels may be summarized in Basic Care and species-specific traits may be visible in hero chips. These share source fields. Breeding details do not repeat the reproduction label; taxonomy does not repeat natural microhabitat; habitat does not repeat the moisture guidance; nutrition does not repeat defensive behaviour. The old aggregate Advanced Care widget is retired. The old standalone Feeding and Habitat widgets are shown only when their structured specialist equivalents are unavailable; existing source text is not erased.
+**Deliberate at-a-glance overlap:** Reproduction/activity labels may be summarized in At a Glance and species-specific traits may be visible in hero chips. These share source fields. Breeding details do not repeat the reproduction label; taxonomy does not repeat natural microhabitat; habitat does not repeat the moisture guidance; nutrition does not repeat defensive behaviour. Notable Traits remain distinct as curated comparison tags; a tag may resemble a Characteristics value but must not create a second factual value. The old aggregate Advanced Care widget is retired. The old standalone Feeding and Habitat widgets are retired; their existing source text is shown by Feeding & Nutrition and Habitat & Setup, respectively.
 
 ## Deprecated fields and migration
 
