@@ -24,19 +24,22 @@ function validProof(mode:string,puzzle:unknown,proof:unknown):boolean{
  }
  if(mode==="connections"){
   const groups=(puzzle as ConnectionsPuzzle).groups;
-  return Array.isArray(data.solved)&&data.solved.length===groups.length&&
-   data.solved.every(x=>typeof x==="string")&&
-   new Set(data.solved).size===groups.length&&groups.every(g=>data.solved.includes(g.label));
+  const solved=data.solved;
+  return Array.isArray(solved)&&solved.length===groups.length&&
+   solved.every(x=>typeof x==="string")&&new Set(solved).size===groups.length&&
+   groups.every(g=>solved.includes(g.label));
  }
  if(mode==="crossword"){
   const clues=(puzzle as CrosswordPuzzle).clues;
-  return Array.isArray(data.answers)&&data.answers.length===clues.length&&
-   clues.every((c,i)=>data.answers[i]===c.answer);
+  const answers=data.answers;
+  return Array.isArray(answers)&&answers.length===clues.length&&
+   clues.every((c,i)=>answers[i]===c.answer);
  }
  if(mode==="search"){
   const words=(puzzle as SearchPuzzle).words;
-  return Array.isArray(data.words)&&data.words.length===words.length&&
-   new Set(data.words).size===words.length&&words.every(w=>data.words.includes(w));
+  const submitted=data.words;
+  return Array.isArray(submitted)&&submitted.length===words.length&&
+   new Set(submitted).size===words.length&&words.every(w=>submitted.includes(w));
  }
  return false;
 }
