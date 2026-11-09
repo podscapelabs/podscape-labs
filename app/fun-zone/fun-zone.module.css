@@ -61,3 +61,7 @@
  .library{margin-top:22px}
  .library>div:first-child{margin-bottom:12px}
 }
+
+/* A glanceable completion count on every game portal card. */
+.gameProgress{display:block;margin:0 0 8px;color:var(--accent);font-size:11px;line-height:1.45;font-weight:800}
+@media(max-width:680px){.gameProgress{font-size:10px}}
