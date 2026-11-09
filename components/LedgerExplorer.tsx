@@ -30,6 +30,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
   const [sort, setSort] = useState<SortMode>(mode === "collection" ? "recent" : "catalogue");
   const deferredQuery = useDeferredValue(query.trim().toLowerCase());
   const restoredRef=useRef(mode!=="catalogue");
+  const [scrollRestored,setScrollRestored]=useState(mode!=="catalogue");
   const pendingScrollRef=useRef<number|null>(null);
   const hydratedRef=useRef(false);
   const [restorationReady,setRestorationReady]=useState(false);
@@ -51,7 +52,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
     hydratedRef.current=true;
     setRestorationReady(true);
     // Preserve the scroll position until the restored filters have rendered.
-    if(pendingScrollRef.current===null)restoredRef.current=true;
+    if(pendingScrollRef.current===null){restoredRef.current=true;setScrollRestored(true);}
   },[mode,records]);
   const genera = useMemo(() => [...new Set(records.map((record) => record.genus).filter(Boolean))].sort(), [records]);
   const careLevels = useMemo(() => [...new Set(records.map((record) => record.careLevel).filter(Boolean))].sort(), [records]);
@@ -80,15 +81,24 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
     }catch{}
   };
   useEffect(()=>{
-    if(mode!=="catalogue"||!hydratedRef.current||!restoredRef.current)return;
+    if(mode!=="catalogue"||!restorationReady||!scrollRestored)return;
+    let pendingFrame:number|null=null;
     const save=()=>{
       try{sessionStorage.setItem(LEDGER_EXPLORER_STATE_KEY,JSON.stringify({query,genus,care,sort,filtersOpen,scrollY:window.scrollY} satisfies LedgerExplorerSnapshot));}catch{}
     };
-    window.addEventListener("scroll",save,{passive:true});
+    const queueSave=()=>{
+      if(pendingFrame!==null)return;
+      pendingFrame=requestAnimationFrame(()=>{pendingFrame=null;save()});
+    };
+    window.addEventListener("scroll",queueSave,{passive:true});
     window.addEventListener("pagehide",save);
     save();
-    return ()=>{window.removeEventListener("scroll",save);window.removeEventListener("pagehide",save)};
-  },[mode,query,genus,care,sort,filtersOpen]);
+    return ()=>{
+      window.removeEventListener("scroll",queueSave);
+      window.removeEventListener("pagehide",save);
+      if(pendingFrame!==null)cancelAnimationFrame(pendingFrame);
+    };
+  },[mode,query,genus,care,sort,filtersOpen,restorationReady,scrollRestored]);
   useEffect(()=>{
     if(mode!=="catalogue"||!restorationReady||restoredRef.current||deferredQuery!==query.trim().toLowerCase())return;
     let second=0;
@@ -96,6 +106,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
       window.scrollTo({top:pendingScrollRef.current||0,behavior:"instant"});
       pendingScrollRef.current=null;
       restoredRef.current=true;
+      setScrollRestored(true);
     })});
     return ()=>{cancelAnimationFrame(first);cancelAnimationFrame(second)};
   },[mode,deferredQuery,query,results.length,restorationReady]);
