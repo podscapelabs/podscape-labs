@@ -4,17 +4,18 @@ import { useState } from "react";
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import styles from "./progress.module.css";
+import { PodscapeLineIcon, type PodscapeIconName } from "@/components/PodscapeLineIcon";
 
 type Achievement = {
   key: string; title: string; description: string; exp: number; coins: number; icon: string; href: string;
   unlockedAt?: string | null; status: "available" | "planned"; hidden?:boolean;
 };
 
-const activities = [
-  { icon: "❧", title: "Explore the Ledger", description: "Discover new species", href: "/ledger" },
-  { icon: "☷", title: "Read a Guide", description: "Learn care essentials", href: "/field-guide" },
-  { icon: "✧", title: "Creative Network", description: "Meet artists and makers", href: "/creative-network" },
-  { icon: "☑", title: "Update Your Colonies", description: "Keep your care notes", href: "/keeper" },
+const activities: { icon: PodscapeIconName; title: string; description: string; href: string }[] = [
+  { icon: "leaf", title: "Explore the Ledger", description: "Discover new species", href: "/ledger" },
+  { icon: "book", title: "Read a Guide", description: "Learn care essentials", href: "/field-guide" },
+  { icon: "community", title: "Meet the Community", description: "Connect with keepers and makers", href: "/community" },
+  { icon: "manager", title: "Update Your Colonies", description: "Keep your care notes", href: "/keeper" },
 ];
 
 export default function ProgressDashboard({
@@ -37,26 +38,26 @@ export default function ProgressDashboard({
     <header className={styles.hero}>
       <div className={styles.heroText}><span className={styles.eyebrow}>PodScape Labs / Member Progress</span>
         <h1>My Progress</h1><p>Explore, learn, care, and connect. Every step adds to your journey.</p></div>
-      <div className={styles.botanical} aria-hidden="true"><span>❧</span><span>✧</span><span>❧</span></div>
+      
     </header>
 
     <section className={styles.journey} aria-label="Your progression">
       <div className={styles.levelSeal} style={{ "--pct": percent + "%" } as CSSProperties}>
-        <div className={styles.sealInside}><small>Level</small><strong>{level}</strong><span aria-hidden="true">❧</span></div>
+        <div className={styles.sealInside}><small>Level</small><strong>{level}</strong><span aria-hidden="true"><PodscapeLineIcon name="achievement" /></span></div>
       </div>
       <div className={styles.journeyInfo}>
         <div className={styles.journeyTop}><strong>Journey to Level {level + 1}</strong><span>{(exp - levelStart).toLocaleString("en-CA")} / {(levelEnd - levelStart).toLocaleString("en-CA")} EXP</span></div>
         <div className={styles.progressTrack} role="progressbar" aria-label="Progress toward next level" aria-valuemin={levelStart} aria-valuemax={levelEnd} aria-valuenow={exp}><span style={{width:percent+"%"}} /></div>
         <div className={styles.currencyGrid}>
-          <div><span className={styles.currencyIcon} aria-hidden="true">❧</span><div><strong>{exp.toLocaleString("en-CA")}</strong><small>Lifetime EXP</small></div></div>
-          <div><span className={styles.currencyIcon} aria-hidden="true">◉</span><div><strong>{coins.toLocaleString("en-CA")}</strong><small>Pod Coins</small></div></div>
+          <div><span className={styles.currencyIcon} aria-hidden="true"><PodscapeLineIcon name="achievement" /></span><div><strong>{exp.toLocaleString("en-CA")}</strong><small>Lifetime EXP</small></div></div>
+          <div><span className={styles.currencyIcon} aria-hidden="true"><PodscapeLineIcon name="shop" /></span><div><strong>{coins.toLocaleString("en-CA")}</strong><small>Pod Coins</small></div></div>
         </div>
       </div>
     </section>
 
     <nav className={styles.sectionsNav} aria-label="Progress sections">
-      {([["achievements","❧","Achievements"],["explore","◇","Explore"],["stats","▥","Stats"]] as const).map(([key,icon,label]) =>
-        <button key={key} type="button" aria-current={view === key ? "page" : undefined} onClick={() => setView(key)}><span aria-hidden="true">{icon}</span>{label}</button>
+      {([["achievements","achievement","Achievements"],["explore","leaf","Explore"],["stats","grid","Stats"]] as const).map(([key,icon,label]) =>
+        <button key={key} type="button" aria-current={view === key ? "page" : undefined} onClick={() => setView(key)}><span aria-hidden="true"><PodscapeLineIcon name={icon} /></span>{label}</button>
       )}
     </nav>
 
@@ -83,7 +84,7 @@ export default function ProgressDashboard({
       <p className={styles.caption}>Early-access achievements unlock automatically from verified species discoveries, collection entries, completed tutorials, customization milestones, and Fun Zone challenges. Each eligible milestone pays EXP once; puzzle milestones do not award Pod Coins.</p>
     </section> : null}
 
-    {view === "explore" ? <section className={styles.explore} aria-labelledby="explore-title"><div className={styles.sectionHeading}><h2 id="explore-title">Explore PodScape</h2><span>Find something new</span></div><p className={styles.caption}>These are suggested destinations, not EXP-earning quests yet.</p><div className={styles.exploreGrid}>{activities.map(a=><Link href={a.href} className={styles.exploreTile} key={a.href}><span className={styles.exploreIcon} aria-hidden="true">{a.icon}</span><strong>{a.title}</strong><small>{a.description}</small><span className={styles.exploreArrow} aria-hidden="true">↗</span></Link>)}</div></section> : null}
+    {view === "explore" ? <section className={styles.explore} aria-labelledby="explore-title"><div className={styles.sectionHeading}><h2 id="explore-title">Explore PodScape</h2><span>Find something new</span></div><p className={styles.caption}>These are suggested destinations, not EXP-earning quests yet.</p><div className={styles.exploreGrid}>{activities.map(a=><Link href={a.href} className={styles.exploreTile} key={a.href}><span className={styles.exploreIcon} aria-hidden="true"><PodscapeLineIcon name={a.icon} /></span><strong>{a.title}</strong><small>{a.description}</small><span className={styles.exploreArrow} aria-hidden="true">↗</span></Link>)}</div></section> : null}
 
     {view === "stats" ? <section className={styles.stats} aria-labelledby="stats-title"><div className={styles.sectionHeading}><h2 id="stats-title">Your Journey</h2><span>Member overview</span></div><div className={styles.statsGrid}><div><small>Current level</small><strong>{level}</strong></div><div><small>Lifetime EXP</small><strong>{exp.toLocaleString("en-CA")}</strong></div><div><small>Pod Coins</small><strong>{coins.toLocaleString("en-CA")}</strong></div><div><small>Recorded achievements</small><strong>{error ? "—" : unlockedCount}</strong></div><div><small>Species discovered</small><strong>{discoveries}</strong></div><div><small>Species collected</small><strong>{collectionSpecies}</strong></div><div><small>Fun Zone puzzles</small><strong>{puzzleCompletions===null?"—":`${puzzleCompletions} / 32`}</strong></div></div><p className={styles.caption}>EXP is permanent. Pod Coin redemption and additional reward milestones are still being developed.</p></section> : null}
 
