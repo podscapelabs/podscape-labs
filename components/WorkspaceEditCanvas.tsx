@@ -12,7 +12,7 @@ function clearDropPreview(scope:string){
 }
 function animatedReorder(scope:string,change:()=>void){
  const nodes=workspaceNodes(scope);
- const before=new Map(nodes.map(node=>[node,node.getBoundingClientRect().top]));
+ const before=new Map(nodes.map(node=>[node,node.getBoundingClientRect()]));
  change();
  requestAnimationFrame(()=>{
   if(window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
@@ -20,10 +20,11 @@ function animatedReorder(scope:string,change:()=>void){
    if(!node.isConnected)continue;
    const previous=before.get(node);
    if(previous===undefined)continue;
-   const delta=previous-node.getBoundingClientRect().top;
-   if(Math.abs(delta)<3)continue;
+   const next=node.getBoundingClientRect();
+   const dx=previous.left-next.left,dy=previous.top-next.top;
+   if(Math.abs(dx)<3&&Math.abs(dy)<3)continue;
    // FLIP animation: layout has already changed; settle neighbouring cards into place.
-   node.animate([{transform:`translate3d(0,${delta}px,0)`},{transform:"translate3d(0,0,0)"}],
+   node.animate([{transform:`translate3d(${dx}px,${dy}px,0)`},{transform:"translate3d(0,0,0)"}],
     {duration:220,easing:"cubic-bezier(.2,.85,.25,1)"});
   }
  });
@@ -31,7 +32,7 @@ function animatedReorder(scope:string,change:()=>void){
 
 type DragState<T extends string>={
  id:T;pointerId:number;startX:number;startY:number;startScrollY:number;
- lastClientY:number;started:boolean;swapAnchorY:number;lastSwapAt:number;
+ lastClientX:number;lastClientY:number;started:boolean;swapAnchorX:number;swapAnchorY:number;lastSwapAt:number;
 };
 export function useWorkspaceDrag<T extends string>(
  scope:string,visible:readonly T[],reorder:(from:T,to:T)=>void
@@ -49,8 +50,17 @@ export function useWorkspaceDrag<T extends string>(
  const trySwap=(drag:DragState<T>)=>{
   const position=drag.lastClientY+(window.scrollY-drag.startScrollY);
   const distance=position-drag.swapAnchorY;
-  const direction=distance>0?1:-1;
-  if(Math.abs(distance)<16){clearDropPreview(scope);return;}
+  const horizontalDistance=drag.lastClientX-drag.swapAnchorX;
+  const orderBefore=visibleRef.current;
+  const currentIndex=orderBefore.indexOf(drag.id);
+  const nodes=workspaceNodes(scope);
+  const moving=nodes.find(node=>node.dataset.workspaceBlock===drag.id);
+  const neighbor=nodes.find(node=>node.dataset.workspaceBlock===orderBefore[currentIndex+(horizontalDistance>0?1:-1)]);
+  const sameRow=Boolean(moving&&neighbor&&Math.abs(moving.getBoundingClientRect().top-neighbor.getBoundingClientRect().top)<20);
+  const horizontal=sameRow&&Math.abs(horizontalDistance)>Math.abs(distance)*1.2;
+  const movement=horizontal?horizontalDistance:distance;
+  const direction=movement>0?1:-1;
+  if(Math.abs(movement)<16){clearDropPreview(scope);return;}
   // Wait for React to settle a swap before reading the next order.
   if(performance.now()-drag.lastSwapAt<125)return;
   const order=visibleRef.current;
@@ -60,8 +70,9 @@ export function useWorkspaceDrag<T extends string>(
   clearDropPreview(scope);
   workspaceNodes(scope).find(node=>node.dataset.workspaceBlock===target)
    ?.setAttribute("data-workspace-drop-preview",direction>0?"after":"before");
-  if(Math.abs(distance)<42)return;
+  if(Math.abs(movement)<42)return;
   drag.swapAnchorY=position;
+  drag.swapAnchorX=drag.lastClientX;
   drag.lastSwapAt=performance.now();
   animatedReorder(scope,()=>reorderRef.current(drag.id,target));
  };
@@ -87,8 +98,8 @@ export function useWorkspaceDrag<T extends string>(
   if(!(event.target as HTMLElement).closest("[data-drag-handle]"))return;
   current.current={
    id,pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,
-   startScrollY:window.scrollY,lastClientY:event.clientY,started:false,
-   swapAnchorY:event.clientY,lastSwapAt:0
+   startScrollY:window.scrollY,lastClientX:event.clientX,lastClientY:event.clientY,started:false,
+   swapAnchorX:event.clientX,swapAnchorY:event.clientY,lastSwapAt:0
   };
   const root=event.currentTarget.closest<HTMLElement>("[data-workspace-root]");
   // Keep capturing on the stationary canvas: the dragged block itself moves.
@@ -97,7 +108,7 @@ export function useWorkspaceDrag<T extends string>(
  const move=(event:PointerEvent<HTMLElement>)=>{
   const drag=current.current;
   if(!drag||drag.pointerId!==event.pointerId)return;
-  drag.lastClientY=event.clientY;
+  drag.lastClientX=event.clientX;drag.lastClientY=event.clientY;
   if(!drag.started){
    if(Math.hypot(event.clientX-drag.startX,event.clientY-drag.startY)<6)return;
    drag.started=true;
