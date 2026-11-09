@@ -56,20 +56,45 @@ for(const gameKey of catalog.gameKeys){
    assert.ok(puzzle.groups.every(g=>g.words.length===4&&g.label.length>3));
    assert.equal(new Set(terms).size,16,"Overlapping Connections groups "+key);
   }else if(mode==="crossword"){
-   const cells=new Map(),vertical=new Set(),horizontal=new Set();
-   puzzle.clues.forEach(c=>{
-    assert.match(c.answer,/^[A-Z]+$/);
-    assert.ok(c.clue.includes("("+c.answer.length+")"),"Missing correct word-length clue "+key);
-    for(let i=0;i<c.answer.length;i++){
-     const r=c.r+(c.dir==="down"?i:0),col=c.c+(c.dir==="across"?i:0);
+   const cells=new Map(),expected=new Set();
+   const membership=new Map();
+   puzzle.clues.forEach((clue,index)=>{
+    assert.match(clue.answer,/^[A-Z]+$/);
+    assert.ok(clue.clue.includes("("+clue.answer.length+")"),"Incorrect clue length "+key);
+    expected.add(clue.dir+":"+clue.r+":"+clue.c+":"+clue.answer);
+    for(let i=0;i<clue.answer.length;i++){
+     const r=clue.r+(clue.dir==="down"?i:0),col=clue.c+(clue.dir==="across"?i:0);
      assert.ok(r>=0&&col>=0&&r<8&&col<13,"Crossword clipping "+key);
      const pos=r+":"+col;
-     if(cells.has(pos))assert.equal(cells.get(pos),c.answer[i],"Crossword mismatch "+key);
-     cells.set(pos,c.answer[i]);
-     (c.dir==="down"?vertical:horizontal).add(pos);
+     if(cells.has(pos))assert.equal(cells.get(pos),clue.answer[i],"Crossword mismatch "+key);
+     cells.set(pos,clue.answer[i]);
+     membership.set(pos,[...(membership.get(pos)||[]),index]);
     }
    });
-   assert.ok([...vertical].some(pos=>horizontal.has(pos)),"Crossword must intersect "+key);
+   const actual=new Set();
+   for(const dir of ["across","down"]){
+    const dr=dir==="down"?1:0,dc=dir==="across"?1:0;
+    for(const pos of cells.keys()){
+     const [r,c]=pos.split(":").map(Number);
+     if(cells.has((r-dr)+":"+(c-dc)))continue;
+     let word="",rr=r,cc=c;
+     while(cells.has(rr+":"+cc)){word+=cells.get(rr+":"+cc);rr+=dr;cc+=dc;}
+     if(word.length>=2){
+      const entry=dir+":"+r+":"+c+":"+word;
+      assert.ok(expected.has(entry),"Unclued ghost word "+entry+" in "+key);
+      actual.add(entry);
+     }
+    }
+   }
+   assert.equal(actual.size,puzzle.clues.length,"Every crossword answer must be a full clued run "+key);
+   const connected=new Set([0]);
+   while(true){
+    const prior=connected.size;
+    for(const indices of membership.values())if(indices.some(i=>connected.has(i)))
+     indices.forEach(i=>connected.add(i));
+    if(prior===connected.size)break;
+   }
+   assert.equal(connected.size,puzzle.clues.length,"Crossword must be one connected grid "+key);
   }else if(mode==="search"){
    assert.equal(puzzle.words.length,8);
    assert.equal(new Set(puzzle.words).size,8);
