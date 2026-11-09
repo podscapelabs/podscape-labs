@@ -16,3 +16,11 @@
 .errorText{border-left:3px solid var(--clay);padding:9px 12px;background:var(--surface-secondary);color:var(--text-primary);font-size:12px;line-height:1.4}
 .playArea button:focus-visible,.playArea input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 @media(max-width:480px){.letterKeyboard span{font-size:10px;min-height:29px}.playArea .actions button{min-height:44px}}
+
+
+.quizReview{margin:16px 0 20px;text-align:left;display:grid;gap:10px}
+.quizReview h3{font-size:15px;margin:0}
+.quizReview>div{padding:13px;border:1px solid var(--border);border-radius:10px;background:var(--surface-secondary)}
+.quizReview strong{display:block;font-size:13px;line-height:1.5}
+.quizReview p{margin:7px 0 3px;color:var(--accent);font-weight:750}
+.quizReview small{display:block;font-size:12px;line-height:1.5;color:var(--text-secondary)}
