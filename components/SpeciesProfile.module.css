@@ -350,3 +350,47 @@
  .speciesHomeHero>div:last-child{width:73%;padding:13px 14px}
  .speciesHomeHero h1{font-size:1.9rem}
 }
+
+
+/* Single Leaf Ledger moisture widget: three aligned visual meters and opt-in details. */
+.moistureWidget{gap:0;padding:16px 17px 13px;border-radius:18px}
+.moistureWidget h2{font:550 clamp(1.3rem,4.3vw,1.65rem)/1.17 var(--display);padding-bottom:13px;border-bottom:1px solid var(--border)}
+.moistureMeters{display:grid;gap:0}
+.moistureMeter{display:grid;gap:8px;padding:17px 0 16px}
+.moistureMeter+.moistureMeter{border-top:1px solid var(--border)}
+.moistureMeterHead{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.moistureMeterHead strong{color:var(--text-primary);font-size:.8rem;line-height:1.3;font-weight:740}
+.moistureMeterHead b{color:var(--accent);font-size:.78rem;text-align:right;line-height:1.3;font-weight:750}
+.moistureGradient{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));height:13px;gap:3px}
+.moistureGradient span{position:relative;min-width:0;background:#bda080}
+.moistureGradient span:nth-child(2){background:#cab99a}
+.moistureGradient span:nth-child(3){background:#a9ba9d}
+.moistureGradient span:nth-child(4){background:#79a58f}
+.moistureGradient span:nth-child(5){background:#4f8783}
+.moistureGradient span:first-child{border-radius:999px 2px 2px 999px}
+.moistureGradient span:last-child{border-radius:2px 999px 999px 2px}
+.moistureGradient .moistureZoneActive{outline:2px solid var(--accent);outline-offset:-2px;filter:saturate(1.16);z-index:1}
+.moistureHumidityTrack,.moistureCoverageTrack{position:relative;height:13px;border-radius:999px;background:color-mix(in srgb,var(--accent) 9%,var(--surface-secondary));border:1px solid var(--border)}
+.moistureHumidityTrack{overflow:visible}
+.moistureHumidityFill{position:absolute;inset-block:0;background:#70a896;border-radius:999px;min-width:2px}
+.moistureHumidityTrack i{position:absolute;top:50%;width:3px;height:19px;background:var(--accent);border-radius:2px;transform:translate(-50%,-50%)}
+.moistureCoverageTrack{overflow:hidden}
+.moistureCoverageTrack>span{display:block;height:100%;background:#70a896;border-radius:999px}
+.moistureMeterEnds{display:flex;justify-content:space-between;gap:10px;color:var(--text-secondary);font-size:.66rem;line-height:1.25}
+.moistureDetails{border-top:1px solid var(--border);padding-top:9px}
+.moistureDetails summary{list-style:none;cursor:pointer;color:var(--accent);font-weight:720;font-size:.73rem;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:30px}
+.moistureDetails summary::-webkit-details-marker{display:none}
+.moistureDetails summary:after{content:"⌄";font-size:1.15rem;transition:transform .2s}
+.moistureDetails[open] summary:after{transform:rotate(180deg)}
+.moistureDetails>div{display:grid;gap:7px;padding:7px 0 2px}
+.moistureDetails p{color:var(--text-secondary);font-size:.72rem;line-height:1.48}
+.moistureDetails p strong{color:var(--text-primary)}
+.moistureDetails summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(max-width:600px){
+ .moistureWidget{padding:13px 14px 10px}
+ .moistureWidget h2{padding-bottom:11px}
+ .moistureMeter{gap:7px;padding:14px 0}
+ .moistureMeterHead strong{font-size:.75rem}
+ .moistureMeterHead b{font-size:.73rem}
+ .moistureMeterEnds{font-size:.62rem}
+}
