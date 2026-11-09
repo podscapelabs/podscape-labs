@@ -25,7 +25,7 @@ export default async function EnclosurePage({params,searchParams}:{params:Promis
  const species=await getSpeciesRecords();
  const record=species.find(item=>item.id===enclosure.speciesId);
  return <PlatformShell><main className={styles.page}>
-  <ColonyWorkspace
+  <ColonyWorkspace key={enclosure.id}
    colony={{id:enclosure.id,name:enclosure.name,label:enclosure.label,species:record?speciesDisplayName(record):"Unlinked species",image:record?.image||null,status:enclosure.status,breeding:enclosure.breeding,quantity:enclosure.quantity,archived:enclosure.isArchived,enclosureType:enclosure.enclosureType}}
    scope={user?.id||"guest"}
    initialEvents={events}
