@@ -7,23 +7,67 @@ function Details({title,rows,note}:{title:string;rows:{label:string;value:string
  if(!active.length)return null;
  return <section className={styles.speciesInfoCard}><h2>{title}</h2><dl className={styles.researchFacts}>{active.map(r=><div key={r.label}><dt>{r.label}</dt><dd>{r.value}</dd></div>)}</dl>{note?<p className={styles.researchDisclaimer}>{note}</p>:null}</section>;
 }
-function PercentBar({min,max}:{min:number;max:number}){
- return <div className={styles.researchPercentTrack} role="img" aria-label={min===max?min+" percent":min+" to "+max+" percent"}><span style={{left:min+"%",width:Math.max(max-min,1)+"%"}}/></div>;
+function validPercent(v:string|undefined){
+ if(!v||!/^(?:100|[1-9]?\d)$/.test(v.trim()))return null;
+ return Number(v.trim());
 }
-function validPercent(v:string|undefined){if(!v||!/^(?:100|[1-9]?\d)$/.test(v))return null;return Number(v);}
+const moistureLabels:Record<string,string>={
+ "dry-leaning":"Dry-leaning","dry-balanced":"Dry to balanced",
+ balanced:"Balanced","balanced-moist":"Balanced to moist","moist-leaning":"Moist-leaning"
+};
+const moistureZones=["Drier area","Lightly damp","Moderately damp","Moist","Very moist"];
+/** One visible moisture widget, using existing editorial fields without inferring new values. */
 export function MoistureAndHumidityWidget({record}:{record:SpeciesRecord}){
- const low=validPercent(record.humidityMin),high=validPercent(record.humidityMax),coverage=validPercent(record.moistZoneCoverage);
- const hasHumidity=low!==null&&high!==null&&low<=high;
- const hasCoverage=coverage!==null;
- const refuge=["Lightly damp","Moist","Very moist"].indexOf(record.moistRefugeCondition||"");
- if(!hasHumidity&&!hasCoverage&&refuge<0&&!record.moistureGradientGuidance?.trim())return null;
- return <section className={styles.speciesInfoCard} aria-label="Moisture and humidity">
+ const rawStart=record.moistureRangeStart,rawEnd=record.moistureRangeEnd;
+ const reviewed=typeof rawStart==="number"&&typeof rawEnd==="number"
+  &&Number.isInteger(rawStart)&&Number.isInteger(rawEnd)
+  &&rawStart>=1&&rawStart<=5&&rawEnd>=rawStart&&rawEnd<=5;
+ const profileIndex=["dry-leaning","dry-balanced","balanced","balanced-moist","moist-leaning"].indexOf(record.moistureProfile||"");
+ const hasSubstrate=reviewed||profileIndex>=0;
+ const min=validPercent(record.humidityMin),max=validPercent(record.humidityMax);
+ const hasHumidity=min!==null&&max!==null&&min<=max;
+ const coverage=validPercent(record.moistZoneCoverage);
+ const refuge=record.moistRefugeCondition?.trim()||"";
+ const guidance=record.moistureGradientGuidance?.trim()||"";
+ if(!hasSubstrate&&!hasHumidity&&coverage===null&&!refuge&&!guidance)return null;
+ const start=reviewed?rawStart:profileIndex+1,end=reviewed?rawEnd:profileIndex+1;
+ const substrateLabel=reviewed
+  ? start===end?moistureZones[start-1]:moistureZones[start-1]+" – "+moistureZones[end-1]
+  : moistureLabels[record.moistureProfile||""]||"Not established";
+ return <section className={styles.speciesInfoCard+" "+styles.moistureWidget} aria-label="Moisture and humidity">
   <h2>Moisture &amp; Humidity</h2>
-  {hasHumidity?<div className={styles.researchMeter}><div><strong>Relative humidity (air)</strong><b>{low===high?low:low+"–"+high}% RH</b></div><PercentBar min={low} max={high}/><small>0% RH <span>100% RH</span></small></div>:null}
-  {hasCoverage?<div className={styles.researchMeter}><div><strong>Moist-zone coverage</strong><b>~{coverage}% of enclosure</b></div><div className={styles.researchCoverage} role="img" aria-label={coverage+" percent moist zone and "+(100-coverage)+" percent less-wet area"}><span style={{width:coverage+"%"}}/></div><small>Moist refuge <span>Less-wet area</span></small></div>:null}
-  {refuge>=0?<div className={styles.researchMeter}><div><strong>Moist-refuge substrate</strong><b>{record.moistRefugeCondition}</b></div><div className={styles.researchRefuge} role="img" aria-label={"Moist refuge substrate: "+record.moistRefugeCondition}>{["Lightly damp","Moist","Very moist"].map((label,i)=><span key={label} className={i===refuge?styles.researchRefugeActive:""}/>)}</div><small>Lightly damp <span>Very moist</span></small><p>Describes the moist refuge only—not the entire enclosure. Avoid waterlogging.</p></div>:null}
-  {record.moistureGradientGuidance?.trim()?<p>{record.moistureGradientGuidance}</p>:null}
-  <p className={styles.researchDisclaimer}>RH, moist-zone coverage and substrate moisture describe different conditions. All figures are approximate husbandry recommendations, not measured species preferences.</p>
+  <div className={styles.moistureMeters}>
+   <div className={styles.moistureMeter}>
+    <div className={styles.moistureMeterHead}><strong>Substrate moisture</strong><b>{hasSubstrate?substrateLabel:"Not established"}</b></div>
+    <div className={styles.moistureGradient} role="img" aria-label={hasSubstrate?"Substrate moisture preference: "+substrateLabel:"Substrate moisture preference not established"}>
+     {moistureZones.map((label,index)=><span key={label} className={hasSubstrate&&index+1>=start&&index+1<=end?styles.moistureZoneActive:undefined}/>)}
+    </div>
+    <div className={styles.moistureMeterEnds}><span>Drier area</span><span>Moister refuge</span></div>
+   </div>
+   <div className={styles.moistureMeter}>
+    <div className={styles.moistureMeterHead}><strong>Air humidity</strong><b>{hasHumidity?"~"+(min===max?min:min+"–"+max)+"% RH":"Not established"}</b></div>
+    <div className={styles.moistureHumidityTrack} role="img" aria-label={hasHumidity?"Approximate air humidity range: "+min+" to "+max+" percent relative humidity":"Air humidity range not established"}>
+     {hasHumidity?<span className={styles.moistureHumidityFill} style={{left:min+"%",width:Math.max(max-min,1)+"%"}}/>:null}
+     {hasHumidity?<><i style={{left:min+"%"}}/><i style={{left:max+"%"}}/></>:null}
+    </div>
+    <div className={styles.moistureMeterEnds}><span>0% RH</span><span>100% RH</span></div>
+   </div>
+   <div className={styles.moistureMeter}>
+    <div className={styles.moistureMeterHead}><strong>Moist-area coverage</strong><b>{coverage!==null?"~"+coverage+"% of enclosure":"Not established"}</b></div>
+    <div className={styles.moistureCoverageTrack} role="img" aria-label={coverage!==null?"Approximately "+coverage+" percent of enclosure maintained as a moist area":"Moist-area coverage not established"}>
+     {coverage!==null?<span style={{width:coverage+"%"}}/>:null}
+    </div>
+    <div className={styles.moistureMeterEnds}><span>Less coverage</span><span>More coverage</span></div>
+   </div>
+  </div>
+  {(refuge||guidance)?<details className={styles.moistureDetails}>
+   <summary>Moisture care notes</summary>
+   <div>
+    {refuge?<p><strong>Moist-side dampness:</strong> {refuge}. This describes the moist refuge, not the entire enclosure.</p>:null}
+    {guidance?<p>{guidance}</p>:null}
+    <p>Air humidity, substrate moisture and moist-area coverage are distinct measurements. Avoid waterlogging.</p>
+   </div>
+  </details>:null}
  </section>;
 }
 export function BreedingDevelopmentWidget({record}:{record:SpeciesRecord}){
