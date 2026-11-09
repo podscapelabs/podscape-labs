@@ -8,9 +8,9 @@ A species fact has **one canonical stored field** and **one detailed home**. It 
 | Canonical owner | Fields |
 | --- | --- |
 | Identity & Taxonomy | Common/scientific name, genus, species, morph, taxonomic status, synonyms, native distribution, captive morph origin, identification/lookalikes, adult size, lifespan |
-| Habitat & Setup | Natural microhabitat, substrate composition (legacy overview), substrate depth, enclosure setup guidance |
+| Habitat & Setup | Natural microhabitat, substrate composition (existing overview field, rendered in Habitat & Setup), substrate depth, enclosure setup guidance |
 | Moisture & Humidity | Broad moisture tendency / reviewed ordinal substrate gradient, RH bounds, moist-area floor coverage, moist refuge dampness, moisture gradient guidance |
-| Feeding & Nutrition | Staple diet, protein guidance, calcium guidance, dietary cautions, feeding overview only for distinct supplemental context |
+| Feeding & Nutrition | Staple diet, protein guidance, calcium guidance, dietary cautions, legacy feeding overview only as fallback when structured nutrition has not yet been reviewed |
 | Behaviour & Ecology | Defensive behaviour, activity & visibility notes, bioactive suitability |
 | Breeding & Development | Brood average and observed range, brooding duration, maturity age, breeding season |
 | Research & Sources | Original source URLs, evidence scope, quality basis, claim-to-source notes, last reviewed |
@@ -18,7 +18,7 @@ A species fact has **one canonical stored field** and **one detailed home**. It 
 | Basic Care & Behaviour | Care level, preferred temperature, ventilation, activity classification, reproduction classification; lightweight overview, not a second detailed description |
 | Species About | One concise original narrative about the specimen; never a second care guide |
 
-**Deliberate at-a-glance overlap:** Reproduction/activity labels may be summarized in Basic Care and species-specific traits may be visible in hero chips. These share source fields. Breeding details do not repeat the reproduction label; taxonomy does not repeat natural microhabitat; habitat does not repeat the moisture guidance; nutrition does not repeat defensive behaviour. The old aggregate Advanced Care widget is retired.
+**Deliberate at-a-glance overlap:** Reproduction/activity labels may be summarized in Basic Care and species-specific traits may be visible in hero chips. These share source fields. Breeding details do not repeat the reproduction label; taxonomy does not repeat natural microhabitat; habitat does not repeat the moisture guidance; nutrition does not repeat defensive behaviour. The old aggregate Advanced Care widget is retired. The old standalone Feeding and Habitat widgets are shown only when their structured specialist equivalents are unavailable; existing source text is not erased.
 
 ## Deprecated fields and migration
 
