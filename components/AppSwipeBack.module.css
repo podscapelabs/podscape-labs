@@ -1,0 +1,18 @@
+/* Hint follows an intentional interior right-swipe in the installed app only.
+   It never intercepts touches, browser edge navigation or controls. */
+.hint{
+ position:fixed;z-index:90;left:50%;bottom:calc(101px + env(safe-area-inset-bottom,0px));
+ display:flex;align-items:center;gap:7px;
+ padding:9px 15px;border:1px solid var(--border,var(--line));
+ border-radius:999px;background:var(--surface,var(--paper));color:var(--text-primary,var(--ink));
+ box-shadow:var(--shadow-soft);font-size:.77rem;font-weight:750;
+ pointer-events:none;opacity:0;
+ transform:translate3d(-50%,12px,0) scale(.94);
+ transition:opacity .12s ease,transform .12s ease;
+}
+.hint span{font-size:1.05rem;color:var(--accent,var(--forest))}
+.hint[data-visible="true"]{
+ opacity:calc(.3 + .7 * var(--swipe-progress,0));
+ transform:translate3d(calc(-50% + var(--swipe-progress,0) * 12px),0,0) scale(1);
+}
+@media(prefers-reduced-motion:reduce){.hint{transition:none}}
