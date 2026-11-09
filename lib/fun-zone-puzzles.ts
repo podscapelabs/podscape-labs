@@ -113,7 +113,7 @@ const extra:Entry[]=[
  Q("Are moisture needs identical across all terrestrial isopods?",["No; ecology and species differ","Yes; all need complete saturation","Yes; all require total dryness","No; none require moisture"],0,"Terrestrial isopods vary in habitat preferences and tolerance.")
  ]),
  quiz("classification","The Crustacean Connection","Explore where isopods fit in animal classification.","Medium",[
- Q("Isopods are classified as which animals?",["Crustaceans","Insects","Arachnids","Molluscs"],0,"Isopods are crustaceans."),
+ Q("Isopods are classified as which animals?",["Crustaceans","Insects","Arachnids","Molluscs"],0,"Isopods belong to Crustacea, a diverse group of arthropods that also includes crabs and shrimp."),
  Q("What is the order containing isopods called?",["Isopoda","Araneae","Coleoptera","Gastropoda"],0,"Isopoda is the crustacean order that includes terrestrial and aquatic isopods."),
  Q("What does a genus name represent?",["A taxonomic grouping of related species","A standardized colour code","A substrate layer","An individual's age"],0,"A genus groups species in biological classification."),
  Q("Why should scientific names be checked against current references?",["Classification and identifications can change","Species never change names","Hobby nicknames are always taxonomic","Scientific names describe humidity"],0,"Taxonomic understanding and naming can be revised with new evidence.")
