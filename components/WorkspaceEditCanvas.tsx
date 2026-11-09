@@ -40,11 +40,11 @@ export function useWorkspaceDrag<T extends string>(
   const scrollTick=()=>{
     const drag=current.current;
     if(!drag?.started){scrollFrame.current=null;return}
-    const upper=145,lower=window.innerHeight-155;
+    const upper=130,lower=Math.max(upper+80,window.innerHeight-130);
     const amount=drag.lastY<upper?-Math.min(18,Math.max(3,(upper-drag.lastY)*.16))
       :drag.lastY>lower?Math.min(18,Math.max(3,(drag.lastY-lower)*.16)):0;
-    if(amount)window.scrollBy(0,amount);
-    scrollFrame.current=requestAnimationFrame(scrollTick);
+    if(amount){window.scrollBy(0,amount);scrollFrame.current=requestAnimationFrame(scrollTick)}
+    else scrollFrame.current=null;
   };
   useEffect(()=>()=>{if(scrollFrame.current!==null)cancelAnimationFrame(scrollFrame.current)},[]);
   const begin=(id:T,event:PointerEvent<HTMLDivElement>)=>{
