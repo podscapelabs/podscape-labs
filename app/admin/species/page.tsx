@@ -110,13 +110,13 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
                   <small>Choose the general range supported by husbandry references. This is not an exact relative humidity percentage or experimentally measured preference.</small>
                   <div className={styles.moistureRangeFields}>
                     <label><span>Drier end</span><select name="moistureRangeStart" defaultValue={selected.moistureRangeStart ?? ""}>
-                      <option value="">Not yet reviewed</option><option value="1">1 · Dry</option><option value="2">2 · Slightly damp</option><option value="3">3 · Moderate</option><option value="4">4 · Damp</option><option value="5">5 · Very damp</option>
+                      <option value="">Not yet reviewed</option><option value="1">1 · Drier area (not bone-dry)</option><option value="2">2 · Slightly damp</option><option value="3">3 · Moderate</option><option value="4">4 · Damp</option><option value="5">5 · Very moist (not waterlogged)</option>
                     </select></label>
                     <label><span>Damper end</span><select name="moistureRangeEnd" defaultValue={selected.moistureRangeEnd ?? ""}>
                       <option value="">Not yet reviewed</option><option value="1">1 · Dry</option><option value="2">2 · Slightly damp</option><option value="3">3 · Moderate</option><option value="4">4 · Damp</option><option value="5">5 · Very damp</option>
                     </select></label>
                   </div>
-                  <small>Set both ends, or leave both unreviewed. Keep a damp refuge available where the species requires one; this scale describes broad substrate conditions, not enclosure percentages.</small>
+                  <small>Set both ends or leave both unreviewed. This is a relative substrate-dampness scale, not the proportion of the enclosure to wet. “Drier” never means bone-dry and “moist” does not mean the entire bin.</small>
                 </div>
                 <label><span>Temperature · approximate</span><input name="temperature" defaultValue={selected.temperature} placeholder="e.g. 20–26°C" /></label>
                 <label><span>Ventilation</span><select name="ventilation" defaultValue={selected.ventilation}>{["","Low","Moderate","High"].map(value=><option key={value} value={value}>{value||"Unspecified"}</option>)}{selected.ventilation&&!["","Low","Moderate","High"].includes(selected.ventilation)?<option value={selected.ventilation}>{selected.ventilation} (existing)</option>:null}</select></label>
