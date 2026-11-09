@@ -45,16 +45,23 @@ const audited = [
 ];
 const nonSemanticGlyph = /[❧✿❀✦✧❦🌿🍃🍂🌱◉♧◇◆☷▥⟡]/u;
 // Walk every app route and shared component, not only a hand-picked allowlist.
-function allTsx(directory) {
+function allSourceFiles(directory, extension) {
   return readdirSync(new URL("../" + directory + "/", import.meta.url), { withFileTypes: true }).flatMap(entry => {
     const path = directory + "/" + entry.name;
-    return entry.isDirectory() ? allTsx(path) : entry.isFile() && entry.name.endsWith(".tsx") ? [path] : [];
+    return entry.isDirectory() ? allSourceFiles(path, extension) : entry.isFile() && entry.name.endsWith(extension) ? [path] : [];
   });
 }
-const allVisualSurfaces = [...allTsx("app"), ...allTsx("components")];
+const allVisualSurfaces = [...allSourceFiles("app", ".tsx"), ...allSourceFiles("components", ".tsx")];
 for (const path of allVisualSurfaces) {
   assert.ok(!nonSemanticGlyph.test(read(path)), "Deprecated decorative glyph found in " + path);
 }
+const allCssSurfaces = [...allSourceFiles("app", ".css"), ...allSourceFiles("components", ".css")];
+for (const path of allCssSurfaces) {
+  const css = read(path);
+  assert.ok(!/content\s*:\s*["\x27][^"\x27]*[❧✿❀✦✧❦🌿🍃🍂🌱◉♧◇◆☷▥⟡]/u.test(css), "Legacy decorative CSS content in " + path);
+}
+assert.ok(!/\.ornament\s*\{/.test(read("app/shop/shop-home.module.css")), "Shop hero must not use navigation icons as ornaments");
+assert.ok(!/\.botanical\s*\{/.test(read("app/account/progress/progress.module.css")), "Unused botanical CSS should remain removed");
 for (const path of audited) {
   const code = read(path);
   assert.ok(!nonSemanticGlyph.test(code), "Non-semantic icon or botanical glyph in " + path);
