@@ -26,3 +26,8 @@
  .modal{padding:22px 15px;max-height:calc(100dvh - 24px)}
 }
 @media(prefers-reduced-motion:reduce){.achievementTile:hover{transform:none}}
+
+/* Medal and dialog states use the same canonical icon family. */
+.lockMark svg{width:15px;height:15px}
+.previouslyHidden svg{width:13px;height:13px;flex:none}
+.modalEmblem svg{width:36px;height:36px}
