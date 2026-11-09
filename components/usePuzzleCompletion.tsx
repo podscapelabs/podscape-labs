@@ -1,11 +1,15 @@
 "use client";
-import {useCallback,useRef,useState} from "react";
+import {useCallback,useEffect,useRef,useState} from "react";
+import {useRouter} from "next/navigation";
 import {announceAchievement,type AchievementNotice} from "./AchievementToast";
 
 export type PuzzleSaveState="idle"|"saving"|"saved"|"unavailable";
 export function usePuzzleCompletion(gameKey:string,puzzleId:string){
  const completedRef=useRef(false);
  const [saved,setSaved]=useState<PuzzleSaveState>("idle");
+ const [failedProof,setFailedProof]=useState<unknown>(null);
+ const router=useRouter();
+ useEffect(()=>{completedRef.current=false;setSaved("idle");setFailedProof(null)},[gameKey,puzzleId]);
  const record=useCallback(async(proof:unknown)=>{
   if(completedRef.current)return;
   completedRef.current=true;
@@ -16,16 +20,16 @@ export function usePuzzleCompletion(gameKey:string,puzzleId:string){
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({gameKey,puzzleId,proof})
    });
-   if(!response.ok){setSaved("unavailable");return;}
+   if(!response.ok){completedRef.current=false;setFailedProof(proof);setSaved("unavailable");return;}
    const result=await response.json() as {unlocked?:AchievementNotice[]};
    (result.unlocked||[]).forEach(announceAchievement);
-   setSaved("saved");
-  }catch{setSaved("unavailable");}
- },[gameKey,puzzleId]);
- return {saved,record};
+   setFailedProof(null);setSaved("saved");router.refresh();
+  }catch{completedRef.current=false;setFailedProof(proof);setSaved("unavailable");}
+ },[gameKey,puzzleId,router]);
+ return {saved,record,retry:failedProof===null?null:()=>record(failedProof)};
 }
-export function PuzzleSaveStatus({status}:{status:PuzzleSaveState}){
+export function PuzzleSaveStatus({status,retry}:{status:PuzzleSaveState;retry?:null|(()=>void)}){
  return <p role="status" aria-live="polite" style={{minHeight:"1.5em",fontSize:12,lineHeight:1.5,color:"var(--text-secondary)"}}>
- {status==="saving"?"Saving puzzle completion…":status==="saved"?"Completion recorded. Achievement EXP is awarded once per milestone.":status==="unavailable"?"Puzzle finished, but the result could not be saved. No EXP was awarded.":""}
+ {status==="saving"?"Saving puzzle completion…":status==="saved"?"Completion recorded. Achievement EXP is awarded once per milestone.":status==="unavailable"?<>Puzzle finished, but your result could not be saved. No EXP was awarded. {retry?<button type="button" onClick={retry} style={{marginLeft:9,padding:"6px 10px",borderRadius:8,border:"1px solid var(--border)",background:"var(--surface)"}}>Retry saving</button>:null}</>:""}
  </p>;
 }
