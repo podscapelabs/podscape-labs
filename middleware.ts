@@ -9,7 +9,7 @@ const PRIVATE_AREAS = [
   "/app", "/menu", "/explore", "/ledger", "/poddex", "/keeper",
   "/fun-zone", "/shop", "/field-guide", "/from-the-lab", "/search",
   "/community", "/podbound", "/api/progress", "/api/search",
-  "/account/progress", "/account/owner-tools",
+  "/account",
 ];
 
 function isPrivateArea(pathname: string): boolean {
@@ -36,7 +36,10 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   // Account entry routes must always be reachable, even with stale Supabase cookies.
   // They enforce invitation and password checks in their Server Actions.
-  if (pathname === "/account/login" || pathname === "/account/sign-up") {
+  if ([
+    "/account/login", "/account/sign-up", "/account/forgot-password",
+    "/account/reset-password",
+  ].includes(pathname) || pathname.startsWith("/auth/")) {
     return NextResponse.next();
   }
   const protectedPage = isPrivateArea(pathname);
