@@ -60,7 +60,6 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
     {label:"Ventilation",value:record.ventilation,note:record.ventilationNote},
     {label:"Activity",value:record.activity,note:record.activityNote},
     {label:"Reproduction",value:record.reproduction,note:record.reproductionNote},
-    {label:"Feeding response",value:record.feedingResponse,note:record.feedingResponseNote},
   ].filter(entry=>typeof entry.value==="string"&&entry.value.trim().length>0&&entry.value!=="Not established");
   // Do not publish legacy "Low / High" moisture without gradient context.
   // Existing values remain in the Desk until editors review each record.
@@ -98,7 +97,6 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
   const redundantTrait = (trait:string) => {
     const text=trait.toLowerCase();
     return (Boolean(record.reproduction?.trim()) && /prolific breeder|rapid colony growth|slow colony growth/.test(text))
-      || (Boolean(record.feedingResponse?.trim()) && /strong feeding response/.test(text))
       || (Boolean(record.activity?.trim()) && /frequently visible|mostly concealed/.test(text));
   };
   const heroTraits = notableTraits.filter(trait=>!redundantTrait(trait)).slice(0,3);
