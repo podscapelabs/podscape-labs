@@ -1,4 +1,5 @@
 import styles from "./SpeciesMoistureGradient.module.css";
+import {PodscapeLineIcon} from "./PodscapeLineIcon";
 
 export type MoisturePosition = "dry-leaning"|"dry-balanced"|"balanced"|"balanced-moist"|"moist-leaning";
 const positions: Record<MoisturePosition,{label:string;index:number}>={
@@ -11,7 +12,7 @@ const positions: Record<MoisturePosition,{label:string;index:number}>={
 export function SpeciesMoistureGradient({position,note}:{position:MoisturePosition;note?:string}){
  const current=positions[position];
  return <div className={styles.card} aria-label={"General captive moisture tendency: "+current.label}>
-   <div className={styles.head}><span>MOISTURE GRADIENT</span><span className={styles.droplet} aria-hidden="true">◉</span></div>
+   <div className={styles.head}><span>MOISTURE GRADIENT</span><span className={styles.droplet} aria-hidden="true"><PodscapeLineIcon name="droplet" /></span></div>
    <strong className={styles.label}>{current.label}</strong>
    <div className={styles.trackWrap}>
     <div className={styles.bar} aria-hidden="true">
