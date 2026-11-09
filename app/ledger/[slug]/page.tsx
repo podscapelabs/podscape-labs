@@ -74,7 +74,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
   const feeding = introText(record.feeding || "");
   const moistureLabels:Record<MoisturePosition,string>={"dry-leaning":"Dry-leaning","dry-balanced":"Dry to balanced","balanced":"Balanced","balanced-moist":"Balanced to moist","moist-leaning":"Moist-leaning"};
   const moistureIndex = moisturePosition ? moisturePositions.indexOf(moisturePosition) : -1;
-  const moistureZoneNames=["Dry","Slightly damp","Moderate","Damp","Very damp"];
+  const moistureZoneNames=["Drier area","Lightly damp","Moderately damp","Moist","Very moist"];
   const rangeStart=record.moistureRangeStart;
   const rangeEnd=record.moistureRangeEnd;
   const hasReviewedRange=typeof rangeStart==="number" && typeof rangeEnd==="number"
@@ -149,10 +149,10 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
               <div className={styles.moistureTrack} aria-hidden="true">{moistureZoneNames.map((item,index)=><span key={item} className={hasReviewedRange
                 ? index+1>=rangeStart! && index+1<=rangeEnd! ? styles.moistureRangeSelected : ""
                 : index===moistureIndex ? styles.moistureSelected : ""}/>)}</div>
-              <div className={styles.moistureEnds}><span>Dry</span><span>Very damp</span></div>
+              <div className={styles.moistureEnds}><span>Drier area</span><span>Moister refuge</span></div>
               <p className={styles.moistureContext}>{hasReviewedRange
-                ? "General captive substrate conditions, not a measured humidity requirement. Maintain a suitable moisture gradient and damp refuge."
-                : "Broad editorial tendency. Detailed substrate range awaiting review."}</p>
+                ? "Relative substrate dampness, not the percentage of the enclosure to wet. Drier does not mean bone-dry; keep an appropriate moist refuge."
+                : "Relative dampness only, not whole-enclosure moisture or air humidity. Detailed conditions await review."}</p>
             </div> : legacyMoisturePending ? <p className={styles.moisturePending}>Substrate moisture information awaiting review.</p> : null,
             advanced: feeding || record.substrate?.trim() || relatedGuides.length ? <section className={styles.speciesInfoCard} aria-label="Advanced care">
               <h2>Advanced Care</h2>
