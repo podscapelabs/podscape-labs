@@ -140,7 +140,7 @@ export function WorkspaceEditBlock<T extends string>({id,scope,label,index,count
  useEffect(()=>()=>{cancelPress();if(clickReset.current!==null)clearTimeout(clickReset.current)},[]);
  const onPressStart=(event:PointerEvent<HTMLDivElement>)=>{
   if(editing){begin(id,event);return}
-  if(!onLongPress||(event.pointerType==="mouse"&&event.button!==0))return;
+  if(!onLongPress||event.pointerType==="mouse")return;
   // Shortcut tiles own their jiggle gesture. Do not let the parent widget's
   // long-press timer intercept them before their shortcut editor activates.
   if((event.target as HTMLElement).closest("[data-shortcut-index]"))return;
