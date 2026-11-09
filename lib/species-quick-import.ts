@@ -1,5 +1,5 @@
 import {flatSpeciesResearchFields,validateSpeciesResearchField} from "@/lib/species-research-fields";
-import {normalizeSpeciesTrait} from "@/lib/species-traits";
+import {normalizeSpeciesTrait,SPECIES_TRAIT_REGISTRY} from "@/lib/species-traits";
 /** Safe, editorial-only import contract for the owner Ledger Desk.
  * Never accept status, identity verification, record ID, slug, catalogue number or image uploads.
  */
@@ -44,6 +44,7 @@ export const IMPORT_RESEARCH_PROMPT=[
  "Use only canonical Notable Traits (up to five); supported dropdowns only: careLevel Beginner/Intermediate/Advanced/Expert; ventilation Low/Moderate/High; activity Shy/Moderate/Active/Very Active; reproduction Slow/Moderate/Fast/Prolific.",
  "moistureRangeStart/moistureRangeEnd are each integers 1–5; moistRefugeCondition is Lightly damp/Moist/Very moist; evidenceScope is species-level/morph-specific/mixed; evidenceQuality is scientific/breeder-consensus/limited.",
  "Output valid JSON without markdown fences. Do not abbreviate text mid-word, truncate any source URL or place research essays into quick-glance fields.",
+ "Canonical Notable Traits: "+SPECIES_TRAIT_REGISTRY.map(trait=>trait.label).join("; "),
  "Exact field names and maximum lengths (characters):",
  ...IMPORT_FIELDS.map(([key,label,limit])=>key+" — "+label+" — max "+limit),
  "Skip record identity verification, photos, publication status, slug and catalogue ID. Imported values are reviewed before saving."
@@ -79,18 +80,20 @@ export function parseSpeciesImport(source:string):ParsedImport{
   if(raw===undefined||raw===null||raw==="")continue;
   if(field==="moistureRangeStart"||field==="moistureRangeEnd"){
    if(![1,2,3,4,5,"1","2","3","4","5"].includes(raw as string|number)){
-    warnings.push(label+": expected a whole-number zone from 1 (drier area, not bone-dry) to 5 (very moist, not waterlogged).");continue;
+    rejected.push(label+": expected a whole-number zone from 1 (drier area, not bone-dry) to 5 (very moist, not waterlogged).");continue;
    }
    values[field]=String(raw);continue;
   }
   if(field==="notableTraits"||field==="fieldGuideLinks"){
-   if(!Array.isArray(raw)&&typeof raw!=="string"){warnings.push(label+": expected an array of strings or newline-separated text.");continue;}
+   if(!Array.isArray(raw)&&typeof raw!=="string"){rejected.push(label+": expected an array of strings or newline-separated text.");continue;}
    const items=Array.isArray(raw)?raw:raw.split(/\r?\n/);
-   if(!items.every(item=>typeof item==="string")){warnings.push(label+": all items must be text.");continue;}
+   if(!items.every(item=>typeof item==="string")){rejected.push(label+": all items must be text.");continue;}
    const cleaned=items.map((item:string)=>item.trim()).filter(Boolean);
    if(field==="notableTraits"){
-    if(cleaned.length>5){rejected.push("Notable traits: provide no more than five; none were imported.");continue;}
-    values[field]=[...new Set(cleaned.map((item:string)=>normalizeSpeciesTrait(item)))].slice(0,5).join("\n");
+    if(cleaned.some((item:string)=>item.length>65)){rejected.push("Notable traits: each trait must be 65 characters or shorter.");continue;}
+    const unique=[...new Set(cleaned.map((item:string)=>normalizeSpeciesTrait(item)))];
+    if(unique.length>5){rejected.push("Notable traits: provide no more than five unique traits; none were imported.");continue;}
+    values[field]=unique.join("\n");
    }else{
     const joined=cleaned.join("\n");
     if(joined.length>limit){rejected.push(label+": "+joined.length+" characters exceeds "+limit+"; no text was truncated.");continue;}
@@ -100,32 +103,32 @@ export function parseSpeciesImport(source:string):ParsedImport{
   }
   if(typeof raw==="number"&&Number.isFinite(raw)){
    if(!["humidityMin","humidityMax","moistZoneCoverage","broodAverage","broodMin","broodMax","adultSizeMm"].includes(field)){
-    warnings.push(label+": expected text; skipped.");continue;
+    rejected.push(label+": expected text; nothing was imported.");continue;
    }
-  }else if(typeof raw!=="string"){warnings.push(label+": expected text; skipped.");continue;}
+  }else if(typeof raw!=="string"){rejected.push(label+": expected text; nothing was imported.");continue;}
   const clean=String(raw).trim();
   if(!clean)continue;
   if(clean.length>limit){rejected.push(label+": "+clean.length+" characters exceeds "+limit+"; no text was truncated.");continue;}
   const researchError=validateSpeciesResearchField(field,clean);
-  if(researchError){warnings.push(label+": "+researchError);continue;}
+  if(researchError){rejected.push(label+": "+researchError);continue;}
   const choices=options[field];
-  if(choices&&!choices.includes(clean)){warnings.push(label+": unsupported choice “"+clean+"”; skipped.");continue;}
+  if(choices&&!choices.includes(clean)){rejected.push(label+": unsupported choice “"+clean+"”.");continue;}
   values[field]=clean;
  }
  const start=values.moistureRangeStart,end=values.moistureRangeEnd;
  if(Boolean(start)!==Boolean(end)||(start&&end&&Number(start)>Number(end))){
   delete values.moistureRangeStart;delete values.moistureRangeEnd;
-  warnings.push("Moisture range skipped: both endpoints are required, with the drier end first.");
+  rejected.push("Moisture range must include both endpoints, with the drier end first.");
  }
  if(values.humidityMin && values.humidityMax && Number(values.humidityMin)>Number(values.humidityMax)){
    delete values.humidityMin;delete values.humidityMax;
-   warnings.push("Relative humidity bounds skipped: lower bound exceeds upper bound.");
+   rejected.push("Relative humidity lower bound exceeds upper bound.");
  }
  if(values.broodMin && values.broodMax && Number(values.broodMin)>Number(values.broodMax)){
    delete values.broodMin;delete values.broodMax;
-   warnings.push("Brood range skipped: minimum exceeds maximum.");
+   rejected.push("Brood minimum exceeds maximum.");
  }
  const unknown=Object.keys(input).filter(key=>!accepted.has(key));
- if(unknown.length)warnings.push("Ignored unsupported keys: "+unknown.slice(0,10).join(", ")+(unknown.length>10?"…":"")+".");
- return {values,warnings:[...rejected,...warnings],error:rejected.length?"Import blocked: "+rejected.length+" field(s) exceed their supported limits or trait capacity. Fix the listed fields and paste again; nothing will be applied.":Object.keys(values).length===0?"No supported, nonempty fields were found.":null};
+ if(unknown.length)rejected.push("Unsupported keys: "+unknown.slice(0,10).join(", ")+(unknown.length>10?"…":"")+". Use only keys in the contract.");
+ return {values,warnings:[...rejected,...warnings],error:rejected.length?"Import blocked: "+rejected.length+" validation issue(s). Fix the listed fields and paste again; nothing will be applied.":Object.keys(values).length===0?"No supported, nonempty fields were found.":null};
 }
