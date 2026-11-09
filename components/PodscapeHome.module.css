@@ -597,3 +597,18 @@
  .shortcuts>.shortcut .shortcutIcon svg{width:20px;height:20px}
  .shortcuts>.shortcut>span:last-child{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;white-space:normal;overflow:hidden;overflow-wrap:anywhere;line-height:1.12;max-width:100%;padding-inline:1px}
 }
+
+
+/* Shared, non-drag fallback for Home and Manager shortcut ordering.
+   Both the standalone jiggle editor and embedded widget editor use it. */
+.shortcutMoveControls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.shortcutMoveControls button{
+ min-width:80px;min-height:44px;padding:9px 12px;
+ border:1px solid var(--line);border-radius:11px;
+ background:var(--paper-strong);color:var(--forest);
+ font-size:.76rem;font-weight:750;cursor:pointer
+}
+.shortcutMoveControls button:disabled{opacity:.35;cursor:not-allowed}
+.shortcutMoveControls button:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
+.inlineShortcutPicker .shortcutMoveControls{flex:1 1 100%}
+@media(max-width:420px){.shortcutMoveControls button{flex:1}}
