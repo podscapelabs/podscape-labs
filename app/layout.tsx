@@ -3,6 +3,7 @@ import { siteContent } from "@/content/site";
 import "./globals.css";
 import { OwnerAwareMobileNav } from "@/components/OwnerAwareMobileNav";
 import { AchievementToast } from "@/components/AchievementToast";
+import { AppSwipeBack } from "@/components/AppSwipeBack";
 
 export const viewport: Viewport = {
   themeColor: [
@@ -48,7 +49,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body>{children}<AchievementToast /><OwnerAwareMobileNav /></body>
+      <body>{children}<AppSwipeBack /><AchievementToast /><OwnerAwareMobileNav /></body>
     </html>
   );
 }
