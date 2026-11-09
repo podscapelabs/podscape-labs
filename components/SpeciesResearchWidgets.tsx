@@ -16,6 +16,7 @@ const moistureLabels:Record<string,string>={
  balanced:"Balanced","balanced-moist":"Balanced to moist","moist-leaning":"Moist-leaning"
 };
 const moistureZones=["Drier area","Lightly damp","Moderately damp","Moist","Very moist"];
+const shortMoistureZones=["Drier","Lightly damp","Moderate","Moist","Very moist"];
 /** One visible moisture widget, using existing editorial fields without inferring new values. */
 export function MoistureAndHumidityWidget({record}:{record:SpeciesRecord}){
  const rawStart=record.moistureRangeStart,rawEnd=record.moistureRangeEnd;
@@ -32,7 +33,7 @@ export function MoistureAndHumidityWidget({record}:{record:SpeciesRecord}){
  if(!hasSubstrate&&!hasHumidity&&coverage===null&&!refuge&&!guidance)return null;
  const start=reviewed?rawStart!:profileIndex+1,end=reviewed?rawEnd!:profileIndex+1;
  const substrateLabel=reviewed
-  ? start===end?moistureZones[start-1]:moistureZones[start-1]+" – "+moistureZones[end-1]
+  ? start===end?shortMoistureZones[start-1]:shortMoistureZones[start-1]+" – "+shortMoistureZones[end-1]
   : moistureLabels[record.moistureProfile||""]||"Not established";
  return <section className={styles.speciesInfoCard+" "+styles.moistureWidget} aria-label="Moisture and humidity">
   <h2>Moisture &amp; Humidity</h2>
