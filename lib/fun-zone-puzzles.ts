@@ -145,6 +145,7 @@ const extra:Entry[]=[
  ])
  ].map(p=>({gameKey:"colony-connections" as const,mode:"connections" as const,puzzle:p})),
  // Crossword clues are positioned explicitly, validated when loaded.
+ ...[
  crossword("anatomy-clues","Anatomy Terms",[
  {answer:"PLEON",clue:"The abdominal region of an isopod (5)",r:0,c:3,dir:"down"},
  {answer:"PEREON",clue:"The main thoracic body region (6)",r:0,c:3,dir:"across"},
