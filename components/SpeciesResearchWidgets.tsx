@@ -141,7 +141,7 @@ export function TaxonomyOriginWidget({record}:{record:SpeciesRecord}){
 }
 export function FeedingEcologyWidget({record}:{record:SpeciesRecord}){
  return <Details title="Feeding & Nutrition" rows={[
- {label:"Staple diet",value:record.stapleDiet},{label:"Protein",value:record.proteinGuidance},{label:"Calcium",value:record.calciumGuidance},
+ {label:"Staple diet",value:record.stapleDiet||record.feeding},{label:"Protein",value:record.proteinGuidance},{label:"Calcium",value:record.calciumGuidance},
  {label:"Dietary cautions",value:record.dietaryCautions}
  ]}/>;
 }
