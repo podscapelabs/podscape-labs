@@ -68,7 +68,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
       if (sort === "recent") return Date.parse(addedAtById[b.id] || "") - Date.parse(addedAtById[a.id] || "");
       if (sort === "common") return speciesDisplayName(a).localeCompare(speciesDisplayName(b));
       if (sort === "scientific") return speciesScientificName(a).localeCompare(speciesScientificName(b));
-      return a.catalogueNumber.localeCompare(b.catalogueNumber);
+      return a.catalogueNumber.localeCompare(b.catalogueNumber,"en",{numeric:true,sensitivity:"base"});
     }), [addedAtById, care, deferredQuery, genus, records, sort]);
 
   const saveBrowseContext=()=>{
@@ -101,6 +101,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
   },[mode,deferredQuery,query,results.length,restorationReady]);
   function clear() {
     setQuery("");
+    setFiltersOpen(false);
     setGenus("all");
     setCare("all");
     setSort(mode === "collection" ? "recent" : "catalogue");
@@ -110,7 +111,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
 
   return <>
     {heroMode && mode === "catalogue" ? <header className={spotlight.hero} aria-labelledby="ledger-hero-title">
-      {featured?.image ? <img src={featured.image} alt="" className={spotlight.heroPhoto} /> : null}
+      {featured?.image ? <img src={featured.image} alt="" className={spotlight.heroPhoto} fetchPriority="high" decoding="async" /> : null}
       <div className={spotlight.heroShade} aria-hidden="true" />
       <div className={spotlight.heroInner}>
         <p className={spotlight.heroEyebrow}>PODSCAPE / SPECIES ARCHIVE</p>
@@ -136,7 +137,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
           <circle cx="10.8" cy="10.8" r="6.5" /><path d="m16 16 5 5" />
         </svg>
         <input id={mode === "catalogue" ? "ledger-directory-search" : undefined} className={styles.searchInput} aria-label={mode === "collection" ? "Search your collection" : "Search species"} value={query} onChange={(event) => setQuery(event.target.value)} type="search" placeholder={mode === "collection" ? "Search your collection…" : "Search species…"} />
-        {mode === "catalogue" ? <button className={spotlight.filterToggle} type="button" aria-label="Show species filters" aria-expanded={filtersOpen} aria-controls="ledger-filter-options" onClick={() => setFiltersOpen(value => !value)}>
+        {mode === "catalogue" ? <button className={spotlight.filterToggle} type="button" aria-label={filtersOpen?"Hide species filters":"Show species filters"} aria-expanded={filtersOpen} aria-controls="ledger-filter-options" onClick={() => setFiltersOpen(value => !value)}>
           <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2.5" fill="var(--surface)"/><circle cx="16" cy="17" r="2.5" fill="var(--surface)"/></svg>
           {genus !== "all" || care !== "all" || sort !== "catalogue" ? <span className={spotlight.filterDot} /> : null}
         </button> : null}
@@ -181,11 +182,11 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
       : <div className="v2-species-grid" onClickCapture={event=>{if((event.target as HTMLElement).closest("a[href^=\"/ledger/\"]"))saveBrowseContext()}}>{results.map((record, index) => <LedgerSpeciesCard record={record} key={record.id} showCollectionAction collected={saved.has(record.id)} signedIn={signedIn} collectionDetails={collectionDetailsById[record.id]} />).flatMap((card, index) => {
         const insertSpotlight = index === 3 && !!featured && !filtersActive;
         return insertSpotlight ? [card, <aside key="species-spotlight" className={spotlight.feature} aria-label="Featured species">
-          {featured!.image ? <img className={spotlight.featurePhoto} src={featured!.image} alt="" loading="lazy" /> : <span className={spotlight.featureFallback} aria-hidden="true">❧</span>}
+          {featured!.image ? <img className={spotlight.featurePhoto} src={featured!.image} alt="" loading="lazy" decoding="async" /> : <span className={spotlight.featureFallback} aria-hidden="true">❧</span>}
           <div className={spotlight.featureCopy}><small>❧ Featured species</small><h2>{featured!.name}</h2><p>{featured!.summary || "Explore this species in the Leaf Ledger."}</p><Link href={`/ledger/${featured!.slug}`}>View species →</Link></div>
         </aside>] : [card];
       })}{results.length < 4 && featured && !filtersActive ? <aside className={spotlight.feature} aria-label="Featured species">
-        {featured.image ? <img className={spotlight.featurePhoto} src={featured.image} alt="" loading="lazy" /> : null}
+        {featured.image ? <img className={spotlight.featurePhoto} src={featured.image} alt="" loading="lazy" decoding="async" /> : null}
         <div className={spotlight.featureCopy}><small>❧ Featured species</small><h2>{featured.name}</h2><p>{featured.summary || "Explore this species in the Leaf Ledger."}</p><Link href={`/ledger/${featured.slug}`}>View species →</Link></div>
       </aside> : null}</div>
     ) : <div className="v2-empty-state"><span className="v2-empty-leaf" aria-hidden="true" /><h2>No species match these filters.</h2><p>Try a different name, genus, or care level.</p><button type="button" onClick={clear}>Reset filters</button></div>}
