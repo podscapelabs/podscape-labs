@@ -644,3 +644,7 @@
 .homeCanvasBlockBar>div button svg{width:16px;height:16px}
 .homeCanvasToolbar button:focus-visible,.homeCanvasBlockBar button:focus-visible{outline:2px solid var(--forest);outline-offset:3px}
 @media(max-width:600px){.homeCanvasToolbar>button{min-height:42px}.homeCanvasBlockBar>div button{min-width:38px;min-height:42px}}
+
+/* Shared editing system icons have one stable size throughout portals. */
+.jiggleHint>svg{width:20px;height:20px;color:var(--forest)}
+.widgetPreview>span svg{width:25px;height:25px}
