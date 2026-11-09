@@ -1,4 +1,5 @@
 import {flatSpeciesResearchFields,validateSpeciesResearchField} from "@/lib/species-research-fields";
+import {normalizeSpeciesTrait} from "@/lib/species-traits";
 /** Safe, editorial-only import contract for the owner Ledger Desk.
  * Never accept status, identity verification, record ID, slug, catalogue number or image uploads.
  */
@@ -17,7 +18,6 @@ export const IMPORT_FIELDS=[
  ["ventilation","Ventilation",160],
  ["activity","Activity",100],
  ["reproduction","Reproduction",100],
- ["feedingResponse","Feeding response",40],
  ["feeding","Feeding overview",300],
  ["substrate","Substrate overview",300],
  ["keeperNotes","Keeper notes",4000],
@@ -33,13 +33,12 @@ const options:Partial<Record<ImportField,readonly string[]>>={
  careLevel:["Beginner","Intermediate","Advanced","Expert"],
  ventilation:["Low","Moderate","High"],
  activity:["Shy","Moderate","Active","Very Active"],
- reproduction:["Slow","Moderate","Fast","Prolific"],
- feedingResponse:["Reserved","Moderate","Eager","Very eager","Not established"]
+ reproduction:["Slow","Moderate","Fast","Prolific"]
 };
 export const IMPORT_TEMPLATE=JSON.stringify({
  commonName:"",scientificName:"",genus:"",species:"",morph:"",
  about:"",summary:"",careLevel:"",temperature:"",ventilation:"",
- activity:"",reproduction:"",feedingResponse:"",
+ activity:"",reproduction:"",
  moistureRangeStart:null,moistureRangeEnd:null,
  feeding:"",substrate:"",notableTraits:[],keeperNotes:"",fieldGuideLinks:[],
  ...Object.fromEntries(flatSpeciesResearchFields.map(item=>[item.name,""]))
@@ -66,7 +65,7 @@ export function parseSpeciesImport(source:string):ParsedImport{
   if(raw===undefined||raw===null||raw==="")continue;
   if(field==="moistureRangeStart"||field==="moistureRangeEnd"){
    if(![1,2,3,4,5,"1","2","3","4","5"].includes(raw as string|number)){
-    warnings.push(label+": expected a whole-number zone from 1 (dry) to 5 (very damp).");continue;
+    warnings.push(label+": expected a whole-number zone from 1 (drier area, not bone-dry) to 5 (very moist, not waterlogged).");continue;
    }
    values[field]=String(raw);continue;
   }
@@ -77,7 +76,7 @@ export function parseSpeciesImport(source:string):ParsedImport{
    const cleaned=items.map((item:string)=>item.trim()).filter(Boolean);
    if(field==="notableTraits"){
     if(cleaned.length>5)warnings.push("Notable traits: limited to the first five entries.");
-    values[field]=[...new Set(cleaned.map((item:string)=>item.slice(0,65)))].slice(0,5).join("\n");
+    values[field]=[...new Set(cleaned.map((item:string)=>normalizeSpeciesTrait(item)))].slice(0,5).join("\n");
    }else{
     values[field]=cleaned.join("\n").slice(0,limit);
    }
