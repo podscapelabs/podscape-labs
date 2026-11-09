@@ -32,7 +32,6 @@ export async function isApprovedTesterEmail(email: string): Promise<boolean> {
 
 /** Owner or invited, confirmed member access for account mutations. */
 export async function requireCustomerPreviewAccess(): Promise<void> {
-  if (process.env.CUSTOMER_ACCOUNTS_PUBLIC === "true") return;
   if (await isAdminAuthenticated()) return;
   const db = await customerSupabase();
   if (!db) redirect("/early-access");
