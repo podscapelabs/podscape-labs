@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 
 const read = path => readFileSync(new URL("../" + path, import.meta.url), "utf8");
 
@@ -26,6 +26,17 @@ const audited = [
   "components/PuzzleLibrary.tsx",
 ];
 const nonSemanticGlyph = /[❧✿❀✦✧❦🌿🍃🍂🌱◉♧◇◆☷▥⟡]/u;
+// Walk every app route and shared component, not only a hand-picked allowlist.
+function allTsx(directory) {
+  return readdirSync(new URL("../" + directory + "/", import.meta.url), { withFileTypes: true }).flatMap(entry => {
+    const path = directory + "/" + entry.name;
+    return entry.isDirectory() ? allTsx(path) : entry.isFile() && entry.name.endsWith(".tsx") ? [path] : [];
+  });
+}
+const allVisualSurfaces = [...allTsx("app"), ...allTsx("components")];
+for (const path of allVisualSurfaces) {
+  assert.ok(!nonSemanticGlyph.test(read(path)), "Deprecated decorative glyph found in " + path);
+}
 for (const path of audited) {
   const code = read(path);
   assert.ok(!nonSemanticGlyph.test(code), "Non-semantic icon or botanical glyph in " + path);
@@ -55,4 +66,4 @@ const species=read("components/SpeciesDashboardWorkspace.tsx");
 assert.match(manager, /WorkspaceEditToolbar/, "Manager must use the shared edit toolbar");
 assert.match(species, /WorkspaceEditToolbar/, "Species workspace must use the shared edit toolbar");
 assert.match(read("components/HomeWidgets.tsx"), /WorkspaceEditToolbar/, "Home must use the shared edit toolbar");
-console.log("Legacy portal icon regression checks passed across " + audited.length + " audited surfaces.");
+console.log("Legacy icon regression checks passed across " + allVisualSurfaces.length + " TSX surfaces and " + audited.length + " focused checks.");
