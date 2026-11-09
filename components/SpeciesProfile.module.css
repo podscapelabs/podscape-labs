@@ -565,3 +565,6 @@
  .profileBrowseArrow{transition:none}
  .researchCardTrigger:active>.researchOverview{transform:none}
 }
+
+/* Semantic icon used by the Leaf Ledger About disclosure. */
+.aboutSymbol svg{display:block;width:22px;height:22px;flex:none}
