@@ -70,3 +70,11 @@ for(const [source,event] of [
  ["components/useNavigationPreferences.ts","nav_personalized"]
 ])assert.ok(read(source).includes(`recordExperienceAction("${event}"`),`Missing genuine edit trigger ${source}`);
 console.log("Experience achievement checks passed: seven one-time EXP milestones, tutorial skip, personalized layouts, guarded RPC and notification integration.");
+
+// The achievement toast must stay readable on dark-mode PWA screens.
+const toastStyles=read("components/AchievementToast.module.css");
+assert.match(toastStyles,/background:var\(--paper/);
+assert.match(toastStyles,/color:var\(--ink/);
+assert.match(toastStyles,/\.close\{[^}]*width:36px/);
+assert.match(toastStyles,/@media\(max-width:600px\)/);
+assert.ok(!/background:var\(--surface\)/.test(toastStyles),"Avoid undefined tokens that make achievement banners transparent");
