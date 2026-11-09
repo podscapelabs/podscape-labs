@@ -18,10 +18,10 @@ const activities = [
 ];
 
 export default function ProgressDashboard({
-  exp, coins, level, levelStart, levelEnd, achievements, error, discoveries, collectionSpecies,
+  exp, coins, level, levelStart, levelEnd, achievements, error, discoveries, collectionSpecies, puzzleCompletions,
 }: {
   exp: number; coins: number; level: number; levelStart: number; levelEnd: number;
-  achievements: Achievement[]; error: boolean; discoveries: number; collectionSpecies: number;
+  achievements: Achievement[]; error: boolean; discoveries: number; collectionSpecies: number; puzzleCompletions: number|null;
 }) {
   const [view, setView] = useState<"achievements" | "explore" | "stats">("achievements");
   const [filter, setFilter] = useState<"all" | "unlocked" | "locked">("all");
@@ -80,12 +80,12 @@ export default function ProgressDashboard({
         </button>)}
       </div>
       {!shown.length ? <p className={styles.empty}>No achievements in this view yet.</p> : null}
-      <p className={styles.caption}>Early-access achievements unlock automatically from recorded species discoveries and collection entries. Each achievement pays EXP once; new milestones do not award Pod Coins.</p>
+      <p className={styles.caption}>Early-access achievements unlock automatically from verified species discoveries, collection entries, and completed Fun Zone challenges. Each eligible milestone pays EXP once; puzzle milestones do not award Pod Coins.</p>
     </section> : null}
 
     {view === "explore" ? <section className={styles.explore} aria-labelledby="explore-title"><div className={styles.sectionHeading}><h2 id="explore-title">Explore PodScape</h2><span>Find something new</span></div><p className={styles.caption}>These are suggested destinations, not EXP-earning quests yet.</p><div className={styles.exploreGrid}>{activities.map(a=><Link href={a.href} className={styles.exploreTile} key={a.href}><span className={styles.exploreIcon} aria-hidden="true">{a.icon}</span><strong>{a.title}</strong><small>{a.description}</small><span className={styles.exploreArrow} aria-hidden="true">↗</span></Link>)}</div></section> : null}
 
-    {view === "stats" ? <section className={styles.stats} aria-labelledby="stats-title"><div className={styles.sectionHeading}><h2 id="stats-title">Your Journey</h2><span>Member overview</span></div><div className={styles.statsGrid}><div><small>Current level</small><strong>{level}</strong></div><div><small>Lifetime EXP</small><strong>{exp.toLocaleString("en-CA")}</strong></div><div><small>Pod Coins</small><strong>{coins.toLocaleString("en-CA")}</strong></div><div><small>Recorded achievements</small><strong>{error ? "—" : unlockedCount}</strong></div><div><small>Species discovered</small><strong>{discoveries}</strong></div><div><small>Species collected</small><strong>{collectionSpecies}</strong></div></div><p className={styles.caption}>EXP is permanent. Pod Coin redemption and additional reward milestones are still being developed.</p></section> : null}
+    {view === "stats" ? <section className={styles.stats} aria-labelledby="stats-title"><div className={styles.sectionHeading}><h2 id="stats-title">Your Journey</h2><span>Member overview</span></div><div className={styles.statsGrid}><div><small>Current level</small><strong>{level}</strong></div><div><small>Lifetime EXP</small><strong>{exp.toLocaleString("en-CA")}</strong></div><div><small>Pod Coins</small><strong>{coins.toLocaleString("en-CA")}</strong></div><div><small>Recorded achievements</small><strong>{error ? "—" : unlockedCount}</strong></div><div><small>Species discovered</small><strong>{discoveries}</strong></div><div><small>Species collected</small><strong>{collectionSpecies}</strong></div><div><small>Fun Zone puzzles</small><strong>{puzzleCompletions===null?"—":`${puzzleCompletions} / 32`}</strong></div></div><p className={styles.caption}>EXP is permanent. Pod Coin redemption and additional reward milestones are still being developed.</p></section> : null}
 
     {view === "achievements" ? <section className={styles.explore} aria-labelledby="explore-next"><div className={styles.sectionHeading}><h2 id="explore-next">Explore & Learn</h2><span>Ideas for your next visit</span></div><div className={styles.exploreGrid}>{activities.map(a=><Link href={a.href} className={styles.exploreTile} key={a.href}><span className={styles.exploreIcon} aria-hidden="true">{a.icon}</span><strong>{a.title}</strong><small>{a.description}</small><span className={styles.exploreArrow} aria-hidden="true">↗</span></Link>)}</div><p className={styles.caption}>Suggestions only: activities here do not automatically award EXP or Pod Coins yet.</p></section> : null}
     <p className={styles.footerNote}>Your EXP stays with you. Future Pod Coin rewards and eligibility will be announced as the program develops.</p>
