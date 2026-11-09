@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { getPodBoundArtworkUrl, getPodBoundCards, type CardCategory } from "@/lib/podbound-cards";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import styles from "./gallery.module.css";
+import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Card Catalogue | PodBound", description: "Explore officially revealed PodBound cards and original artwork from Podscape Labs." };
@@ -50,10 +51,10 @@ export default async function PodBoundCardGallery({searchParams}:{searchParams:P
         <p className={styles.results} role="status">Showing {cards.length} of {all.length} revealed cards</p>
         {cards.length?<div className={styles.grid}>
           {cards.map(c=><Link key={c.id} href={`/podbound/cards/${c.id}`} className={styles.card}>
-            <div className={styles.art}>{c.artUrl?<Image src={c.artUrl} alt={c.core_art_alt||c.title} fill unoptimized sizes="(max-width:600px) 45vw, (max-width:900px) 30vw, 250px"/>:<span className={styles.artMissing}><span aria-hidden="true">✦</span>Artwork to be revealed</span>}</div>
+            <div className={styles.art}>{c.artUrl?<Image src={c.artUrl} alt={c.core_art_alt||c.title} fill unoptimized sizes="(max-width:600px) 45vw, (max-width:900px) 30vw, 250px"/>:<span className={styles.artMissing}><PodscapeLineIcon name="podbound" />Artwork to be revealed</span>}</div>
             <div className={styles.cardInfo}><small>{c.category} · {c.set_name||"Core Set"}</small><strong>{c.title}</strong><span>{c.card_number||"PodBound"} <b aria-hidden="true">↗</b></span></div>
           </Link>)}
-        </div>:<div className={styles.empty}><span aria-hidden="true">✧</span><h3>{all.length?"No matching cards yet.":"The collection is taking shape."}</h3><p>{all.length?"Try a different search or browse all cards.":"Original artwork and card reveals will appear here as they're approved for publication."}</p>{all.length?<Link href="/podbound/cards">Browse all cards →</Link>:<Link href="/podbound">Explore PodBound →</Link>}</div>}
+        </div>:<div className={styles.empty}><PodscapeLineIcon name="podbound" /><h3>{all.length?"No matching cards yet.":"The collection is taking shape."}</h3><p>{all.length?"Try a different search or browse all cards.":"Original artwork and card reveals will appear here as they're approved for publication."}</p>{all.length?<Link href="/podbound/cards">Browse all cards →</Link>:<Link href="/podbound">Explore PodBound →</Link>}</div>}
       </section>
       {isOwner&&<aside className={styles.owner}><span>OWNER ACCESS</span><p>Ready to reveal more cards? Publish them from the Card Desk.</p><Link href="/admin/podbound">Open Card Desk →</Link></aside>}
     </main>
