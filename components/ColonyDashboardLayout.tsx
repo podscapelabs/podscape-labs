@@ -61,7 +61,7 @@ export function ColonyDashboardLayout({scope,colonyId,widgets,forceVisible}:{
   {libraryOpen?<div className={home.homeEditorOverlay} onPointerDown={event=>{if(event.target===event.currentTarget)setLibraryOpen(false)}}>
    <div className={styles.colonyWidgetLibrary} role="dialog" aria-modal="true" aria-labelledby="colony-widget-heading">
     <header className={styles.libraryHeader}><div><small>PERSONALIZE THIS COLONY</small><h2 id="colony-widget-heading">Colony widgets</h2></div><button type="button" onClick={()=>setLibraryOpen(false)}>Done</button></header>
-    <p>Choose what's useful to you. Every colony can have its own layout; hiding widgets never changes your records.</p>
+    <p>Choose what&apos;s useful to you. Every colony can have its own layout; hiding widgets never changes your records.</p>
     <div className={styles.libraryControls}><span>{visible.length} of {colonyWidgetIds.length} shown</span><button type="button" onClick={()=>{setLibraryOpen(false);setEditing(true)}}>Arrange widgets</button></div>
     {Object.entries(groups).map(([group,items])=><section className={styles.libraryGroup} key={group}>
       <h3>{group}</h3><div className={styles.libraryGrid}>{items.map(([id,title,description])=><article className={styles.libraryCard} key={id}>
