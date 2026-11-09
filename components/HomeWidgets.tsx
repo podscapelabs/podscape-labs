@@ -22,14 +22,14 @@ type WidgetId="recent"|"colony"|"games"|"progress"|"schedule"|"guides"|"communit
 type WidgetGroup="Discovery"|"My Keeper Tools"|"Play & Community";
 type WidgetDef={name:string;description:string;icon:PodscapeIconName;group:WidgetGroup;preview:string;size:"wide"|"compact"};
 const definitions:Record<WidgetId,WidgetDef>={
-  recent:{name:"Recent & Noteworthy",description:"The newest guide and ways to explore Podscape.",icon:"leaf",group:"Discovery",preview:"Fresh guides · Games · Community",size:"wide"},
+  recent:{name:"Recent & Noteworthy",description:"The newest guide and ways to explore Podscape.",icon:"news",group:"Discovery",preview:"Fresh guides · Games · Community",size:"wide"},
   guides:{name:"Field Guide",description:"Jump into a recent care guide.",icon:"book",group:"Discovery",preview:"Continue discovering husbandry",size:"compact"},
   colony:{name:"My Colony",description:"Quick access to your most recently updated enclosure.",icon:"jar",group:"My Keeper Tools",preview:"Colony · Species · Recorded count",size:"compact"},
-  progress:{name:"My Progress",description:"View your level and earned EXP at a glance.",icon:"leaf",group:"My Keeper Tools",preview:"Keeper level · Earned EXP",size:"compact"},
+  progress:{name:"My Progress",description:"View your level and earned EXP at a glance.",icon:"achievement",group:"My Keeper Tools",preview:"Keeper level · Earned EXP",size:"compact"},
   schedule:{name:"Care Schedule",description:"One-tap access to the existing Manager care schedule.",icon:"calendar",group:"My Keeper Tools",preview:"Open your care schedule",size:"compact"},
-  games:{name:"Play a Little",description:"Get straight into your Fun Zone activities.",icon:"creative",group:"Play & Community",preview:"Puzzles · Quizzes · Word games",size:"compact"},
+  games:{name:"Play a Little",description:"Get straight into your Fun Zone activities.",icon:"gamepad",group:"Play & Community",preview:"Puzzles · Quizzes · Word games",size:"compact"},
   community:{name:"Community",description:"Find your way back to the keeper community.",icon:"community",group:"Play & Community",preview:"Keepers · Creators · Updates",size:"compact"},
-  pins:{name:"My Favorites",description:"Your pinned species, games and personal colonies in one place.",icon:"leaf",group:"Discovery",preview:"Pinned species · Games · Colonies",size:"wide"}
+  pins:{name:"My Favorites",description:"Your pinned species, games and personal colonies in one place.",icon:"bookmark",group:"Discovery",preview:"Pinned species · Games · Colonies",size:"wide"}
 };
 const available=Object.keys(definitions) as WidgetId[];
 const groups:WidgetGroup[]=["Discovery","My Keeper Tools","Play & Community"];
