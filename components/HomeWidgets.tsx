@@ -141,6 +141,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
     </section>
   );
   return <HomeCanvasEditContext.Provider value={canvasEditing}><section className={`${styles.widgetArea} ${canvasEditing?styles.homeCanvasEditing:""}`} aria-label="Your customizable homepage" data-workspace-root="home" onPointerMove={event=>{if(canvasEditing)moveDrag(event)}} onPointerUp={()=>{if(canvasEditing)stopDrag()}} onPointerCancel={()=>{if(canvasEditing)stopDrag()}}>
+{!canvasEditing&&<button type="button" className={styles.desktopDashboardEdit} onClick={()=>enterCanvas()} aria-label="Edit Home dashboard">✎ Edit Home</button>}
     {canvasEditing?<WorkspaceEditToolbar title="Arrange your Home" description="Drag blocks to move them. Shortcuts stay together." onAdd={()=>{finishCanvas();returnFocus.current=document.activeElement as HTMLElement;setEditing(true)}} onReset={resetToDefault} onDone={finishCanvas}/>:null}
     {editing&&<div className={styles.homeEditorOverlay} onPointerDown={event=>{if(event.target===event.currentTarget)close()}}>
       <div className={`${styles.widgetEditor} ${styles.widgetLibrary}`} id="podscape-home-widget-editor" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="widget-library-title">
