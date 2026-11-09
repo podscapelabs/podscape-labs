@@ -152,3 +152,12 @@
   .nav > .primary span { width: 25px; height: 25px; }
   .nav > .primary svg { width: 25px; height: 25px; }
 }
+
+
+/* Precise toolbar edits remain usable by keyboard and on smaller browser windows. */
+@media(max-width:720px){
+ .editorActions button{min-height:44px;font-size:.76rem}
+ .editorActions button:focus-visible,.editorHeading button:focus-visible,
+ .resetLink:focus-visible,.nav>.item:focus-visible{outline:3px solid var(--accent,var(--forest));outline-offset:3px}
+ .editor{max-height:min(67dvh,480px);overflow-y:auto;overscroll-behavior:contain}
+}
