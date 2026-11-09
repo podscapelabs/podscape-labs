@@ -6,18 +6,18 @@ import {moveBlock,dropBlock,uniqueAllowed} from "./workspace-layout";
 import homeStyles from "./PodscapeHome.module.css";
 import styles from "./SpeciesProfile.module.css";
 
-export const speciesWidgetIds=["care","moisture","about","feeding","habitat","traits","guides","environment","breeding","taxonomy","nutrition","behaviour","habitatAdvanced","sources","personal","navigation"] as const;
+export const speciesWidgetIds=["care","moisture","about","feeding","habitat","traits","guides","breeding","taxonomy","nutrition","behaviour","habitatAdvanced","sources","personal","navigation"] as const;
 export type SpeciesWidgetId=(typeof speciesWidgetIds)[number];
 export const speciesWidgetLabels:Record<SpeciesWidgetId,string>={
- about:"Species overview",care:"Basic Care & Behaviour",moisture:"Moisture preference",
+ about:"Species overview",care:"Basic Care & Behaviour",moisture:"Moisture & Humidity",
  feeding:"Feeding overview",habitat:"Habitat & substrate",traits:"Notable traits",guides:"Related Field Guides",
- environment:"Moisture & Humidity",breeding:"Breeding & Development",taxonomy:"Taxonomy & Origin",nutrition:"Feeding & Nutrition",habitatAdvanced:"Habitat & Setup",behaviour:"Behaviour & Ecology",sources:"Research & Sources",personal:"My Species Tools",navigation:"Explore Species"
+ breeding:"Breeding & Development",taxonomy:"Taxonomy & Origin",nutrition:"Feeding & Nutrition",habitatAdvanced:"Habitat & Setup",behaviour:"Behaviour & Ecology",sources:"Research & Sources",personal:"My Species Tools",navigation:"Explore Species"
 };
 const descriptions:Record<SpeciesWidgetId,string>={
  about:"A short introduction to the species",care:"Essential care, activity and breeding at a glance",
- moisture:"Its relative dry-to-moist tendency",feeding:"General feeding information",habitat:"Substrate and habitat notes",
+ moisture:"Substrate gradient, approximate air humidity and moist-area coverage",feeding:"General feeding information",habitat:"Substrate and habitat notes",
  traits:"Distinctive characteristics",guides:"Supporting species-specific guides",
- environment:"Relative humidity, moist-zone coverage and moist-refuge substrate",breeding:"Brood measurements, reproduction and maturity",
+ breeding:"Brood measurements, reproduction and maturity",
  taxonomy:"Identification, scientific names, origins and morphology",nutrition:"Staple diet, supplements and dietary cautions",behaviour:"Defensive behaviour, activity and bioactive suitability",
  habitatAdvanced:"Enclosure setup and natural microhabitat",sources:"Reference links, evidence and review scope",personal:"Collection and pin-to-home shortcuts",navigation:"Related species guides and catalogue navigation"
 };
@@ -30,11 +30,14 @@ function normalize(value:unknown):Layout{
  const obj=value as Partial<Layout>;
  // Migrate layouts saved before Basic Care and Behaviour were combined.
  const oldOrder:unknown[]=Array.isArray(obj.order)?obj.order:[];
+ // Merge the old separate specialist widget into the existing moisture slot.
+ const mergeMoisture=(id:unknown)=>id==="environment"?"moisture":id;
  // Behaviour is now a valid specialist widget; never drop it from persisted layouts.
- const ordered=oldOrder;
+ const ordered=oldOrder.map(mergeMoisture);
  const order=[...uniqueAllowed(ordered,defaultOrder),...defaultOrder].filter((v,i,a)=>a.indexOf(v)===i);
  const existing:unknown[]=Array.isArray(obj.visible)?obj.visible:defaultVisible;
- const migrated=existing.includes("behaviour")&&!existing.includes("care")?[...existing,"care"]:existing;
+ const combined=existing.map(mergeMoisture);
+ const migrated=combined.includes("behaviour")&&!combined.includes("care")?[...combined,"care"]:combined;
  // First run after the page-footer migration: preserve the original actions as widgets.
  // Later intentional removals are honored because the IDs already exist in saved order.
  const migratedFooter=oldOrder.includes("personal")||oldOrder.includes("navigation")?migrated:[...migrated,"personal","navigation"];
