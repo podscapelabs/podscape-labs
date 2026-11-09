@@ -170,14 +170,14 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
             nutrition: nutritionAvailable ? <FeedingEcologyWidget record={record}/> : null,
             habitatAdvanced: habitatAdvancedAvailable ? <HabitatSetupWidget record={record}/> : null,
             sources: sourcesAvailable ? <ResearchSourcesWidget record={record}/> : null,
-            personal: {!previewRequested && record.kind === "species" ? <section className={styles.dashboardPersonal} aria-label="Your PodScape">
+            personal: !previewRequested && record.kind === "species" ? <section className={styles.dashboardPersonal} aria-label="Your PodScape">
             <div className={styles.dashboardPersonalTitle}>Your PodScape</div>
             <div className={styles.dashboardPersonalActions}>
               {record.status === "published" ? <PinToHome pin={{ kind: "species", id: record.slug }} userId={user?.id || null} /> : null}
               {collectionEntry ? <Link href="/keeper/collection" className={styles.collectionDestination}>✓ In collection · View colonies →</Link>
                 : <CollectionButton speciesId={record.id} speciesName={displayName} initialCollected={false} signedIn={member.signedIn} detail />}
             </div>
-          </section> : null},
+          </section> : null,
             navigation: <nav className={styles.compactFooter} aria-label="Explore more">
             <Link href="/field-guide?topic=Species#all-guides">Explore species guides →</Link>
             <Link href="/ledger">← All species</Link>
