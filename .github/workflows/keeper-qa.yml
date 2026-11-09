@@ -38,5 +38,7 @@ jobs:
         run: node scripts/verify-experience-achievements.mjs
       - name: Manager workspace regression checks
         run: node scripts/verify-manager-workspaces.mjs
+      - name: PodScape icon and shared-editor design system checks
+        run: node scripts/verify-design-system.mjs
       - name: Build Next.js application
         run: pnpm run build
