@@ -37,9 +37,45 @@ export const SPECIES_TRAIT_GROUPS=[
   ["Recognizable hobby morph","A widely recognized morph name or distinctive captive appearance."]
  ]}
 ] as const;
-/** Do not reinterpret legacy generic feeding observations as protein-specific evidence. */
-export const LEGACY_TRAIT_ALIASES:Record<string,string>={};
+const TRAIT_IDS:Record<string,string>={
+ "High-contrast pattern":"high-contrast-pattern",
+ "Distinctive colouration":"distinctive-colouration",
+ "Spotted pattern":"spotted-pattern",
+ "Striped pattern":"striped-pattern",
+ "Translucent body":"translucent-body",
+ "Spiny body":"spiny-body",
+ "Large-bodied":"large-bodied",
+ "Small-bodied":"small-bodied",
+ "Pronounced sexual dimorphism":"pronounced-sexual-dimorphism",
+ "Strong protein appetite":"strong-protein-appetite",
+ "Conglobates (rolls into a ball)":"conglobation",
+ "Frequently visible":"frequently-visible",
+ "Mostly concealed":"mostly-concealed",
+ "Defensive hissing":"defensive-hissing",
+ "Climbing behaviour":"climbing",
+ "Burrowing behaviour":"burrowing",
+ "Prolific breeder":"prolific-breeder",
+ "Slow colony growth":"slow-colony-growth",
+ "Rapid colony growth":"rapid-colony-growth",
+ "Distinctive juveniles":"distinctive-juveniles",
+ "Notable colour variation":"colour-variation",
+ "Captive-bred morph":"captive-bred-morph",
+ "Provisional identification":"provisional-identification",
+ "Recognizable hobby morph":"recognizable-hobby-morph",
+};
+/** Stable canonical IDs power future species comparison; labels may evolve. */
+export const SPECIES_TRAIT_REGISTRY=SPECIES_TRAIT_GROUPS.flatMap(group=>group.traits.map(([label,description])=>({
+ id:TRAIT_IDS[label],label,description,group:group.group
+})));
+/** Explicit IDs are not derived from mutable display labels. */
+export function getSpeciesTraitId(label:string):string|null{
+ const match=SPECIES_TRAIT_REGISTRY.find(item=>item.label.toLocaleLowerCase("en")===label.trim().toLocaleLowerCase("en"));
+ return match?.id??null;
+}
+/** Custom traits remain visible on profiles but do not silently become comparison categories. */
+export function comparableTraitIds(labels:readonly string[]):string[]{
+ return Array.from(new Set(labels.map(getSpeciesTraitId).filter((id):id is string=>id!==null))).sort();
+}
 export function normalizeSpeciesTrait(trait:string){
- const tidy=trait.trim().replace(/\s+/g," ").slice(0,65);
- return LEGACY_TRAIT_ALIASES[tidy]||tidy;
+ return trait.trim().replace(/\\s+/g," ").slice(0,65);
 }
