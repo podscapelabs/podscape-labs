@@ -51,6 +51,11 @@ begin
    ('species_personalized',25,'species_personalized'),
    ('manager_personalized',25,'manager_personalized')
   ) as v(key,points,trigger) where v.trigger=p_action_key
+  union all select 'secret_two_paths',20 where customized>=2
+  union all select 'secret_first_steps',30 where customized>=1 and exists (
+    select 1 from public.member_experience_actions
+    where user_id=p_user_id and action_key='onboarding_complete'
+  )
   union all select 'customize_three',60 where customized>=3
   union all select 'customize_all',100 where customized=4
  loop
