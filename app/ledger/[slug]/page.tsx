@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CollectionButton } from "@/components/CollectionButton";
 import { SpeciesDashboardWorkspace } from "@/components/SpeciesDashboardWorkspace";
-import {getSpeciesTraitId} from "@/lib/species-traits";
 import {MoistureAndHumidityWidget,BreedingDevelopmentWidget,TaxonomyOriginWidget,FeedingEcologyWidget,HabitatSetupWidget,BehaviourEcologyWidget,ResearchSourcesWidget} from "@/components/SpeciesResearchWidgets";
 import { PinToHome } from "@/components/PinToHome";
 import { customerSupabase } from "@/lib/customer-auth/server";
@@ -12,6 +11,7 @@ import Image from "next/image";
 import { type MoisturePosition } from "@/components/SpeciesMoistureGradient";
 import { SpeciesDiscoveryTracker } from "@/components/SpeciesDiscoveryTracker";
 import styles from "@/components/SpeciesProfile.module.css";
+import homeStyles from "@/components/PodscapeHome.module.css";
 import { speciesDisplayName, speciesGenus, speciesRecordLabel, speciesScientificName } from "@/data/species";
 import { isGuideActive } from "@/data/guides";
 import { getGuideRecords } from "@/lib/guide-store";
@@ -95,13 +95,6 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
   const sourcesAvailable=hasResearch(["researchSources","evidenceScope","evidenceQuality","evidenceNotes","lastReviewed"]);
 
   const notableTraits = [...new Set((record.notableTraits || []).map(trait => trait.trim()).filter(Boolean))].slice(0, 5);
-  // Keep the hero distinctive; don't repeat information already in the care grid.
-  const redundantTrait = (trait:string) => {
-    const text=trait.toLowerCase();
-    return (Boolean(record.reproduction?.trim()) && /prolific breeder|rapid colony growth|slow colony growth/.test(text))
-      || (Boolean(record.activity?.trim()) && /frequently visible|mostly concealed/.test(text));
-  };
-  const heroTraits = notableTraits.filter(trait=>!redundantTrait(trait)).slice(0,3);
   let relatedGuides: { slug: string; title: string; summary: string }[] = [];
   try {
     const guides = await getGuideRecords();
@@ -122,15 +115,13 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
           <span className={styles.catalogueLabel}>{record.catalogueNumber}</span>
         </div>
 
-        <header className={styles.compactHero}>
-          <div className={styles.identity}>
+        <header className={`${homeStyles.hero} ${styles.speciesHomeHero}`}>
+          {record.image ? <Image className={homeStyles.heroImage} src={record.image} alt={record.imageAlt || scientificName} fill priority sizes="(max-width: 720px) 100vw, 1100px" style={{objectPosition:`${record.imagePositionX}% ${record.imagePositionY}%`}} /> : null}
+          <div className={homeStyles.heroContent}>
+            <p className={homeStyles.eyebrow}>LEAF LEDGER · SPECIES PROFILE</p>
             <h1>{displayName}</h1>
-            <p className={styles.scientific}><em>{scientificName}</em></p>
-            <p className={styles.identityLine}>{speciesGenus(record)} <span aria-hidden="true">·</span> {speciesRecordLabel(record)}</p>
-            {heroTraits.length ? <ul className={styles.heroTraits} aria-label="Distinctive traits">{heroTraits.map(trait=><li key={trait} data-trait-id={getSpeciesTraitId(trait)||undefined}>{trait}</li>)}</ul> : null}
-          </div>
-          <div className={styles.compactPhoto}>
-            {record.image ? <Image src={record.image} alt={record.imageAlt || scientificName} fill sizes="(max-width:600px) 100vw, (max-width:1000px) 44vw, 400px" style={{objectFit:"contain",objectPosition:`${record.imagePositionX}% ${record.imagePositionY}%`,transform:`scale(${record.imageZoom})`}} /> : <span aria-label="Species photograph pending">Photo pending</span>}
+            <p className={styles.speciesHeroScientific}><em>{scientificName}</em></p>
+            <p className={styles.speciesHeroIdentity}>{speciesGenus(record)} <span aria-hidden="true">·</span> {speciesRecordLabel(record)}</p>
           </div>
         </header>
 
