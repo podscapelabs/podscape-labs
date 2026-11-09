@@ -118,7 +118,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
           <span className={styles.catalogueLabel}>{record.catalogueNumber}</span>
         </div>
 
-        <SpeciesProfileNavigator currentSlug={record.slug} catalogue={catalogue}>
+        <SpeciesProfileNavigator currentSlug={record.slug} catalogue={previewRequested ? [] : catalogue}>
         <header className={`${homeStyles.hero} ${styles.speciesHomeHero} ${record.image ? styles.speciesHeroHasArt : styles.speciesHeroNoArt}`}>
           {record.image ? <div className={styles.speciesHeroArt}><Image className={homeStyles.heroImage} src={record.image} alt={record.imageAlt || scientificName} fill priority sizes="(max-width: 720px) 65vw, 540px" style={{objectFit:"contain",objectPosition:`${record.imagePositionX}% ${record.imagePositionY}%`,transform:`scale(${record.imageZoom})`}} /></div> : null}
           <div className={homeStyles.heroContent}>
