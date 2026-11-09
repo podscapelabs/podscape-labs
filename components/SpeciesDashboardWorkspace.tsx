@@ -6,16 +6,20 @@ import {moveBlock,dropBlock,uniqueAllowed} from "./workspace-layout";
 import homeStyles from "./PodscapeHome.module.css";
 import styles from "./SpeciesProfile.module.css";
 
-export const speciesWidgetIds=["care","moisture","about","advanced","feeding","habitat","traits","guides"] as const;
+export const speciesWidgetIds=["care","moisture","about","advanced","feeding","habitat","traits","guides","environment","breeding","taxonomy","nutrition","habitatAdvanced","sources"] as const;
 export type SpeciesWidgetId=(typeof speciesWidgetIds)[number];
 export const speciesWidgetLabels:Record<SpeciesWidgetId,string>={
  about:"Species overview",care:"Basic Care & Behaviour",moisture:"Moisture preference",advanced:"Advanced Care",
- feeding:"Feeding overview",habitat:"Habitat & substrate",traits:"Notable traits",guides:"Related Field Guides"
+ feeding:"Feeding overview",habitat:"Habitat & substrate",traits:"Notable traits",guides:"Related Field Guides",
+ environment:"Moisture & Humidity",breeding:"Breeding & Development",taxonomy:"Taxonomy & Origin",nutrition:"Feeding & Ecology",habitatAdvanced:"Habitat & Setup",sources:"Research & Sources"
 };
 const descriptions:Record<SpeciesWidgetId,string>={
  about:"A short introduction to the species",care:"Essential care, activity and breeding at a glance",advanced:"Feeding and substrate details when you want more depth",
  moisture:"Its relative dry-to-moist tendency",feeding:"General feeding information",habitat:"Substrate and habitat notes",
- traits:"Distinctive characteristics",guides:"Supporting species-specific guides"
+ traits:"Distinctive characteristics",guides:"Supporting species-specific guides",
+ environment:"Relative humidity, moist-zone coverage and moist-refuge substrate",breeding:"Brood measurements, reproduction and maturity",
+ taxonomy:"Identification, scientific names, origins and morphology",nutrition:"Diet, supplements and feeding cautions",
+ habitatAdvanced:"Enclosure setup and natural microhabitat",sources:"Reference links, evidence and review scope"
 };
 const defaultOrder:SpeciesWidgetId[]=[...speciesWidgetIds];
 const defaultVisible:SpeciesWidgetId[]=["care","moisture","about"];
