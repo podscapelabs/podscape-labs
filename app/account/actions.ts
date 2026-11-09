@@ -76,13 +76,17 @@ export async function signInCustomer(_prev: CustomerFormState, form: FormData): 
   const { error, data } = await db.auth.signInWithPassword({ email, password });
   if (error) return { error: "Invalid credentials or unverified email. Please try again.", message: "" };
   if (data.user?.app_metadata?.role === "owner") redirect("/app");
-  const approval = await testerAccessStatus(email);
-  if (approval === "unavailable") {
+  // Never trust the address submitted in the form as the approval identity.
+  // Only an authenticated, confirmed account with an active invitation may enter.
+  const verifiedEmail = data.user?.email_confirmed_at ? data.user.email?.trim().toLowerCase() : "";
+  const approval = verifiedEmail ? await testerAccessStatus(verifiedEmail) : "not-invited";
+  if (approval !== "approved") {
     await db.auth.signOut();
-    return { error: "Sign-in succeeded, but Early Access verification is temporarily unavailable. Please try again shortly.", message: "" };
+    return { error: approval === "unavailable"
+      ? "Early Access verification is temporarily unavailable. Please try again shortly."
+      : "This account is not approved for Early Access. Contact the PodScape team.", message: "" };
   }
-  if (approval === "approved") redirect("/app");
-  redirect("/early-access");
+  redirect("/app");
 }
 
 export async function requestCustomerPasswordReset(_prev: CustomerFormState, form: FormData): Promise<CustomerFormState> {
