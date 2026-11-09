@@ -16,5 +16,5 @@ export default async function Page({params}:{params:Promise<{game:string}>}){
  const {data:{user}}=db?await db.auth.getUser():{data:{user:null}};
  const {ids,available}=await getFunZoneProgress(game.key);
  const puzzles:PuzzleItem[]=getPuzzles(game.key).map(entry=>({id:entry.puzzle.id,title:entry.puzzle.title,description:entry.puzzle.description,topic:game.category,difficulty:entry.puzzle.difficulty,href:`/fun-zone/${game.key}/${entry.puzzle.id}`,status:ids.has(entry.puzzle.id)?"completed":available&&canPlayPuzzle(game.key,entry.puzzle.id,ids)?"playable":"locked"}));
- return <PlatformShell><div style={{padding:"12px 18px 0",maxWidth:1140,margin:"auto"}}><PinToHome pin={{kind:"game",id:game.key}} userId={user?.id||null}/></div><PuzzleLibrary title={game.title} subtitle={game.subtitle} puzzles={puzzles}/></PlatformShell>;
+ return <PlatformShell><div style={{padding:"12px 18px 0",maxWidth:1140,margin:"auto"}}><PinToHome pin={{kind:"game",id:game.key}} userId={user?.id||null}/></div><PuzzleLibrary gameKey={game.key} title={game.title} subtitle={game.subtitle} puzzles={puzzles}/></PlatformShell>;
 }
