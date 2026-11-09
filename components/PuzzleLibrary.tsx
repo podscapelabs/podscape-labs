@@ -13,7 +13,7 @@ export function PuzzleLibrary({title,subtitle,eyebrow="Fun Zone / Puzzle Library
  const completed=puzzles.filter(p=>p.status==="completed").length;
  return <main className={styles.page}><div className={styles.wrap}>
    <nav className={styles.breadcrumbs} aria-label="Breadcrumb"><Link href="/fun-zone">← Fun Zone</Link><span aria-hidden="true">/</span><span>{title}</span></nav>
-   <header className={styles.hero}><div className={styles.heroContent}><p className={styles.eyebrow}>{eyebrow}</p><h1>{title}</h1><p>{subtitle}</p></div><div className={styles.heroDecoration} aria-hidden="true"><PodscapeLineIcon name={gameIcon(gameKey)}/></div></header>
+   <header className={styles.hero}><div className={styles.heroContent}><p className={styles.eyebrow}>{eyebrow}</p><h1>{title}</h1><p>{subtitle}</p></div></header>
    <div className={styles.summary} aria-label="Puzzle library overview">
      <div><span className={styles.summaryIcon} aria-hidden="true"><PodscapeLineIcon name="grid"/></span><strong>{puzzles.length}</strong><small>Listed puzzles</small></div>
      <div><span className={styles.summaryIcon} aria-hidden="true"><PodscapeLineIcon name="check"/></span><strong>{completed} / {puzzles.length}</strong><small>Completed</small></div>
