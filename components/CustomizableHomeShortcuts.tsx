@@ -17,7 +17,7 @@ export function CustomizableHomeShortcuts({isOwner=false}:{isOwner?:boolean}){
   const current=choices[selected]||choices[0];
   return <section aria-label="Your Podscape shortcuts">
     {editing&&!canvasEditing&&<div className={styles.jiggleToolbar} role="region" aria-label="Customize homepage shortcuts">
-      <span className={styles.jiggleHint}>✧ <strong>Arrange your shortcuts</strong><small>Drag icons or use the move buttons. Tap one to replace it.</small></span>
+      <span className={styles.jiggleHint}><PodscapeLineIcon name="grip" /> <strong>Arrange your shortcuts</strong><small>Drag icons or use the move buttons. Tap one to replace it.</small></span>
       <button type="button" className={styles.jiggleDone} onClick={done}>Done</button>
       <label className={styles.jigglePicker}>Replace {current?.label||"shortcut"}
         <select value={current?.id||""} onChange={event=>change(swapNavigationSlot(ids,selected,event.target.value))}>
