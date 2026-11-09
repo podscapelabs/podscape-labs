@@ -1,12 +1,13 @@
 "use client";
 
-import { useDeferredValue, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { LedgerSpeciesCard } from "./LedgerSpeciesCard";
 import { CollectionSpeciesRow } from "./CollectionSpeciesRow";
 import collectionStyles from "./CollectionRows.module.css";
 import styles from "./LedgerLayout.module.css";
 import spotlight from "@/app/ledger/discover.module.css";
 import Link from "next/link";
+import {LEDGER_BROWSE_ORDER_KEY,LEDGER_EXPLORER_STATE_KEY,type LedgerExplorerSnapshot} from "@/lib/ledger-navigation";
 import type { ColonyStatus } from "@/data/collection";
 import { speciesDisplayName, speciesScientificName, type SpeciesRecord } from "@/data/species";
 
@@ -28,6 +29,28 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
   const [care, setCare] = useState("all");
   const [sort, setSort] = useState<SortMode>(mode === "collection" ? "recent" : "catalogue");
   const deferredQuery = useDeferredValue(query.trim().toLowerCase());
+  const restoredRef=useRef(mode!=="catalogue");
+  const pendingScrollRef=useRef<number|null>(null);
+  const hydratedRef=useRef(false);
+  // Restore the exact catalogue view when returning from a species profile.
+  useEffect(()=>{
+    if(mode!=="catalogue")return;
+    try{
+      const raw=sessionStorage.getItem(LEDGER_EXPLORER_STATE_KEY);
+      if(raw){
+        const saved=JSON.parse(raw) as Partial<LedgerExplorerSnapshot>;
+        if(typeof saved.query==="string")setQuery(saved.query);
+        if(typeof saved.genus==="string"&&(saved.genus==="all"||records.some(item=>item.genus===saved.genus)))setGenus(saved.genus);
+        if(typeof saved.care==="string"&&(saved.care==="all"||records.some(item=>item.careLevel===saved.care)))setCare(saved.care);
+        if(["catalogue","common","scientific","recent"].includes(saved.sort||""))setSort(saved.sort as SortMode);
+        if(typeof saved.filtersOpen==="boolean")setFiltersOpen(saved.filtersOpen);
+        if(typeof saved.scrollY==="number"&&Number.isFinite(saved.scrollY))pendingScrollRef.current=Math.max(0,saved.scrollY);
+      }
+    }catch{}
+    hydratedRef.current=true;
+    // Preserve the scroll position until the restored filters have rendered.
+    if(pendingScrollRef.current===null)restoredRef.current=true;
+  },[mode,records]);
   const genera = useMemo(() => [...new Set(records.map((record) => record.genus).filter(Boolean))].sort(), [records]);
   const careLevels = useMemo(() => [...new Set(records.map((record) => record.careLevel).filter(Boolean))].sort(), [records]);
   const saved = useMemo(() => new Set(collectedIds), [collectedIds]);
@@ -46,6 +69,34 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
       return a.catalogueNumber.localeCompare(b.catalogueNumber);
     }), [addedAtById, care, deferredQuery, genus, records, sort]);
 
+  const saveBrowseContext=()=>{
+    if(mode!=="catalogue")return;
+    try{
+      const snapshot:LedgerExplorerSnapshot={query,genus,care,sort,filtersOpen,scrollY:window.scrollY};
+      sessionStorage.setItem(LEDGER_EXPLORER_STATE_KEY,JSON.stringify(snapshot));
+      sessionStorage.setItem(LEDGER_BROWSE_ORDER_KEY,JSON.stringify({slugs:results.map(item=>item.slug)}));
+    }catch{}
+  };
+  useEffect(()=>{
+    if(mode!=="catalogue"||!hydratedRef.current||!restoredRef.current)return;
+    const save=()=>{
+      try{sessionStorage.setItem(LEDGER_EXPLORER_STATE_KEY,JSON.stringify({query,genus,care,sort,filtersOpen,scrollY:window.scrollY} satisfies LedgerExplorerSnapshot));}catch{}
+    };
+    window.addEventListener("scroll",save,{passive:true});
+    window.addEventListener("pagehide",save);
+    save();
+    return ()=>{window.removeEventListener("scroll",save);window.removeEventListener("pagehide",save)};
+  },[mode,query,genus,care,sort,filtersOpen]);
+  useEffect(()=>{
+    if(mode!=="catalogue"||!hydratedRef.current||restoredRef.current||deferredQuery!==query.trim().toLowerCase())return;
+    let second=0;
+    const first=requestAnimationFrame(()=>{second=requestAnimationFrame(()=>{
+      window.scrollTo({top:pendingScrollRef.current||0,behavior:"instant"});
+      pendingScrollRef.current=null;
+      restoredRef.current=true;
+    })});
+    return ()=>{cancelAnimationFrame(first);cancelAnimationFrame(second)};
+  },[mode,deferredQuery,query,results.length]);
   function clear() {
     setQuery("");
     setGenus("all");
@@ -125,7 +176,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
     </div>
     {results.length ? (mode === "collection"
       ? <div className={collectionStyles.grid}>{results.map((record) => <CollectionSpeciesRow record={record} details={collectionDetailsById[record.id]} key={record.id} />)}</div>
-      : <div className="v2-species-grid">{results.map((record, index) => <LedgerSpeciesCard record={record} key={record.id} showCollectionAction collected={saved.has(record.id)} signedIn={signedIn} collectionDetails={collectionDetailsById[record.id]} />).flatMap((card, index) => {
+      : <div className="v2-species-grid" onClickCapture={event=>{if((event.target as HTMLElement).closest("a[href^=\"/ledger/\"]"))saveBrowseContext()}}>{results.map((record, index) => <LedgerSpeciesCard record={record} key={record.id} showCollectionAction collected={saved.has(record.id)} signedIn={signedIn} collectionDetails={collectionDetailsById[record.id]} />).flatMap((card, index) => {
         const insertSpotlight = index === 3 && !!featured && !filtersActive;
         return insertSpotlight ? [card, <aside key="species-spotlight" className={spotlight.feature} aria-label="Featured species">
           {featured!.image ? <img className={spotlight.featurePhoto} src={featured!.image} alt="" loading="lazy" /> : <span className={spotlight.featureFallback} aria-hidden="true">❧</span>}
