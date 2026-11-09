@@ -104,7 +104,7 @@ function Crossword({puzzle,onComplete}:{puzzle:CrosswordPuzzle;onComplete:Comple
  const [answers,setAnswers]=useState<Record<number,string>>({}),[checked,setChecked]=useState(false);
  // Coordinates deliberately intersect at matching letters of the five answers.
  const places=puzzle.clues;
- const display=Array.from({length:8},()=>Array.from({length:11},()=>({open:false,char:"",number:0,conflict:false})));
+ const display=Array.from({length:8},()=>Array.from({length:13},()=>({open:false,char:"",number:0,conflict:false})));
  places.forEach((p,i)=>{
   const value=(answers[i]||"").toUpperCase();
   for(let j=0;j<puzzle.clues[i].answer.length;j++){
@@ -122,7 +122,7 @@ function Crossword({puzzle,onComplete}:{puzzle:CrosswordPuzzle;onComplete:Comple
  const correct=puzzle.clues.filter((clue,i)=>(answers[i]||"").trim().toUpperCase()===clue.answer).length;
  const complete=correct===puzzle.clues.length&&conflicts===0;
  return <div className={styles.playArea}>
-  <div className={styles.stage}><small>MINI CROSSWORD · FIVE INTERSECTING CLUES</small><h2>Keeper&apos;s Vocabulary</h2><p>Enter answers in the fields below. Letters appear on the connected grid; conflicting intersections are highlighted.</p></div>
+  <div className={styles.stage}><small>MINI CROSSWORD · FIVE CLUES</small><h2>{puzzle.title}</h2><p>Enter answers in the fields below. Letters appear on the connected grid; conflicting intersections are highlighted.</p></div>
   <div className={styles.crosswordBoard} aria-label="Crossword grid">{display.flatMap((row,r)=>row.map((cell,c)=><div key={r+"-"+c} className={cell.open?styles.crosswordCell:styles.crosswordBlank} data-conflict={cell.conflict?"true":undefined}>{cell.number?<small>{cell.number}</small>:null}{cell.char}</div>))}</div>
   <div className={styles.clues}>{puzzle.clues.map((clue,i)=>{
    const success=(answers[i]||"").toUpperCase()===clue.answer;
