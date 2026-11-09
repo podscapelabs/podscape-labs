@@ -18,3 +18,8 @@
  .section{margin-top:22px}
  .heading{margin-bottom:12px}
 }
+
+/* Legacy audit: vector icons share the platform icon geometry. */
+.topicArt svg{width:32px;height:32px;max-width:45%;max-height:45%}
+.guideArt svg{width:25px;height:25px}
+.hero:after,.featured:after{content:none}
