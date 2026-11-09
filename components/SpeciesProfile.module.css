@@ -455,3 +455,31 @@
 .moistureHumidityFill{background:#62a18b;box-shadow:inset 0 0 0 2px var(--accent)}
 .moistureHumidityTrack i{width:4px;height:23px}
 .moistureCoverageTrack>span{background:#62a18b;box-shadow:inset 0 0 0 2px var(--accent)}
+
+
+/* At a Glance is a keeper's first impression: four equal quick-fact tiles. */
+.glanceWidget{display:grid;gap:12px}
+.glanceWidget .dashboardSectionHead h2{font-size:clamp(1.45rem,4.5vw,1.85rem);margin:0}
+.glanceWidget .dashboardFacts{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.glanceWidget .dashboardFacts>div{min-height:88px;padding:15px 14px;border:1px solid var(--border);border-radius:15px;background:var(--surface-secondary);gap:7px;align-content:start}
+.glanceWidget .dashboardFacts>div:first-child{border-color:color-mix(in srgb,var(--accent) 43%,var(--border));background:color-mix(in srgb,var(--accent) 7%,var(--surface))}
+.glanceWidget .dashboardFacts dt{font-size:.66rem;letter-spacing:.055em}
+.glanceWidget .dashboardFacts dd{font-size:clamp(.91rem,3.25vw,1.13rem);line-height:1.25;font-weight:730}
+.glanceHelp{color:var(--text-secondary);font-size:.67rem;line-height:1.35}
+@media(max-width:420px){
+ .glanceWidget .dashboardFacts{gap:8px}
+ .glanceWidget .dashboardFacts>div{min-height:85px;padding:12px 11px}
+ .glanceWidget .dashboardFacts dt{font-size:.6rem}
+ .glanceWidget .dashboardFacts dd{font-size:.91rem}
+}
+/* Research siblings use the same visual fact tiles as At a Glance. */
+.researchOverview{gap:10px}
+.researchOverview .researchSnapshot{gap:9px}
+.researchOverview .researchSnapshot>div{background:var(--surface-secondary);border-radius:15px;min-height:76px;padding:13px}
+.researchOverview .researchSnapshot dt{text-transform:uppercase;letter-spacing:.05em;font-size:.63rem;font-weight:770}
+.researchOverview .researchSnapshot dd{font-size:.86rem;font-weight:690;line-height:1.4}
+@media(max-width:420px){
+ .researchOverview .researchSnapshot{gap:8px}
+ .researchOverview .researchSnapshot>div{padding:11px;min-height:74px}
+ .researchOverview .researchSnapshot dd{font-size:.76rem}
+}
