@@ -84,6 +84,15 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
     ? (rangeStart===rangeEnd ? moistureZoneNames[rangeStart-1] : moistureZoneNames[rangeStart-1]+" – "+moistureZoneNames[rangeEnd-1])
     : moisturePosition ? moistureLabels[moisturePosition] : "";
 
+  // Specialist cards do not appear in the library until their data exists for this species.
+  const hasResearch=(keys:(keyof typeof record)[])=>keys.some(key=>typeof record[key]==="string"&&Boolean((record[key] as string).trim()));
+  const environmentAvailable=hasResearch(["humidityMin","humidityMax","moistZoneCoverage","moistRefugeCondition","moistureGradientGuidance"]);
+  const breedingAvailable=hasResearch(["broodAverage","broodMin","broodMax","incubationPeriod","maturityAge","breedingSeason"]);
+  const taxonomyAvailable=hasResearch(["taxonomicStatus","taxonomicSynonyms","nativeDistribution","naturalMicrohabitat","morphOrigin","identificationNotes","adultSizeMm","lifespan"]);
+  const nutritionAvailable=hasResearch(["stapleDiet","proteinGuidance","calciumGuidance","dietaryCautions","defensiveBehaviour","visibilityNotes","bioactiveSuitability"]);
+  const habitatAdvancedAvailable=hasResearch(["naturalMicrohabitat","substrateDepth","enclosureGuidance","moistureGradientGuidance"]);
+  const sourcesAvailable=hasResearch(["researchSources","evidenceScope","evidenceQuality","evidenceNotes","lastReviewed"]);
+
   const notableTraits = [...new Set((record.notableTraits || []).map(trait => trait.trim()).filter(Boolean))].slice(0, 5);
   // Keep the hero distinctive; don't repeat information already in the care grid.
   const redundantTrait = (trait:string) => {
@@ -156,12 +165,12 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
             habitat: record.substrate?.trim() ? <section className={styles.speciesInfoCard}><h2>Habitat &amp; substrate</h2><p>{introText(record.substrate)}</p></section> : null,
             traits: notableTraits.length ? <section className={styles.speciesInfoCard}><h2>Notable traits</h2><ul className={styles.compactTraits}>{notableTraits.map(trait=><li key={trait}>{trait}</li>)}</ul></section> : null,
             guides: relatedGuides.length ? <section className={styles.speciesInfoCard}><h2>Related Field Guides</h2><div className={styles.relatedGuides}>{relatedGuides.map(guide=><Link href={`/field-guide/${guide.slug}`} key={guide.slug}><span><strong>{guide.title}</strong>{guide.summary?<small>{guide.summary}</small>:null}</span><b aria-hidden="true">→</b></Link>)}</div></section> : null,
-            environment: <MoistureAndHumidityWidget record={record}/>,
-            breeding: <BreedingDevelopmentWidget record={record}/>,
-            taxonomy: <TaxonomyOriginWidget record={record}/>,
-            nutrition: <FeedingEcologyWidget record={record}/>,
-            habitatAdvanced: <HabitatSetupWidget record={record}/>,
-            sources: <ResearchSourcesWidget record={record}/>
+            environment: environmentAvailable ? <MoistureAndHumidityWidget record={record}/> : null,
+            breeding: breedingAvailable ? <BreedingDevelopmentWidget record={record}/> : null,
+            taxonomy: taxonomyAvailable ? <TaxonomyOriginWidget record={record}/> : null,
+            nutrition: nutritionAvailable ? <FeedingEcologyWidget record={record}/> : null,
+            habitatAdvanced: habitatAdvancedAvailable ? <HabitatSetupWidget record={record}/> : null,
+            sources: sourcesAvailable ? <ResearchSourcesWidget record={record}/> : null
           }} />
 
           <details className={styles.dashboardExplore}>
