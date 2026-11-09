@@ -51,13 +51,57 @@ function Connections(){
   </>}
  </div>;
 }
+const burrowRounds=[
+ {answer:"HUMUS",clue:"Dark, decomposed organic matter found in soil and forest-floor substrate.",note:"Humus is well-decomposed organic matter. It isn't a shelter object, but forms part of the natural soil environment."},
+ {answer:"COVER",clue:"Shelter or protection provided by leaves, bark and other hiding places.",note:"Leaf litter and bark offer cover from exposure and help create local microhabitats."},
+ {answer:"FUNGI",clue:"Organisms that help break down dead plant matter in woodland habitats.",note:"Fungi contribute to decomposition. Isopods may interact with fungal growth as part of the detrital food web."}
+] as const;
+type TileResult="correct"|"present"|"absent";
+function scoreGuess(guess:string,target:string):TileResult[]{
+ const result:Array<TileResult>=Array(5).fill("absent");
+ const available=new Map<string,number>();
+ for(let i=0;i<5;i++){if(guess[i]===target[i])result[i]="correct";else available.set(target[i],(available.get(target[i])||0)+1);}
+ for(let i=0;i<5;i++)if(result[i]!=="correct"){
+  const count=available.get(guess[i])||0;
+  if(count>0){result[i]="present";available.set(guess[i],count-1)}
+ }
+ return result;
+}
 function Burrow(){
- const target="MOSSY";
+ const [round,setRound]=useState(0);
+ const {answer:target,clue,note}=burrowRounds[round%burrowRounds.length];
  const [guesses,setGuesses]=useState<string[]>([]),[entry,setEntry]=useState("");
  const won=guesses.includes(target),lost=guesses.length>=6&&!won;
- const submit=()=>{const word=entry.toUpperCase().trim();if(word.length!==5||! /^[A-Z]+$/.test(word)||won||lost)return;setGuesses(g=>[...g,word]);setEntry("")};
- return <div className={styles.playArea}><div className={styles.stage}><small>FIVE LETTERS · SIX GUESSES</small><h2>Find the hidden habitat word</h2><p>Think of a place where tiny isopods might shelter.</p></div><div className={styles.guessGrid}>{Array.from({length:6},(_,r)=>{const guess=guesses[r]||"";return <div className={styles.guessRow} key={r}>{Array.from({length:5},(_,c)=>{const letter=guess[c]||"";const result=!letter?"":target[c]===letter?"correct":target.includes(letter)?"present":"absent";return <span key={c} data-result={result}>{letter}</span>})}</div>})}</div>
- {won||lost?<div className={styles.result}><h2>{won?"You found it! ✦":"The word was MOSSY"}</h2><p>{won?"A mossy microhabitat can provide cover and hold moisture.":"Try the challenge again and look for the habitat clue."}</p><button onClick={()=>{setGuesses([]);setEntry("")}}>Play again ↻</button></div>:<form className={styles.burrowForm} onSubmit={e=>{e.preventDefault();submit()}}><label htmlFor="burrow-guess">Your guess</label><input id="burrow-guess" value={entry} onChange={e=>setEntry(e.target.value.replace(/[^a-z]/gi,"").slice(0,5).toUpperCase())} maxLength={5} autoComplete="off" autoCapitalize="characters" placeholder="5 letters"/><button disabled={entry.length!==5}>Guess →</button></form>}<p className={styles.footnote}>Green: right position · Sage: right letter, wrong place</p></div>;
+ const submit=()=>{
+  const word=entry.toUpperCase().trim();
+  if(!/^[A-Z]{5}$/.test(word)||won||lost)return;
+  setGuesses(g=>[...g,word]);setEntry("");
+ };
+ const restart=(next:boolean)=>{
+  if(next)setRound(n=>(n+1)%burrowRounds.length);
+  setGuesses([]);setEntry("");
+ };
+ const keyboard=new Map<string,TileResult>();
+ const rank:Record<TileResult,number>={absent:1,present:2,correct:3};
+ guesses.forEach(guess=>scoreGuess(guess,target).forEach((result,i)=>{
+  const key=guess[i],previous=keyboard.get(key);
+  if(!previous||rank[result]>rank[previous])keyboard.set(key,result);
+ }));
+ return <div className={styles.playArea}>
+  <div className={styles.stage}><small>WORD {round+1} / {burrowRounds.length} · FIVE LETTERS · SIX GUESSES</small><h2>Unearth the hidden term</h2><p><strong>Clue:</strong> {clue}</p></div>
+  <div className={styles.guessGrid} aria-label="Word guesses">{Array.from({length:6},(_,r)=>{
+   const guess=guesses[r]||"",results=guess?scoreGuess(guess,target):[];
+   return <div className={styles.guessRow} key={r}>{Array.from({length:5},(_,c)=><span key={c} data-result={results[c]||""} aria-label={guess?(`Guess ${r+1}, ${guess[c]}, ${results[c]}`):`Guess ${r+1}, empty tile ${c+1}`}>{guess[c]||""}</span>)}</div>;
+  })}</div>
+  {won||lost?<div className={styles.result} role="status"><h2>{won?"You found it! ✦":`The word was ${target}`}</h2><p>{note}</p><div className={styles.actions} style={{justifyContent:"center"}}><button type="button" onClick={()=>restart(false)}>Retry word ↻</button><button type="button" onClick={()=>restart(true)}>Next term →</button></div></div>
+  :<form className={styles.burrowForm} onSubmit={e=>{e.preventDefault();submit()}}>
+   <label htmlFor="burrow-guess">Your guess</label>
+   <input id="burrow-guess" value={entry} onChange={e=>setEntry(e.target.value.replace(/[^a-z]/gi,"").slice(0,5).toUpperCase())} maxLength={5} autoComplete="off" autoCapitalize="characters" spellCheck={false} placeholder="5 letters" aria-describedby="burrow-help"/>
+   <button type="submit" disabled={entry.length!==5}>Guess →</button>
+  </form>}
+  <div className={styles.letterKeyboard} aria-label="Letter clues">{["QWERTYUIOP","ASDFGHJKL","ZXCVBNM"].map(row=><div key={row}>{[...row].map(letter=><span key={letter} data-result={keyboard.get(letter)||""}>{letter}</span>)}</div>)}</div>
+  <p className={styles.footnote} id="burrow-help">Green: correct spot · Sage: in word, wrong spot · Gray: not in word. Repeated letters count only when present in the answer.</p>
+ </div>;
 }
 function Crossword(){
  const [answers,setAnswers]=useState<Record<number,string>>({}),[checked,setChecked]=useState(false);
