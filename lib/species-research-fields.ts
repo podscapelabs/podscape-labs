@@ -46,6 +46,7 @@ export function validateSpeciesResearchField(name:string,value:string):string|nu
  if(name==="lastReviewed"&&!/^\d{4}-\d{2}-\d{2}$/.test(value))return "Expected date YYYY-MM-DD.";
  if(name==="evidenceScope"&&!["species-level","morph-specific","mixed"].includes(value))return "Unsupported evidence scope.";
  if(name==="evidenceQuality"&&!["scientific","breeder-consensus","limited"].includes(value))return "Unsupported evidence basis.";
+ if(name==="moistRefugeCondition"&&!["Lightly damp","Moist","Very moist"].includes(value))return "Use Lightly damp, Moist or Very moist (moist refuge only).";
  if(name==="researchSources"){
   const lines=value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
   if(lines.some(x=>{try{return !["https:","http:"].includes(new URL(x).protocol)}catch{return true}}))return "Sources must be full HTTP(S) URLs, one per line.";
