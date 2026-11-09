@@ -4,7 +4,7 @@ import {testerAccessStatus} from "@/lib/customer-auth/access";
 import {customerSupabase} from "@/lib/customer-auth/server";
 import {getSupabaseAdmin} from "@/lib/supabase-admin";
 import {achievementCatalog} from "@/data/achievement-catalog";
-import {getPuzzle,type QuizPuzzle,type BurrowPuzzle,type ConnectionsPuzzle,type CrosswordPuzzle,type SearchPuzzle} from "@/lib/fun-zone-puzzles";
+import {getPuzzle,getPuzzles,type QuizPuzzle,type BurrowPuzzle,type ConnectionsPuzzle,type CrosswordPuzzle,type SearchPuzzle} from "@/lib/fun-zone-puzzles";
 
 function validProof(mode:string,puzzle:unknown,proof:unknown):boolean{
  if(!proof||typeof proof!=="object")return false;
@@ -66,10 +66,13 @@ export async function POST(request:Request){
  const challenge=getPuzzle(gameKey,puzzleId);
  if(!challenge||!validProof(challenge.mode,challenge.puzzle,proof))
   return NextResponse.json({error:"Puzzle completion was not verified"},{status:400});
+ const ordered=getPuzzles(gameKey);
+ const index=ordered.findIndex(entry=>entry.puzzle.id===puzzleId);
+ const previousPuzzleId=index>0?ordered[index-1].puzzle.id:null;
  const admin=getSupabaseAdmin();
  if(!admin)return NextResponse.json({error:"Progress is temporarily unavailable"},{status:503});
  const {data,error}=await admin.rpc("record_member_puzzle_completion",{
-  p_user_id:user.id,p_game_key:gameKey,p_puzzle_id:puzzleId
+  p_user_id:user.id,p_game_key:gameKey,p_puzzle_id:puzzleId,p_previous_puzzle_id:previousPuzzleId
  });
  if(error){
   console.error("Puzzle progress error",error.code);
