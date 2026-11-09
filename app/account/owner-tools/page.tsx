@@ -5,6 +5,7 @@ import { customerSupabase } from "@/lib/customer-auth/server";
 import { signOutAdmin } from "@/app/admin/actions";
 import styles from "./page.module.css";
 import { ownerDesks, ownerOperations } from "@/data/owner-desks";
+import { TestAchievementButton } from "@/components/TestAchievementButton";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Owner Tools | Podscape Labs", robots: { index: false, follow: false } };
@@ -39,6 +40,7 @@ export default async function OwnerToolsPage() {
           {ownerOperations.map(item=><Link href={item.href} key={item.href}><span><strong>{item.title}</strong><small>{item.description}</small></span><b aria-hidden="true">→</b></Link>)}
         </div>
       </section>
+      <section aria-label="Owner-only notification test" style={{margin:"18px 0"}}><p style={{fontSize:12,opacity:.75}}>Owner QA · Preview the achievement banner. This test never changes EXP or unlocks an achievement.</p><TestAchievementButton/></section>
       <form action={signOutAdmin} className={styles.signOut}><button type="submit">Sign out of owner access</button></form>
     </div>
   </main>;
