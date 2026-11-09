@@ -29,3 +29,13 @@
 .signOut button{padding:11px 15px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--muted);font:inherit;font-size:.75rem;cursor:pointer}
 @media(max-width:680px){.heading{display:block}.back{margin-top:17px}.grid{grid-template-columns:1fr}.card{min-height:112px;padding:15px}.heading{margin-bottom:24px}}
 @media(prefers-reduced-motion:reduce){.card{transition:none}}
+
+/* Unified owner desks: responsive symbols and comfortable action targets. */
+.symbol svg{width:25px;height:25px}
+.operationCopy{min-width:0}
+.operationCopy strong{display:flex;align-items:center;gap:9px;min-width:0}
+.operationCopy strong svg{width:19px;height:19px;flex:none;color:var(--forest)}
+.links a{min-height:58px}
+.signOut button{min-height:44px}
+@media(min-width:1100px){.inner{max-width:1050px}.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:390px){.page{padding:16px 12px 75px}.card{gap:10px;padding:12px}.symbol{width:36px;height:36px}.copy strong{font-size:1.16rem}.links a{padding:13px 12px}}
