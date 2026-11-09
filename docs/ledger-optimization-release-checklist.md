@@ -26,3 +26,15 @@ Production baseline: `310eca2f028ba849bbe86f3673a2859a8397074b`
 - [ ] Verify production alias points to the intended commit after explicit deploy approval.
 
 Automated checks were not available for the latest branch commit during preparation of this checklist. Earlier Vercel previews are not proof that the final commit builds.
+
+
+## Invitation-only access and desktop QA (NOT verified on device)
+- [ ] Approved, email-confirmed tester signs in successfully and opens Home, Leaf Ledger, Shop, Fun Zone, Guides, PodBound, Manager, account and My Collection without an owner sign-in prompt.
+- [ ] Uninvited or revoked email cannot sign in to the testing platform; direct portal URLs redirect to the maintenance entry.
+- [ ] A signed-out visitor cannot access /app, /menu, /ledger, /shop or /fun-zone by entering a URL.
+- [ ] Approved testers never see Owner Tools in Menu, the global navigation, or Home shortcuts, including previously pinned owner links.
+- [ ] An approved tester opening /account/owner-tools or an owner desk URL cannot see privileged data or perform owner actions.
+- [ ] Account sign-up/login/password-recovery pages remain reachable before authentication.
+- [ ] Desktop Home, Manager and Species pages show an explicit Edit button; clicking enters edit mode with stable (non-jiggling) widgets.
+- [ ] Desktop arrow controls move blocks precisely and retain layout after refresh; mobile long-press still works.
+- [ ] Mouse holding on a widget no longer enters edit mode unexpectedly; desktop shortcut replacement remains available in the edit toolbar.
