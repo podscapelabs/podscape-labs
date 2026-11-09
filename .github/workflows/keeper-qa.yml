@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - codex/unified-home-manager-customization
+      - codex/ledger-navigation-optimization
   pull_request:
   workflow_dispatch:
 permissions:
@@ -31,5 +32,7 @@ jobs:
         run: pnpm run typecheck
       - name: Leaf Ledger regression checks
         run: node scripts/verify-ledger.mjs
+      - name: Fun Zone regression checks
+        run: pnpm run test:fun-zone
       - name: Build Next.js application
         run: pnpm run build
