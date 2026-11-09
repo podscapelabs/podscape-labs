@@ -4,6 +4,7 @@ import { AdminPhotoEditor } from "@/components/AdminPhotoEditor";
 import { LedgerUnsavedGuard } from "@/components/LedgerUnsavedGuard";
 import { LedgerDeskWorkflow } from "@/components/LedgerDeskWorkflow";
 import { LedgerQuickImport } from "@/components/LedgerQuickImport";
+import { SpeciesResearchEditor } from "@/components/SpeciesResearchEditor";
 import { NotableTraitPicker } from "@/components/NotableTraitPicker";
 import { SpecimenLeaf } from "@/components/SpecimenLeaf";
 import { speciesDisplayName, speciesRecordLabel, speciesScientificName } from "@/data/species";
@@ -133,7 +134,7 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
           </div>
           </div>
           <div data-ledger-stage="notes" id="ledger-stage-notes">
-          <div id="ledger-notes" className={styles.workflowSection}><div className={styles.workflowSectionHeading}>Editorial notes <small>Internal keeper notes and reference links</small></div><fieldset aria-label="Editorial notes"><label><span>Keeper notes</span><textarea name="keeperNotes" defaultValue={selected.keeperNotes} rows={7} /></label><label><span>Field Guide links · one path per line</span><textarea name="fieldGuideLinks" defaultValue={selected.fieldGuideLinks.join("\n")} rows={4} /></label></fieldset></div>
+          <div id="ledger-notes" className={styles.workflowSection}><div className={styles.workflowSectionHeading}>Editorial notes <small>Internal keeper notes and reference links</small></div><fieldset aria-label="Editorial notes"><label><span>Keeper notes</span><textarea name="keeperNotes" defaultValue={selected.keeperNotes} rows={7} /></label><label><span>Field Guide links · one path per line</span><textarea name="fieldGuideLinks" defaultValue={selected.fieldGuideLinks.join("\n")} rows={4} /></label></fieldset><SpeciesResearchEditor record={selected}/></div>
           </div>
           </LedgerDeskWorkflow>
 
