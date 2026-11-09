@@ -16,21 +16,30 @@ export function SpeciesProfileNavigator({currentSlug,catalogue,children}:{
  const [browseSlugs,setBrowseSlugs]=useState<string[]>(()=>catalogue.map(item=>item.slug));
  const gesture=useRef<{x:number;y:number}|null>(null);
  useEffect(()=>{
+  const fallback=catalogue.map(item=>item.slug);
   try{
    const raw=sessionStorage.getItem(LEDGER_BROWSE_ORDER_KEY);
-   if(!raw)return;
+   if(!raw){setBrowseSlugs(fallback);return;}
    const parsed=JSON.parse(raw) as Partial<LedgerBrowseOrder>;
-   if(!Array.isArray(parsed.slugs)||!parsed.slugs.includes(currentSlug))return;
+   if(!Array.isArray(parsed.slugs)||!parsed.slugs.includes(currentSlug)){setBrowseSlugs(fallback);return;}
    const valid=new Set(catalogue.map(item=>item.slug));
    const matched=[...new Set(parsed.slugs)].filter((slug):slug is string=>typeof slug==="string"&&valid.has(slug));
-   if(matched.includes(currentSlug)&&matched.length>0)setBrowseSlugs(matched);
-  }catch{}
+   setBrowseSlugs(matched.includes(currentSlug)&&matched.length>0?matched:fallback);
+  }catch{setBrowseSlugs(fallback)}
  },[currentSlug,catalogue]);
  const bySlug=useMemo(()=>new Map(catalogue.map(item=>[item.slug,item])),[catalogue]);
  const index=browseSlugs.indexOf(currentSlug);
  const prev=index>0?bySlug.get(browseSlugs[index-1]):null;
  const next=index>=0&&index<browseSlugs.length-1?bySlug.get(browseSlugs[index+1]):null;
- const navigate=(item:SpeciesNavItem|null|undefined)=>{if(item)router.push("/ledger/"+encodeURIComponent(item.slug))};
+ // Warm only the adjacent routes, never the entire species catalogue.
+ useEffect(()=>{
+  if(prev)router.prefetch("/ledger/"+encodeURIComponent(prev.slug));
+  if(next)router.prefetch("/ledger/"+encodeURIComponent(next.slug));
+ },[prev?.slug,next?.slug,router]);
+ const navigate=(item:SpeciesNavItem|null|undefined)=>{
+  if(!item||item.slug===currentSlug)return;
+  router.push("/ledger/"+encodeURIComponent(item.slug),{scroll:true});
+ };
  const start=(event:TouchEvent<HTMLDivElement>)=>{
   if(event.touches.length!==1||((event.target as HTMLElement).closest("a,button,input,select,textarea,[role=dialog]"))){gesture.current=null;return;}
   const x=event.touches[0].clientX;
