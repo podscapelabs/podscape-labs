@@ -73,3 +73,9 @@
  .section{margin-top:21px}
  .section>div:first-child:has(h2){margin-bottom:12px}
 }
+
+/* Legacy audit: use the reusable vector icon language in navigational surfaces. */
+.ornament svg{width:1em;height:1em}
+.pathIcon svg{width:24px;height:24px}
+.category svg{width:26px;height:26px}
+.feature:after{content:none}
