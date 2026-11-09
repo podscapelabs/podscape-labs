@@ -634,3 +634,13 @@
  .homeCanvasEditing .homeCanvasBlockActive [data-drag-handle]:active{cursor:grabbing}
  .homeCanvasToolbar{position:sticky;top:12px}
 }
+
+/* Shared editing controls are identical on Home, Manager, and Colony dashboards. */
+.homeCanvasToolbar>button{display:inline-flex;justify-content:center;align-items:center;gap:6px}
+.homeCanvasToolbar>button svg{width:16px;height:16px;flex:none}
+.homeCanvasHandle{display:inline-flex;align-items:center;gap:6px}
+.homeCanvasHandle svg{width:17px;height:17px;flex:none}
+.homeCanvasBlockBar>div button{display:grid;place-items:center}
+.homeCanvasBlockBar>div button svg{width:16px;height:16px}
+.homeCanvasToolbar button:focus-visible,.homeCanvasBlockBar button:focus-visible{outline:2px solid var(--forest);outline-offset:3px}
+@media(max-width:600px){.homeCanvasToolbar>button{min-height:42px}.homeCanvasBlockBar>div button{min-width:38px;min-height:42px}}
