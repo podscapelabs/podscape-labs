@@ -25,8 +25,18 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
   const params = await searchParams;
   const records = await getSpeciesRecords();
   const archivedView = params.view === "archived";
-  const activeRecords = records.filter((record) => !record.archivedAt);
-  const archivedRecords = records.filter((record) => Boolean(record.archivedAt));
+  // Catalogue order is consistent in both desktop navigation and mobile picker.
+  // Numeric comparison keeps PL-SP-9 before PL-SP-10, even without zero-padding.
+  const compareCatalogue = (a: (typeof records)[number], b: (typeof records)[number]) => {
+    const aNumber = a.catalogueNumber.trim();
+    const bNumber = b.catalogueNumber.trim();
+    if (!aNumber && bNumber) return 1;
+    if (aNumber && !bNumber) return -1;
+    const order = aNumber.localeCompare(bNumber, "en", { numeric: true, sensitivity: "base" });
+    return order || speciesDisplayName(a).localeCompare(speciesDisplayName(b), "en", { numeric: true, sensitivity: "base" });
+  };
+  const activeRecords = records.filter((record) => !record.archivedAt).sort(compareCatalogue);
+  const archivedRecords = records.filter((record) => Boolean(record.archivedAt)).sort(compareCatalogue);
   const visibleRecords = archivedView ? archivedRecords : activeRecords;
   const selected = params.record ? visibleRecords.find((record) => record.id === params.record) : visibleRecords[0];
   const readiness = selected ? speciesReadiness(selected) : null;
@@ -44,7 +54,7 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
         <form method="get" className={styles.mobilePicker}>
           <input type="hidden" name="view" value={archivedView ? "archived" : "active"} />
           <label htmlFor="ledger-record-picker">Choose a species record</label>
-          <select id="ledger-record-picker" name="record" defaultValue={selected?.id || ""}>{visibleRecords.map((record) => <option key={record.id} value={record.id}>{speciesDisplayName(record)} · {record.catalogueNumber}</option>)}</select>
+          <select id="ledger-record-picker" name="record" defaultValue={selected?.id || ""}>{visibleRecords.map((record) => <option key={record.id} value={record.id}>{record.catalogueNumber} · {speciesDisplayName(record)}</option>)}</select>
           <button className="button button-primary" type="submit">Open record</button>
         </form>
         <nav className={styles.recordLinks} aria-label="Species records">{visibleRecords.map((record) => <Link className={record.id === selected?.id ? "is-active" : ""} href={`/admin/species?view=${archivedView ? "archived" : "active"}&record=${record.id}`} prefetch={false} key={record.id}><small>{record.catalogueNumber}</small><b>{speciesDisplayName(record)}</b><em>{speciesScientificName(record)}</em><span>{record.archivedAt ? "Archived" : `${speciesRecordLabel(record)} · ${record.status}`}</span></Link>)}</nav>
