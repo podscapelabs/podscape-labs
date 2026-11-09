@@ -94,7 +94,15 @@ function Crossword({puzzle,onComplete}:{puzzle:CrosswordPuzzle;onComplete:Comple
  const [answers,setAnswers]=useState<Record<number,string>>({}),[checked,setChecked]=useState(false);
  // Coordinates deliberately intersect at matching letters of the five answers.
  const places=puzzle.clues;
- const display=Array.from({length:8},()=>Array.from({length:13},()=>({open:false,char:"",number:0,conflict:false})));
+ // Use standard crossword numbering: entries that start in one square share its number.
+ const starts=[...new Set(places.map(p=>p.r+":"+p.c))].sort((a,b)=>{
+  const [ar,ac]=a.split(":").map(Number),[br,bc]=b.split(":").map(Number);
+  return ar-br||ac-bc;
+ });
+ const clueNumbers=new Map(starts.map((start,i)=>[start,i+1]));
+ const rows=Math.max(...places.map(p=>p.r+(p.dir==="down"?p.answer.length:1)));
+ const columns=Math.max(...places.map(p=>p.c+(p.dir==="across"?p.answer.length:1)));
+ const display=Array.from({length:rows},()=>Array.from({length:columns},()=>({open:false,char:"",number:0,conflict:false})));
  places.forEach((p,i)=>{
   const value=(answers[i]||"").toUpperCase();
   for(let j=0;j<puzzle.clues[i].answer.length;j++){
@@ -105,18 +113,18 @@ function Crossword({puzzle,onComplete}:{puzzle:CrosswordPuzzle;onComplete:Comple
     if(cell.char&&cell.char!==value[j])cell.conflict=true;
     else cell.char=value[j];
    }
-   if(j===0)cell.number=i+1;
+   if(j===0)cell.number=clueNumbers.get(p.r+":"+p.c)||0;
   }
  });
  const conflicts=display.flat().filter(cell=>cell.conflict).length;
  const correct=puzzle.clues.filter((clue,i)=>(answers[i]||"").trim().toUpperCase()===clue.answer).length;
  const complete=correct===puzzle.clues.length&&conflicts===0;
  return <div className={styles.playArea}>
-  <div className={styles.stage}><small>MINI CROSSWORD · FIVE CLUES</small><h2>{puzzle.title}</h2><p>Enter answers in the fields below. Letters appear on the connected grid; conflicting intersections are highlighted.</p></div>
-  <div className={styles.crosswordBoard} aria-label="Crossword grid">{display.flatMap((row,r)=>row.map((cell,c)=><div key={r+"-"+c} className={cell.open?styles.crosswordCell:styles.crosswordBlank} data-conflict={cell.conflict?"true":undefined}>{cell.number?<small>{cell.number}</small>:null}{cell.char}</div>))}</div>
+  <div className={styles.stage}><small>MINI CROSSWORD · FIVE CLUES</small><h2>{puzzle.title}</h2><p>Enter answers below. Crossing clues share letter squares; any conflicting entries are highlighted.</p></div>
+  <div className={styles.crosswordBoard} style={{gridTemplateColumns:`repeat(${columns},minmax(0,1fr))`}} aria-label="Crossword grid">{display.flatMap((row,r)=>row.map((cell,c)=><div key={r+"-"+c} className={cell.open?styles.crosswordCell:styles.crosswordBlank} data-conflict={cell.conflict?"true":undefined}>{cell.number?<small>{cell.number}</small>:null}{cell.char}</div>))}</div>
   <div className={styles.clues}>{puzzle.clues.map((clue,i)=>{
    const success=(answers[i]||"").toUpperCase()===clue.answer;
-   return <label key={clue.answer}><span><strong>{i+1} {places[i].dir}.</strong> {clue.clue}</span><input aria-label={`Answer to clue ${i+1}`} value={answers[i]||""} maxLength={clue.answer.length} autoComplete="off" spellCheck={false} onChange={e=>{setAnswers(a=>({...a,[i]:e.target.value.replace(/[^a-z]/gi,"").toUpperCase()}));setChecked(false)}} data-correct={checked&&success}/></label>;
+   return <label key={clue.answer}><span><strong>{clueNumbers.get(clue.r+":"+clue.c)} {places[i].dir}.</strong> {clue.clue}</span><input aria-label={`Answer to clue ${i+1}`} value={answers[i]||""} maxLength={clue.answer.length} autoComplete="off" spellCheck={false} onChange={e=>{setAnswers(a=>({...a,[i]:e.target.value.replace(/[^a-z]/gi,"").toUpperCase()}));setChecked(false)}} data-correct={checked&&success}/></label>;
   })}</div>
   <div className={styles.actions}><button type="button" onClick={()=>{setChecked(true);if(complete)onComplete({answers:puzzle.clues.map((_,i)=>answers[i]||"")})}}>Check answers</button><button type="button" className={styles.secondary} onClick={()=>{setAnswers({});setChecked(false)}}>Reset</button></div>
   {conflicts>0?<p className={styles.errorText} role="status">{conflicts} crossing {conflicts===1?"letter disagrees":"letters disagree"} between answers. Check the highlighted cells.</p>:null}
