@@ -125,7 +125,9 @@ export async function saveSpeciesRecord(formData: FormData) {
   // Validate optional reviewed facts before changing any existing record.
   const researchedValues:Record<string,string>={};
   for(const item of flatSpeciesResearchFields){
-    const value=field(formData,item.name,item.limit);
+    const value=String(formData.get(item.name)||"").trim();
+    if(value.length>item.limit)
+      studioRedirect(id,"error",item.label+": exceeds "+item.limit+" characters. Nothing was saved; please shorten this field without cutting a sentence or source URL.",view);
     const error=validateSpeciesResearchField(item.name,value);
     if(error)studioRedirect(id,"error",item.label+": "+error,view);
     researchedValues[item.name]=value;
