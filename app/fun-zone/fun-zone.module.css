@@ -86,3 +86,8 @@
 .puzzleArt[data-kind=Word],.puzzleArt[data-kind=Logic],.puzzleArt[data-kind=Knowledge]{background:var(--surface-secondary);background-image:none!important}
 .featureArtwork{border-radius:18px;background:transparent}
 .artMark{border-radius:14px;background:color-mix(in srgb,var(--accent) 7%,var(--surface));border-color:color-mix(in srgb,var(--accent) 27%,var(--border))}
+
+/* Balance icons are functional labels, not Unicode ornaments. */
+.balance span{display:flex;align-items:center;gap:7px}
+.balance span svg{width:17px;height:17px;flex:none}
+@media(max-width:680px){.balance span svg{width:14px;height:14px}}
