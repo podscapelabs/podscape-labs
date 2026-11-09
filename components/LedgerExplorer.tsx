@@ -33,10 +33,12 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
   const [scrollRestored,setScrollRestored]=useState(mode!=="catalogue");
   const pendingScrollRef=useRef<number|null>(null);
   const hydratedRef=useRef(false);
+  const didRestoreRef=useRef(false);
   const [restorationReady,setRestorationReady]=useState(false);
   // Restore the exact catalogue view when returning from a species profile.
   useEffect(()=>{
-    if(mode!=="catalogue")return;
+    if(mode!=="catalogue"||didRestoreRef.current)return;
+    didRestoreRef.current=true;
     try{
       const raw=sessionStorage.getItem(LEDGER_EXPLORER_STATE_KEY);
       if(raw){
