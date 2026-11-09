@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CollectionButton } from "@/components/CollectionButton";
 import { SpeciesDashboardWorkspace } from "@/components/SpeciesDashboardWorkspace";
+import { SpeciesProfileNavigator } from "@/components/SpeciesProfileNavigator";
 import {MoistureAndHumidityWidget,BreedingDevelopmentWidget,TaxonomyOriginWidget,FeedingEcologyWidget,HabitatSetupWidget,BehaviourEcologyWidget,ResearchSourcesWidget} from "@/components/SpeciesResearchWidgets";
 import {getSpeciesTraitId} from "@/lib/species-traits";
 import { PinToHome } from "@/components/PinToHome";
@@ -12,11 +13,11 @@ import Image from "next/image";
 import { SpeciesDiscoveryTracker } from "@/components/SpeciesDiscoveryTracker";
 import styles from "@/components/SpeciesProfile.module.css";
 import homeStyles from "@/components/PodscapeHome.module.css";
-import { speciesDisplayName, speciesGenus, speciesRecordLabel, speciesScientificName } from "@/data/species";
+import { isSpeciesRecordActive, speciesDisplayName, speciesGenus, speciesRecordLabel, speciesScientificName } from "@/data/species";
 import { isGuideActive } from "@/data/guides";
 import { getGuideRecords } from "@/lib/guide-store";
 import { getMemberCollectionState } from "@/lib/member-collection";
-import { getSpeciesRecord } from "@/lib/species-store";
+import { getSpeciesRecord, getSpeciesRecords } from "@/lib/species-store";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
@@ -61,6 +62,10 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
 
   const [member, db] = await Promise.all([getMemberCollectionState(), customerSupabase()]);
   const { data: { user } } = db ? await db.auth.getUser() : { data: { user: null } };
+  const catalogue = (await getSpeciesRecords())
+    .filter(item => isSpeciesRecordActive(item) && item.kind === "species")
+    .sort((a,b)=>a.catalogueNumber.localeCompare(b.catalogueNumber,"en",{numeric:true,sensitivity:"base"}))
+    .map(item=>({slug:item.slug,name:speciesDisplayName(item)}));
   const collectionEntry = member.entries.find(entry => entry.speciesId === record.id);
   const displayName = speciesDisplayName(record);
   const scientificName = speciesScientificName(record);
@@ -110,6 +115,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
           <span className={styles.catalogueLabel}>{record.catalogueNumber}</span>
         </div>
 
+        <SpeciesProfileNavigator currentSlug={record.slug} catalogue={catalogue}>
         <header className={`${homeStyles.hero} ${styles.speciesHomeHero} ${record.image ? styles.speciesHeroHasArt : styles.speciesHeroNoArt}`}>
           {record.image ? <div className={styles.speciesHeroArt}><Image className={homeStyles.heroImage} src={record.image} alt={record.imageAlt || scientificName} fill priority sizes="(max-width: 720px) 65vw, 540px" style={{objectFit:"contain",objectPosition:`${record.imagePositionX}% ${record.imagePositionY}%`,transform:`scale(${record.imageZoom})`}} /></div> : null}
           <div className={homeStyles.heroContent}>
@@ -119,6 +125,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
             <p className={styles.speciesHeroIdentity}>{speciesGenus(record)} <span aria-hidden="true">·</span> {speciesRecordLabel(record)}</p>
           </div>
         </header>
+        </SpeciesProfileNavigator>
 
         <div className={styles.dashboardBody}>
           <SpeciesDashboardWorkspace scope={user?.id || "guest"} preview={previewRequested} widgets={{
