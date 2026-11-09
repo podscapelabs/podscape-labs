@@ -311,3 +311,19 @@
  .speciesWorkspace .compactFooter{gap:10px}
 }
 @media(max-width:370px){.compactHero .compactPhoto{width:100%;height:185px}.compactHero .identity h1{font-size:2rem}}
+
+
+/* Specialist cards: data density without enclosing each sentence in a full-height tile. */
+.researchFacts{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.researchFacts>div{padding:9px 11px;gap:3px;align-content:start}
+.researchFacts>div:has(dd:nth-child(2)){min-width:0}
+.researchFacts dd{line-height:1.4}
+.researchLinks{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.researchLinks strong{grid-column:1/-1}
+.researchLinks a{display:block;padding:7px 9px;border:1px solid var(--border);border-radius:9px;background:var(--surface-secondary);font-weight:650;text-decoration:none}
+@media(max-width:600px){
+ .researchFacts{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .researchFacts>div{grid-column:1/-1}
+ .researchFacts>div:has(dd){padding:9px 11px}
+ .researchLinks{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
