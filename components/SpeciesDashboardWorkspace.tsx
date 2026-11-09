@@ -6,23 +6,23 @@ import {moveBlock,dropBlock,uniqueAllowed} from "./workspace-layout";
 import homeStyles from "./PodscapeHome.module.css";
 import styles from "./SpeciesProfile.module.css";
 
+// Keep stable IDs to preserve saved layouts across this visual redesign.
 export const speciesWidgetIds=["care","moisture","about","feeding","habitat","traits","guides","breeding","taxonomy","nutrition","behaviour","habitatAdvanced","sources","personal","navigation"] as const;
 export type SpeciesWidgetId=(typeof speciesWidgetIds)[number];
 export const speciesWidgetLabels:Record<SpeciesWidgetId,string>={
- about:"Species overview",care:"Basic Care & Behaviour",moisture:"Moisture & Humidity",
- feeding:"Feeding overview",habitat:"Habitat & substrate",traits:"Notable traits",guides:"Related Field Guides",
- breeding:"Breeding & Development",taxonomy:"Taxonomy & Origin",nutrition:"Feeding & Nutrition",habitatAdvanced:"Habitat & Setup",behaviour:"Behaviour & Ecology",sources:"Research & Sources",personal:"My Species Tools",navigation:"Explore Species"
+ about:"Species overview",care:"At a Glance",moisture:"Moisture & Humidity",
+ feeding:"Feeding overview",habitat:"Habitat & substrate",traits:"Notable Traits",guides:"Related Field Guides",
+ breeding:"Breeding & Growth",taxonomy:"Origins & Identity",nutrition:"Feeding & Nutrition",habitatAdvanced:"Habitat & Setup",behaviour:"Species Characteristics",sources:"Research & Sources",personal:"My Species Tools",navigation:"Explore Species"
 };
 const descriptions:Record<SpeciesWidgetId,string>={
- about:"A short introduction to the species",care:"Essential care, activity and breeding at a glance",
- moisture:"Substrate gradient, approximate air humidity and moist-area coverage",feeding:"General feeding information",habitat:"Substrate and habitat notes",
+ about:"A short introduction to the species",care:"Quick beginner suitability, temperature, activity and colony growth",
+ moisture:"Substrate gradient, approximate air humidity and moist-area coverage",feeding:"General feeding information when detailed nutrition is unavailable",habitat:"Substrate notes when detailed habitat setup is unavailable",
  traits:"Distinctive characteristics",guides:"Supporting species-specific guides",
- breeding:"Brood measurements, reproduction and maturity",
- taxonomy:"Identification, scientific names, origins and morphology",nutrition:"Staple diet, supplements and dietary cautions",behaviour:"Defensive behaviour, activity and bioactive suitability",
- habitatAdvanced:"Enclosure setup and natural microhabitat",sources:"Reference links, evidence and review scope",personal:"Collection and pin-to-home shortcuts",navigation:"Related species guides and catalogue navigation"
+ breeding:"Brood size, reproduction and development",taxonomy:"Distribution, scientific names, morph origins and identification",nutrition:"Staple diet, supplements and dietary cautions",behaviour:"Adult size, lifespan, defence and visibility",
+ habitatAdvanced:"Ventilation, substrate, enclosure and natural microhabitat",sources:"Original references and research scope",personal:"Collection and pin-to-home shortcuts",navigation:"Related species guides and catalogue navigation"
 };
-const defaultOrder:SpeciesWidgetId[]=[...speciesWidgetIds];
-const defaultVisible:SpeciesWidgetId[]=["care","moisture","about","traits","personal","navigation"];
+const defaultOrder:SpeciesWidgetId[]=["care","moisture","behaviour","habitatAdvanced","nutrition","breeding","taxonomy","about","traits","guides","sources","personal","navigation","feeding","habitat"];
+const defaultVisible:SpeciesWidgetId[]=["care","moisture","behaviour","habitatAdvanced","about","traits","personal","navigation"];
 type Layout={order:SpeciesWidgetId[];visible:SpeciesWidgetId[]};
 const defaultLayout=():Layout=>({order:[...defaultOrder],visible:[...defaultVisible]});
 function normalize(value:unknown):Layout{
