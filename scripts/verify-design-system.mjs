@@ -40,6 +40,14 @@ for(const [path,code] of [
  assert.ok(!/[❧🍃🌿🍂]/u.test(code),"Botanical filler icon is forbidden in "+path);
 }
 assert.match(cards,/name="achievement"/,"Fun Zone milestones should use a trophy, not a leaf");
+assert.ok(!cards.includes("game.mark"),"Legacy text glyphs must not render as game icons");
+const homeWidgets=read("components/HomeWidgets.tsx");
+for(const [key,icon] of [
+ ["recent","news"],["progress","achievement"],["games","gamepad"],["pins","bookmark"]
+]){
+ assert.ok(homeWidgets.includes(key+':{name:')&&homeWidgets.includes('icon:"'+icon+'"'),"Missing semantic Home icon for "+key);
+}
+
 assert.match(library,/progressIcons\.completed/);
 assert.match(library,/progressIcons\.locked/);
 for(const path of ["app/fun-zone/fun-zone.module.css","components/PuzzleLibrary.module.css","components/PlayGame.module.css"]){
