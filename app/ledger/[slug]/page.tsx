@@ -9,7 +9,6 @@ import { PinToHome } from "@/components/PinToHome";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import { PlatformShell } from "@/components/PlatformShell";
 import Image from "next/image";
-import { type MoisturePosition } from "@/components/SpeciesMoistureGradient";
 import { SpeciesDiscoveryTracker } from "@/components/SpeciesDiscoveryTracker";
 import styles from "@/components/SpeciesProfile.module.css";
 import homeStyles from "@/components/PodscapeHome.module.css";
@@ -54,8 +53,6 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
   const scientificName = speciesScientificName(record);
 
   // Only render explicitly authored species facts. Empty fields never become assumptions.
-  const moisturePositions:MoisturePosition[]=["dry-leaning","dry-balanced","balanced","balanced-moist","moist-leaning"];
-  const moisturePosition = moisturePositions.find(value=>value===record.moistureProfile);
   const quickFacts = [
     {label:"Care level",value:record.careLevel},
     {label:"Temperature",value:record.temperature,note:record.temperatureNote},
@@ -63,31 +60,17 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
     {label:"Activity",value:record.activity,note:record.activityNote},
     {label:"Reproduction",value:record.reproduction,note:record.reproductionNote},
   ].filter(entry=>typeof entry.value==="string"&&entry.value.trim().length>0&&entry.value!=="Not established");
-  // Do not publish legacy "Low / High" moisture without gradient context.
-  // Existing values remain in the Desk until editors review each record.
-  const legacyMoisturePending = !moisturePosition && Boolean(record.moisture?.trim());
-
   // Legacy preview copy must never masquerade as a published species description.
   const isPlaceholder = (value: string) => /temporary (?:visual )?record for testing|placeholder (?:text|description)|lorem ipsum/i.test(value);
   const summary = isPlaceholder(record.summary || "") ? "" : record.summary || "";
   const authoredAbout = isPlaceholder(record.about || "") ? "" : record.about || "";
   const about = introText(authoredAbout || summary);
   const feeding = introText(record.feeding || "");
-  const moistureLabels:Record<MoisturePosition,string>={"dry-leaning":"Dry-leaning","dry-balanced":"Dry to balanced","balanced":"Balanced","balanced-moist":"Balanced to moist","moist-leaning":"Moist-leaning"};
-  const moistureIndex = moisturePosition ? moisturePositions.indexOf(moisturePosition) : -1;
-  const moistureZoneNames=["Drier area","Lightly damp","Moderately damp","Moist","Very moist"];
-  const rangeStart=record.moistureRangeStart;
-  const rangeEnd=record.moistureRangeEnd;
-  const hasReviewedRange=typeof rangeStart==="number" && typeof rangeEnd==="number"
-    && Number.isInteger(rangeStart) && Number.isInteger(rangeEnd)
-    && rangeStart>=1 && rangeEnd<=5 && rangeStart<=rangeEnd;
-  const moistureRangeLabel=hasReviewedRange
-    ? (rangeStart===rangeEnd ? moistureZoneNames[rangeStart-1] : moistureZoneNames[rangeStart-1]+" – "+moistureZoneNames[rangeEnd-1])
-    : moisturePosition ? moistureLabels[moisturePosition] : "";
-
   // Specialist cards do not appear in the library until their data exists for this species.
   const hasResearch=(keys:(keyof typeof record)[])=>keys.some(key=>typeof record[key]==="string"&&Boolean((record[key] as string).trim()));
-  const environmentAvailable=(Boolean(record.humidityMin?.trim())&&Boolean(record.humidityMax?.trim()))||hasResearch(["moistZoneCoverage","moistRefugeCondition","moistureGradientGuidance"]);
+  const moistureAvailable=(typeof record.moistureRangeStart==="number"&&typeof record.moistureRangeEnd==="number")
+    ||Boolean(record.moistureProfile?.trim())
+    ||hasResearch(["humidityMin","humidityMax","moistZoneCoverage","moistRefugeCondition","moistureGradientGuidance"]);
   const breedingAvailable=hasResearch(["broodAverage","incubationPeriod","maturityAge","breedingSeason"])||(Boolean(record.broodMin?.trim())&&Boolean(record.broodMax?.trim()));
   const taxonomyAvailable=hasResearch(["taxonomicStatus","taxonomicSynonyms","nativeDistribution","morphOrigin","identificationNotes","adultSizeMm","lifespan"]);
   const nutritionAvailable=hasResearch(["stapleDiet","proteinGuidance","calciumGuidance","dietaryCautions"]);
@@ -136,21 +119,11 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
               <div className={styles.dashboardSectionHead}><h2>Basic Care &amp; Behaviour</h2></div>
               <dl className={styles.dashboardFacts}>{quickFacts.map(({label,value})=><div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
             </section> : null,
-            moisture: hasReviewedRange || moisturePosition ? <div className={styles.dashboardMoisture} aria-label={"General substrate moisture conditions: "+moistureRangeLabel}>
-              <div className={styles.moistureTop}><strong>Substrate moisture range</strong><span>{moistureRangeLabel}</span></div>
-              <div className={styles.moistureTrack} aria-hidden="true">{moistureZoneNames.map((item,index)=><span key={item} className={hasReviewedRange
-                ? index+1>=rangeStart! && index+1<=rangeEnd! ? styles.moistureRangeSelected : ""
-                : index===moistureIndex ? styles.moistureSelected : ""}/>)}</div>
-              <div className={styles.moistureEnds}><span>Drier area</span><span>Moister refuge</span></div>
-              <p className={styles.moistureContext}>{hasReviewedRange
-                ? "Relative substrate dampness, not the percentage of the enclosure to wet. Drier does not mean bone-dry; keep an appropriate moist refuge."
-                : "Relative dampness only, not whole-enclosure moisture or air humidity. Detailed conditions await review."}</p>
-            </div> : legacyMoisturePending ? <p className={styles.moisturePending}>Substrate moisture information awaiting review.</p> : null,
+            moisture: moistureAvailable ? <MoistureAndHumidityWidget record={record}/> : null,
             feeding: feeding && !nutritionAvailable ? <section className={styles.speciesInfoCard}><h2>Feeding overview</h2><p>{feeding}</p></section> : null,
             habitat: record.substrate?.trim() && !habitatAdvancedAvailable ? <section className={styles.speciesInfoCard}><h2>Habitat &amp; substrate</h2><p>{introText(record.substrate)}</p></section> : null,
             traits: notableTraits.length ? <section className={styles.speciesInfoCard}><h2>Notable traits</h2><ul className={styles.compactTraits}>{notableTraits.map(trait=><li key={trait} data-trait-id={getSpeciesTraitId(trait)||undefined}>{trait}</li>)}</ul></section> : null,
             guides: relatedGuides.length ? <section className={styles.speciesInfoCard}><h2>Related Field Guides</h2><div className={styles.relatedGuides}>{relatedGuides.map(guide=><Link href={`/field-guide/${guide.slug}`} key={guide.slug}><span><strong>{guide.title}</strong>{guide.summary?<small>{guide.summary}</small>:null}</span><b aria-hidden="true">→</b></Link>)}</div></section> : null,
-            environment: environmentAvailable ? <MoistureAndHumidityWidget record={record}/> : null,
             breeding: breedingAvailable ? <BreedingDevelopmentWidget record={record}/> : null,
             taxonomy: taxonomyAvailable ? <TaxonomyOriginWidget record={record}/> : null,
             nutrition: nutritionAvailable ? <FeedingEcologyWidget record={record}/> : null,
