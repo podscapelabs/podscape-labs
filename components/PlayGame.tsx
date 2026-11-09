@@ -16,19 +16,40 @@ function Quiz({game}:{game:Game}){
  return <div className={styles.playArea}>{done?<div className={styles.result}><span aria-hidden="true">✦</span><h2>Challenge complete!</h2><p>You answered {score} of {questions.length} correctly.</p><button onClick={()=>{setIndex(0);setAnswers([])}}>Try again ↻</button></div>:<><div className={styles.stage}><small>QUESTION {index+1} / {questions.length}</small><h2>{current.prompt}</h2></div><div className={styles.options}>{current.choices.map((choice,i)=><button type="button" disabled={chosen!==undefined} data-result={chosen===undefined?"":i===current.answer?"correct":i===chosen?"incorrect":""} key={choice} onClick={()=>setAnswers(a=>[...a,i])}>{choice}</button>)}</div>{chosen!==undefined?<div className={styles.feedback} role="status"><strong>{chosen===current.answer?"Correct!":"Not quite."}</strong><p>{current.explanation}</p><button type="button" onClick={()=>setIndex(x=>x+1)}>{index===questions.length-1?"See results":"Next question →"}</button></div>:null}</>}</div>;
 }
 function Connections(){
- const all=useMemo(()=>[...connectionGroups.flatMap(g=>g.words)].sort((a,b)=>{const hash=(s:string)=>s.split("").reduce((v,c)=>(v*31+c.charCodeAt(0))>>>0,7);return hash(a)-hash(b)}),[]);
- const [selected,setSelected]=useState<string[]>([]),[solved,setSolved]=useState<string[]>([]),[mistakes,setMistakes]=useState(0),[notice,setNotice]=useState("");
- const completed=solved.length===4;
+ const [round,setRound]=useState(0);
+ const all=useMemo(()=>{
+  // Vary order between rounds, but keep it deterministic during rendering.
+  let seed=24813+round*9719;
+  const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296};
+  const words=connectionGroups.flatMap(g=>g.words);
+  for(let i=words.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[words[i],words[j]]=[words[j],words[i]];}
+  return words;
+ },[round]);
+ const [selected,setSelected]=useState<string[]>([]),[solved,setSolved]=useState<string[]>([]);
+ const [mistakes,setMistakes]=useState(0),[notice,setNotice]=useState("");
+ const completed=solved.length===connectionGroups.length;
+ const exhausted=mistakes>=4;
  const check=()=>{
+  if(selected.length!==4||completed||exhausted)return;
   const group=connectionGroups.find(g=>selected.every(w=>g.words.includes(w)));
-  if(group){setSolved(old=>[...old,group.label]);setNotice("Found: "+group.label+"!");}
-  else{setMistakes(m=>m+1);setNotice("Not quite — try a different group of four.");}
+  if(group&&!solved.includes(group.label)){setSolved(old=>[...old,group.label]);setNotice("Found: "+group.label+"!");}
+  else{setMistakes(m=>m+1);setNotice("Not quite — compare the terms and try another group.");}
   setSelected([]);
  };
- const reset=()=>{setSelected([]);setSolved([]);setMistakes(0);setNotice("")};
- return <div className={styles.playArea}><div className={styles.smallStats}><span>{solved.length} / 4 groups found</span><span>{mistakes} guesses missed</span></div>
- {solved.map(label=>{const group=connectionGroups.find(g=>g.label===label)!;return <div className={styles.solvedGroup} key={label}><strong>{label}</strong><span>{group.words.join(" · ")}</span></div>})}
- {completed?<div className={styles.result}><h2>Colony connected! ✦</h2><p>You found all four hidden groups.</p><button onClick={reset}>Play again ↻</button></div>:<><div className={styles.connectionGrid}>{all.filter(w=>!solved.some(label=>connectionGroups.find(g=>g.label===label)?.words.includes(w))).map(word=><button type="button" aria-pressed={selected.includes(word)} key={word} onClick={()=>setSelected(old=>old.includes(word)?old.filter(x=>x!==word):old.length<4?[...old,word]:old)}>{word}</button>)}</div><div className={styles.actions}><button disabled={selected.length!==4} onClick={check}>Submit group ({selected.length}/4)</button><button className={styles.secondary} onClick={()=>setSelected([])}>Clear selection</button></div><p className={styles.feedbackText} role="status">{notice||"Find four terms with one thing in common."}</p></>}</div>;
+ const reset=()=>{setRound(x=>x+1);setSelected([]);setSolved([]);setMistakes(0);setNotice("")};
+ return <div className={styles.playArea}>
+  <div className={styles.smallStats}><span>{solved.length} / {connectionGroups.length} groups found</span><span>{Math.max(0,4-mistakes)} mistakes left</span></div>
+  {solved.map(label=>{const group=connectionGroups.find(g=>g.label===label)!;return <div className={styles.solvedGroup} key={label}><strong>{label}</strong><span>{group.words.join(" · ")}</span></div>})}
+  {completed||exhausted?<div className={styles.result}><h2>{completed?"Colony connected! ✦":"Round complete"}</h2>
+    <p>{completed?"All four categories found.":`You found ${solved.length} of four groups. Review the categories below, then try a fresh arrangement.`}</p>
+    {exhausted&&connectionGroups.filter(g=>!solved.includes(g.label)).map(g=><div className={styles.revealGroup} key={g.label}><strong>{g.label}</strong><span>{g.words.join(" · ")}</span></div>)}
+    <button type="button" onClick={reset}>New arrangement ↻</button>
+   </div>:<>
+   <div className={styles.connectionGrid}>{all.filter(w=>!solved.some(label=>connectionGroups.find(g=>g.label===label)?.words.includes(w))).map(word=><button type="button" aria-pressed={selected.includes(word)} key={word} onClick={()=>setSelected(old=>old.includes(word)?old.filter(x=>x!==word):old.length<4?[...old,word]:old)}>{word}</button>)}</div>
+   <div className={styles.actions}><button type="button" disabled={selected.length!==4} onClick={check}>Submit group ({selected.length}/4)</button><button type="button" className={styles.secondary} disabled={!selected.length} onClick={()=>setSelected([])}>Clear selection</button></div>
+   <p className={styles.feedbackText} role="status">{notice||"Find four terms that belong to the same category. Four incorrect submissions end the round."}</p>
+  </>}
+ </div>;
 }
 function Burrow(){
  const target="MOSSY";
