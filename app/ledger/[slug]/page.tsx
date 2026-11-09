@@ -67,9 +67,8 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
 
   // Only render explicitly authored species facts. Empty fields never become assumptions.
   const quickFacts = [
-    {label:"Care level",value:record.careLevel},
+    {label:"Care difficulty",value:record.careLevel},
     {label:"Temperature",value:displayTemperature(record.temperature),note:record.temperatureNote},
-    {label:"Ventilation",value:record.ventilation,note:record.ventilationNote},
     {label:"Activity",value:record.activity,note:record.activityNote},
     {label:"Reproduction",value:record.reproduction,note:record.reproductionNote},
   ].filter(entry=>typeof entry.value==="string"&&entry.value.trim().length>0&&entry.value!=="Not established");
@@ -85,10 +84,10 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
     ||Boolean(record.moistureProfile?.trim())
     ||hasResearch(["humidityMin","humidityMax","moistZoneCoverage","moistRefugeCondition","moistureGradientGuidance"]);
   const breedingAvailable=hasResearch(["broodAverage","incubationPeriod","maturityAge","breedingSeason"])||(Boolean(record.broodMin?.trim())&&Boolean(record.broodMax?.trim()));
-  const taxonomyAvailable=hasResearch(["taxonomicStatus","taxonomicSynonyms","nativeDistribution","morphOrigin","identificationNotes","adultSizeMm","lifespan"]);
+  const taxonomyAvailable=hasResearch(["taxonomicStatus","taxonomicSynonyms","nativeDistribution","morphOrigin","identificationNotes"]);
   const nutritionAvailable=hasResearch(["stapleDiet","proteinGuidance","calciumGuidance","dietaryCautions"]);
-  const behaviourAvailable=hasResearch(["defensiveBehaviour","visibilityNotes","bioactiveSuitability"]);
-  const habitatAdvancedAvailable=hasResearch(["naturalMicrohabitat","substrateDepth","enclosureGuidance"]);
+  const behaviourAvailable=hasResearch(["adultSizeMm","lifespan","defensiveBehaviour","visibilityNotes"]);
+  const habitatAdvancedAvailable=Boolean(record.ventilation?.trim()||record.substrate?.trim())||hasResearch(["naturalMicrohabitat","substrateDepth","enclosureGuidance","bioactiveSuitability"]);
   const sourcesAvailable=hasResearch(["researchSources","evidenceScope","evidenceQuality","evidenceNotes","lastReviewed"]);
 
   const notableTraits = [...new Set((record.notableTraits || []).map(trait => trait.trim()).filter(Boolean))].slice(0, 5);
@@ -128,9 +127,9 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
               <summary><span className={styles.aboutSymbol} aria-hidden="true">❧</span><span className={styles.aboutSummary}><strong>About {displayName}</strong><span className={styles.aboutPreview}>{about}</span></span><span className={styles.aboutChevron} aria-hidden="true">⌄</span></summary>
               <div className={styles.aboutFull}><p>{authoredAbout || summary}</p></div>
             </details> : null,
-            care:quickFacts.length ? <section className={styles.dashboardCare} aria-label="Basic care and behaviour">
-              <div className={styles.dashboardSectionHead}><h2>Basic Care &amp; Behaviour</h2></div>
-              <dl className={styles.dashboardFacts}>{quickFacts.map(({label,value})=><div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+            care:quickFacts.length ? <section className={styles.dashboardCare+" "+styles.glanceWidget} aria-label="At a Glance">
+              <div className={styles.dashboardSectionHead}><h2>At a Glance</h2></div>
+              <dl className={styles.dashboardFacts}>{quickFacts.map(({label,value})=><div key={label}><dt>{label}</dt><dd>{value}</dd>{label==="Care difficulty"?<small className={styles.glanceHelp}>{value==="Beginner"?"Suitable for newer keepers":value==="Intermediate"?"Some experience recommended":value==="Advanced"||value==="Expert"?"Experienced keepers recommended":null}</small>:null}</div>)}</dl>
             </section> : null,
             moisture: moistureAvailable ? <MoistureAndHumidityWidget record={record}/> : null,
             feeding: feeding && !nutritionAvailable ? <section className={styles.speciesInfoCard}><h2>Feeding overview</h2><p>{feeding}</p></section> : null,
