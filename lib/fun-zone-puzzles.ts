@@ -28,7 +28,7 @@ const originalCrossword:CrosswordClue[]=crosswordClues.map((c,i)=>({...c,...([
 // Each row of a spine crossword may also intersect neighbouring across rows.
 // Keep an explicit checker to reject any contradictory intersection.
 function validateCrossword(clues:CrosswordClue[]){
- const used=new Map<string,string>();const rows=8,cols=11;
+ const used=new Map<string,string>();const rows=8,cols=13;
  for(const c of clues){
   if(!/^[A-Z]+$/.test(c.answer))throw new Error("Invalid crossword answer");
   for(let i=0;i<c.answer.length;i++){
@@ -154,7 +154,7 @@ const extra:Entry[]=[
  ]),
  crossword("forest-words","The Forest Floor",[
  {answer:"MOSS",clue:"A non-vascular plant sometimes used as a moist refuge (4)",r:0,c:4,dir:"down"},
- {answer:"MANCa".toUpperCase(),clue:"A juvenile stage in isopod development (5)",r:0,c:4,dir:"across"},
+ {answer:"MANCA",clue:"A juvenile stage in isopod development (5)",r:0,c:4,dir:"across"},
  {answer:"ONISCUS",clue:"An isopod genus (7)",r:1,c:4,dir:"across"},
  {answer:"SOIL",clue:"Ground material that may form part of substrate (4)",r:2,c:4,dir:"across"},
  {answer:"SUBSTRATE",clue:"Material lining the floor of an enclosure (9)",r:3,c:4,dir:"across"}
