@@ -3,6 +3,7 @@
 import {useEffect,useLayoutEffect,useRef,useState,type ReactNode} from "react";
 import {WorkspaceEditBlock,WorkspaceEditToolbar,useWorkspaceDrag} from "./WorkspaceEditCanvas";
 import {moveBlock,dropBlock,uniqueAllowed} from "./workspace-layout";
+import {recordExperienceAction} from "./experience-achievements";
 import homeStyles from "./PodscapeHome.module.css";
 import styles from "./SpeciesProfile.module.css";
 
@@ -55,7 +56,7 @@ export function SpeciesDashboardWorkspace({widgets,scope,preview=false}:{widgets
   try{const raw=localStorage.getItem(storageKey);if(raw)setLayout(normalize(JSON.parse(raw)))}catch{}
   setHydrated(true);
  },[storageKey]);
- const update=(value:Layout)=>{setLayout(value);try{localStorage.setItem(storageKey,JSON.stringify(value))}catch{}};
+ const update=(value:Layout)=>{setLayout(value);try{localStorage.setItem(storageKey,JSON.stringify(value))}catch{}const base=defaultLayout();if(!preview&&hydrated&&JSON.stringify(value)!==JSON.stringify(layout)&&JSON.stringify(value)!==JSON.stringify(base))void recordExperienceAction("species_personalized",{order:value.order,visible:value.visible,changedOrder:value.order.join("|")!==base.order.join("|")});};
  const enterCanvas=(id?:SpeciesWidgetId)=>{
   if(id){
    const node=Array.from(document.querySelectorAll<HTMLElement>('[data-workspace-scope="species"]')).find(el=>el.dataset.workspaceBlock===id);
