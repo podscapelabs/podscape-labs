@@ -134,7 +134,7 @@ function Crossword({puzzle,onComplete}:{puzzle:CrosswordPuzzle;onComplete:Comple
  </div>;
 }
 export function PlayGame({game,challenge}:{game:Game;challenge:{gameKey:string;mode:string;puzzle:Puzzle}}){
- const {saved,record}=usePuzzleCompletion(challenge.gameKey,challenge.puzzle.id);
+ const {saved,record,retry}=usePuzzleCompletion(challenge.gameKey,challenge.puzzle.id);
  return <main className={styles.page}><div className={styles.wrap}>
   <nav className={styles.crumb}><Link href="/fun-zone">Fun Zone</Link><span>/</span><Link href={`/fun-zone/${game.key}`}>{game.title}</Link></nav>
   <header className={styles.hero}>
@@ -147,7 +147,7 @@ export function PlayGame({game,challenge}:{game:Game;challenge:{gameKey:string;m
     challenge.mode==="burrow"?<Burrow puzzle={challenge.puzzle as BurrowPuzzle} onComplete={record}/>:
     challenge.mode==="crossword"?<Crossword puzzle={challenge.puzzle as CrosswordPuzzle} onComplete={record}/>:
     <Quiz puzzle={challenge.puzzle as QuizPuzzle} onComplete={record}/>}
-  <PuzzleSaveStatus status={saved}/>
+  <PuzzleSaveStatus status={saved} retry={retry}/>
   <WorkspaceLinks items={[{href:`/fun-zone/${game.key}`,label:`More ${game.title}`},{href:"/fun-zone",label:"All games"},{href:"/ledger",label:"Leaf Ledger"}]}/>
  </div></main>;
 }
