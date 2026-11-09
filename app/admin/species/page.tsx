@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { AdminPhotoEditor } from "@/components/AdminPhotoEditor";
 import { LedgerUnsavedGuard } from "@/components/LedgerUnsavedGuard";
 import { LedgerDeskWorkflow } from "@/components/LedgerDeskWorkflow";
+import { LedgerQuickImport } from "@/components/LedgerQuickImport";
 import { NotableTraitPicker } from "@/components/NotableTraitPicker";
 import { SpecimenLeaf } from "@/components/SpecimenLeaf";
 import { speciesDisplayName, speciesRecordLabel, speciesScientificName } from "@/data/species";
@@ -65,6 +66,7 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
               <button className="button button-primary" type="submit">Save changes</button>
             </div>
           </div>
+          <LedgerQuickImport recordId={selected.id} />
           <LedgerDeskWorkflow recordId={selected.id}>
           <div data-ledger-stage="identity" id="ledger-stage-identity">
           <fieldset id="ledger-identity"><legend>Identity</legend><div className="admin-form-grid two"><label><span>Common name</span><input name="commonName" defaultValue={selected.commonName} placeholder="Leave blank until assigned" /></label><label><span>Scientific name</span><input name="scientificName" defaultValue={selected.scientificName} placeholder="Leave blank until assigned" /></label><label><span>Genus</span><input name="genus" list="ledger-genus-options" defaultValue={selected.genus} placeholder="Select or type confirmed genus" /><datalist id="ledger-genus-options">{[...new Set(records.map(r=>r.genus).filter(Boolean))].sort().map(genus=><option key={genus} value={genus}/>)}</datalist><small>Suggestions from your existing records. Verify scientific identification before selecting.</small></label><label><span>Species</span><input name="species" defaultValue={selected.species} /></label><label><span>Morph or variety</span><input name="morph" defaultValue={selected.morph} /></label></div></fieldset>
