@@ -43,7 +43,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
         if(typeof saved.query==="string")setQuery(saved.query);
         if(typeof saved.genus==="string"&&(saved.genus==="all"||records.some(item=>item.genus===saved.genus)))setGenus(saved.genus);
         if(typeof saved.care==="string"&&(saved.care==="all"||records.some(item=>item.careLevel===saved.care)))setCare(saved.care);
-        if(["catalogue","common","scientific","recent"].includes(saved.sort||""))setSort(saved.sort as SortMode);
+        if(["catalogue","common","scientific"].includes(saved.sort||""))setSort(saved.sort as SortMode);
         if(typeof saved.filtersOpen==="boolean")setFiltersOpen(saved.filtersOpen);
         if(typeof saved.scrollY==="number"&&Number.isFinite(saved.scrollY))pendingScrollRef.current=Math.max(0,saved.scrollY);
       }
@@ -164,7 +164,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
       </div>
     </div>
     <div className={`v2-results-meta ${styles.resultMeta}`}>
-      <span id="ledger-directory-title">{results.length} {results.length === 1 ? "record" : "records"}</span>
+      <span id="ledger-directory-title" role="status" aria-live="polite" aria-atomic="true">{results.length} {results.length === 1 ? "record" : "records"}</span>
       <div className={styles.metaActions}>
         {filtersActive ? <button type="button" onClick={clear}>Clear filters</button> : null}
         {mode === "catalogue" ? <details className={styles.legend}>
