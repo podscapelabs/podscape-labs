@@ -404,3 +404,54 @@
 .researchContext[open]>summary:after{content:"⌃"}
 .researchContext>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .researchContext .researchDisclaimer{border-top:0;padding-top:4px;font-size:.71rem!important}
+
+
+/* Leaf Ledger: compact dashboards first, full research in a dismissible detail screen. */
+.researchOverview{gap:12px;padding:16px}
+.researchOverview>h2{font:550 clamp(1.34rem,4.5vw,1.75rem)/1.15 var(--display)}
+.researchSnapshot{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0}
+.researchSnapshot>div{min-width:0;display:grid;align-content:start;gap:7px;padding:12px;border:1px solid var(--border);border-radius:13px;background:var(--surface-secondary)}
+.researchSnapshot dt{font-size:.68rem;color:var(--text-secondary);font-weight:650}
+.researchSnapshot dd{margin:0;font-size:.79rem;line-height:1.39;font-weight:660;color:var(--text-primary);overflow-wrap:anywhere}
+.researchOpenButton{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:43px;padding:10px 13px;border:1px solid var(--border);border-radius:12px;background:var(--surface-secondary);color:var(--accent);font-size:.78rem;font-weight:760;cursor:pointer}
+.researchOpenButton>span:last-child{font-size:1rem}
+.researchOpenButton:focus-visible,.researchDialogClose:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.researchSourcesSummary{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.researchSourcesSummary span{padding:8px 11px;border:1px solid var(--border);border-radius:999px;color:var(--text-primary);background:var(--surface-secondary);font-size:.76rem;font-weight:650}
+.researchDialog{position:fixed;inset:0;margin:auto;padding:0;width:min(700px,calc(100% - 28px));max-width:none;max-height:min(88dvh,900px);border:1px solid var(--border);border-radius:24px;background:var(--surface);color:var(--text-primary);box-shadow:0 18px 80px #0005;overflow:hidden}
+.researchDialog::backdrop{background:rgba(11,27,20,.66);backdrop-filter:blur(3px)}
+.researchDialogPanel{display:flex;flex-direction:column;min-height:0;max-height:min(88dvh,900px)}
+.researchDialogHeader{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:19px 21px 16px;border-bottom:1px solid var(--border);flex:none}
+.researchDialogHeader>div{min-width:0}
+.researchDialogHeader small{display:block;margin-bottom:7px;font-size:.58rem;color:var(--text-secondary);font-weight:800;letter-spacing:.11em}
+.researchDialogHeader h2{margin:0;font:550 clamp(1.6rem,5vw,2.1rem)/1.14 var(--display);overflow-wrap:anywhere}
+.researchDialogClose{display:grid;place-items:center;flex:none;width:42px;height:42px;padding:0;border:1px solid var(--border);border-radius:50%;background:var(--surface-secondary);color:var(--text-primary);font-size:1.75rem;line-height:1;cursor:pointer}
+.researchDialogBody{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:17px 20px 25px}
+.researchFullFacts{display:grid;gap:9px;margin:0}
+.researchFullFacts>div{display:grid;gap:5px;padding:13px 14px;border:1px solid var(--border);border-radius:13px;background:var(--surface-secondary)}
+.researchFullFacts dt{font-size:.72rem;font-weight:730;color:var(--text-secondary)}
+.researchFullFacts dd{margin:0;font-size:.84rem;line-height:1.54;white-space:pre-wrap;overflow-wrap:anywhere}
+.researchExpandedNote{display:grid;gap:6px;margin-top:14px;padding:13px 14px;border-top:1px solid var(--border);color:var(--text-secondary)}
+.researchExpandedNote strong,.researchDialogLinks>strong{font-size:.78rem;color:var(--text-primary)}
+.researchExpandedNote p{margin:0;font-size:.79rem;line-height:1.5}
+.researchDialogLinks{display:grid;gap:10px;margin-top:17px}
+.researchDialogLinks .researchLinks{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:600px){
+ .researchOverview{padding:14px;gap:10px}
+ .researchSnapshot{gap:7px}
+ .researchSnapshot>div{padding:10px;gap:5px}
+ .researchSnapshot dt{font-size:.63rem}
+ .researchSnapshot dd{font-size:.74rem}
+ .researchDialog{width:100%;max-height:88dvh;margin:auto 0 0;border-radius:23px 23px 0 0;border-bottom:0}
+ .researchDialogPanel{max-height:88dvh}
+ .researchDialogHeader{padding:16px 17px 12px}
+ .researchDialogBody{padding:13px 15px calc(22px + env(safe-area-inset-bottom,0px))}
+ .researchFullFacts>div{padding:11px 12px}
+}
+/* Strengthen active meter boundaries without turning the gradient into separate cards. */
+.moistureGradient{height:16px;gap:4px}
+.moistureGradient .moistureZoneActive{outline:3px solid var(--accent);outline-offset:-3px;filter:saturate(1.22) contrast(1.06)}
+.moistureHumidityTrack,.moistureCoverageTrack{height:16px;border-width:2px;border-color:color-mix(in srgb,var(--accent) 28%,var(--border))}
+.moistureHumidityFill{background:#62a18b;box-shadow:inset 0 0 0 2px var(--accent)}
+.moistureHumidityTrack i{width:4px;height:23px}
+.moistureCoverageTrack>span{background:#62a18b;box-shadow:inset 0 0 0 2px var(--accent)}
