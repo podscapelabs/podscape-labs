@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { CollectionButton } from "@/components/CollectionButton";
 import { SpeciesDashboardWorkspace } from "@/components/SpeciesDashboardWorkspace";
 import {MoistureAndHumidityWidget,BreedingDevelopmentWidget,TaxonomyOriginWidget,FeedingEcologyWidget,HabitatSetupWidget,BehaviourEcologyWidget,ResearchSourcesWidget} from "@/components/SpeciesResearchWidgets";
+import {getSpeciesTraitId} from "@/lib/species-traits";
 import { PinToHome } from "@/components/PinToHome";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import { PlatformShell } from "@/components/PlatformShell";
