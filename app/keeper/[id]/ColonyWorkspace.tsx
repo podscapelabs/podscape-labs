@@ -59,7 +59,7 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
   }catch{setError("Could not undo. Your record may still be saved.");}
   finally{setUndoing(false);}
  }
- const tiles=[
+ const tiles:Array<{title:string;detail:string;href:string;icon:"droplet"|"jar"|"calendar"|"note"|"qr";featured?:boolean;requiresActive?:boolean}>=[
   {title:"Quick Care",detail:"Misting, feeding & care logs",href:careUrl,icon:"droplet" as const,featured:true,requiresActive:true},
   {title:"Colony Details",detail:"Population, habitat & status",href:"/keeper/"+id+"/details",icon:"jar" as const},
   {title:"Care Schedule",detail:"Set routines for this enclosure",href:"/keeper/"+id+"/details?panel=care#care-reminders",icon:"calendar" as const},
