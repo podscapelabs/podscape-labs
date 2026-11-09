@@ -13,7 +13,6 @@ export function announceAchievement(notice: AchievementNotice) {
 
 export function AchievementToast() {
   const [queue, setQueue] = useState<AchievementNotice[]>([]);
-  const [dismissed, setDismissed] = useState(false);
   const current = queue[0];
   useEffect(() => {
     const receive = (event: Event) => {
@@ -26,14 +25,10 @@ export function AchievementToast() {
   }, []);
   useEffect(() => {
     if (!current) return;
-    const timeout = window.setTimeout(() => setDismissed(true), 5500);
+    const timeout = window.setTimeout(() => setQueue(prev => prev.slice(1)), 5500);
     return () => window.clearTimeout(timeout);
-  }, [current]);
-  useEffect(() => {
-    if (!dismissed) return;
-    setQueue(prev => prev.slice(1));
-    setDismissed(false);
-  }, [dismissed]);
+  }, [current?.id]);
+  const dismiss = () => setQueue(prev => prev.slice(1));
   if (!current) return null;
   return createPortal(<aside className={styles.toast} role="status" aria-live="polite" aria-atomic="true">
     <div className={styles.icon} aria-hidden="true">✦</div>
@@ -41,8 +36,8 @@ export function AchievementToast() {
       <div className={styles.eyebrow}>Achievement unlocked!</div>
       <strong>{current.title}</strong>
       <div className={styles.description}>{current.description}</div>
-      <div className={styles.rewards}>+{current.exp} EXP <span aria-hidden="true">·</span> +{current.coins} Pod Coins</div>
-      <Link className={styles.link} href="/account/progress" onClick={() => setDismissed(true)}>View achievements →</Link>
+      <div className={styles.rewards}>+{current.exp} EXP{current.coins>0?<><span aria-hidden="true">·</span> +{current.coins} Pod Coins</>:null}</div>
+      <Link className={styles.link} href="/account/progress" onClick={dismiss}>View achievements →</Link>
     </div>
     <button className={styles.close} type="button" aria-label="Dismiss achievement" onClick={() => setDismissed(true)}>×</button>
   </aside>, document.body);
