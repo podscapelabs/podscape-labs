@@ -11,11 +11,9 @@ function validProof(mode:string,puzzle:unknown,proof:unknown):boolean{
  const data=proof as Record<string,unknown>;
  if(mode==="quiz"){
   const questions=(puzzle as QuizPuzzle).questions;
+  // Completion rewards participation, not a perfect score; all answers must be valid.
   return Array.isArray(data.answers)&&data.answers.length===questions.length&&
-   data.answers.every((answer,i)=>Number.isInteger(answer)&&answer>=0&&answer<4)&&
-   data.answers.some((answer,i)=>answer!==questions[i].answer)===false ||
-   mode==="quiz"&&Array.isArray(data.answers)&&data.answers.length===(puzzle as QuizPuzzle).questions.length&&
-   data.answers.every((answer)=>Number.isInteger(answer)&&answer>=0&&answer<4);
+   data.answers.every(answer=>Number.isInteger(answer)&&answer>=0&&answer<4);
  }
  if(mode==="burrow"){
   const answer=(puzzle as BurrowPuzzle).answer;
