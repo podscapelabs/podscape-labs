@@ -11,6 +11,12 @@ const portals=[
  "app/community/community.module.css",
  "components/SpeciesProfile.module.css"
 ];
+const funZoneScreens=[
+ "components/PuzzleLibrary.module.css",
+ "components/PlayGame.module.css",
+ "app/fun-zone/leaderboard/leaderboard.module.css",
+ "app/fun-zone/word-search/game.module.css"
+];
 const roles=[
  "--portal-hero-start","--portal-hero-end","--portal-hero-glow",
  "--portal-hero-text","--portal-hero-muted","--portal-hero-soft",
@@ -31,5 +37,10 @@ for(const name of portals){
   assert(!css.includes("var(--forest)"),name+" uses legacy forest text colour; use --accent or a portal colour role");
  }
 }
+for(const name of funZoneScreens){
+ const css=read(name);
+ assert(css.includes("var(--background)"),name+" must use shared background.");
+ assert(!css.includes("var(--forest)"),name+" uses the legacy bright-green forest colour.");
+}
 assert(read("app/fun-zone/fun-zone.module.css").includes("var(--accent-contrast)"),"Fun Zone active filters must use contrast-aware foreground.");
-console.log("Portal colour tokens validated for light/dark themes, Leaf Ledger, Fun Zone, and Community.");
+console.log("Portal colour tokens validated for light/dark themes, Leaf Ledger, Fun Zone screens, and Community.");
