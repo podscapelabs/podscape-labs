@@ -105,15 +105,36 @@ function Burrow(){
 }
 function Crossword(){
  const [answers,setAnswers]=useState<Record<number,string>>({}),[checked,setChecked]=useState(false);
- // A real connected mini crossword; coordinates are row, column, orientation.
+ // Coordinates deliberately intersect at matching letters of the five answers.
  const places=[{r:6,c:1,dir:"across"},{r:1,c:3,dir:"down"},{r:3,c:2,dir:"down"},{r:4,c:0,dir:"across"},{r:2,c:2,dir:"across"}] as const;
- const display=Array.from({length:7},()=>Array.from({length:6},()=>({open:false,char:"",number:0})));
- places.forEach((p,i)=>{const value=(answers[i]||"").toUpperCase();for(let j=0;j<crosswordClues[i].answer.length;j++){const row=p.r+(p.dir==="down"?j:0),col=p.c+(p.dir==="across"?j:0);if(row>=0&&row<7&&col>=0&&col<6){display[row][col].open=true;if(value[j])display[row][col].char=value[j];if(j===0)display[row][col].number=i+1;}}});
- const correct=crosswordClues.filter((c,i)=>(answers[i]||"").trim().toUpperCase()===c.answer).length;
- return <div className={styles.playArea}><div className={styles.stage}><small>MINI CROSSWORD · FIVE CLUES</small><h2>Keeper&apos;s Vocabulary</h2><p>Fill the intersecting words from the clues below.</p></div>
- <div className={styles.crosswordBoard} aria-label="Crossword grid">{display.flatMap((row,r)=>row.map((cell,c)=><div key={r+"-"+c} className={cell.open?styles.crosswordCell:styles.crosswordBlank}>{cell.number?<small>{cell.number}</small>:null}{cell.char}</div>))}</div>
- <div className={styles.clues}>{crosswordClues.map((clue,i)=>{const success=(answers[i]||"").toUpperCase()===clue.answer;return <label key={clue.answer}><span><strong>{i+1} {places[i].dir}.</strong> {clue.clue}</span><input aria-label={`Answer to clue ${i+1}`} value={answers[i]||""} maxLength={clue.answer.length} onChange={e=>{setAnswers(a=>({...a,[i]:e.target.value.replace(/[^a-z]/gi,"").toUpperCase()}));setChecked(false)}} data-correct={checked&&success}/></label>})}</div>
- <div className={styles.actions}><button onClick={()=>setChecked(true)}>Check answers</button><button className={styles.secondary} onClick={()=>{setAnswers({});setChecked(false)}}>Reset</button></div>{checked?<p className={styles.feedbackText} role="status">{correct===crosswordClues.length?"All five correct! Crossword complete. ✦":`${correct} of ${crosswordClues.length} correct. Keep going!`}</p>:null}</div>;
+ const display=Array.from({length:7},()=>Array.from({length:6},()=>({open:false,char:"",number:0,conflict:false})));
+ places.forEach((p,i)=>{
+  const value=(answers[i]||"").toUpperCase();
+  for(let j=0;j<crosswordClues[i].answer.length;j++){
+   const row=p.r+(p.dir==="down"?j:0),col=p.c+(p.dir==="across"?j:0);
+   const cell=display[row][col];
+   cell.open=true;
+   if(value[j]){
+    if(cell.char&&cell.char!==value[j])cell.conflict=true;
+    else cell.char=value[j];
+   }
+   if(j===0)cell.number=i+1;
+  }
+ });
+ const conflicts=display.flat().filter(cell=>cell.conflict).length;
+ const correct=crosswordClues.filter((clue,i)=>(answers[i]||"").trim().toUpperCase()===clue.answer).length;
+ const complete=correct===crosswordClues.length&&conflicts===0;
+ return <div className={styles.playArea}>
+  <div className={styles.stage}><small>MINI CROSSWORD · FIVE INTERSECTING CLUES</small><h2>Keeper&apos;s Vocabulary</h2><p>Enter answers in the fields below. Letters appear on the connected grid; conflicting intersections are highlighted.</p></div>
+  <div className={styles.crosswordBoard} aria-label="Crossword grid">{display.flatMap((row,r)=>row.map((cell,c)=><div key={r+"-"+c} className={cell.open?styles.crosswordCell:styles.crosswordBlank} data-conflict={cell.conflict?"true":undefined}>{cell.number?<small>{cell.number}</small>:null}{cell.char}</div>))}</div>
+  <div className={styles.clues}>{crosswordClues.map((clue,i)=>{
+   const success=(answers[i]||"").toUpperCase()===clue.answer;
+   return <label key={clue.answer}><span><strong>{i+1} {places[i].dir}.</strong> {clue.clue}</span><input aria-label={`Answer to clue ${i+1}`} value={answers[i]||""} maxLength={clue.answer.length} autoComplete="off" spellCheck={false} onChange={e=>{setAnswers(a=>({...a,[i]:e.target.value.replace(/[^a-z]/gi,"").toUpperCase()}));setChecked(false)}} data-correct={checked&&success}/></label>;
+  })}</div>
+  <div className={styles.actions}><button type="button" onClick={()=>setChecked(true)}>Check answers</button><button type="button" className={styles.secondary} onClick={()=>{setAnswers({});setChecked(false)}}>Reset</button></div>
+  {conflicts>0?<p className={styles.errorText} role="status">{conflicts} crossing {conflicts===1?"letter disagrees":"letters disagree"} between answers. Check the highlighted cells.</p>:null}
+  {checked?<p className={styles.feedbackText} role="status">{complete?"All five correct! Crossword complete. ✦":`${correct} of ${crosswordClues.length} answers correct. ${conflicts?"Resolve the crossings too.":"Keep going!"}`}</p>:null}
+ </div>;
 }
 export function PlayGame({game}:{game:Game}){
  return <main className={styles.page}><div className={styles.wrap}><nav className={styles.crumb}><Link href="/fun-zone">Fun Zone</Link><span>/</span><Link href={`/fun-zone/${game.key}`}>{game.title}</Link></nav><header className={styles.hero}><span className={styles.eyebrow}>{game.category} / Sample 01</span><h1>{game.puzzleTitle}</h1><p>{game.description}</p></header><div className={styles.notice}>Practice puzzle · No EXP or Pod Coins awarded · Results are not saved to your account</div>{game.mode==="connections"?<Connections/>:game.mode==="burrow"?<Burrow/>:game.mode==="crossword"?<Crossword/>:<Quiz game={game}/>}<WorkspaceLinks items={[{href:`/fun-zone/${game.key}`,label:`More ${game.title}`},{href:"/fun-zone",label:"All games"},{href:"/ledger",label:"Leaf Ledger"}]}/></div></main>;
