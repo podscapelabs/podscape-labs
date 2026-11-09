@@ -19,6 +19,7 @@ export type SpeciesRecord = {
   imagePositionX: number;
   imagePositionY: number;
   imageZoom: number;
+  /** Legacy card text fallback; new species should use About for their introduction. */
   summary: string;
   tags: string[];
   /** Up to five concise, editorially verified distinguishing traits. */
@@ -30,14 +31,18 @@ export type SpeciesRecord = {
   /** Editorially reviewed substrate-moisture range, five ordinal categories (1 dry ... 5 very damp). */
   moistureRangeStart?: number | null;
   moistureRangeEnd?: number | null;
+  /** Legacy moisture note; new entries use moistureGradientGuidance. */
   moistureNote?: string;
   /** Optional concise context. No inferred husbandry instructions. */
   ventilationNote?: string;
   temperatureNote?: string;
+  /** Legacy activity note; new entries use visibilityNotes. */
   activityNote?: string;
   reproductionNote?: string;
   /** Observed feeding enthusiasm, separate from diet and portion guidance. */
+  /** Legacy, subjective feeding rating. Not used in new profiles. */
   feedingResponse?: string;
+  /** Legacy feeding rating explanation, retained for historical compatibility. */
   feedingResponseNote?: string;
   temperature: string;
   ventilation: string;
