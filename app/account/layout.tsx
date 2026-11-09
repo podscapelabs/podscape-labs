@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { PlatformShell } from "@/components/PlatformShell";
-import { requireCustomerPreviewAccess } from "@/lib/customer-auth/access";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -9,6 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default async function CustomerAccountLayout({ children }: { children: React.ReactNode }) {
-  await requireCustomerPreviewAccess();
   return <PlatformShell>{children}</PlatformShell>;
 }
