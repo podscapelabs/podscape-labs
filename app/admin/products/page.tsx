@@ -6,6 +6,7 @@ import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getProductRecords } from "@/lib/product-store";
 import { createProductRecord } from "./actions";
 import styles from "./products.module.css";
+import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
 
 export const dynamic = "force-dynamic";
 
@@ -67,13 +68,13 @@ export default async function ProductDeskPage({ searchParams }: { searchParams: 
           {visibleRecords.map((product) => {
             const lowStock = isProductLowStock(product);
             return <Link className={styles.productRow} href={`/admin/products/${encodeURIComponent(product.id)}`} key={product.id}>
-              <div className={styles.identity}><span className={styles.thumb}>{product.image ? <Image src={product.image} alt="" fill sizes="58px" unoptimized /> : <b aria-hidden="true">❧</b>}</span><span><strong>{product.title}</strong><small>{product.scientificName ? <><i>{product.scientificName}</i>{product.morph ? ` · ${product.morph}` : ""} · </> : null}{product.category}{(product.variants?.filter((variant) => variant.isActive).length || 0) > 1 ? ` · ${product.variants?.filter((variant) => variant.isActive).length} variants` : product.sku ? ` · ${product.sku}` : ""}</small></span></div>
+              <div className={styles.identity}><span className={styles.thumb}>{product.image ? <Image src={product.image} alt="" fill sizes="58px" unoptimized /> : <PodscapeLineIcon name="shop"/>}</span><span><strong>{product.title}</strong><small>{product.scientificName ? <><i>{product.scientificName}</i>{product.morph ? ` · ${product.morph}` : ""} · </> : null}{product.category}{(product.variants?.filter((variant) => variant.isActive).length || 0) > 1 ? ` · ${product.variants?.filter((variant) => variant.isActive).length} variants` : product.sku ? ` · ${product.sku}` : ""}</small></span></div>
               <span className={`${styles.status} ${product.archivedAt ? styles.archived : product.status === "published" ? styles.published : styles.draft}`}>{product.archivedAt ? "Archived" : product.status}</span>
               <span className={lowStock ? styles.stockLow : styles.stock}>{product.availability === "in-stock" ? `${productStockQuantity(product)} in stock` : product.availability.replace("-", " ")}</span>
               <strong className={styles.price}>{formatProductPrice(product)}</strong><span className={styles.open} aria-hidden="true">›</span>
             </Link>;
           })}
-          {visibleRecords.length === 0 ? <div className={styles.empty}><span aria-hidden="true">❧</span><h3>No products found.</h3><p>Adjust the filters or create a new product draft.</p></div> : null}
+          {visibleRecords.length === 0 ? <div className={styles.empty}><PodscapeLineIcon name="shop"/><h3>No products found.</h3><p>Adjust the filters or create a new product draft.</p></div> : null}
         </div>
       </section>
       <p className={styles.checkoutNote}>Checkout remains disabled. Publishing controls catalogue visibility only until payment processing is connected.</p>
