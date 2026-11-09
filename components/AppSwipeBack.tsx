@@ -2,6 +2,7 @@
 
 import {useEffect,useRef} from "react";
 import {usePathname,useRouter} from "next/navigation";
+import styles from "./AppSwipeBack.module.css";
 
 // Native browser edge gestures remain the first choice. In installed PWAs,
 // add a conservative content swipe for navigation, without intercepting carousels.
@@ -38,6 +39,11 @@ export function AppSwipeBack(){
  const popped=useRef(false);
  const started=useRef<{x:number;y:number;at:number}|null>(null);
  const navigating=useRef(false);
+ const hintRef=useRef<HTMLDivElement>(null);
+ const hideHint=()=>{
+  const hint=hintRef.current;
+  if(hint){hint.dataset.visible="false";hint.style.setProperty("--swipe-progress","0")}
+ };
 
  useEffect(()=>{
   const onPop=()=>{popped.current=true;navigating.current=false;};
@@ -60,6 +66,7 @@ export function AppSwipeBack(){
  useEffect(()=>{
   const onStart=(event:TouchEvent)=>{
    started.current=null;
+   hideHint();
    if(!standalone()||event.touches.length!==1||navigating.current)return;
    if(pathname==="/"||pathname==="/app"||pathname.startsWith("/admin")||pathname.startsWith("/auth/")||pathname.startsWith("/account/login")||pathname.startsWith("/account/register"))return;
    if(historyRef.current.length<2)return;
@@ -68,8 +75,17 @@ export function AppSwipeBack(){
    if(isInteractive(event.target instanceof Element?event.target:null))return;
    started.current={x:touch.clientX,y:touch.clientY,at:Date.now()};
   };
+  const onMove=(event:TouchEvent)=>{
+   const from=started.current,hint=hintRef.current;
+   if(!from||!hint||event.touches.length!==1)return;
+   const dx=event.touches[0].clientX-from.x,dy=event.touches[0].clientY-from.y;
+   if(Math.abs(dy)>Math.max(25,Math.abs(dx)*.8)){started.current=null;hideHint();return;}
+   if(dx<26){hideHint();return;}
+   hint.dataset.visible="true";
+   hint.style.setProperty("--swipe-progress",String(Math.min(1,Math.max(0,(dx-26)/(DISTANCE-26)))));
+  };
   const onEnd=(event:TouchEvent)=>{
-   const from=started.current;started.current=null;
+   const from=started.current;started.current=null;hideHint();
    if(!from||event.changedTouches.length!==1||navigating.current)return;
    const touch=event.changedTouches[0];
    const dx=touch.clientX-from.x,dy=touch.clientY-from.y;
@@ -78,15 +94,17 @@ export function AppSwipeBack(){
    navigating.current=true;
    router.back();
   };
-  const cancel=()=>{started.current=null;};
+  const cancel=()=>{started.current=null;hideHint();};
   document.addEventListener("touchstart",onStart,{passive:true});
+  document.addEventListener("touchmove",onMove,{passive:true});
   document.addEventListener("touchend",onEnd,{passive:true});
   document.addEventListener("touchcancel",cancel,{passive:true});
   return ()=>{
    document.removeEventListener("touchstart",onStart);
+   document.removeEventListener("touchmove",onMove);
    document.removeEventListener("touchend",onEnd);
    document.removeEventListener("touchcancel",cancel);
   };
  },[pathname,router]);
- return null;
+ return <div ref={hintRef} className={styles.hint} data-visible="false" aria-hidden="true"><span>←</span> Back</div>;
 }
