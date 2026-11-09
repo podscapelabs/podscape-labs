@@ -1,13 +1,15 @@
 import {Header} from "@/components/Header";
 import styles from "@/components/MarketingHome.module.css";
 import {MenuPinnedDirectory} from "./MenuPinnedDirectory";
+import {isAdminAuthenticated} from "@/lib/admin-auth";
 
-export default function MenuPage(){
+export default async function MenuPage(){
+ const isOwner=await isAdminAuthenticated();
  return <div className={`v2-site ${styles.site}`}><Header/><main className={styles.menuPage}>
   <div className="v2-container">
    <h1>Menu</h1>
    <p>Explore PodScape. Pin the destinations you visit most to keep them at the top of your Menu.</p>
-   <MenuPinnedDirectory/>
+   <MenuPinnedDirectory isOwner={isOwner}/>
   </div>
  </main></div>;
 }
