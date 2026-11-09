@@ -27,7 +27,7 @@
 
 /* Portal-level game navigation and usable crossword density on phones. */
 .hero{border-radius:20px;padding:clamp(18px,4vw,30px);background:var(--surface-secondary);border:1px solid var(--border);margin:0 0 14px;position:relative;overflow:hidden}
-.hero:after{content:"❧";position:absolute;right:-5px;top:-34px;font-size:155px;line-height:1;opacity:.055;pointer-events:none}
+
 .heroTitleRow{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
 .heroTitleRow>div{min-width:0;flex:1}
 .hero .difficulty{flex:none;border-radius:999px;padding:6px 10px;font-size:11px;font-weight:800;border:1px solid var(--border);background:var(--surface)}
