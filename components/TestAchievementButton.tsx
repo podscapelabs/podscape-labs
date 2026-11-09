@@ -12,6 +12,6 @@ export function TestAchievementButton(){
   <button type="button" style={style} onClick={()=>announceAchievement({
    id:"hidden-visual-test-"+Date.now(),title:"Secret Unlocked",
    description:"A preview of how a hidden discovery is revealed.",exp:20,coins:0,hidden:true
-  })}>✺ Preview hidden reveal</button>
+  })}>Preview hidden reveal</button>
  </div>;
 }
