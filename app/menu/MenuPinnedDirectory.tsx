@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect,useState} from "react";
+import {useEffect,useMemo,useState} from "react";
 import Link from "next/link";
 import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
 import {availableNavigationChoices,navigationGroups,type NavChoice} from "@/components/navigation-customization";
@@ -27,9 +27,9 @@ function MenuItem({item,pinned,onToggle}:{item:NavChoice;pinned:boolean;onToggle
  </div>;
 }
 export function MenuPinnedDirectory({isOwner=false}:{isOwner?:boolean}){
- const visibleChoices=availableNavigationChoices(isOwner);
- const available=visibleChoices.filter(item=>item.id!=="menu"&&!item.planned);
- const allowedIds=new Set(available.map(item=>item.id));
+ const visibleChoices=useMemo(()=>availableNavigationChoices(isOwner),[isOwner]);
+ const available=useMemo(()=>visibleChoices.filter(item=>item.id!=="menu"&&!item.planned),[visibleChoices]);
+ const allowedIds=useMemo(()=>new Set(available.map(item=>item.id)),[available]);
  const [ids,setIds]=useState<string[]>([]);
  const [ready,setReady]=useState(false);
  useEffect(()=>{
@@ -37,7 +37,7 @@ export function MenuPinnedDirectory({isOwner=false}:{isOwner?:boolean}){
   sync();setReady(true);
   window.addEventListener("storage",sync);
   return ()=>window.removeEventListener("storage",sync);
- },[isOwner]);
+ },[allowedIds]);
  const toggle=(id:string)=>{
   const next=ids.includes(id)?ids.filter(value=>value!==id):[...ids,id].slice(0,12);
   setIds(next);
