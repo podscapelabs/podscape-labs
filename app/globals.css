@@ -573,6 +573,16 @@ h1, h2, h3 { text-wrap: balance; }
   --border-strong: #9c9d83;
   --accent: #314f1d;
   --accent-hover: #203711;
+  /* Shared portal colour roles: deep heroes never inherit a light-mode text green. */
+  --portal-hero-start: #17382a;
+  --portal-hero-end: #335541;
+  --portal-hero-glow: #56765d;
+  --portal-hero-text: #f6f1e5;
+  --portal-hero-muted: #dce4d8;
+  --portal-hero-soft: #bbd0b7;
+  --portal-hero-button-bg: #f6f1e5;
+  --portal-hero-button-text: #17382a;
+  --accent-contrast: #fffaf0;
   --focus: #b57418;
   --ledger: #39591e;
   --podbound: #174d77;
@@ -611,6 +621,15 @@ h1, h2, h3 { text-wrap: balance; }
   --border-strong: #55684d;
   --accent: #9db26f;
   --accent-hover: #b7c98b;
+  --portal-hero-start: #10261d;
+  --portal-hero-end: #274737;
+  --portal-hero-glow: #44634e;
+  --portal-hero-text: #f6f1e5;
+  --portal-hero-muted: #d4dfd0;
+  --portal-hero-soft: #b8cbb0;
+  --portal-hero-button-bg: #f6f1e5;
+  --portal-hero-button-text: #17382a;
+  --accent-contrast: #102319;
   --focus: #e3a641;
   --ledger: #7fa04d;
   --podbound: #4d8fc4;
