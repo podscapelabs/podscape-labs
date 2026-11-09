@@ -1,4 +1,3 @@
-import type {ReactNode} from "react";
 import type {SpeciesRecord} from "@/data/species";
 import styles from "@/components/SpeciesProfile.module.css";
 
@@ -30,7 +29,7 @@ export function MoistureAndHumidityWidget({record}:{record:SpeciesRecord}){
 export function BreedingDevelopmentWidget({record}:{record:SpeciesRecord}){
  const avg=record.broodAverage?.trim(),min=record.broodMin?.trim(),max=record.broodMax?.trim();
  return <Details title="Breeding & Development" rows={[
-  {label:"Reproduction rate",value:record.reproduction},{label:"Average brood",value:avg?avg+" young":undefined},
+  {label:"Average brood",value:avg?avg+" young":undefined},
   {label:"Observed brood range",value:min&&max?min+"–"+max+" young":undefined},
   {label:"Incubation / brooding",value:record.incubationPeriod},{label:"Age at maturity",value:record.maturityAge},
   {label:"Breeding season",value:record.breedingSeason}
@@ -39,7 +38,7 @@ export function BreedingDevelopmentWidget({record}:{record:SpeciesRecord}){
 export function TaxonomyOriginWidget({record}:{record:SpeciesRecord}){
  return <Details title="Taxonomy & Origin" rows={[
  {label:"Taxonomic status",value:record.taxonomicStatus},{label:"Synonyms",value:record.taxonomicSynonyms},
- {label:"Native distribution",value:record.nativeDistribution},{label:"Natural microhabitat",value:record.naturalMicrohabitat},
+ {label:"Native distribution",value:record.nativeDistribution},
  {label:"Morph origin",value:record.morphOrigin},{label:"Adult size",value:record.adultSizeMm?.trim()?record.adultSizeMm+" mm":undefined},
  {label:"Lifespan",value:record.lifespan},{label:"Identification & lookalikes",value:record.identificationNotes}
  ]}/>;
@@ -47,8 +46,15 @@ export function TaxonomyOriginWidget({record}:{record:SpeciesRecord}){
 export function FeedingEcologyWidget({record}:{record:SpeciesRecord}){
  return <Details title="Feeding & Ecology" rows={[
  {label:"Staple diet",value:record.stapleDiet},{label:"Protein",value:record.proteinGuidance},{label:"Calcium",value:record.calciumGuidance},
- {label:"Dietary cautions",value:record.dietaryCautions},{label:"Defensive behaviour",value:record.defensiveBehaviour},
- {label:"Activity & visibility",value:record.visibilityNotes},{label:"Bioactive suitability",value:record.bioactiveSuitability}
+ {label:"Dietary cautions",value:record.dietaryCautions}
+ ]}/>;
+}
+/** Behavioural ecology is distinct from nutrition and can be compared separately. */
+export function BehaviourEcologyWidget({record}:{record:SpeciesRecord}){
+ return <Details title="Behaviour & Ecology" rows={[
+  {label:"Defensive behaviour",value:record.defensiveBehaviour},
+  {label:"Activity & visibility",value:record.visibilityNotes||record.activityNote},
+  {label:"Bioactive suitability",value:record.bioactiveSuitability}
  ]}/>;
 }
 export function ResearchSourcesWidget({record}:{record:SpeciesRecord}){
@@ -57,18 +63,18 @@ export function ResearchSourcesWidget({record}:{record:SpeciesRecord}){
  if(!links.length&&!has(record,["evidenceScope","evidenceQuality","evidenceNotes","lastReviewed"]))return null;
  return <section className={styles.speciesInfoCard}><h2>Research &amp; Sources</h2>
  <dl className={styles.researchFacts}>
- {record.evidenceScope?<div><dt>Evidence scope</dt><dd>{record.evidenceScope}</dd></div>:null}
- {record.evidenceQuality?<div><dt>Evidence basis</dt><dd>{record.evidenceQuality}</dd></div>:null}
+ {record.evidenceScope?<div><dt>Evidence scope</dt><dd>{{"species-level":"Species-level","morph-specific":"Morph-specific","mixed":"Mixed species and morph evidence"}[record.evidenceScope]||record.evidenceScope}</dd></div>:null}
+ {record.evidenceQuality?<div><dt>Evidence basis</dt><dd>{{"scientific":"Scientific literature","breeder-consensus":"Breeder consensus","limited":"Limited evidence"}[record.evidenceQuality]||record.evidenceQuality}</dd></div>:null}
  {record.lastReviewed?<div><dt>Last reviewed</dt><dd>{record.lastReviewed}</dd></div>:null}
  {record.evidenceNotes?<div><dt>Evidence &amp; uncertainty</dt><dd>{record.evidenceNotes}</dd></div>:null}
  </dl>
- {links.length?<div className={styles.researchLinks}><strong>Original references</strong>{links.map(url=><a key={url} href={url} target="_blank" rel="noopener noreferrer">{url}</a>)}</div>:null}
+ {links.length?<div className={styles.researchLinks}><strong>Original references</strong>{links.map((url,index)=><a key={url} href={url} target="_blank" rel="noopener noreferrer" title={url}>{index+1}. {new URL(url).hostname.replace(/^www\./,"")} ↗</a>)}</div>:null}
  <p className={styles.researchDisclaimer}>Seller consensus and scientific measurements are different evidence types. Species-level findings may not have been measured for a particular morph.</p>
  </section>;
 }
 export function HabitatSetupWidget({record}:{record:SpeciesRecord}){
  return <Details title="Habitat & Setup" rows={[
  {label:"Natural microhabitat",value:record.naturalMicrohabitat},{label:"Substrate depth",value:record.substrateDepth},
- {label:"Enclosure guidance",value:record.enclosureGuidance},{label:"Moisture arrangement",value:record.moistureGradientGuidance}
+ {label:"Enclosure guidance",value:record.enclosureGuidance}
  ]} note="Enclosure advice varies with colony size, ventilation and local conditions."/>;
 }
