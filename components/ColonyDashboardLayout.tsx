@@ -63,6 +63,11 @@ export function ColonyDashboardLayout({scope,colonyId,widgets,forceVisible}:{
  const done=()=>{stop();setEditing(false)};
  const reset=()=>{if(!window.confirm("Reset this colony dashboard? Your care records, notes and other colony layouts will not change."))return;stop();update(defaultColonyLayout())};
  const toggle=(id:ColonyWidgetId)=>update({...layout,visible:layout.visible.includes(id)?layout.visible.filter(x=>x!==id):[...layout.visible,id]});
+ const presets:{id:string;title:string;description:string;visible:ColonyWidgetId[]}[]=[
+  {id:"care",title:"Care first",description:"Misting, feeding and recent activity",visible:["shortcuts","care","activity","observations"]},
+  {id:"growth",title:"Colony growth",description:"Population, breeding and observations",visible:["shortcuts","population","observations","environment"]},
+  {id:"minimal",title:"Minimal",description:"Just the actions and essentials",visible:["shortcuts","care"]}
+ ];
  return <div className={styles.colonyDashboard} data-workspace-root="colony"
   onPointerMove={event=>{if(editing)dragMove(event)}} onPointerUp={()=>{if(editing)stop()}} onPointerCancel={()=>{if(editing)stop()}}>
   {!editing?<div className={styles.dashboardHeading}>
@@ -81,6 +86,13 @@ export function ColonyDashboardLayout({scope,colonyId,widgets,forceVisible}:{
    <div data-colony-widget-library className={styles.colonyWidgetLibrary} role="dialog" aria-modal="true" aria-labelledby="colony-widget-heading">
     <header className={styles.libraryHeader}><div><small>PERSONALIZE THIS COLONY</small><h2 id="colony-widget-heading">Colony widgets</h2></div><button ref={closeRef} type="button" onClick={()=>setLibraryOpen(false)}>Done</button></header>
     <p>Choose what&apos;s useful to you. Every colony can have its own layout; hiding widgets never changes your records.</p>
+    <div className={styles.presetPicker} role="group" aria-label="Colony dashboard layout presets">
+      {presets.map(preset=><button type="button" key={preset.id}
+        aria-pressed={layout.visible.length===preset.visible.length&&preset.visible.every(id=>layout.visible.includes(id))}
+        onClick={()=>update({...layout,visible:[...preset.visible]})}>
+        <strong>{preset.title}</strong><small>{preset.description}</small>
+      </button>)}
+    </div>
     <div className={styles.libraryControls}><span>{visible.length} of {colonyWidgetIds.length} shown</span><button type="button" onClick={()=>{setLibraryOpen(false);setEditing(true)}}>Arrange widgets</button></div>
     {Object.entries(groups).map(([group,items])=><section className={styles.libraryGroup} key={group}>
       <h3>{group}</h3><div className={styles.libraryGrid}>{items.map(([id,title,description])=><article className={styles.libraryCard} key={id}>
