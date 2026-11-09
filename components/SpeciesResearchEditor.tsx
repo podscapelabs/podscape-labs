@@ -4,15 +4,23 @@ import styles from "@/app/admin/species/ledger-desk.module.css";
 
 /** Research is optional and never auto-filled. Sources should be mapped to specific claims. */
 export function SpeciesResearchEditor({record}:{record:SpeciesRecord}){
+ const effectiveValue=(name:keyof SpeciesRecord)=>{
+   const direct=record[name];
+   if(typeof direct==="string"&&direct.trim())return direct;
+   // Carry forward previously entered notes when the canonical field is still empty.
+   if(name==="visibilityNotes")return record.activityNote||"";
+   if(name==="moistureGradientGuidance")return record.moistureNote||"";
+   return "";
+ };
  return <section className={styles.researchEditor} aria-label="Optional researched species information">
   <div className={styles.researchEditorIntro}>
    <strong>Research &amp; specialist details</strong>
-   <p>Optional verified information for advanced widgets. Leave unknown values blank, and cite the original source beside each claim in Evidence notes. Good starting references include scientific publications, taxonomic databases, independent breeders and isopod.site.</p>
+   <p>Optional verified information for advanced widgets. Leave unknown values blank. Previous activity and moisture notes appear here for review rather than being deleted. Cite the original source beside each claim in Evidence notes. Suggested references include scientific publications, taxonomic databases, independent breeders and isopod.site.</p>
   </div>
   {speciesResearchGroups.map(group=><details key={group.id} className={styles.researchGroup}>
-   <summary>{group.title}<span>{group.fields.filter(([name])=>Boolean(record[name]?.trim())).length} filled</span></summary>
+   <summary>{group.title}<span>{group.fields.filter(([name])=>Boolean(effectiveValue(name)?.trim())).length} filled</span></summary>
    <div className={styles.researchGrid}>{group.fields.map(([name,label,limit])=>{
-    const value=record[name]||"";
+    const value=effectiveValue(name);
     const long=limit>200;
     if(name==="moistRefugeCondition")return <label key={name}><span>{label}</span><select name={name} defaultValue={value}><option value="">Not established</option><option value="Lightly damp">Lightly damp</option><option value="Moist">Moist</option><option value="Very moist">Very moist (never waterlogged)</option></select><small>Only the moist refuge, not the entire enclosure.</small></label>;
     if(name==="evidenceScope")return <label key={name}><span>{label}</span><select name={name} defaultValue={value}><option value="">Not recorded</option><option value="species-level">Species-level</option><option value="morph-specific">Morph-specific</option><option value="mixed">Mixed / varies by field</option></select></label>;
