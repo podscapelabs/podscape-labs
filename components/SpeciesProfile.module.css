@@ -405,3 +405,13 @@
 .careFactDetails[open]>summary{background:var(--accent);color:var(--surface)}
 .careFactDetails>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .careFactDetails>p{white-space:pre-line;overflow-wrap:anywhere;margin:7px 0 0;padding:9px 0 0;border-top:1px solid var(--border);color:var(--text-secondary);font-size:.71rem;line-height:1.47}
+
+
+/* Research qualifications remain accessible without crowding each specialist card. */
+.researchContext{border-top:1px solid var(--border);margin-top:3px;padding-top:4px}
+.researchContext>summary{list-style:none;cursor:pointer;color:var(--accent);font-size:.71rem;font-weight:700;min-height:28px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.researchContext>summary::-webkit-details-marker{display:none}
+.researchContext>summary:after{content:"⌄";font-size:1rem}
+.researchContext[open]>summary:after{content:"⌃"}
+.researchContext>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.researchContext .researchDisclaimer{border-top:0;padding-top:4px;font-size:.71rem!important}
