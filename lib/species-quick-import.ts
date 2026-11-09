@@ -10,7 +10,6 @@ export const IMPORT_FIELDS=[
  ["species","Species",100],
  ["morph","Morph / variety",120],
  ["about","About",4000],
- ["summary","Catalogue summary",600],
  ["careLevel","Care level",100],
  ["moistureRangeStart","Moisture · drier end",1],
  ["moistureRangeEnd","Moisture · damper end",1],
@@ -37,7 +36,7 @@ const options:Partial<Record<ImportField,readonly string[]>>={
 };
 export const IMPORT_TEMPLATE=JSON.stringify({
  commonName:"",scientificName:"",genus:"",species:"",morph:"",
- about:"",summary:"",careLevel:"",temperature:"",ventilation:"",
+ about:"",careLevel:"",temperature:"",ventilation:"",
  activity:"",reproduction:"",
  moistureRangeStart:null,moistureRangeEnd:null,
  feeding:"",substrate:"",notableTraits:[],keeperNotes:"",fieldGuideLinks:[],
