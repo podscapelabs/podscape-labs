@@ -7,9 +7,9 @@ const read=(path)=>readFileSync(new URL("../"+path,import.meta.url),"utf8");
 const js=ts.transpileModule(read("data/achievement-catalog.ts"),{
  compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}
 }).outputText;
-const module={exports:{}};
-runInNewContext(js,{module,exports:module.exports});
-const catalog=module.exports.achievementCatalog;
+const commonJs={exports:{}};
+runInNewContext(js,{module:commonJs,exports:commonJs.exports});
+const catalog=commonJs.exports.achievementCatalog;
 const expected={
  onboarding_complete:35,home_personalized:20,nav_personalized:20,
  species_personalized:25,manager_personalized:25,customize_three:60,customize_all:100
