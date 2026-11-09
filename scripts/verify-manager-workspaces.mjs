@@ -42,3 +42,25 @@ assert.match(widgets,/Reset this colony dashboard/,"Reset must explicitly preser
 assert.match(hub,/forceVisible=\{initialPanel==="observation"/,"Deep-linked observations remain accessible even when hidden");
 assert.match(colonyPage,/scope=\{user\?\.id/,"Layout storage must use authenticated member identity");
 assert.match(hub,/No live humidity or temperature readings/,"Environment cards must not imply sensor data");
+
+/* Large-scale refinement safeguards: layout isolation, archived records,
+   keyboard editing and mobile care selection. */
+assert.match(widgets,/hydratedKey===storageKey/,"Colony layout must not leak while switching routes");
+assert.match(widgets,/data-colony-widget-library/,"Widget library dialog should have a focus scope");
+assert.match(widgets,/event.key==="Escape"/,"Widget library should close on Escape");
+assert.match(widgets,/event.key!=="Tab"/,"Widget library should trap keyboard focus");
+assert.match(widgets,/Care first/,"Provide a care-focused preset");
+assert.match(widgets,/Colony growth/,"Provide a breeder-focused preset");
+assert.match(widgets,/Minimal/,"Provide a simple preset");
+assert.match(hub,/colony.archived/,"Archived colonies must have a read-only experience");
+assert.match(hub,/tiles.filter\(tile=>!colony.archived/,"Archived colonies must hide disabled QR and care tools");
+assert.match(colonyPage,/ColonyWorkspace key=\{enclosure.id\}/,"Transient state must reset between colonies");
+assert.match(scanner,/visibleChoices=showAllBins\|\|binSearch.trim\(\)\?filteredBins:filteredBins.slice\(0,8\)/,"Initial Quick Care picker must be short");
+assert.match(scanner,/Show all/,"Provide explicit access to the full collection");
+const scannerStyles=read("components/KeeperScanner.module.css");
+assert.match(scannerStyles,/\.quickChooseList\{max-height:none;overflow:visible/,"Don't nest vertical scrollers");
+const drag=read("components/WorkspaceEditCanvas.tsx");
+assert.match(drag,/lastClientX/,"Widget drag needs horizontal input");
+assert.match(drag,/next\.left/,"Widget reorder animation must account for columns");
+assert.match(css,/\.presetPicker/,"Colony presets require distinct controls");
+console.log("Manager refinement checks passed: archived safety, focus, per-colony isolation, compact picker and two-axis drag.");
