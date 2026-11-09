@@ -1,3 +1,4 @@
+import {flatSpeciesResearchFields,validateSpeciesResearchField} from "@/lib/species-research-fields";
 /** Safe, editorial-only import contract for the owner Ledger Desk.
  * Never accept status, identity verification, record ID, slug, catalogue number or image uploads.
  */
@@ -22,6 +23,7 @@ export const IMPORT_FIELDS=[
  ["keeperNotes","Keeper notes",4000],
  ["fieldGuideLinks","Field Guide links",1000],
  ["notableTraits","Notable traits",1000],
+ ...flatSpeciesResearchFields.map(item=>[item.name,item.label,item.limit] as const),
 ] as const;
 export type ImportField=(typeof IMPORT_FIELDS)[number][0];
 export type ImportEntry={field:ImportField;label:string;value:string;existing:string;willReplace:boolean};
@@ -39,7 +41,8 @@ export const IMPORT_TEMPLATE=JSON.stringify({
  about:"",summary:"",careLevel:"",temperature:"",ventilation:"",
  activity:"",reproduction:"",feedingResponse:"",
  moistureRangeStart:null,moistureRangeEnd:null,
- feeding:"",substrate:"",notableTraits:[],keeperNotes:"",fieldGuideLinks:[]
+ feeding:"",substrate:"",notableTraits:[],keeperNotes:"",fieldGuideLinks:[],
+ ...Object.fromEntries(flatSpeciesResearchFields.map(item=>[item.name,""]))
 },null,2);
 
 /** Treat all imported values as untrusted, even when they came from an assistant. */
@@ -80,10 +83,16 @@ export function parseSpeciesImport(source:string):ParsedImport{
    }
    continue;
   }
-  if(typeof raw!=="string"){warnings.push(label+": expected text; skipped.");continue;}
-  const clean=raw.trim();
+  if(typeof raw==="number"&&Number.isFinite(raw)){
+   if(!["humidityMin","humidityMax","moistZoneCoverage","broodAverage","broodMin","broodMax","adultSizeMm"].includes(field)){
+    warnings.push(label+": expected text; skipped.");continue;
+   }
+  }else if(typeof raw!=="string"){warnings.push(label+": expected text; skipped.");continue;}
+  const clean=String(raw).trim();
   if(!clean)continue;
   if(clean.length>limit)warnings.push(label+": truncated to "+limit+" characters.");
+  const researchError=validateSpeciesResearchField(field,clean);
+  if(researchError){warnings.push(label+": "+researchError);continue;}
   const choices=options[field];
   if(choices&&!choices.includes(clean)){warnings.push(label+": unsupported choice “"+clean+"”; skipped.");continue;}
   values[field]=clean.slice(0,limit);
@@ -92,6 +101,14 @@ export function parseSpeciesImport(source:string):ParsedImport{
  if(Boolean(start)!==Boolean(end)||(start&&end&&Number(start)>Number(end))){
   delete values.moistureRangeStart;delete values.moistureRangeEnd;
   warnings.push("Moisture range skipped: both endpoints are required, with the drier end first.");
+ }
+ if(values.humidityMin && values.humidityMax && Number(values.humidityMin)>Number(values.humidityMax)){
+   delete values.humidityMin;delete values.humidityMax;
+   warnings.push("Relative humidity bounds skipped: lower bound exceeds upper bound.");
+ }
+ if(values.broodMin && values.broodMax && Number(values.broodMin)>Number(values.broodMax)){
+   delete values.broodMin;delete values.broodMax;
+   warnings.push("Brood range skipped: minimum exceeds maximum.");
  }
  const unknown=Object.keys(input).filter(key=>!accepted.has(key));
  if(unknown.length)warnings.push("Ignored unsupported keys: "+unknown.slice(0,10).join(", ")+(unknown.length>10?"…":"")+".");
