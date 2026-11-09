@@ -180,3 +180,16 @@
  .libraryGrid{grid-template-columns:1fr 1fr;gap:7px}
  .libraryCard{padding:10px}
 }
+
+
+/* Archived colonies remain readable without offering actions that cannot be saved. */
+.archivedNotice{display:flex;align-items:center;flex-wrap:wrap;gap:6px 11px;padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:var(--surface-secondary)}
+.archivedNotice strong{font-size:.78rem;color:var(--text-primary)}
+.archivedNotice span{flex:1 1 200px;color:var(--text-secondary);font-size:.73rem;line-height:1.45}
+.archivedNotice a{color:var(--accent);font-size:.73rem;font-weight:800}
+.readOnlyLabel{flex:none;color:var(--text-secondary);font-size:.7rem;font-weight:800}
+.colonyWidgetGrid[aria-busy="true"]{min-height:96px}
+.colonyWidgetGrid[aria-busy="true"] .emptyDashboard{grid-column:1/-1}
+.colonyWidgetLibrary button:focus-visible{outline:2px solid var(--forest);outline-offset:3px}
+.colonyWidgetLibrary [aria-pressed="true"]{font-weight:850}
+@media(max-width:650px){.archivedNotice{display:grid}.colonyFooterLinks{padding-bottom:12px}}
