@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import type { SpeciesIdentityStatus, SpeciesRecord, SpeciesRecordKind, SpeciesStatus } from "@/data/species";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { generateSpeciesSearchTags } from "@/lib/species-search-tags";
+import {flatSpeciesResearchFields,validateSpeciesResearchField} from "@/lib/species-research-fields";
 import { appendSpeciesRecord, getSpeciesRecords, replaceSpeciesRecord, saveSpeciesPhoto } from "@/lib/species-store";
 
 function field(formData: FormData, name: string, limit = 2000) {
@@ -121,6 +122,19 @@ export async function saveSpeciesRecord(formData: FormData) {
     studioRedirect(id, "error", "Choose a complete moisture range, starting with the drier zone and ending with the damper zone.", view);
   }
 
+  // Validate optional reviewed facts before changing any existing record.
+  const researchedValues:Record<string,string>={};
+  for(const item of flatSpeciesResearchFields){
+    const value=field(formData,item.name,item.limit);
+    const error=validateSpeciesResearchField(item.name,value);
+    if(error)studioRedirect(id,"error",item.label+": "+error,view);
+    researchedValues[item.name]=value;
+  }
+  if(researchedValues.humidityMin&&researchedValues.humidityMax&&Number(researchedValues.humidityMin)>Number(researchedValues.humidityMax))
+    studioRedirect(id,"error","Relative humidity lower bound must not exceed the upper bound",view);
+  if(researchedValues.broodMin&&researchedValues.broodMax&&Number(researchedValues.broodMin)>Number(researchedValues.broodMax))
+    studioRedirect(id,"error","Brood minimum must not exceed brood maximum",view);
+
   const status: SpeciesStatus = publication === "archived" ? current.status : (publication as SpeciesStatus);
   const archivedAt = publication === "archived" ? current.archivedAt || new Date().toISOString() : null;
 
@@ -165,6 +179,7 @@ export async function saveSpeciesRecord(formData: FormData) {
     substrate: field(formData, "substrate", 300),
     feeding: field(formData, "feeding", 300),
     about: field(formData, "about", 4000),
+    ...researchedValues,
     keeperNotes: field(formData, "keeperNotes", 4000),
     fieldGuideLinks: field(formData, "fieldGuideLinks", 1000).split(/\r?\n/).map((link) => link.trim()).filter(Boolean),
     updatedAt: new Date().toISOString(),
