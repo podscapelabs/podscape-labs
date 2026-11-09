@@ -38,16 +38,17 @@ function introText(value: string, fallback = "") {
   return plain.slice(0, cutoff > 120 ? cutoff : 232).trimEnd() + "…";
 }
 
-/** Display Fahrenheit from a clearly parsed Celsius range without changing stored care data. */
+/** Keep Basic Care scannable even when older imports append editorial commentary.
+ * The underlying temperature field remains unchanged.
+ */
 function displayTemperature(value:string){
  const source=value.trim();
- if(/°\s*F\b/i.test(source))return source;
- const match=source.match(/^(\d+(?:\.\d+)?)\s*[–—-]\s*(\d+(?:\.\d+)?)\s*°\s*C\s*$/i);
+ const match=source.match(/^(\d+(?:\.\d+)?)\s*[–—-]\s*(\d+(?:\.\d+)?)\s*°\s*C/i);
  if(!match)return source;
- const lo=Number(match[1]),hi=Number(match[2]);
- if(!Number.isFinite(lo)||!Number.isFinite(hi)||lo>hi)return source;
+ const low=Number(match[1]),high=Number(match[2]);
+ if(!Number.isFinite(low)||!Number.isFinite(high)||low>high)return source;
  const toF=(c:number)=>Math.round(c*9/5+32);
- return `${match[1]}–${match[2]}°C (${toF(lo)}–${toF(hi)}°F)`;
+ return match[1]+"–"+match[2]+"°C ("+toF(low)+"–"+toF(high)+"°F)";
 }
 
 export default async function SpeciesPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ ownerPreview?: string }> }) {
