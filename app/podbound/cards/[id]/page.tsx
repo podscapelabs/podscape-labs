@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { getPodBoundCard, getPodBoundArtworkUrl } from "@/lib/podbound-cards";
 import { getSpeciesRecords } from "@/lib/species-store";
 import styles from "./detail.module.css";
+import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
 
 export const dynamic = "force-dynamic";
 export default async function CardDetail({params}:{params:Promise<{id:string}>}) {
@@ -27,7 +28,7 @@ export default async function CardDetail({params}:{params:Promise<{id:string}>})
       <header className={styles.header}><p>A PODSCAPE LABS ORIGINAL / CARD ARCHIVE</p><h1>{card.title}</h1><span>{card.category} · {card.set_name||"Core Set"}{card.card_number?" · "+card.card_number:""}</span></header>
       <div className={styles.layout}>
         <section className={styles.artworks} aria-label="Original card artwork">
-          <div className={styles.art}>{core?<Image src={core} alt={card.core_art_alt||card.title+" original artwork"} fill unoptimized sizes="(max-width:700px) 90vw, 450px"/>:<div className={styles.placeholder}><span aria-hidden="true">✦</span><p>Artwork reveal pending</p></div>}</div>
+          <div className={styles.art}>{core?<Image src={core} alt={card.core_art_alt||card.title+" original artwork"} fill unoptimized sizes="(max-width:700px) 90vw, 450px"/>:<div className={styles.placeholder}><PodscapeLineIcon name="podbound" /><p>Artwork reveal pending</p></div>}</div>
           {alt&&<div className={styles.alternate}><p>ALTERNATE ARTWORK</p><div className={styles.altArt}><Image src={alt} alt={card.alternate_art_alt||card.title+" alternate artwork"} fill unoptimized sizes="(max-width:700px) 90vw, 450px"/></div></div>}
         </section>
         <section className={styles.story}>
