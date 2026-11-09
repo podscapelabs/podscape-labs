@@ -117,7 +117,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
         </div>
 
         <header className={`${homeStyles.hero} ${styles.speciesHomeHero}`}>
-          {record.image ? <Image className={homeStyles.heroImage} src={record.image} alt={record.imageAlt || scientificName} fill priority sizes="(max-width: 720px) 100vw, 1100px" style={{objectPosition:`${record.imagePositionX}% ${record.imagePositionY}%`}} /> : null}
+          {record.image ? <div className={styles.speciesHeroArt}><Image className={homeStyles.heroImage} src={record.image} alt={record.imageAlt || scientificName} fill priority sizes="(max-width: 720px) 65vw, 540px" style={{objectFit:"contain",objectPosition:`${record.imagePositionX}% ${record.imagePositionY}%`,transform:`scale(${record.imageZoom})`}} /></div> : null}
           <div className={homeStyles.heroContent}>
             <p className={homeStyles.eyebrow}>LEAF LEDGER · SPECIES PROFILE</p>
             <h1>{displayName}</h1>
