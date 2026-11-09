@@ -59,6 +59,8 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careMode=f
  const [zoomRange,setZoomRange]=useState<{min:number;max:number}|null>(null);const [zoom,setZoom]=useState(1);
  const [selected,setSelected]=useState<Bin|null>(()=>bins.find(b=>b.id===initialBinId)||null);const [state,setState]=useState<"idle"|"scanning">(initialBinId||startManual?"idle":"scanning");const [error,setError]=useState("");const [pending,start]=useTransition();
  const [binSearch,setBinSearch]=useState("");
+ const [showBinPicker,setShowBinPicker]=useState(false);
+ const [showHistory,setShowHistory]=useState(false);
  const [customNote,setCustomNote]=useState("");const [customDate,setCustomDate]=useState("");
  const [recent,setRecent]=useState<CareRecord[]>([]);
  const [undoneIds,setUndoneIds]=useState<string[]>([]);
@@ -70,7 +72,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careMode=f
  const [confirmAllCare,setConfirmAllCare]=useState<{kind:string;note:string;label:string}|null>(null);
  const [lastOperation,setLastOperation]=useState<LastOperation|null>(null);
  const stop=()=>{stream.current?.getTracks().forEach(t=>t.stop());stream.current=null;canvas.current=null;setTorchOn(false);};
- function match(value:string){const id=readId(value);const found=bins.find(b=>b.id.toLowerCase()===id?.toLowerCase());if(found){lock.current=true;stop();if(state==="scanning"&&!careMode){router.push("/keeper/"+found.id);return true;}setSelected(found);setState("idle");setCustomNote("");setCustomDate("");setError("");setNotice(lastOperation?"Previous care action available to undo.":"");setMultiCare(false);setChosenBins([found.id]);setConfirmAllCare(null);return true;}setError("That code does not match an active bin in your collection.");return false;}
+ function match(value:string){const id=readId(value);const found=bins.find(b=>b.id.toLowerCase()===id?.toLowerCase());if(found){lock.current=true;stop();if(state==="scanning"&&!careMode){router.push("/keeper/"+found.id);return true;}setSelected(found);setShowBinPicker(false);setShowHistory(false);setState("idle");setCustomNote("");setCustomDate("");setError("");setNotice(lastOperation?"Previous care action available to undo.":"");setMultiCare(false);setChosenBins([found.id]);setConfirmAllCare(null);return true;}setError("That code does not match an active bin in your collection.");return false;}
  useEffect(()=>()=>stop(),[]);
  useEffect(()=>{if(state!=="scanning")return;
  let live=true;let timer:ReturnType<typeof setInterval>|undefined;
@@ -156,12 +158,13 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careMode=f
  }catch{setError("Unable to save care. Please retry.");}finally{saving.current=false;}});
  }
  function switchBin(bin:Bin){
+  setShowBinPicker(false);setShowHistory(false);
   if(pending||undoPending)return;
   setSelected(bin);setNotice(lastOperation?"Previous care action available to undo.":"");setError("");setCustomNote("");setCustomDate("");setChosenBins([bin.id]);setConfirmAllCare(null);
  }
  function toggleMultiCare(){
   if(pending||undoPending)return;
-  setMultiCare(v=>!v);setChosenBins(selected?[selected.id]:[]);setConfirmAllCare(null);setNotice(lastOperation?"Previous care action available to undo.":"");setError("");
+  setMultiCare(v=>!v);setShowBinPicker(false);setChosenBins(selected?[selected.id]:[]);setConfirmAllCare(null);setNotice(lastOperation?"Previous care action available to undo.":"");setError("");
  }
  function toggleChosen(id:string){setConfirmAllCare(null);setChosenBins(ids=>ids.includes(id)?ids.filter(v=>v!==id):[...ids,id]);}
  function selectSpecies(){
@@ -236,15 +239,22 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careMode=f
    </div>
    <div className={styles.populationStrip} aria-label="Estimated population counts"><div><small>This bin</small><strong>~{selected.quantity.toLocaleString()}</strong></div><div><small>{selected.species} · {speciesBins.length} {speciesBins.length===1?"bin":"bins"}</small><strong>~{speciesPopulation.toLocaleString()} total</strong></div></div>
    <div className={styles.binPicker}>
-    <WorkspaceSectionHeader title="Enclosures" meta={bins.length} description={multiCare?"Tap to select for group care":"Swipe or tap to switch bins"} action={<button type="button" className={styles.modeButton} aria-pressed={multiCare} onClick={toggleMultiCare} disabled={pending||undoPending}>{multiCare?"Done selecting":"Multi-care"}</button>}/>
+    <WorkspaceSectionHeader title={multiCare?"Group care selection":"Your enclosure"} meta={multiCare?bins.length:speciesBins.length}
+      description={multiCare?"Choose which bins will receive this care entry.":"Quick Care is focused on the selected bin."}
+      action={<button type="button" className={styles.modeButton} aria-pressed={multiCare} onClick={toggleMultiCare} disabled={pending||undoPending}>{multiCare?"Done selecting":"Multi-care"}</button>}/>
+    {!multiCare?<div className={styles.compactBinSwitch}>
+      <div><strong>{selected.name}</strong><small>{selected.species}{speciesBins.length>1?" · "+speciesBins.length+" bins in this species":""}</small></div>
+      <button type="button" disabled={pending||undoPending||speciesBins.length<=1} aria-expanded={showBinPicker} onClick={()=>setShowBinPicker(x=>!x)}>{showBinPicker?"Hide bins":"Switch bin"}</button>
+      <button type="button" disabled={pending||undoPending} onClick={()=>{setSelected(null);setState("idle");setShowBinPicker(false);setBinSearch("");setMultiCare(false);}}>Other species</button>
+     </div>:null}
     {multiCare?<div className={styles.selectionLine}>
       <span>{chosenBins.length} of {bins.length} selected</span>
       <div className={styles.selectionActions}><button type="button" onClick={selectSpecies} disabled={pending||undoPending}>All {selected.species} ({speciesBins.length})</button><button type="button" onClick={selectAllEnclosures} disabled={pending||undoPending}>All bins ({bins.length})</button></div>
     </div>:null}
-    <div className={styles.binCarousel} role="group" aria-label={multiCare?"Choose bins for bulk care":"Choose a bin to view"}>
-     {bins.map(bin=>{const marked=multiCare?chosenBins.includes(bin.id):bin.id===selected.id;return <button type="button" key={bin.id} className={marked?styles.binCardSelected:styles.binCard} onClick={()=>multiCare?toggleChosen(bin.id):switchBin(bin)} aria-pressed={marked} disabled={pending||undoPending}><span className={styles.binCardHeading}>{bin.species}<span aria-hidden="true">{marked?"✓":""}</span></span><strong>{bin.name}</strong><small>{bin.label||"No shelf assigned"}</small></button>;})}
-    </div>
-    {multiCare?<p className={styles.bulkHint}>Each selected enclosure keeps its own care history and population. Undo reverses the batch.</p>:null}
+    {(multiCare||showBinPicker)?<div className={styles.binCarousel} role="group" aria-label={multiCare?"Choose bins for bulk care":"Other enclosures of this species"}>
+      {(multiCare?bins:speciesBins).map(bin=>{const marked=multiCare?chosenBins.includes(bin.id):bin.id===selected.id;return <button type="button" key={bin.id} className={marked?styles.binCardSelected:styles.binCard} onClick={()=>multiCare?toggleChosen(bin.id):switchBin(bin)} aria-pressed={marked} disabled={pending||undoPending}><span className={styles.binCardHeading}>{multiCare?bin.species:bin.name}<span aria-hidden="true">{marked?"✓":""}</span></span><strong>{multiCare?bin.name:bin.label||"No shelf assigned"}</strong></button>;})}
+     </div>:null}
+    {multiCare?<p className={styles.bulkHint}>Bulk care writes a separate private log to each selected bin. Undo reverses the batch.</p>:null}
    </div>
    <div className={styles.actionHead}><WorkspaceSectionHeader title={multiCare?"Group care":"Quick care"} description={multiCare?"Log care across your selected bins.":"Tap an action to log it."} action={<span className={styles.careSessionCount}>{multiCare?chosenBins.length+" selected":loggedForBin.length+" this session"}</span>}/></div>
    {error?<p className={styles.error} role="alert">{error}</p>:null}
@@ -260,8 +270,8 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careMode=f
    {(notice||latest)?<div className={styles.inlineNotice} role="status"><span>{notice||"Care saved."}</span>{latest?<button type="button" onClick={undo} disabled={undoPending||pending}>{undoPending?"Undoing…":"Undo "+latest.label+(latest.records.length>1?" ("+latest.records.length+")":"")}</button>:null}</div>:null}
    {!multiCare?<details className={styles.careDetails}><summary>Add note or custom date</summary><label htmlFor="keeper-care-note">Care note</label><textarea id="keeper-care-note" maxLength={1500} rows={3} value={customNote} onChange={e=>setCustomNote(e.target.value)} placeholder="What did you do or observe?"/><label htmlFor="keeper-care-date">Care date (for notes)</label><input id="keeper-care-date" type="date" value={customDate} max={new Date().toISOString().slice(0,10)} onChange={e=>setCustomDate(e.target.value)}/><button type="button" disabled={pending||!customNote.trim()} onClick={()=>save("observation",customNote.trim(),"Custom note",customDate||undefined)}>Save note</button></details>:null}
    <div className={styles.workspaceHistory}>
-    <WorkspaceSectionHeader title="Recent activity" action={<Link className={styles.historyFullLink} href={"/keeper/"+selected.id+"/history"}>Full history →</Link>}/>
-    {historyForBin.length?<div className={styles.historyList}>{historyForBin.map(event=><div key={event.id} className={styles.historyEntry}><div><strong>{event.note||event.kind.replaceAll("-"," ")}</strong><small>{event.kind.replaceAll("-"," ")}{event.quantityChange!==null?" · Population "+(event.quantityChange>0?"+":"")+event.quantityChange:""}</small></div><time dateTime={event.createdAt}>{new Date(event.createdAt).toLocaleDateString(undefined,{month:"short",day:"numeric"})}</time></div>)}</div>:<p className={styles.historyEmpty}>No recent records to preview. Open full history for older entries.</p>}
+    <div className={styles.compactHistoryHead}><strong>Recent care</strong><button type="button" aria-expanded={showHistory} onClick={()=>setShowHistory(v=>!v)}>{showHistory?"Hide records":"Show records"}</button><Link className={styles.historyFullLink} href={"/keeper/"+selected.id+"/history"}>Full history →</Link></div>
+    {showHistory?(historyForBin.length?<div className={styles.historyList}>{historyForBin.map(event=><div key={event.id} className={styles.historyEntry}><div><strong>{event.note||event.kind.replaceAll("-"," ")}</strong><small>{event.kind.replaceAll("-"," ")}</small></div><time dateTime={event.createdAt}>{new Date(event.createdAt).toLocaleDateString(undefined,{month:"short",day:"numeric"})}</time></div>)}</div>:<p className={styles.historyEmpty}>No recorded care yet. Your next log will appear here.</p>):<p className={styles.historyEmpty}>{historyForBin.length?historyForBin.length+" recent "+(historyForBin.length===1?"entry":"entries"):"Your next care entry will appear here."}</p>}
    </div>
    <div className={styles.careFooter}><Link className={styles.settingsLink} href={"/keeper/"+selected.id+"/details"}>Colony settings & QR ↗</Link><button type="button" className={styles.nextBin} onClick={beginScan} disabled={pending||undoPending}>▣ Scan next bin</button></div>
 
