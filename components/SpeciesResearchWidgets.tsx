@@ -8,6 +8,7 @@ function has(record:SpeciesRecord,keys:(keyof SpeciesRecord)[]){return keys.some
 /** Native dialog keeps full editorial records one tap away from the compact dashboard. */
 function ResearchDialog({title,preview,children}:{title:string;preview:ReactNode;children:ReactNode}){
  const dialogRef=useRef<HTMLDialogElement>(null);
+ const triggerRef=useRef<HTMLButtonElement>(null);
  const titleId=useId();
  const [open,setOpen]=useState(false);
  useEffect(()=>{
@@ -17,12 +18,12 @@ function ResearchDialog({title,preview,children}:{title:string;preview:ReactNode
   else if(!open&&dialog.open)dialog.close();
  },[open]);
  return <>
-  <button className={styles.researchCardTrigger} type="button" onClick={()=>setOpen(true)} aria-label={"Explore "+title}>
+  <button ref={triggerRef} className={styles.researchCardTrigger} type="button" aria-haspopup="dialog" aria-expanded={open} onClick={()=>setOpen(true)} aria-label={"Explore "+title}>
    {preview}
    <span className={styles.researchOpenButton}><span>Explore details</span><span aria-hidden="true">↗</span></span>
   </button>
   <dialog ref={dialogRef} aria-labelledby={titleId} className={styles.researchDialog}
-   onClose={()=>setOpen(false)}
+   onClose={()=>{setOpen(false);triggerRef.current?.focus({preventScroll:true})}}
    onClick={event=>{if(event.target===event.currentTarget)dialogRef.current?.close()}}>
    <div className={styles.researchDialogPanel}>
     <div className={styles.researchDialogHeader}>
