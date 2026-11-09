@@ -22,7 +22,7 @@ const descriptions:Record<SpeciesWidgetId,string>={
  habitatAdvanced:"Enclosure setup and natural microhabitat",sources:"Reference links, evidence and review scope",personal:"Collection and pin-to-home shortcuts",navigation:"Related species guides and catalogue navigation"
 };
 const defaultOrder:SpeciesWidgetId[]=[...speciesWidgetIds];
-const defaultVisible:SpeciesWidgetId[]=["care","moisture","about","personal","navigation"];
+const defaultVisible:SpeciesWidgetId[]=["care","moisture","about","traits","personal","navigation"];
 type Layout={order:SpeciesWidgetId[];visible:SpeciesWidgetId[]};
 const defaultLayout=():Layout=>({order:[...defaultOrder],visible:[...defaultVisible]});
 function normalize(value:unknown):Layout{
