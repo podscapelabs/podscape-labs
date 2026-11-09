@@ -12,6 +12,7 @@ import homeStyles from "./PodscapeHome.module.css";
 import {moveBlock,dropBlock,uniqueAllowed} from "./workspace-layout";
 import {WorkspaceEditToolbar,WorkspaceEditBlock,useWorkspaceDrag} from "./WorkspaceEditCanvas";
 import {ManagerCareOverview,ManagerActivityFeed,ManagerInsights,type ManagerBin,type ManagerEvent} from "./ManagerCareWidgets";
+import {recordExperienceAction} from "./experience-achievements";
 
 type Section="hero"|"stats"|"care"|"tools"|"activity"|"enclosures"|"insights";
 type Tool={id:string;label:string;href:string;icon:PodscapeIconName};
@@ -128,7 +129,7 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
   if(Math.abs(difference)>1)window.scrollBy({top:difference,behavior:"instant"});
  },[canvasEditing]);
  useEffect(()=>{try{const saved=localStorage.getItem(storageKey);if(saved)setLayout(normalize(JSON.parse(saved)))}catch{}setReady(true)},[storageKey]);
- const update=(next:Layout)=>{setLayout(next);try{localStorage.setItem(storageKey,JSON.stringify(next))}catch{}};
+ const update=(next:Layout)=>{setLayout(next);try{localStorage.setItem(storageKey,JSON.stringify(next))}catch{}if(ready&&JSON.stringify(next)!==JSON.stringify(layout)&&JSON.stringify(next)!==JSON.stringify(initial))void recordExperienceAction("manager_personalized",{order:next.order,visible:next.visible,tools:next.tools,changed:true,changedOrder:next.order.join("|")!==initial.order.join("|")});};
  const swap=(id:string)=>{if(slot===null)return;const next=[...layout.tools];const prior=next.indexOf(id);if(prior>=0){[next[slot],next[prior]]=[next[prior],next[slot]]}else next[slot]=id;update({...layout,tools:next});setSlot(null)};
  const move=(id:Section,dir:number)=>update({...layout,order:moveBlock(layout.order,layout.visible,id,dir)});
  const reorder=(from:Section,to:Section)=>update({...layout,order:dropBlock(layout.order,from,to)});
