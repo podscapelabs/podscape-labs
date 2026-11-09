@@ -7,39 +7,37 @@ import homeStyles from "./PodscapeHome.module.css";
 import styles from "./SpeciesProfile.module.css";
 
 // Keep stable IDs to preserve saved layouts across this visual redesign.
-export const speciesWidgetIds=["care","moisture","about","feeding","habitat","traits","guides","breeding","taxonomy","nutrition","behaviour","habitatAdvanced","sources","personal","navigation"] as const;
+export const speciesWidgetIds=["care","moisture","about","traits","guides","breeding","taxonomy","nutrition","behaviour","habitatAdvanced","sources","personal","navigation"] as const;
 export type SpeciesWidgetId=(typeof speciesWidgetIds)[number];
 export const speciesWidgetLabels:Record<SpeciesWidgetId,string>={
  about:"Species overview",care:"At a Glance",moisture:"Moisture & Humidity",
- feeding:"Feeding overview",habitat:"Habitat & substrate",traits:"Notable Traits",guides:"Related Field Guides",
+ traits:"Notable Traits",guides:"Related Field Guides",
  breeding:"Breeding & Growth",taxonomy:"Origins & Identity",nutrition:"Feeding & Nutrition",habitatAdvanced:"Habitat & Setup",behaviour:"Species Characteristics",sources:"Research & Sources",personal:"My Species Tools",navigation:"Explore Species"
 };
 const descriptions:Record<SpeciesWidgetId,string>={
  about:"A short introduction to the species",care:"Quick beginner suitability, temperature, activity and colony growth",
- moisture:"Substrate gradient, approximate air humidity and moist-area coverage",feeding:"General feeding information when detailed nutrition is unavailable",habitat:"Substrate notes when detailed habitat setup is unavailable",
+ moisture:"Substrate gradient, approximate air humidity and moist-area coverage",
  traits:"Distinctive characteristics",guides:"Supporting species-specific guides",
  breeding:"Brood size, reproduction and development",taxonomy:"Distribution, scientific names, morph origins and identification",nutrition:"Staple diet, supplements and dietary cautions",behaviour:"Adult size, lifespan, defence and visibility",
  habitatAdvanced:"Ventilation, substrate, enclosure and natural microhabitat",sources:"Original references and research scope",personal:"Collection and pin-to-home shortcuts",navigation:"Related species guides and catalogue navigation"
 };
-const defaultOrder:SpeciesWidgetId[]=["care","moisture","behaviour","habitatAdvanced","nutrition","breeding","taxonomy","about","traits","guides","sources","personal","navigation","feeding","habitat"];
+const defaultOrder:SpeciesWidgetId[]=["care","moisture","behaviour","habitatAdvanced","nutrition","breeding","taxonomy","about","traits","guides","sources","personal","navigation"];
 const defaultVisible:SpeciesWidgetId[]=["care","moisture","behaviour","habitatAdvanced","about","traits","personal","navigation"];
 type Layout={order:SpeciesWidgetId[];visible:SpeciesWidgetId[]};
 const defaultLayout=():Layout=>({order:[...defaultOrder],visible:[...defaultVisible]});
 function normalize(value:unknown):Layout{
  if(!value||typeof value!=="object")return defaultLayout();
  const obj=value as Partial<Layout>;
- // Migrate layouts saved before Basic Care and Behaviour were combined.
+ // Retired fallback panels merge into their canonical specialist widgets.
+ // Preserve saved visibility and ordering; never add a duplicate to the library.
+ const migrate=(id:unknown)=>id==="environment"?"moisture":id==="feeding"?"nutrition":id==="habitat"?"habitatAdvanced":id;
  const oldOrder:unknown[]=Array.isArray(obj.order)?obj.order:[];
- // Merge the old separate specialist widget into the existing moisture slot.
- const mergeMoisture=(id:unknown)=>id==="environment"?"moisture":id;
- // Behaviour is now a valid specialist widget; never drop it from persisted layouts.
- const ordered=oldOrder.map(mergeMoisture);
- const order=[...uniqueAllowed(ordered,defaultOrder),...defaultOrder].filter((v,i,a)=>a.indexOf(v)===i);
- const existing:unknown[]=Array.isArray(obj.visible)?obj.visible:defaultVisible;
- const combined=existing.map(mergeMoisture);
+ const oldVisible:unknown[]=Array.isArray(obj.visible)?obj.visible:defaultVisible;
+ const ordered=oldOrder.map(migrate);
+ const order=[...uniqueAllowed(ordered,defaultOrder),...defaultOrder].filter((id,i,all)=>all.indexOf(id)===i);
+ const combined=oldVisible.map(migrate);
  const migrated=combined.includes("behaviour")&&!combined.includes("care")?[...combined,"care"]:combined;
- // First run after the page-footer migration: preserve the original actions as widgets.
- // Later intentional removals are honored because the IDs already exist in saved order.
+ // Legacy profiles had personal/navigation actions outside the customizable canvas.
  const migratedFooter=oldOrder.includes("personal")||oldOrder.includes("navigation")?migrated:[...migrated,"personal","navigation"];
  const visible=uniqueAllowed(migratedFooter,defaultOrder);
  return {order,visible};
@@ -73,7 +71,6 @@ export function SpeciesDashboardWorkspace({widgets,scope,preview=false}:{widgets
  },[canvasEditing]);
  const available=speciesWidgetIds.filter(id=>widgets[id]!=null);
  const visible=layout.order.filter(id=>layout.visible.includes(id)&&available.includes(id));
- const hidden=layout.order.filter(id=>!layout.visible.includes(id)&&available.includes(id));
  const move=(id:SpeciesWidgetId,delta:number)=>update({...layout,order:moveBlock(layout.order,visible,id,delta)});
  const reorder=(from:SpeciesWidgetId,to:SpeciesWidgetId)=>update({...layout,order:dropBlock(layout.order,from,to)});
  const {dragging,begin,move:dragMove,stop}=useWorkspaceDrag<SpeciesWidgetId>("species",visible,reorder);
@@ -83,7 +80,6 @@ export function SpeciesDashboardWorkspace({widgets,scope,preview=false}:{widgets
   stop();update(defaultLayout());
  };
  const toggle=(id:SpeciesWidgetId)=>update({...layout,visible:layout.visible.includes(id)?layout.visible.filter(v=>v!==id):[...layout.visible,id]});
- const reveal=(id:SpeciesWidgetId)=>{if(!layout.visible.includes(id))toggle(id);setLibraryOpen(false)};
  return <div className={`${styles.speciesWorkspace} ${canvasEditing?homeStyles.homeCanvasEditing:""}`} data-workspace-root="species" onPointerMove={event=>{if(canvasEditing)dragMove(event)}} onPointerUp={()=>{if(canvasEditing)stop()}} onPointerCancel={()=>{if(canvasEditing)stop()}}>
   {canvasEditing&&<WorkspaceEditToolbar title="Arrange your Species Dashboard" description="Drag blocks to move them. Changes apply to every species profile." onAdd={()=>{done();setLibraryOpen(true)}} onReset={reset} onDone={done}/>}
   {visible.map((id,index)=><WorkspaceEditBlock key={id} id={id} scope="species" label={speciesWidgetLabels[id]} index={index} count={visible.length} editing={canvasEditing} dragging={dragging===id} required={false} onMove={move} onRemove={item=>toggle(item)} begin={begin} move={dragMove} stop={stop} onLongPress={!preview?()=>enterCanvas(id):undefined}>{widgets[id]}</WorkspaceEditBlock>)}
