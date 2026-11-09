@@ -34,3 +34,17 @@
 /* End the game section directly after the grid; the site footer follows. */
 .page{min-height:0;padding-bottom:24px}
 @media(max-width:720px){.page{min-height:0;padding-bottom:20px}}
+
+
+/* Search assistance does not award anything; hints reveal only a starting cell. */
+.cell.hinted{outline:3px solid var(--focus);outline-offset:-2px;box-shadow:inset 0 0 0 2px var(--surface)}
+.hintControls{display:grid;gap:5px;margin-top:11px}
+.hintControls button{min-height:44px;border:1px solid var(--border);border-radius:10px;background:var(--surface-secondary);color:var(--text-primary);font-size:12px;font-weight:750;cursor:pointer}
+.statusText{min-height:1em;color:var(--accent);font-size:12px;line-height:1.4;margin:8px 0}
+.board button:focus-visible,.side button:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+@media(max-width:720px){
+ .hintControls{display:block;margin:8px 0 0}
+ .hintControls button{min-height:35px;width:100%}
+ .hintControls .tip{display:none}
+ .statusText{font-size:10px;margin:5px 0 0}
+}
