@@ -56,7 +56,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
   const awaitedSlug = (await params).slug;
   // Load the catalogue once: the active profile and adjacent navigation use the same snapshot.
   const allRecords = await getSpeciesRecords();
-  const record = allRecords.find(item => item.slug === (awaitedSlug) && isSpeciesRecordActive(item));
+  const record = allRecords.find(item => item.slug === awaitedSlug);
   if (!record) notFound();
   const previewRequested = (await searchParams).ownerPreview === "1";
   const unpublished = record.status !== "published" || record.kind !== "species";
