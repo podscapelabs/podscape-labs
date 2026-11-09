@@ -58,7 +58,7 @@ export function LedgerQuickImport({recordId}:{recordId:string}){
  const dismiss=()=>{setOpen(false);setFeedback("")};
  return <div className={styles.quickImportRoot}>
   <div className={styles.quickImportEntry}>
-   <div><strong>Species Quick Import <span aria-hidden="true">✧</span></strong><small>Research with the exact field contract. Nothing is silently shortened.</small></div>
+   <div><strong>Species Quick Import</strong><small>Research with the exact field contract. Nothing is silently shortened.</small></div>
    <button type="button" onClick={()=>{setFeedback("");setOpen(value=>!value)}} aria-expanded={open}>{open?"Close import":"+ Quick Import"}</button>
   </div>
   {feedback?<p role="status" className={styles.quickImportSuccess}>{feedback}</p>:null}
