@@ -4,7 +4,7 @@ import Link from "next/link";
 import { createPortal } from "react-dom";
 import styles from "./AchievementToast.module.css";
 
-export type AchievementNotice = { id: string; title: string; description: string; exp: number; coins: number };
+export type AchievementNotice = { id: string; title: string; description: string; exp: number; coins: number; hidden?:boolean };
 const EVENT = "podscape:achievement-unlocked";
 
 export function announceAchievement(notice: AchievementNotice) {
@@ -30,10 +30,10 @@ export function AchievementToast() {
   }, [current?.id]);
   const dismiss = () => setQueue(prev => prev.slice(1));
   if (!current) return null;
-  return createPortal(<aside className={styles.toast} role="status" aria-live="polite" aria-atomic="true">
-    <div className={styles.icon} aria-hidden="true">✦</div>
+  return createPortal(<aside className={styles.toast} data-hidden={current.hidden===true?"true":undefined} role="status" aria-live="polite" aria-atomic="true">
+    <div className={styles.icon} aria-hidden="true">{current.hidden?"✺":"✦"}</div>
     <div className={styles.content}>
-      <div className={styles.eyebrow}>Achievement unlocked!</div>
+      <div className={styles.eyebrow}>{current.hidden?"Hidden Achievement Discovered!":"Achievement unlocked!"}</div>
       <strong>{current.title}</strong>
       <div className={styles.description}>{current.description}</div>
       <div className={styles.rewards}>+{current.exp} EXP{current.coins>0?<><span aria-hidden="true">·</span> +{current.coins} Pod Coins</>:null}</div>
