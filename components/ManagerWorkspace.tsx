@@ -4,6 +4,7 @@ import {useEffect,useLayoutEffect,useRef,useState,type ReactNode} from "react";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {useShortcutEditor} from "./useShortcutEditor";
+import {moveNavigationSlot} from "./navigation-customization";
 import {HomeCanvasEditContext} from "./HomeCanvasEditContext";
 import {PodscapeLineIcon,type PodscapeIconName} from "./PodscapeLineIcon";
 import styles from "@/app/keeper/page.module.css";
@@ -57,17 +58,25 @@ function ManagerQuickShortcuts({ids,change,primaryHref,canvasEditing}:{ids:strin
  const destination=(tool:Tool)=>tool.href;
  return <>
   {editing&&!canvasEditing?<div className={homeStyles.jiggleToolbar} role="region" aria-label="Customize Manager shortcuts">
-    <span className={homeStyles.jiggleHint}>✧ <strong>Arrange your shortcuts</strong><small>Drag icons to move them. Tap one to replace it.</small></span>
+    <span className={homeStyles.jiggleHint}>✧ <strong>Arrange your shortcuts</strong><small>Drag icons or use the move buttons. Tap one to replace it.</small></span>
     <button type="button" className={homeStyles.jiggleDone} onClick={done}>Done</button>
     <label className={homeStyles.jigglePicker}>Replace {current.label}
      <select value={current.id} onChange={event=>change(swapManagerSlot(ids,selected,event.target.value))}>
       {library.map(tool=><option key={tool.id} value={tool.id}>{tool.label}{ids.includes(tool.id)&&tool.id!==current.id?" (swap)":""}</option>)}
      </select>
     </label>
+    <div className={homeStyles.shortcutMoveControls} role="group" aria-label="Move selected Manager shortcut">
+      <button type="button" disabled={selected<=0} onClick={()=>{change(moveNavigationSlot(ids,selected,selected-1));setSelected(selected-1)}} aria-label={`Move ${current.label} left`}>← Left</button>
+      <button type="button" disabled={selected>=ids.length-1} onClick={()=>{change(moveNavigationSlot(ids,selected,selected+1));setSelected(selected+1)}} aria-label={`Move ${current.label} right`}>Right →</button>
+    </div>
     <button type="button" className={homeStyles.jiggleReset} onClick={()=>{change([...initial.tools]);setSelected(0)}}>Reset shortcuts</button>
    </div>:null}
    {canvasEditing?<div className={homeStyles.inlineShortcutPicker}><span>Drag shortcuts to reorder · Tap one to replace</span>
     <label>Replace {current.label}<select value={current.id} onChange={event=>change(swapManagerSlot(ids,selected,event.target.value))}>{library.map(tool=><option key={tool.id} value={tool.id}>{tool.label}</option>)}</select></label>
+    <div className={homeStyles.shortcutMoveControls} role="group" aria-label="Move selected Manager shortcut">
+      <button type="button" disabled={selected<=0} onClick={()=>{change(moveNavigationSlot(ids,selected,selected-1));setSelected(selected-1)}} aria-label={`Move ${current.label} left`}>← Left</button>
+      <button type="button" disabled={selected>=ids.length-1} onClick={()=>{change(moveNavigationSlot(ids,selected,selected+1));setSelected(selected+1)}} aria-label={`Move ${current.label} right`}>Right →</button>
+    </div>
     <button type="button" onClick={()=>{change([...initial.tools]);setSelected(0)}}>Reset shortcuts</button>
    </div>:null}
    <nav className={`${homeStyles.shortcuts} ${styles.managerHomeShortcuts} ${editing?homeStyles.shortcutEditing:""}`} aria-label="Manager shortcuts">
