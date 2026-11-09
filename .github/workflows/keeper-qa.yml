@@ -34,5 +34,7 @@ jobs:
         run: node scripts/verify-ledger.mjs
       - name: Fun Zone regression checks
         run: pnpm run test:fun-zone
+      - name: Onboarding and customization achievement checks
+        run: node scripts/verify-experience-achievements.mjs
       - name: Build Next.js application
         run: pnpm run build
