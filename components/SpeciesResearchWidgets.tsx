@@ -6,7 +6,7 @@ import styles from "@/components/SpeciesProfile.module.css";
 
 function has(record:SpeciesRecord,keys:(keyof SpeciesRecord)[]){return keys.some(k=>typeof record[k]==="string"&&Boolean((record[k] as string).trim()));}
 /** Native dialog keeps full editorial records one tap away from the compact dashboard. */
-function ResearchDialog({title,children}:{title:string;children:ReactNode}){
+function ResearchDialog({title,preview,children}:{title:string;preview:ReactNode;children:ReactNode}){
  const dialogRef=useRef<HTMLDialogElement>(null);
  const titleId=useId();
  const [open,setOpen]=useState(false);
@@ -17,8 +17,9 @@ function ResearchDialog({title,children}:{title:string;children:ReactNode}){
   else if(!open&&dialog.open)dialog.close();
  },[open]);
  return <>
-  <button className={styles.researchOpenButton} type="button" onClick={()=>setOpen(true)}>
-   <span>Explore details</span><span aria-hidden="true">↗</span>
+  <button className={styles.researchCardTrigger} type="button" onClick={()=>setOpen(true)} aria-label={"Explore "+title}>
+   {preview}
+   <span className={styles.researchOpenButton}><span>Explore details</span><span aria-hidden="true">↗</span></span>
   </button>
   <dialog ref={dialogRef} aria-labelledby={titleId} className={styles.researchDialog}
    onClose={()=>setOpen(false)}
@@ -44,18 +45,17 @@ function previewFact(label:string,value:string){
 function Details({title,rows,note}:{title:string;rows:{label:string;value:string|undefined}[];note?:string}){
  const active=rows.filter((r):r is {label:string;value:string}=>Boolean(r.value?.trim()));
  if(!active.length)return null;
- return <section className={styles.speciesInfoCard+" "+styles.researchOverview}>
+ return <ResearchDialog title={title} preview={<div className={styles.speciesInfoCard+" "+styles.researchOverview}>
   <h2>{title}</h2>
   <dl className={styles.researchSnapshot}>
    {active.slice(0,4).map(row=><div key={row.label}>
     <dt>{row.label}</dt><dd>{previewFact(row.label,row.value)}</dd>
    </div>)}
   </dl>
-  <ResearchDialog title={title}>
+ </div>}>
    <dl className={styles.researchFullFacts}>{active.map(row=><div key={row.label}><dt>{row.label}</dt><dd>{row.value}</dd></div>)}</dl>
    {note?<div className={styles.researchExpandedNote}><strong>Research context</strong><p>{note}</p></div>:null}
-  </ResearchDialog>
- </section>;
+  </ResearchDialog>;
 }
 function validPercent(v:string|undefined){
  if(!v||!/^(?:100|[1-9]?\d)$/.test(v.trim()))return null;
@@ -159,13 +159,13 @@ export function ResearchSourcesWidget({record}:{record:SpeciesRecord}){
  const links=lines.filter(s=>{try{return ["https:","http:"].includes(new URL(s).protocol)}catch{return false}});
  if(!links.length&&!has(record,["evidenceScope","evidenceQuality","evidenceNotes","lastReviewed"]))return null;
  const review=record.lastReviewed?new Date(record.lastReviewed+"T00:00:00").toLocaleDateString("en-CA",{month:"short",year:"numeric"}):null;
- return <section className={styles.speciesInfoCard+" "+styles.researchOverview}>
+ return <ResearchDialog title="Research & Sources" preview={<div className={styles.speciesInfoCard+" "+styles.researchOverview}>
   <h2>Research &amp; Sources</h2>
   <div className={styles.researchSourcesSummary}>
    <span>{links.length} reference{links.length===1?"":"s"}</span>
    {review?<span>Reviewed {review}</span>:null}
   </div>
-  <ResearchDialog title="Research & Sources">
+ </div>}>
    <dl className={styles.researchFullFacts}>
     {record.evidenceScope?<div><dt>Evidence scope</dt><dd>{{"species-level":"Species-level","morph-specific":"Morph-specific","mixed":"Mixed species and morph evidence"}[record.evidenceScope]||record.evidenceScope}</dd></div>:null}
     {record.evidenceQuality?<div><dt>Evidence basis</dt><dd>{{"scientific":"Scientific literature","breeder-consensus":"Breeder consensus","limited":"Limited evidence"}[record.evidenceQuality]||record.evidenceQuality}</dd></div>:null}
@@ -174,8 +174,7 @@ export function ResearchSourcesWidget({record}:{record:SpeciesRecord}){
    </dl>
    {links.length?<div className={styles.researchDialogLinks}><strong>Original references</strong><div className={styles.researchLinks}>{links.map((url,index)=><a key={url} href={url} target="_blank" rel="noopener noreferrer" title={url}>{index+1}. {new URL(url).hostname.replace(/^www\./,"")} ↗</a>)}</div></div>:null}
    <div className={styles.researchExpandedNote}><strong>About this evidence</strong><p>Scientific measurements and captive-care consensus are different evidence types. Findings for a named species may not have been directly tested for every hobby morph.</p></div>
-  </ResearchDialog>
- </section>;
+  </ResearchDialog>;
 }
 export function HabitatSetupWidget({record}:{record:SpeciesRecord}){
  return <Details title="Habitat & Setup" rows={[
