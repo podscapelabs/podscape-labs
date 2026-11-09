@@ -34,8 +34,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
   const protectedPage = isPrivateArea(pathname);
-  // Public portal routes never need membership, even if auth cookies are stale.
-  if (!protectedPage) return NextResponse.next();
+  // Public portal routes are never redirected, but still refresh Supabase cookies.
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
     || process.env.SUPABASE_PUBLISHABLE_KEY
