@@ -63,7 +63,7 @@
  .editing .item:active{cursor:grabbing}
  .editing .selected{border-radius:16px;outline:2px solid var(--accent,var(--forest));outline-offset:2px}
  .editor{position:fixed;z-index:61;display:grid;gap:12px;left:12px;right:12px;bottom:calc(91px + env(safe-area-inset-bottom,0px));max-width:540px;margin:auto;padding:17px;border:1px solid var(--border,var(--line));border-radius:20px;background:var(--surface,var(--paper));color:var(--text-primary,var(--ink));box-shadow:var(--shadow)}
- .editorHeading{display:flex;align-items:start;justify-content:space-between;gap:12px}
+ .editorHeading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
  .editorHeading div{display:grid;gap:5px}
  .editorHeading strong{font:400 1.35rem var(--serif)}
  .editorHeading small{color:var(--text-secondary,var(--muted));font-size:.73rem}
@@ -99,7 +99,7 @@
 @media (max-width: 720px) {
   .nav {
     padding: 7px 6px 5px;
-    align-items: end;
+    align-items:flex-end;
   }
   .nav > .item {
     box-sizing: border-box;
