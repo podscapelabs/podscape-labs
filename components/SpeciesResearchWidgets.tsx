@@ -30,7 +30,7 @@ export function MoistureAndHumidityWidget({record}:{record:SpeciesRecord}){
  const refuge=record.moistRefugeCondition?.trim()||"";
  const guidance=record.moistureGradientGuidance?.trim()||"";
  if(!hasSubstrate&&!hasHumidity&&coverage===null&&!refuge&&!guidance)return null;
- const start=reviewed?rawStart:profileIndex+1,end=reviewed?rawEnd:profileIndex+1;
+ const start=reviewed?rawStart!:profileIndex+1,end=reviewed?rawEnd!:profileIndex+1;
  const substrateLabel=reviewed
   ? start===end?moistureZones[start-1]:moistureZones[start-1]+" – "+moistureZones[end-1]
   : moistureLabels[record.moistureProfile||""]||"Not established";
