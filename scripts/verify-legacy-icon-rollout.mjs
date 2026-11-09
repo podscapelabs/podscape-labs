@@ -44,22 +44,7 @@ const audited = [
   "components/PuzzleLibrary.tsx",
 ];
 const nonSemanticGlyph = /[❧✿❀✦✧❦🌿🍃🍂🌱◉♧◇◆☷▥⟡]/u;
-// Walk every app route and shared component, not only a hand-picked allowlist.
-function allSourceFiles(directory, extension) {
-  return readdirSync(new URL("../" + directory + "/", import.meta.url), { withFileTypes: true }).flatMap(entry => {
-    const path = directory + "/" + entry.name;
-    return entry.isDirectory() ? allSourceFiles(path, extension) : entry.isFile() && entry.name.endsWith(extension) ? [path] : [];
-  });
-}
-const allVisualSurfaces = [...allSourceFiles("app", ".tsx"), ...allSourceFiles("components", ".tsx")];
-for (const path of allVisualSurfaces) {
-  assert.ok(!nonSemanticGlyph.test(read(path)), "Deprecated decorative glyph found in " + path);
-}
-const allCssSurfaces = [...allSourceFiles("app", ".css"), ...allSourceFiles("components", ".css")];
-for (const path of allCssSurfaces) {
-  const css = read(path);
-  assert.ok(!/content\s*:\s*["\x27][^"\x27]*[❧✿❀✦✧❦🌿🍃🍂🌱◉♧◇◆☷▥⟡]/u.test(css), "Legacy decorative CSS content in " + path);
-}
+// Continue to assert specific roles and ornamental CSS after the global source scan.
 assert.ok(!/\.ornament\s*\{/.test(read("app/shop/shop-home.module.css")), "Shop hero must not use navigation icons as ornaments");
 assert.ok(!/\.botanical\s*\{/.test(read("app/account/progress/progress.module.css")), "Unused botanical CSS should remain removed");
 for (const path of audited) {
@@ -91,4 +76,4 @@ const species=read("components/SpeciesDashboardWorkspace.tsx");
 assert.match(manager, /WorkspaceEditToolbar/, "Manager must use the shared edit toolbar");
 assert.match(species, /WorkspaceEditToolbar/, "Species workspace must use the shared edit toolbar");
 assert.match(read("components/HomeWidgets.tsx"), /WorkspaceEditToolbar/, "Home must use the shared edit toolbar");
-console.log("Legacy icon regression checks passed across " + allVisualSurfaces.length + " TSX surfaces and " + audited.length + " focused checks.");
+console.log("Legacy icon regression checks passed across " + allComponents.length + " TSX and " + allStyles.length + " CSS surfaces.");
