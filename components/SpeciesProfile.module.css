@@ -327,3 +327,26 @@
  .researchFacts>div:has(dd){padding:9px 11px}
  .researchLinks{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+/* Species identity borrows the existing Home hero shell, typography rhythm and overlay. */
+.speciesHomeHero{height:285px;min-height:0;border:1px solid var(--border);box-shadow:var(--shadow-soft);background:#183625}
+.speciesHomeHero::after{z-index:0;background:linear-gradient(90deg,#10291ff5 0%,#10291ff0 35%,#10291f9c 58%,#10291f00 88%)}
+.speciesHomeHero .speciesHeroArt{position:absolute;inset:0 0 0 auto;width:60%;height:100%;overflow:hidden;background:color-mix(in srgb,var(--surface) 86%,#ddd2ae)}
+.speciesHomeHero .speciesHeroArt img{z-index:0}
+.speciesHomeHero>div:last-child{position:relative;z-index:1;width:min(65%,520px);padding:28px 32px}
+.speciesHomeHero h1{font:500 clamp(2.25rem,5vw,3.65rem)/1.02 var(--display);letter-spacing:-.045em;color:#fffaf0;margin:10px 0 7px;overflow-wrap:anywhere}
+.speciesHomeHero .speciesHeroScientific{margin:0 0 12px;color:#f2ecdf;font:italic clamp(.93rem,2.5vw,1.24rem)/1.28 var(--display)}
+.speciesHomeHero .speciesHeroIdentity{margin:0;color:#e3e9dc;font-size:.76rem;line-height:1.4;font-weight:650}
+.speciesHeroIdentity span{padding:0 5px;color:#d7cfa8}
+@media(max-width:720px){
+ .speciesHomeHero{height:235px;border-radius:20px}
+ .speciesHomeHero .speciesHeroArt{width:64%}
+ .speciesHomeHero>div:last-child{width:68%;padding:17px 18px}
+ .speciesHomeHero h1{font-size:clamp(2rem,7.6vw,2.7rem);margin:8px 0 7px}
+ .speciesHomeHero .speciesHeroScientific{font-size:.88rem;margin-bottom:8px}
+ .speciesHomeHero .speciesHeroIdentity{font-size:.65rem}
+}
+@media(max-width:390px){
+ .speciesHomeHero>div:last-child{width:73%;padding:13px 14px}
+ .speciesHomeHero h1{font-size:1.9rem}
+}
