@@ -34,7 +34,10 @@ function normalize(value:unknown):Layout{
  const order=[...uniqueAllowed(ordered,defaultOrder),...defaultOrder].filter((v,i,a)=>a.indexOf(v)===i);
  const existing:unknown[]=Array.isArray(obj.visible)?obj.visible:defaultVisible;
  const migrated=existing.includes("behaviour")&&!existing.includes("care")?[...existing,"care"]:existing;
- const visible=uniqueAllowed(migrated,defaultOrder);
+ // First run after the page-footer migration: preserve the original actions as widgets.
+ // Later intentional removals are honored because the IDs already exist in saved order.
+ const migratedFooter=oldOrder.includes("personal")||oldOrder.includes("navigation")?migrated:[...migrated,"personal","navigation"];
+ const visible=uniqueAllowed(migratedFooter,defaultOrder);
  return {order,visible};
 }
 
