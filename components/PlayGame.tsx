@@ -1,9 +1,9 @@
 "use client";
-import {useCallback,useMemo,useRef,useState} from "react";
+import {useMemo,useState} from "react";
 import Link from "next/link";
 import type {Game} from "@/lib/fun-zone-games";
-import type {QuizPuzzle,ConnectionsPuzzle,BurrowPuzzle,CrosswordPuzzle} from "@/lib/fun-zone-puzzles";
-import {announceAchievement,type AchievementNotice} from "./AchievementToast";
+import type {Puzzle,QuizPuzzle,ConnectionsPuzzle,BurrowPuzzle,CrosswordPuzzle} from "@/lib/fun-zone-puzzles";
+import {usePuzzleCompletion,PuzzleSaveStatus} from "./usePuzzleCompletion";
 import styles from "./PlayGame.module.css";
 import {WorkspaceLinks} from "./PodscapeWorkspaceUI";
 
@@ -133,32 +133,21 @@ function Crossword({puzzle,onComplete}:{puzzle:CrosswordPuzzle;onComplete:Comple
   {checked?<p className={styles.feedbackText} role="status">{complete?"All five correct! Crossword complete. ✦":`${correct} of ${puzzle.clues.length} answers correct. ${conflicts?"Resolve the crossings too.":"Keep going!"}`}</p>:null}
  </div>;
 }
-export function PlayGame({game,challenge}:{game:Game;challenge:{gameKey:string;mode:string;puzzle:QuizPuzzle|ConnectionsPuzzle|BurrowPuzzle|CrosswordPuzzle}}){
- const completedRef=useRef(false);
- const [saved,setSaved]=useState<"idle"|"saving"|"saved"|"unavailable">("idle");
- const onComplete=useCallback(async(proof:unknown)=>{
-  if(completedRef.current)return;
-  completedRef.current=true;setSaved("saving");
-  try{
-   const response=await fetch("/api/progress/puzzle-complete",{
-    method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({gameKey:challenge.gameKey,puzzleId:challenge.puzzle.id,proof})
-   });
-   if(!response.ok){setSaved("unavailable");return}
-   const result=await response.json() as {unlocked?:AchievementNotice[]};
-   for(const item of result.unlocked||[])announceAchievement(item);
-   setSaved("saved");
-  }catch{setSaved("unavailable")}
- },[challenge.gameKey,challenge.puzzle.id]);
+export function PlayGame({game,challenge}:{game:Game;challenge:{gameKey:string;mode:string;puzzle:Puzzle}}){
+ const {saved,record}=usePuzzleCompletion(challenge.gameKey,challenge.puzzle.id);
  return <main className={styles.page}><div className={styles.wrap}>
   <nav className={styles.crumb}><Link href="/fun-zone">Fun Zone</Link><span>/</span><Link href={`/fun-zone/${game.key}`}>{game.title}</Link></nav>
-  <header className={styles.hero}><span className={styles.eyebrow}>{game.category} / {challenge.puzzle.difficulty}</span><h1>{challenge.puzzle.title}</h1><p>{challenge.puzzle.description}</p></header>
-  <div className={styles.notice}>Early-access puzzle · EXP achievements for verified completions · No Pod Coins</div>
-  {challenge.mode==="connections"?<Connections puzzle={challenge.puzzle as ConnectionsPuzzle} onComplete={onComplete}/>:
-    challenge.mode==="burrow"?<Burrow puzzle={challenge.puzzle as BurrowPuzzle} onComplete={onComplete}/>:
-    challenge.mode==="crossword"?<Crossword puzzle={challenge.puzzle as CrosswordPuzzle} onComplete={onComplete}/>:
-    <Quiz puzzle={challenge.puzzle as QuizPuzzle} onComplete={onComplete}/>}
-  <p className={styles.completionStatus} role="status">{saved==="saving"?"Saving your completion…":saved==="saved"?"Puzzle completion recorded. Achievement rewards unlock once per milestone.":saved==="unavailable"?"Puzzle finished locally, but completion could not be recorded. No EXP was awarded.":""}</p>
+  <header className={styles.hero}>
+   <span className={styles.eyebrow}>PODSCAPE / FUN ZONE / {game.category.toUpperCase()}</span>
+   <div className={styles.heroTitleRow}><div><h1>{challenge.puzzle.title}</h1><p>{challenge.puzzle.description}</p></div><span className={styles.difficulty}>{challenge.puzzle.difficulty}</span></div>
+   <div className={styles.heroLinks}><Link href={`/fun-zone/${game.key}`}>All {game.title} puzzles</Link><Link href="/account/progress">Achievements</Link></div>
+  </header>
+  <div className={styles.notice}>Early-access challenge · Unique completions count toward EXP achievements · No Pod Coins</div>
+  {challenge.mode==="connections"?<Connections puzzle={challenge.puzzle as ConnectionsPuzzle} onComplete={record}/>:
+    challenge.mode==="burrow"?<Burrow puzzle={challenge.puzzle as BurrowPuzzle} onComplete={record}/>:
+    challenge.mode==="crossword"?<Crossword puzzle={challenge.puzzle as CrosswordPuzzle} onComplete={record}/>:
+    <Quiz puzzle={challenge.puzzle as QuizPuzzle} onComplete={record}/>}
+  <PuzzleSaveStatus status={saved}/>
   <WorkspaceLinks items={[{href:`/fun-zone/${game.key}`,label:`More ${game.title}`},{href:"/fun-zone",label:"All games"},{href:"/ledger",label:"Leaf Ledger"}]}/>
  </div></main>;
 }
