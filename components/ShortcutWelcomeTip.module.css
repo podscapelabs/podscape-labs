@@ -34,3 +34,6 @@
 .layoutChoice small{font-size:.7rem;color:var(--muted)}
 .dialog .skipNote{font-size:.7rem!important;line-height:1.5;margin:4px 0!important}
 @media(max-width:720px){.dialog{padding:18px}.icon{width:52px;height:52px;font-size:2rem;margin-bottom:11px}.layoutChoice{padding:8px 10px}.layoutChoice small{font-size:.66rem}}
+
+/* Welcome illustration uses a meaningful shared icon, never text ornaments. */
+.icon svg{width:35px;height:35px}
