@@ -29,3 +29,12 @@
 
 ## Research status
 Unverified/unavailable information remains blank. No default percentage, average brood, lifespan, moisture fraction, or care recommendation is invented for visual completeness.
+
+## Editorial cleanup · standardized traits
+- **Do not use Feeding Response as a default species rating.** The old broad scale (“Reserved”, “Eager”) was inconsistent and is hidden from new editing/import flows. Historical data remains intact for backwards compatibility.
+- Capture repeatable distinguishing feeding observations as **Notable Traits**, e.g. “Strong protein appetite”. This means a documented tendency to consume protein-rich foods, **not** a scientifically proven elevated protein requirement.
+- Use **Protein guidance** for husbandry instructions, not a second label for appetite. Keep **Staple diet** for the food base and **Feeding overview** for additional nonduplicative context.
+- The editorial trait library includes short definitions; choose no more than five evidence-supported traits. Historical freeform traits are preserved and not automatically reinterpreted.
+- Prefer **Activity & visibility notes** over separate activity-note variants. Prefer **Moisture gradient guidance** over an additional generic moisture note. Legacy notes appear in the corresponding editor when the canonical field is empty, so they can be reviewed without data loss.
+- Use a single principal **About** description. Generate concise catalogue excerpts from it; keep old manually written catalogue summaries as fallback for historic entries.
+- Keep the broad substrate moisture range distinct from **moist-zone coverage** and **air RH**. Never describe the whole enclosure as uniformly damp, and never suggest “drier” means bone dry.
