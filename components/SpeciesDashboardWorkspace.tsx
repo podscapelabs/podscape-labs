@@ -81,6 +81,7 @@ export function SpeciesDashboardWorkspace({widgets,scope,preview=false}:{widgets
  };
  const toggle=(id:SpeciesWidgetId)=>update({...layout,visible:layout.visible.includes(id)?layout.visible.filter(v=>v!==id):[...layout.visible,id]});
  return <div className={`${styles.speciesWorkspace} ${canvasEditing?homeStyles.homeCanvasEditing:""}`} data-workspace-root="species" onPointerMove={event=>{if(canvasEditing)dragMove(event)}} onPointerUp={()=>{if(canvasEditing)stop()}} onPointerCancel={()=>{if(canvasEditing)stop()}}>
+{!preview&&!canvasEditing&&<button type="button" className={homeStyles.desktopDashboardEdit} onClick={()=>enterCanvas()} aria-label="Edit species dashboard">✎ Edit Species Dashboard</button>}
   {canvasEditing&&<WorkspaceEditToolbar title="Arrange your Species Dashboard" description="Drag blocks to move them. Changes apply to every species profile." onAdd={()=>{done();setLibraryOpen(true)}} onReset={reset} onDone={done}/>}
   {visible.map((id,index)=><WorkspaceEditBlock key={id} id={id} scope="species" label={speciesWidgetLabels[id]} index={index} count={visible.length} editing={canvasEditing} dragging={dragging===id} required={false} onMove={move} onRemove={item=>toggle(item)} begin={begin} move={dragMove} stop={stop} onLongPress={!preview?()=>enterCanvas(id):undefined}>{widgets[id]}</WorkspaceEditBlock>)}
   {!preview&&hydrated&&!canvasEditing&&<div className={homeStyles.addWidgetFooter}><button type="button" className={homeStyles.addWidgetButton} onClick={()=>setLibraryOpen(true)}><span aria-hidden="true">＋</span> Add Widget</button></div>}
