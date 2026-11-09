@@ -4,10 +4,10 @@ import { NextResponse, type NextRequest } from "next/server";
 
 // Discovery portals are public. Member data and actions have separate guards.
 // Never gate the public Ledger, Shop, Fun Zone, Guides, Search or app homepage.
-const PRIVATE_AREAS = ["/keeper/collection", "/keeper/scan", "/keeper/qr", "/keeper/schedule", "/keeper/activity", "/keeper/new", "/api/progress"];
+const PRIVATE_AREAS = ["/keeper/", "/api/progress"];
 
 function isPrivateArea(pathname: string): boolean {
-  return PRIVATE_AREAS.some((area) => pathname === area || pathname.startsWith(area + "/"));
+  return PRIVATE_AREAS.some((area) => area.endsWith("/") ? pathname.startsWith(area) : pathname === area || pathname.startsWith(area + "/"));
 }
 
 /** Allow the existing legacy owner session to review the platform without a member account. */
