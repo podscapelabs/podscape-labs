@@ -38,12 +38,15 @@ export function LedgerUnsavedGuard(){
       // Switching records, creating a blank species or archiving can discard edits.
       if(event.target instanceof HTMLFormElement)confirmMove(event);
     };
+    const imported=()=>window.setTimeout(changed,0);
+    window.addEventListener("podscape-ledger-import-applied",imported);
     form.addEventListener("input",changed);
     form.addEventListener("change",changed);
     document.addEventListener("click",onClick,true);
     document.addEventListener("submit",onSubmit,true);
     window.addEventListener("beforeunload",beforeUnload);
     return ()=>{
+      window.removeEventListener("podscape-ledger-import-applied",imported);
       form.removeEventListener("input",changed);
       form.removeEventListener("change",changed);
       document.removeEventListener("click",onClick,true);
