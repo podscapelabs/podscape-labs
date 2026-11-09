@@ -11,7 +11,8 @@
     "db:migrate": "node scripts/apply-supabase-schema.mjs",
     "db:seed": "node scripts/seed-supabase-species.mjs",
     "db:setup": "pnpm db:migrate && pnpm db:seed",
-    "check:portal-colors": "node scripts/check-portal-colors.mjs"
+    "check:portal-colors": "node scripts/check-portal-colors.mjs",
+    "test:fun-zone": "node scripts/verify-fun-zone.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
