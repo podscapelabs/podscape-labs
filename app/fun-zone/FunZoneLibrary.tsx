@@ -3,17 +3,16 @@ import {useState} from "react";
 import Link from "next/link";
 import styles from "./fun-zone.module.css";
 import {WorkspaceSectionHeader} from "@/components/PodscapeWorkspaceUI";
+import {games as gameCatalog} from "@/lib/fun-zone-games";
 
 type Category = "All" | "Daily" | "Word" | "Knowledge" | "Logic";
+// Single source of truth for all playable sample games.
 const games: {title:string;detail:string;category:Exclude<Category,"All">;mark:string;ready:boolean;href?:string}[] = [
- {title:"Crossword Colony",detail:"Solve isopod-themed clues.",category:"Word",mark:"▦",ready:true,href:"/fun-zone/crossword-colony"},
- {title:"Colony Connections",detail:"Find four hidden groups.",category:"Logic",mark:"◇",ready:true,href:"/fun-zone/colony-connections"},
- {title:"Word Burrow",detail:"Guess the isopod term.",category:"Word",mark:"ABC",ready:true,href:"/fun-zone/word-burrow"},
- {title:"Species Detective",detail:"Identify species from clues.",category:"Knowledge",mark:"⌕",ready:true,href:"/fun-zone/species-detective"},
- {title:"Word Search",detail:"Find hidden hobby terms.",category:"Word",mark:"⌗",ready:true,href:"/fun-zone/word-search"},
- {title:"Keeper's Challenge",detail:"Solve practical colony scenarios.",category:"Logic",mark:"☷",ready:true,href:"/fun-zone/keepers-challenge"},
- {title:"Word of the Week",detail:"Explore isopod terminology.",category:"Daily",mark:"✧",ready:true,href:"/fun-zone/word-of-the-week"},
- {title:"Species Quiz",detail:"Test your isopod knowledge.",category:"Knowledge",mark:"?",ready:true,href:"/fun-zone/species-quiz"},
+ ...gameCatalog.map(game=>({
+  title:game.title,detail:game.subtitle,category:game.category as Exclude<Category,"All">,
+  mark:game.mark,ready:true,href:"/fun-zone/"+game.key
+ })),
+ {title:"Word Search",detail:"Find hidden hobby terms.",category:"Word",mark:"⌗",ready:true,href:"/fun-zone/word-search"}
 ];
 const categories:Category[] = ["All","Daily","Word","Knowledge","Logic"];
 export function FunZoneLibrary(){
