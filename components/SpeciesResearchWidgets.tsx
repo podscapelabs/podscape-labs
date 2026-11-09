@@ -74,7 +74,8 @@ export function ResearchSourcesWidget({record}:{record:SpeciesRecord}){
 }
 export function HabitatSetupWidget({record}:{record:SpeciesRecord}){
  return <Details title="Habitat & Setup" rows={[
- {label:"Natural microhabitat",value:record.naturalMicrohabitat},{label:"Substrate depth",value:record.substrateDepth},
+ {label:"Natural microhabitat",value:record.naturalMicrohabitat},
+ {label:"Substrate composition",value:record.substrate},{label:"Substrate depth",value:record.substrateDepth},
  {label:"Enclosure guidance",value:record.enclosureGuidance}
  ]} note="Enclosure advice varies with colony size, ventilation and local conditions."/>;
 }
