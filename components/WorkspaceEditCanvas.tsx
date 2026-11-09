@@ -29,67 +29,88 @@ function animatedReorder(scope:string,change:()=>void){
  });
 }
 
-type DragState<T extends string>={id:T;pointerId:number;startX:number;startY:number;lastY:number;started:boolean;swapAnchorY:number};
+type DragState<T extends string>={
+ id:T;pointerId:number;startX:number;startY:number;startScrollY:number;
+ lastClientY:number;started:boolean;swapAnchorY:number;lastSwapAt:number;
+};
 export function useWorkspaceDrag<T extends string>(
-  scope:string,visible:readonly T[],reorder:(from:T,to:T)=>void
+ scope:string,visible:readonly T[],reorder:(from:T,to:T)=>void
 ){
-  const current=useRef<DragState<T>|null>(null);
-  const scrollFrame=useRef<number|null>(null);
-  const [dragging,setDragging]=useState<T|null>(null);
-  // Continue auto-scrolling while the finger rests near an edge, not just on move events.
-  const scrollTick=()=>{
-    const drag=current.current;
-    if(!drag?.started){scrollFrame.current=null;return}
-    const upper=130,lower=Math.max(upper+80,window.innerHeight-130);
-    const amount=drag.lastY<upper?-Math.min(18,Math.max(3,(upper-drag.lastY)*.16))
-      :drag.lastY>lower?Math.min(18,Math.max(3,(drag.lastY-lower)*.16)):0;
-    if(amount){window.scrollBy(0,amount);scrollFrame.current=requestAnimationFrame(scrollTick)}
-    else scrollFrame.current=null;
-  };
-  useEffect(()=>()=>{if(scrollFrame.current!==null)cancelAnimationFrame(scrollFrame.current)},[]);
-  const begin=(id:T,event:PointerEvent<HTMLDivElement>)=>{
-    if(event.pointerType==="mouse"&&event.button!==0)return;
-    // The arrows remain independent of dragging. Only the handle starts a drag.
-    if(!(event.target as HTMLElement).closest("[data-drag-handle]"))return;
-    current.current={id,pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,lastY:event.clientY,started:false,swapAnchorY:event.clientY};
-    // Capture on the stationary workspace rather than the widget itself:
-    // React reorders the widget nodes and iOS drops pointer capture on moved nodes.
-    const root=event.currentTarget.closest<HTMLElement>("[data-workspace-root]");
-    (root||event.currentTarget).setPointerCapture(event.pointerId);
-  };
-  const move=(event:PointerEvent<HTMLElement>)=>{
-    const drag=current.current;
-    if(!drag||drag.pointerId!==event.pointerId)return;
-    if(!drag.started){
-      if(Math.hypot(event.clientX-drag.startX,event.clientY-drag.startY)<6)return;
-      drag.started=true;setDragging(drag.id);
-    }
-    // Keep scrolling even when the finger pauses at a viewport edge.
-    if(scrollFrame.current===null)scrollFrame.current=requestAnimationFrame(scrollTick);
+ const current=useRef<DragState<T>|null>(null);
+ const scrollFrame=useRef<number|null>(null);
+ const visibleRef=useRef(visible);
+ const reorderRef=useRef(reorder);
+ visibleRef.current=visible;
+ reorderRef.current=reorder;
+ const [dragging,setDragging]=useState<T|null>(null);
 
-    const delta=event.clientY-drag.lastY;
-    drag.lastY=event.clientY;
-    if(Math.abs(delta)<1.5)return;
-    const direction=delta>0?1:-1;
-    // Gesture distance is measured from the last swap, NOT from the neighboring
-    // block's physical edge. The latter can be far below a very tall hero.
-    const distance=event.clientY-drag.swapAnchorY;
-    const requiredDistance=42;
-    const nodes=workspaceNodes(scope);
-    const from=visible.indexOf(drag.id);
-    const to=from+direction;
-    if(from<0||to<0||to>=visible.length){clearDropPreview(scope);return}
-    const neighbor=nodes.find(node=>node.dataset.workspaceBlock===visible[to]);
-    if(!neighbor)return;
-    clearDropPreview(scope);
-    neighbor.setAttribute("data-workspace-drop-preview",direction>0?"after":"before");
-    if(direction*distance<requiredDistance)return;
-    drag.swapAnchorY=event.clientY;
-    clearDropPreview(scope);
-    animatedReorder(scope,()=>reorder(drag.id,visible[to]));
+ // Drag distance is measured in page coordinates, not just client pixels.
+ // Auto-scroll therefore keeps moving widgets even while the finger is still.
+ const trySwap=(drag:DragState<T>)=>{
+  const position=drag.lastClientY+(window.scrollY-drag.startScrollY);
+  const distance=position-drag.swapAnchorY;
+  const direction=distance>0?1:-1;
+  if(Math.abs(distance)<42)return;
+  // Wait for React to settle a swap before reading the next order.
+  if(performance.now()-drag.lastSwapAt<125)return;
+  const order=visibleRef.current;
+  const from=order.indexOf(drag.id),to=from+direction;
+  if(from<0||to<0||to>=order.length){clearDropPreview(scope);return;}
+  const target=order[to];
+  clearDropPreview(scope);
+  workspaceNodes(scope).find(node=>node.dataset.workspaceBlock===target)
+   ?.setAttribute("data-workspace-drop-preview",direction>0?"after":"before");
+  drag.swapAnchorY=position;
+  drag.lastSwapAt=performance.now();
+  animatedReorder(scope,()=>reorderRef.current(drag.id,target));
+ };
+ const scrollTick=()=>{
+  const drag=current.current;
+  if(!drag?.started){scrollFrame.current=null;return;}
+  const upper=130,lower=Math.max(upper+80,window.innerHeight-130);
+  const amount=drag.lastClientY<upper?-Math.min(18,Math.max(3,(upper-drag.lastClientY)*.16))
+   :drag.lastClientY>lower?Math.min(18,Math.max(3,(drag.lastClientY-lower)*.16)):0;
+  if(!amount){scrollFrame.current=null;return;}
+  const previous=window.scrollY;
+  // Directly updating the scroll position avoids the site's smooth-scroll CSS
+  // delaying a drag and causing oscillation in the landing position.
+  if(document.scrollingElement)document.scrollingElement.scrollTop+=amount;
+  if(window.scrollY!==previous)trySwap(drag);
+  scrollFrame.current=requestAnimationFrame(scrollTick);
+ };
+ useEffect(()=>()=>{if(scrollFrame.current!==null)cancelAnimationFrame(scrollFrame.current)},[]);
+ const begin=(id:T,event:PointerEvent<HTMLDivElement>)=>{
+  if(event.pointerType==="mouse"&&event.button!==0)return;
+  if(!(event.target as HTMLElement).closest("[data-drag-handle]"))return;
+  current.current={
+   id,pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,
+   startScrollY:window.scrollY,lastClientY:event.clientY,started:false,
+   swapAnchorY:event.clientY,lastSwapAt:0
   };
-  const stop=()=>{clearDropPreview(scope);current.current=null;if(scrollFrame.current!==null)cancelAnimationFrame(scrollFrame.current);scrollFrame.current=null;setDragging(null)};
-  return {dragging,begin,move,stop};
+  const root=event.currentTarget.closest<HTMLElement>("[data-workspace-root]");
+  // Keep capturing on the stationary canvas: the dragged block itself moves.
+  try{(root||event.currentTarget).setPointerCapture(event.pointerId)}catch{}
+ };
+ const move=(event:PointerEvent<HTMLElement>)=>{
+  const drag=current.current;
+  if(!drag||drag.pointerId!==event.pointerId)return;
+  drag.lastClientY=event.clientY;
+  if(!drag.started){
+   if(Math.hypot(event.clientX-drag.startX,event.clientY-drag.startY)<6)return;
+   drag.started=true;
+   setDragging(drag.id);
+  }
+  trySwap(drag);
+  if(scrollFrame.current===null)scrollFrame.current=requestAnimationFrame(scrollTick);
+ };
+ const stop=()=>{
+  clearDropPreview(scope);
+  current.current=null;
+  if(scrollFrame.current!==null)cancelAnimationFrame(scrollFrame.current);
+  scrollFrame.current=null;
+  setDragging(null);
+ };
+ return {dragging,begin,move,stop};
 }
 export function WorkspaceEditToolbar({title,description,onAdd,onReset,onDone}:{title:string;description:string;onAdd:()=>void;onReset:()=>void;onDone:()=>void}){
  return <div className={styles.homeCanvasToolbar} role="toolbar" aria-label={title}>
