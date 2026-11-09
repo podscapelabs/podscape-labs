@@ -6,6 +6,7 @@ import { signOutAdmin } from "@/app/admin/actions";
 import styles from "./page.module.css";
 import { ownerDesks, ownerOperations } from "@/data/owner-desks";
 import { TestAchievementButton } from "@/components/TestAchievementButton";
+import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Owner Tools | Podscape Labs", robots: { index: false, follow: false } };
@@ -28,7 +29,7 @@ export default async function OwnerToolsPage() {
         <div className={styles.sectionHeading}><p className={styles.eyebrow}>CONTENT MANAGEMENT</p><h2 id="content-heading">Your desks</h2></div>
         <div className={styles.grid}>
           {ownerDesks.map(desk => <Link className={styles.card} href={desk.href} key={desk.href}>
-            <span className={styles.symbol} aria-hidden="true">{desk.symbol}</span>
+            <span className={styles.symbol} aria-hidden="true"><PodscapeLineIcon name={desk.icon} /></span>
             <span className={styles.copy}><small>{desk.label}</small><strong>{desk.title}</strong><span>{desk.description}</span></span>
             <span className={styles.arrow} aria-hidden="true">↗</span>
           </Link>)}
@@ -37,7 +38,7 @@ export default async function OwnerToolsPage() {
       <section className={styles.other} aria-labelledby="more-heading">
         <div className={styles.sectionHeading}><p className={styles.eyebrow}>OPERATIONS</p><h2 id="more-heading">Manage access &amp; settings</h2></div>
         <div className={styles.links}>
-          {ownerOperations.map(item=><Link href={item.href} key={item.href}><span><strong>{item.title}</strong><small>{item.description}</small></span><b aria-hidden="true">→</b></Link>)}
+          {ownerOperations.map(item=><Link href={item.href} key={item.href}><span className={styles.operationCopy}><strong><PodscapeLineIcon name={item.icon} /> {item.title}</strong><small>{item.description}</small></span><b aria-hidden="true">→</b></Link>)}
         </div>
       </section>
       <section aria-label="Owner-only notification test" style={{margin:"18px 0"}}><p style={{fontSize:12,opacity:.75}}>Owner QA · Preview the achievement banner. This test never changes EXP or unlocks an achievement.</p><TestAchievementButton/></section>
