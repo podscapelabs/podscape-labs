@@ -7,6 +7,7 @@ import collectionStyles from "./CollectionRows.module.css";
 import styles from "./LedgerLayout.module.css";
 import spotlight from "@/app/ledger/discover.module.css";
 import Link from "next/link";
+import {PodscapeLineIcon} from "./PodscapeLineIcon";
 import {LEDGER_BROWSE_ORDER_KEY,LEDGER_EXPLORER_STATE_KEY,type LedgerExplorerSnapshot} from "@/lib/ledger-navigation";
 import type { ColonyStatus } from "@/data/collection";
 import { speciesDisplayName, speciesScientificName, type SpeciesRecord } from "@/data/species";
@@ -136,7 +137,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
           {query ? <button type="button" onClick={()=>setQuery("")} aria-label="Clear species search">×</button> : null}
         </div>
         <nav className={spotlight.heroDestinations} aria-label="Leaf Ledger mini dashboard">
-          <a href="#ledger-directory" aria-current="page" className={spotlight.heroDestinationActive}><span aria-hidden="true">❧</span><strong>Discover</strong><small>Explore species</small></a>
+          <a href="#ledger-directory" aria-current="page" className={spotlight.heroDestinationActive}><span aria-hidden="true"><PodscapeLineIcon name="leaf"/></span><strong>Discover</strong><small>Explore species</small></a>
           <Link href={signedIn ? "/keeper/collection" : "/account/login"}><span aria-hidden="true">▤</span><strong>My Collection</strong><small>Your saved species</small></Link>
         </nav>
       </div>
@@ -195,8 +196,8 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
       : <div className="v2-species-grid" onClickCapture={event=>{if((event.target as HTMLElement).closest("a[href^=\"/ledger/\"]"))saveBrowseContext()}}>{results.map((record, index) => <LedgerSpeciesCard record={record} key={record.id} showCollectionAction collected={saved.has(record.id)} signedIn={signedIn} collectionDetails={collectionDetailsById[record.id]} />).flatMap((card, index) => {
         const insertSpotlight = index === 3 && !!featured && !filtersActive;
         return insertSpotlight ? [card, <aside key="species-spotlight" className={spotlight.feature} aria-label="Featured species">
-          {featured!.image ? <img className={spotlight.featurePhoto} src={featured!.image} alt="" loading="lazy" decoding="async" /> : <span className={spotlight.featureFallback} aria-hidden="true">❧</span>}
-          <div className={spotlight.featureCopy}><small>❧ Featured species</small><h2>{featured!.name}</h2><p>{featured!.summary || "Explore this species in the Leaf Ledger."}</p><Link href={`/ledger/${featured!.slug}`}>View species →</Link></div>
+          {featured!.image ? <img className={spotlight.featurePhoto} src={featured!.image} alt="" loading="lazy" decoding="async" /> : <span className={spotlight.featureFallback} aria-hidden="true"><PodscapeLineIcon name="leaf"/></span>}
+          <div className={spotlight.featureCopy}><small>Featured species</small><h2>{featured!.name}</h2><p>{featured!.summary || "Explore this species in the Leaf Ledger."}</p><Link href={`/ledger/${featured!.slug}`}>View species →</Link></div>
         </aside>] : [card];
       })}{results.length < 4 && featured && !filtersActive ? <aside className={spotlight.feature} aria-label="Featured species">
         {featured.image ? <img className={spotlight.featurePhoto} src={featured.image} alt="" loading="lazy" decoding="async" /> : null}
