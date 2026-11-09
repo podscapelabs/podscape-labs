@@ -74,10 +74,10 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
           </div>
           <div data-ledger-stage="profile" id="ledger-stage-profile">
           <div id="ledger-profile" className={styles.workflowSection}>
-            <div className={styles.workflowSectionHeading}>Species profile <small>About and short catalogue summary</small></div>
+            <div className={styles.workflowSectionHeading}>Species profile <small>One primary About description; catalogue excerpt is automatic</small></div>
             <fieldset aria-label="Species profile description">
               <label><span>About · public species introduction</span><textarea name="about" defaultValue={selected.about} rows={4} placeholder="Brief description of what makes this species recognizable and interesting." /></label>
-              <label><span>Catalogue summary · optional fallback</span><textarea name="summary" defaultValue={selected.summary} rows={2} placeholder="Short card description; used if About is blank." /></label>
+              <input type="hidden" name="summary" value={selected.summary} /><small>Catalogue cards use an automatic excerpt of About. Existing legacy summaries are retained as fallback until reviewed.</small>
             </fieldset>
           </div>
           </div>
@@ -89,7 +89,7 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
           </div>
           <div data-ledger-stage="traits" id="ledger-stage-traits">
           <div id="ledger-traits" className={styles.workflowSection}>
-            <div className={styles.workflowSectionHeading}>Notable traits <small>Select up to five traits from the reusable library</small></div>
+            <div className={styles.workflowSectionHeading}>Notable traits <small>Up to five defined biological characteristics, including feeding traits</small></div>
             <fieldset aria-label="Notable traits">
               <NotableTraitPicker key={selected.id} initialTraits={selected.notableTraits || []} />
             </fieldset>
@@ -122,7 +122,7 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
                 <label><span>Ventilation</span><select name="ventilation" defaultValue={selected.ventilation}>{["","Low","Moderate","High"].map(value=><option key={value} value={value}>{value||"Unspecified"}</option>)}{selected.ventilation&&!["","Low","Moderate","High"].includes(selected.ventilation)?<option value={selected.ventilation}>{selected.ventilation} (existing)</option>:null}</select></label>
                 <label><span>Activity</span><select name="activity" defaultValue={selected.activity||""}>{["","Shy","Moderate","Active","Very Active"].map(value=><option key={value} value={value}>{value||"Unspecified"}</option>)}{selected.activity&&!["","Shy","Moderate","Active","Very Active"].includes(selected.activity)?<option value={selected.activity}>{selected.activity} (existing)</option>:null}</select></label>
                 <label><span>Reproduction</span><select name="reproduction" defaultValue={selected.reproduction||""}>{["","Slow","Moderate","Fast","Prolific"].map(value=><option key={value} value={value}>{value||"Unspecified"}</option>)}{selected.reproduction&&!["","Slow","Moderate","Fast","Prolific"].includes(selected.reproduction)?<option value={selected.reproduction}>{selected.reproduction} (existing)</option>:null}</select></label>
-                <label><span>Feeding response</span><select name="feedingResponse" defaultValue={selected.feedingResponse||""}>{["","Reserved","Moderate","Eager","Very eager","Not established"].map(value=><option key={value} value={value}>{value||"Unspecified"}</option>)}</select></label>
+                
               </div>
               <details className={styles.optionalSection}><summary>Optional feeding and substrate <small>Only when a concise general note adds value</small></summary>
                 <div className="admin-form-grid two">
