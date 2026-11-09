@@ -8,3 +8,15 @@
 .card[data-status="completed"] .art{background:color-mix(in srgb,var(--accent) 14%,var(--surface-secondary))}
 .action:focus-visible,.filters button:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
 @media(max-width:600px){.card[data-status="locked"] .art{height:86px}.card[data-status="locked"]{min-height:120px}}
+
+/* Functional icons replace the former heart-shaped leaf ornaments. */
+.hero h1 span{display:none}
+.heroDecoration{position:absolute;right:16px;top:16px;transform:none;display:grid;place-items:center;width:66px;height:66px;border:1px solid color-mix(in srgb,var(--accent) 23%,var(--border));border-radius:16px;color:var(--accent);opacity:.28;font-size:inherit;pointer-events:none}
+.heroDecoration svg{width:39px;height:39px}
+.art::after{content:none;display:none}
+.artLeaf{display:none}
+.artSymbol{display:grid;place-items:center;width:74px;height:74px;border-radius:18px;background:color-mix(in srgb,var(--accent) 9%,var(--surface));border:1px solid color-mix(in srgb,var(--accent) 30%,var(--border));font:inherit}
+.artSymbol svg{width:42px;height:42px}
+.summaryIcon{font-size:inherit}
+.summaryIcon svg{width:22px;height:22px}
+@media(max-width:600px){.heroDecoration{width:43px;height:43px;right:12px;top:12px;border-radius:11px;opacity:.22}.heroDecoration svg{width:26px;height:26px}.heroContent{padding-right:25px}.artSymbol{width:54px;height:54px;border-radius:13px}.artSymbol svg{width:32px;height:32px}}
