@@ -25,19 +25,6 @@ const originalCrossword:CrosswordClue[]=crosswordClues.map((c,i)=>({...c,...([
 ] as const)[i]}));
 // For new puzzles use a validated single-column vertical spine and crossing
 // horizontal words, generated from a common letter. Every intersection matches.
-function spinePuzzle(words:[string,string,string,string,string],clues:[string,string,string,string,string]):CrosswordClue[]{
- const [spine,...across]=words;
- if(spine.length!==5)throw new Error("Crossword spine must have five letters");
- // Vertical spine at column 4, horizontal terms each cross it at their
- // first matching letter, with distinct rows.
- const result:CrosswordClue[]=[{answer:spine,clue:clues[0],r:0,c:4,dir:"down"}];
- for(let row=0;row<4;row++){
-  const word=across[row],at=word.indexOf(spine[row]);
-  if(at<0||at>4||word.length-at>6)throw new Error("Invalid crossing "+word);
-  result.push({answer:word,clue:clues[row+1],r:row,c:4-at,dir:"across"});
- }
- return result;
-}
 // Each row of a spine crossword may also intersect neighbouring across rows.
 // Keep an explicit checker to reject any contradictory intersection.
 function validateCrossword(clues:CrosswordClue[]){
