@@ -217,3 +217,8 @@
 .quickChooseList{max-height:none;overflow:visible;overscroll-behavior:auto}
 .showMoreBins{display:block;margin:12px auto 2px;min-height:42px;padding:9px 17px;border:1px solid var(--border);border-radius:999px;background:var(--surface-secondary);color:var(--accent);font-size:.76rem;font-weight:800;cursor:pointer}
 .showMoreBins:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* Care action, bin and species placeholders use canonical line icons. */
+.careTileTop svg{width:24px;height:24px;display:block}
+.quickChoosePhoto svg{width:23px;height:23px}
+.careThumbFallback svg{width:39px;height:39px}
