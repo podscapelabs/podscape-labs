@@ -50,7 +50,7 @@ export function useWorkspaceDrag<T extends string>(
   const position=drag.lastClientY+(window.scrollY-drag.startScrollY);
   const distance=position-drag.swapAnchorY;
   const direction=distance>0?1:-1;
-  if(Math.abs(distance)<42)return;
+  if(Math.abs(distance)<16){clearDropPreview(scope);return;}
   // Wait for React to settle a swap before reading the next order.
   if(performance.now()-drag.lastSwapAt<125)return;
   const order=visibleRef.current;
@@ -60,6 +60,7 @@ export function useWorkspaceDrag<T extends string>(
   clearDropPreview(scope);
   workspaceNodes(scope).find(node=>node.dataset.workspaceBlock===target)
    ?.setAttribute("data-workspace-drop-preview",direction>0?"after":"before");
+  if(Math.abs(distance)<42)return;
   drag.swapAnchorY=position;
   drag.lastSwapAt=performance.now();
   animatedReorder(scope,()=>reorderRef.current(drag.id,target));
@@ -75,8 +76,10 @@ export function useWorkspaceDrag<T extends string>(
   // Directly updating the scroll position avoids the site's smooth-scroll CSS
   // delaying a drag and causing oscillation in the landing position.
   if(document.scrollingElement)document.scrollingElement.scrollTop+=amount;
-  if(window.scrollY!==previous)trySwap(drag);
-  scrollFrame.current=requestAnimationFrame(scrollTick);
+  if(window.scrollY!==previous){
+   trySwap(drag);
+   scrollFrame.current=requestAnimationFrame(scrollTick);
+  }else scrollFrame.current=null;
  };
  useEffect(()=>()=>{if(scrollFrame.current!==null)cancelAnimationFrame(scrollFrame.current)},[]);
  const begin=(id:T,event:PointerEvent<HTMLDivElement>)=>{
