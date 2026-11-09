@@ -33,11 +33,13 @@ function ResearchDialog({title,children}:{title:string;children:ReactNode}){
   </dialog>
  </>;
 }
+/** Dashboard previews end on word boundaries. The detail sheet always has the full value. */
 function previewFact(label:string,value:string){
  const clean=value.replace(/\s+/g," ").trim();
- if(label==="Staple diet")return clean.split(/[;,]/)[0].slice(0,82);
- if(label==="Identification & lookalikes"||label==="Taxonomic status")return clean.length>90?clean.slice(0,87).trimEnd()+"…":clean;
- return clean.length>87?clean.slice(0,84).trimEnd()+"…":clean;
+ const primary=label==="Staple diet"?clean.split(/[;,]/)[0]:clean;
+ if(primary.length<=88)return primary;
+ const boundary=primary.lastIndexOf(" ",86);
+ return primary.slice(0,boundary>45?boundary:86).replace(/[\s,;:]+$/,"")+"…";
 }
 function Details({title,rows,note}:{title:string;rows:{label:string;value:string|undefined}[];note?:string}){
  const active=rows.filter((r):r is {label:string;value:string}=>Boolean(r.value?.trim()));
