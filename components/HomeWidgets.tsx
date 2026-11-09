@@ -8,6 +8,7 @@ import styles from "./PodscapeHome.module.css";
 import {moveBlock,dropBlock,visibleBlocks,uniqueAllowed} from "./workspace-layout";
 import {WorkspaceEditToolbar,WorkspaceEditBlock,useWorkspaceDrag} from "./WorkspaceEditCanvas";
 import {HomeCanvasEditContext} from "./HomeCanvasEditContext";
+import {recordExperienceAction} from "./experience-achievements";
 
 type Tile={title:string;label:string;description:string;href:string;image?:string|null;alt?:string};
 export type HomeColony={id:string;name:string;quantity:number;speciesName:string}|null;
@@ -122,6 +123,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
   const update=(next:Layout)=>{
     setLayout(next);
     try{localStorage.setItem(storageKey,JSON.stringify(next))}catch{}
+    if(userId&&JSON.stringify(next)!==JSON.stringify(layout))void recordExperienceAction("home_personalized",{order:next.order,visible:next.visible});
   };
   const add=(id:WidgetId)=>update({...layout,order:layout.order.includes(id)?layout.order:[...layout.order,id],visible:[...layout.visible.filter(item=>item!==id),id]});
   const remove=(id:WidgetId)=>update({...layout,visible:layout.visible.filter(item=>item!==id)});
