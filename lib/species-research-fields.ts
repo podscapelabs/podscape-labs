@@ -1,38 +1,38 @@
 /** Optional, evidence-led Leaf Ledger fields. Missing information must remain blank. */
 export const speciesResearchGroups=[
  {id:"identity",title:"Taxonomy & origin",fields:[
-  ["taxonomicStatus","Taxonomic status",120],["taxonomicSynonyms","Synonyms / historic names",300],
-  ["nativeDistribution","Native distribution",300],
-  ["morphOrigin","Captive morph origin",240],["identificationNotes","Identification notes & lookalikes",500],
-  ["adultSizeMm","Typical adult length (mm)",40],["lifespan","Lifespan (if established)",100]
+  ["taxonomicStatus","Taxonomic status",650],["taxonomicSynonyms","Synonyms / historic names",1200],
+  ["nativeDistribution","Native distribution",900],
+  ["morphOrigin","Captive morph origin",850],["identificationNotes","Identification notes & lookalikes",1800],
+  ["adultSizeMm","Typical adult length (mm)",40],["lifespan","Lifespan (if established)",300]
  ]},
  {id:"environment",title:"Moisture & humidity",fields:[
   ["humidityMin","RH lower bound (%)",3],["humidityMax","RH upper bound (%)",3],
   ["moistZoneCoverage","Approximate moist-zone coverage (% of floor area)",3],
   ["moistRefugeCondition","Moist-refuge substrate condition",120],
-  ["moistureGradientGuidance","Moisture gradient / dry-side guidance",350]
+  ["moistureGradientGuidance","Moisture gradient / dry-side guidance",1000]
  ]},
  {id:"habitat",title:"Habitat & enclosure",fields:[
-  ["naturalMicrohabitat","Natural microhabitat",300],
-  ["substrateDepth","Substrate depth",100],["enclosureGuidance","Enclosure setup guidance",350]
+  ["naturalMicrohabitat","Natural microhabitat",900],
+  ["substrateDepth","Substrate depth",300],["enclosureGuidance","Enclosure setup guidance",1200]
  ]},
  {id:"breeding",title:"Breeding & development",fields:[
   ["broodAverage","Average young per brood",8],["broodMin","Observed brood minimum",8],["broodMax","Observed brood maximum",8],
-  ["incubationPeriod","Incubation / brooding period",100],["maturityAge","Age at maturity",100],["breedingSeason","Breeding season",120]
+  ["incubationPeriod","Incubation / brooding period",450],["maturityAge","Age at maturity",450],["breedingSeason","Breeding season",900]
  ]},
  {id:"nutrition",title:"Feeding & nutrition",fields:[
-  ["stapleDiet","Staple diet",300],["proteinGuidance","Protein guidance",240],
-  ["calciumGuidance","Calcium guidance",200],["dietaryCautions","Dietary cautions",240]
+  ["stapleDiet","Staple diet",900],["proteinGuidance","Protein guidance",900],
+  ["calciumGuidance","Calcium guidance",750],["dietaryCautions","Dietary cautions",900]
  ]},
  {id:"behaviour",title:"Behaviour & bioactive ecology",fields:[
-  ["defensiveBehaviour","Defensive behaviour",200],["visibilityNotes","Visibility & activity notes",200],
-  ["bioactiveSuitability","Bioactive suitability",240]
+  ["defensiveBehaviour","Defensive behaviour",850],["visibilityNotes","Visibility & activity notes",850],
+  ["bioactiveSuitability","Bioactive suitability",900]
  ]},
  {id:"evidence",title:"Evidence & editorial review",fields:[
-  ["researchSources","Research sources (one URL per line)",2400],
+  ["researchSources","Research sources (one URL per line)",16000],
   ["evidenceScope","Evidence scope: species-level / morph-specific / mixed",30],
   ["evidenceQuality","Evidence basis: scientific / breeder consensus / limited",30],
-  ["evidenceNotes","Evidence mapping & uncertainties (cite field and source)",2000],
+  ["evidenceNotes","Evidence mapping & uncertainties (cite field and source)",10000],
   ["lastReviewed","Last reviewed (YYYY-MM-DD)",10]
  ]}
 ] as const;
