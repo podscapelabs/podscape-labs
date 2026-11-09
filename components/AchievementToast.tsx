@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createPortal } from "react-dom";
 import styles from "./AchievementToast.module.css";
+import {PodscapeLineIcon} from "./PodscapeLineIcon";
 
 export type AchievementNotice = { id: string; title: string; description: string; exp: number; coins: number; hidden?:boolean };
 const EVENT = "podscape:achievement-unlocked";
@@ -31,7 +32,7 @@ export function AchievementToast() {
   const dismiss = () => setQueue(prev => prev.slice(1));
   if (!current) return null;
   return createPortal(<aside className={styles.toast} data-hidden={current.hidden===true?"true":undefined} role="status" aria-live="polite" aria-atomic="true">
-    <div className={styles.icon} aria-hidden="true">{current.hidden?"✺":"✦"}</div>
+    <div className={styles.icon} aria-hidden="true"><PodscapeLineIcon name="achievement" /></div>
     <div className={styles.content}>
       <div className={styles.eyebrow}>{current.hidden?"Hidden Achievement Discovered!":"Achievement unlocked!"}</div>
       <strong>{current.title}</strong>
