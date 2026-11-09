@@ -1,6 +1,7 @@
 "use client";
 
-import {useState,useTransition,type FormEvent} from "react";
+import {useState,useTransition,type FormEvent,type ReactNode} from "react";
+import {ColonyDashboardLayout,type ColonyWidgetId} from "@/components/ColonyDashboardLayout";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -9,13 +10,13 @@ import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
 import styles from "./ColonyWorkspace.module.css";
 
 type CareEvent={id:string;kind:string;note:string;createdAt:string;quantityChange:number|null};
-type Colony={id:string;name:string;label:string;species:string;image:string|null;status:string;breeding:string;quantity:number;archived:boolean};
+type Colony={id:string;name:string;label:string;species:string;image:string|null;status:string;breeding:string;quantity:number;archived:boolean;enclosureType:string};
 function dayLabel(timestamp:string){
  const d=new Date(timestamp);
  return Number.isNaN(d.getTime())?"Date unavailable":d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
 }
-export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,referenceUrl}:{
- colony:Colony;initialEvents:CareEvent[];careDates:Record<string,string>;initialPanel?:string;referenceUrl?:string
+export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,referenceUrl,scope}:{
+ colony:Colony;initialEvents:CareEvent[];careDates:Record<string,string>;initialPanel?:string;referenceUrl?:string;scope:string
 }){
  const router=useRouter();
  const [events,setEvents]=useState(initialEvents);
@@ -64,6 +65,57 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
   {title:"History",detail:"Every recorded care action",href:"/keeper/"+id+"/history",icon:"note" as const},
   {title:"QR Label",detail:"Print, scan & identify",href:"/keeper/qr?bin="+id,icon:"qr" as const}
  ];
+ const widgets:Record<ColonyWidgetId,ReactNode>={
+  shortcuts:<section className={styles.tools} aria-label="Colony tools">
+   <div className={styles.sectionTitle}><div><p>QUICK ACTIONS</p><h2>Colony tools</h2></div></div>
+   <div className={styles.toolGrid}>{tiles.map(tile=><Link key={tile.title} className={tile.featured?styles.featuredTool:undefined} href={tile.href}>
+     <PodscapeLineIcon name={tile.icon}/><strong>{tile.title}</strong><small>{tile.detail}</small><span className={styles.toolArrow} aria-hidden="true">↗</span>
+    </Link>)}</div>
+  </section>,
+  care:<section className={styles.widgetPanel} aria-label="Care at a glance">
+    <div className={styles.sectionTitle}><div><p>CARE & ROUTINES</p><h2>Care at a glance</h2></div><Link href={careUrl}>Log care →</Link></div>
+    <div className={styles.miniMetrics}>
+      <div><span>Last misted</span><strong>{lastMisted?dayLabel(lastMisted):"Not logged"}</strong></div>
+      <div><span>Last fed</span><strong>{lastFed?dayLabel(lastFed):"Not logged"}</strong></div>
+    </div>
+    <Link className={styles.widgetLink} href={"/keeper/"+id+"/details?panel=care#care-reminders"}>Manage schedule →</Link>
+   </section>,
+  population:<section className={styles.widgetPanel} aria-label="Population and breeding">
+    <div className={styles.sectionTitle}><div><p>COLONY RECORDS</p><h2>Population & breeding</h2></div><Link href={"/keeper/"+id+"/details"}>Edit →</Link></div>
+    <div className={styles.miniMetrics}>
+      <div><span>Recorded population</span><strong>~{colony.quantity.toLocaleString()}</strong></div>
+      <div><span>Breeding</span><strong>{colony.breeding.replaceAll("-"," ")}</strong></div>
+    </div>
+    <p className={styles.dataHint}>Values come from your saved colony record, not automatic estimates.</p>
+   </section>,
+  environment:<section className={styles.widgetPanel} aria-label="Enclosure and environment">
+    <div className={styles.sectionTitle}><div><p>COLONY SETUP</p><h2>Enclosure & environment</h2></div><Link href={"/keeper/"+id+"/details"}>Edit →</Link></div>
+    <div className={styles.factList}>
+     <div><span>Enclosure</span><strong>{colony.enclosureType||"Not recorded"}</strong></div>
+     <div><span>Location</span><strong>{colony.label||"Not assigned"}</strong></div>
+     <div><span>Status</span><strong>{colony.status.replaceAll("-"," ")}</strong></div>
+    </div>
+    <p className={styles.dataHint}>Recorded setup only. No live humidity or temperature readings.</p>
+   </section>,
+  observations:<section className={styles.widgetPanel} aria-label="Colony observations">
+   <div className={styles.sectionTitle}><div><p>YOUR NOTES</p><h2>Observations</h2></div><Link href={"/keeper/"+id+"/history"}>All notes →</Link></div>
+   {events.find(x=>x.kind==="observation")?<div className={styles.latestNote}>
+    <strong>Latest note</strong><p>{events.find(x=>x.kind==="observation")?.note}</p>
+   </div>:<p className={styles.empty}>Nothing noted yet. Keep an eye on your colony and record what you see.</p>}
+   <div className={styles.noteToggle}><button type="button" aria-expanded={notesOpen} aria-controls="colony-note-editor" onClick={()=>setNotesOpen(x=>!x)} disabled={colony.archived}>{notesOpen?"Close note":"＋ Add observation"}</button></div>
+   {notesOpen?<form className={styles.noteForm} id="colony-note-editor" onSubmit={recordObservation}>
+    <label htmlFor="colony-observation">Colony observation</label>
+    <textarea id="colony-observation" rows={3} maxLength={1500} placeholder="New mancae, changes in activity, feeding observations…" value={observation} onChange={e=>setObservation(e.target.value)} required/>
+    <button type="submit" disabled={pending||undoing||!observation.trim()||colony.archived}>{pending?"Saving…":"Save note"}</button>
+   </form>:null}
+   {error?<p className={styles.warning} role="alert">{error}</p>:null}
+   {message?<div className={styles.notice} role="status"><span>{message}</span>{lastSaved?<button type="button" onClick={undo} disabled={undoing||pending}>{undoing?"Undoing…":"Undo"}</button>:null}</div>:null}
+   </section>,
+  activity:<section className={styles.widgetPanel} aria-label="Recent colony activity">
+    <div className={styles.sectionTitle}><div><p>CARE HISTORY</p><h2>Recent care</h2></div><Link href={"/keeper/"+id+"/history"}>Full history →</Link></div>
+    {events.length?<div className={styles.historyList}>{events.slice(0,3).map(event=><div key={event.id}><span><strong>{event.note||event.kind.replaceAll("-"," ")}</strong><small>{event.kind.replaceAll("-"," ")}</small></span><time dateTime={event.createdAt}>{dayLabel(event.createdAt)}</time></div>)}</div>:<p className={styles.empty}>No entries yet. Record care to start your colony history.</p>}
+   </section>
+ };
  return <div className={styles.root}>
   <nav className={styles.breadcrumb} aria-label="Colony navigation"><Link href="/keeper">Manager</Link><span>/</span><Link href="/keeper/collection">My Colonies</Link><span>/</span><span>{colony.name}</span></nav>
   <header className={styles.hero}>
@@ -73,29 +125,11 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
     <span>{colony.label||"No location assigned"} · {colony.status.replaceAll("-"," ")}{colony.archived?" · Archived":""}</span>
    </div>
   </header>
-  <div className={styles.metrics} aria-label="At a glance">
-   <div><span>Estimated population</span><strong>~{colony.quantity.toLocaleString()}</strong></div>
-   <div><span>Last misted</span><strong>{lastMisted?dayLabel(lastMisted):"Not yet logged"}</strong></div>
-   <div><span>Last fed</span><strong>{lastFed?dayLabel(lastFed):"Not yet logged"}</strong></div>
+  <ColonyDashboardLayout scope={scope} colonyId={colony.id} widgets={widgets} forceVisible={initialPanel==="observation"?"observations":undefined}/>
+  <div className={styles.colonyFooterLinks}>
+   <Link href={careUrl}>Quick Care →</Link>
+   <Link href={"/keeper/"+id+"/details"}>Colony settings →</Link>
+   {referenceUrl?<Link href={referenceUrl}>Leaf Ledger →</Link>:null}
   </div>
-  <section className={styles.tools} aria-labelledby="colony-tools-heading">
-   <div className={styles.sectionTitle}><div><p>YOUR COLONY / WORKSPACES</p><h2 id="colony-tools-heading">What would you like to do?</h2></div></div>
-   <div className={styles.toolGrid}>{tiles.map(tile=><Link key={tile.title} className={tile.featured?styles.featuredTool:undefined} href={tile.href}>
-    <PodscapeLineIcon name={tile.icon}/><strong>{tile.title}</strong><small>{tile.detail}</small><span className={styles.toolArrow} aria-hidden="true">↗</span>
-   </Link>)}</div>
-  </section>
-  <section className={styles.care} aria-labelledby="colony-notes-heading">
-   <div className={styles.sectionTitle}><div><p>YOUR RECORDS</p><h2 id="colony-notes-heading">Notes & recent activity</h2></div><Link href={"/keeper/"+id+"/history"}>Full history →</Link></div>
-   {events.length?<div className={styles.historyList}>{events.slice(0,3).map(event=><div key={event.id}><span><strong>{event.note||event.kind.replaceAll("-"," ")}</strong><small>{event.kind.replaceAll("-"," ")}</small></span><time dateTime={event.createdAt}>{dayLabel(event.createdAt)}</time></div>)}</div>:<p className={styles.empty}>Nothing logged yet. Your first care entry will appear here.</p>}
-   <div className={styles.noteToggle}><button type="button" aria-expanded={notesOpen} aria-controls="colony-note-editor" onClick={()=>setNotesOpen(x=>!x)} disabled={colony.archived}>{notesOpen?"Close note":"＋ Add a note"}</button></div>
-   {notesOpen?<form className={styles.noteForm} id="colony-note-editor" onSubmit={recordObservation}>
-    <label htmlFor="colony-observation">Colony observation</label>
-    <textarea id="colony-observation" rows={3} maxLength={1500} placeholder="New mancae, changes in activity, feeding observations…" value={observation} onChange={e=>setObservation(e.target.value)} required/>
-    <button type="submit" disabled={pending||undoing||!observation.trim()||colony.archived}>{pending?"Saving…":"Save note"}</button>
-   </form>:null}
-   {error?<p className={styles.warning} role="alert">{error}</p>:null}
-   {message?<div className={styles.notice} role="status"><span>{message}</span>{lastSaved?<button type="button" onClick={undo} disabled={undoing||pending}>{undoing?"Undoing…":"Undo"}</button>:null}</div>:null}
-  </section>
-  {referenceUrl?<Link className={styles.reference} href={referenceUrl}>Explore {colony.species} in Leaf Ledger →</Link>:null}
  </div>;
 }
