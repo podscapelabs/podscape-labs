@@ -12,7 +12,7 @@ assert.match(hub,/mode=care/,"Direct Quick Care must stay in care mode");
 for(const route of ["details","history","qr","care-reminders"])assert.ok(hub.includes(route),"Missing categorized colony tool: "+route);
 assert.match(hub,/logKeeperEvent\(/,"Private notes still use the owner-scoped care server action");
 assert.match(hub,/undoKeeperEvent\(/,"Private notes must retain Undo");
-assert.match(hub,/recent care/i,"Recent care summary should be visible");
+assert.match(hub,/notes & recent activity/i,"Recent activity summary should be visible");
 assert.match(scanner,/speciesBins=selected\?bins\.filter/,"Species-scoped switching must remain");
 assert.match(scanner,/\(multiCare\?bins:speciesBins\)\.map/,"All-bin selection should only appear in Multi-care");
 assert.match(scanner,/showBinPicker/,"Other bins must be hidden until requested");
