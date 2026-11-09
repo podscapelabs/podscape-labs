@@ -7,6 +7,7 @@ import {usePuzzleCompletion,PuzzleSaveStatus} from "./usePuzzleCompletion";
 import {scoreWordGuess} from "@/lib/fun-zone-logic";
 import styles from "./PlayGame.module.css";
 import {WorkspaceLinks} from "./PodscapeWorkspaceUI";
+import {PodscapeLineIcon} from "./PodscapeLineIcon";
 
 type Completion=(proof:unknown)=>void;
 function Quiz({puzzle,onComplete}:{puzzle:QuizPuzzle;onComplete:Completion}){
@@ -16,7 +17,7 @@ function Quiz({puzzle,onComplete}:{puzzle:QuizPuzzle;onComplete:Completion}){
  const score=answers.filter((value,i)=>value===questions[i].answer).length;
  const current=questions[index];
  const chosen=answers[index];
- return <div className={styles.playArea}>{done?<div className={styles.result}><span aria-hidden="true">✦</span><h2>Challenge complete!</h2><p>You answered {score} of {questions.length} correctly.</p>
+ return <div className={styles.playArea}>{done?<div className={styles.result}><span aria-hidden="true"><PodscapeLineIcon name="achievement"/></span><h2>Challenge complete!</h2><p>You answered {score} of {questions.length} correctly.</p>
   {score<questions.length?<div className={styles.quizReview}><h3>Review what you learned</h3>{questions.map((question,i)=>answers[i]!==question.answer?<div key={i}><strong>{question.prompt}</strong><p>Correct answer: {question.choices[question.answer]}</p><small>{question.explanation}</small></div>:null)}</div>:<p>Perfect round! Every answer was correct.</p>}
   <button type="button" onClick={()=>{setIndex(0);setAnswers([])}}>Try again ↻</button>
  </div>:<><div className={styles.stage}><small>QUESTION {index+1} / {questions.length}</small><h2>{current.prompt}</h2></div><div className={styles.options}>{current.choices.map((choice,i)=><button type="button" disabled={chosen!==undefined} data-result={chosen===undefined?"":i===current.answer?"correct":i===chosen?"incorrect":""} key={choice} onClick={()=>setAnswers(a=>[...a,i])}>{choice}</button>)}</div>{chosen!==undefined?<div className={styles.feedback} role="status"><strong>{chosen===current.answer?"Correct!":"Not quite."}</strong><p>{current.explanation}</p><button type="button" onClick={()=>{if(index===questions.length-1)onComplete({answers});setIndex(x=>x+1)}}>{index===questions.length-1?"See results":"Next question →"}</button></div>:null}</>}</div>;
@@ -46,7 +47,7 @@ function Connections({puzzle,onComplete}:{puzzle:ConnectionsPuzzle;onComplete:Co
  return <div className={styles.playArea}>
   <div className={styles.smallStats}><span>{solved.length} / {puzzle.groups.length} groups found</span><span>{Math.max(0,4-mistakes)} mistakes left</span></div>
   {solved.map(label=>{const group=puzzle.groups.find(g=>g.label===label)!;return <div className={styles.solvedGroup} key={label}><strong>{label}</strong><span>{group.words.join(" · ")}</span></div>})}
-  {completed||exhausted?<div className={styles.result}><h2>{completed?"Colony connected! ✦":"Round complete"}</h2>
+  {completed||exhausted?<div className={styles.result}><h2>{completed?"Colony connected!":"Round complete"}</h2>
     <p>{completed?"All four categories found.":`You found ${solved.length} of four groups. Review the categories below, then try a fresh arrangement.`}</p>
     {exhausted&&puzzle.groups.filter(g=>!solved.includes(g.label)).map(g=><div className={styles.revealGroup} key={g.label}><strong>{g.label}</strong><span>{g.words.join(" · ")}</span></div>)}
     <button type="button" onClick={reset}>New arrangement ↻</button>
@@ -80,7 +81,7 @@ function Burrow({puzzle,onComplete}:{puzzle:BurrowPuzzle;onComplete:Completion})
    const guess=guesses[r]||"",results=guess?scoreWordGuess(guess,target):[];
    return <div className={styles.guessRow} key={r}>{Array.from({length:5},(_,c)=><span key={c} data-result={results[c]||""} aria-label={guess?(`Guess ${r+1}, ${guess[c]}, ${results[c]}`):`Guess ${r+1}, empty tile ${c+1}`}>{guess[c]||""}</span>)}</div>;
   })}</div>
-  {won||lost?<div className={styles.result} role="status"><h2>{won?"You found it! ✦":`The word was ${target}`}</h2><p>{note}</p><div className={styles.actions} style={{justifyContent:"center"}}><button type="button" onClick={restart}>Retry word ↻</button><Link className={styles.nextPuzzle} href="/fun-zone/word-burrow">More words →</Link></div></div>
+  {won||lost?<div className={styles.result} role="status"><h2>{won?"You found it!":`The word was ${target}`}</h2><p>{note}</p><div className={styles.actions} style={{justifyContent:"center"}}><button type="button" onClick={restart}>Retry word ↻</button><Link className={styles.nextPuzzle} href="/fun-zone/word-burrow">More words →</Link></div></div>
   :<form className={styles.burrowForm} onSubmit={e=>{e.preventDefault();submit()}}>
    <label htmlFor="burrow-guess">Your guess</label>
    <input id="burrow-guess" value={entry} onChange={e=>setEntry(e.target.value.replace(/[^a-z]/gi,"").slice(0,5).toUpperCase())} maxLength={5} autoComplete="off" autoCapitalize="characters" spellCheck={false} placeholder="5 letters" aria-describedby="burrow-help"/>
@@ -128,7 +129,7 @@ function Crossword({puzzle,onComplete}:{puzzle:CrosswordPuzzle;onComplete:Comple
   })}</div>
   <div className={styles.actions}><button type="button" onClick={()=>{setChecked(true);if(complete)onComplete({answers:puzzle.clues.map((_,i)=>answers[i]||"")})}}>Check answers</button><button type="button" className={styles.secondary} onClick={()=>{setAnswers({});setChecked(false)}}>Reset</button></div>
   {conflicts>0?<p className={styles.errorText} role="status">{conflicts} crossing {conflicts===1?"letter disagrees":"letters disagree"} between answers. Check the highlighted cells.</p>:null}
-  {checked?<p className={styles.feedbackText} role="status">{complete?"All five correct! Crossword complete. ✦":`${correct} of ${puzzle.clues.length} answers correct. ${conflicts?"Resolve the crossings too.":"Keep going!"}`}</p>:null}
+  {checked?<p className={styles.feedbackText} role="status">{complete?"All five correct! Crossword complete.":`${correct} of ${puzzle.clues.length} answers correct. ${conflicts?"Resolve the crossings too.":"Keep going!"}`}</p>:null}
  </div>;
 }
 export function PlayGame({game,challenge}:{game:Game;challenge:{gameKey:string;mode:string;puzzle:Puzzle}}){
