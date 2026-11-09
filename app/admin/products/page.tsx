@@ -52,7 +52,7 @@ export default async function ProductDeskPage({ searchParams }: { searchParams: 
       <section className={styles.catalogue} aria-labelledby="catalogue-title">
         <div className={styles.catalogueHead}><div><p className="admin-kicker">Catalogue</p><h2 id="catalogue-title">Products</h2></div><Link href="/shop" target="_blank">Shop preview ↗</Link></div>
         <form className={styles.filters} action="/admin/products" method="get">
-          <label className={styles.search}><span className="sr-only">Search products</span><span aria-hidden="true">⌕</span><input type="search" name="q" defaultValue={params.q} placeholder="Search products, SKUs or tags…" /></label>
+          <label className={styles.search}><span className="sr-only">Search products</span><span aria-hidden="true"><PodscapeLineIcon name="search"/></span><input type="search" name="q" defaultValue={params.q} placeholder="Search products, SKUs or tags…" /></label>
           <input type="hidden" name="category" value={category} />
           <label><span className="sr-only">Status</span><select name="status" defaultValue={status}><option value="all">Active products</option><option value="published">Published</option><option value="draft">Draft</option><option value="low-stock">Low stock</option><option value="archived">Archived</option></select></label>
           <label><span className="sr-only">Sort by</span><select name="sort" defaultValue={sort}><option value="recent">Recently updated</option><option value="name">Product name</option><option value="stock">Stock: lowest first</option></select></label>
