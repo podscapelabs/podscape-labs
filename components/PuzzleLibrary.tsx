@@ -18,9 +18,9 @@ export function PuzzleLibrary({title,subtitle,eyebrow="Fun Zone / Puzzle Library
    </div>
    <div className={styles.libraryHeading}><WorkspaceSectionHeader title="Choose a puzzle" description="Pick a challenge and explore at your own pace." meta={shown.length+" shown"}/></div>
    <div className={styles.filters} role="group" aria-label="Filter puzzles">
-     {([["all","All"],["playable","Playable"],["upcoming","Coming soon"]] as const).map(([key,label])=><button type="button" key={key} aria-pressed={filter===key} onClick={()=>setFilter(key)}>{label}</button>)}
+     {([["all","All"],["playable","Ready & completed"],["upcoming","Locked"]] as const).map(([key,label])=><button type="button" key={key} aria-pressed={filter===key} onClick={()=>setFilter(key)}>{label}</button>)}
    </div>
-   <div className={styles.cards}>{shown.map((puzzle)=><article className={styles.card} key={puzzle.id}>
+   <div className={styles.cards}>{shown.map((puzzle)=><article className={styles.card} data-status={puzzle.status} key={puzzle.id}>
      <div className={styles.art} aria-hidden="true"><span className={styles.artLeaf}>❧</span><span className={styles.artSymbol}>{puzzle.status==="completed"?"✓":puzzle.status==="locked"?"♢":"⌕"}</span></div>
      <div className={styles.cardContent}><div className={styles.cardTop}><span className={styles.topic}>{puzzle.topic} · {puzzle.difficulty}</span><span className={styles.status} data-ready={puzzle.status==="playable"||puzzle.status==="completed"}>{puzzle.status==="completed"?"✓ Completed":puzzle.status==="locked"?"🔒 Locked":puzzle.status==="playable"?"Ready to play":"Coming soon"}</span></div><h3>{puzzle.title}</h3><p>{puzzle.description}</p><small>{puzzle.status==="completed"?"You can replay this puzzle at any time":puzzle.status==="locked"?"Complete the previous puzzle to unlock":puzzle.status==="playable"?"Finish to record your progress":"This challenge is in development"}</small></div>
      {puzzle.href&&puzzle.status!=="locked"&&puzzle.status!=="upcoming"?<Link className={styles.action} href={puzzle.href} aria-label={`${puzzle.status==="completed"?"Replay":"Play"} ${puzzle.title}`}>{puzzle.status==="completed"?"Replay":"Play"} <span aria-hidden="true">→</span></Link>:null}
