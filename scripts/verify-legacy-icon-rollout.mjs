@@ -16,9 +16,13 @@ const allStyles = allUIFiles.filter(p=>p.endsWith(".css"));
 assert.ok(allComponents.length>=150, "Audit unexpectedly skipped TSX screens");
 assert.ok(allStyles.length>=55, "Audit unexpectedly skipped stylesheets");
 const prohibited = /[❧❦✿❀✦✧✺♧☘◇◆◉◌◈☷▥▤⟡🍃🌿🍂🌱⌕⠿]/u;
+const violations = [];
 for (const path of [...allComponents,...allStyles]) {
-  assert.ok(!prohibited.test(read(path)), "Legacy decorative or substitute icon survived in "+path);
+  const content = read(path);
+  const matches = [...content.matchAll(new RegExp(prohibited.source,"gu"))];
+  if (matches.length) violations.push(path + ": " + [...new Set(matches.map(m=>m[0]))].join(" "));
 }
+assert.deepEqual(violations, [], "Legacy decorative or substitute icons remain:\\n" + violations.join("\\n"));
 
 
 // Audit public-facing portal entry points and shared widget surfaces. This is a
