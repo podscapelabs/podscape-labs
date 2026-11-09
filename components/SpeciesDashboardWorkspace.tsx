@@ -6,8 +6,10 @@ import {moveBlock,dropBlock,uniqueAllowed} from "./workspace-layout";
 import {recordExperienceAction} from "./experience-achievements";
 import homeStyles from "./PodscapeHome.module.css";
 import styles from "./SpeciesProfile.module.css";
+import { PodscapeLineIcon, type PodscapeIconName } from "./PodscapeLineIcon";
 
 // Keep stable IDs to preserve saved layouts across this visual redesign.
+const speciesWidgetIcons: Record<string,PodscapeIconName> = {care:"jar",moisture:"droplet",about:"book",traits:"leaf",guides:"book",breeding:"grid",taxonomy:"search",nutrition:"leaf",behaviour:"community",habitatAdvanced:"jar",sources:"book",personal:"bookmark",navigation:"arrow-right"};
 export const speciesWidgetIds=["care","moisture","about","traits","guides","breeding","taxonomy","nutrition","behaviour","habitatAdvanced","sources","personal","navigation"] as const;
 export type SpeciesWidgetId=(typeof speciesWidgetIds)[number];
 export const speciesWidgetLabels:Record<SpeciesWidgetId,string>={
@@ -92,7 +94,7 @@ export function SpeciesDashboardWorkspace({widgets,scope,preview=false}:{widgets
     <div className={homeStyles.homeEditorHead}><div><small>YOUR HOBBY, YOUR SPACE</small><h2 id="species-widget-library">Species Widget Library</h2></div><button type="button" onClick={()=>setLibraryOpen(false)}>Done</button></div>
     <p>Pick the information you care about. Hold any dashboard block to rearrange or remove it. Your layout carries across all species; missing facts remain hidden until researched.</p>
     <div className={homeStyles.widgetLibraryActions}><span>{visible.length} active widgets</span><button type="button" onClick={()=>{setLibraryOpen(false);enterCanvas()}}>Arrange Dashboard</button></div>
-    <div className={homeStyles.widgetLibraryGroups}><section><h3>Species information</h3><div className={homeStyles.widgetGallery}>{speciesWidgetIds.map(id=><article key={id} className={homeStyles.widgetGalleryCard}><div className={homeStyles.widgetPreview}><span aria-hidden="true">✧</span><div><strong>{speciesWidgetLabels[id]}</strong><small>{descriptions[id]}</small></div></div><div className={homeStyles.widgetGalleryCopy}><strong>{speciesWidgetLabels[id]}</strong><p>{available.includes(id)?"Available for this species":"No information for this species yet — your preference still applies to others."}</p><button type="button" className={layout.visible.includes(id)?homeStyles.widgetRemove:homeStyles.widgetAdd} onClick={()=>toggle(id)}>{layout.visible.includes(id)?"✓ Added · Remove":"+ Add to Dashboard"}</button></div></article>)}</div></section></div>
+    <div className={homeStyles.widgetLibraryGroups}><section><h3>Species information</h3><div className={homeStyles.widgetGallery}>{speciesWidgetIds.map(id=><article key={id} className={homeStyles.widgetGalleryCard}><div className={homeStyles.widgetPreview}><span aria-hidden="true"><PodscapeLineIcon name={speciesWidgetIcons[id]} /></span><div><strong>{speciesWidgetLabels[id]}</strong><small>{descriptions[id]}</small></div></div><div className={homeStyles.widgetGalleryCopy}><strong>{speciesWidgetLabels[id]}</strong><p>{available.includes(id)?"Available for this species":"No information for this species yet — your preference still applies to others."}</p><button type="button" className={layout.visible.includes(id)?homeStyles.widgetRemove:homeStyles.widgetAdd} onClick={()=>toggle(id)}>{layout.visible.includes(id)?"✓ Added · Remove":"+ Add to Dashboard"}</button></div></article>)}</div></section></div>
     <div className={homeStyles.widgetLibraryFooter}><small>One layout for all species · Saved on this device</small><button type="button" onClick={reset}>Reset layout</button></div>
    </div>
   </div>}
