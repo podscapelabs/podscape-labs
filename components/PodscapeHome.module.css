@@ -612,3 +612,25 @@
 .shortcutMoveControls button:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
 .inlineShortcutPicker .shortcutMoveControls{flex:1 1 100%}
 @media(max-width:420px){.shortcutMoveControls button{flex:1}}
+
+
+/* Desktop customization uses an explicit Edit button and stable, non-jiggling
+   cards. Touch layouts retain press-and-hold discovery and jiggle feedback. */
+.desktopDashboardEdit{
+ display:none;align-items:center;justify-content:center;gap:8px;
+ margin:0 0 16px auto;padding:11px 18px;min-height:44px;
+ background:var(--paper-strong);border:1px solid var(--line);border-radius:12px;
+ color:var(--forest);font-size:.84rem;font-weight:800;cursor:pointer;
+ box-shadow:var(--shadow-soft);
+}
+.desktopDashboardEdit:focus-visible{outline:3px solid var(--forest);outline-offset:3px}
+@media(min-width:721px){
+ .desktopDashboardEdit{display:flex}
+ .homeCanvasEditing .homeCanvasBlockActive,
+ .homeCanvasEditing .homeCanvasBlockActive:nth-of-type(even),
+ .shortcutEditing .shortcut.jiggling{animation:none!important;transform:none}
+ .homeCanvasEditing .homeCanvasBlockActive{cursor:default}
+ .homeCanvasEditing .homeCanvasBlockActive [data-drag-handle]{cursor:grab}
+ .homeCanvasEditing .homeCanvasBlockActive [data-drag-handle]:active{cursor:grabbing}
+ .homeCanvasToolbar{position:sticky;top:12px}
+}
