@@ -546,3 +546,22 @@
 .profileBrowseProgress span{font-size:.65rem;line-height:1.3;color:var(--text-secondary)}
 @media(min-width:700px){.profileBrowseBar{max-width:360px;justify-self:center;width:100%}}
 @media(max-width:420px){.profileBrowseBar{grid-template-columns:42px minmax(0,1fr) 42px;padding:6px 8px}.profileBrowseProgress span{font-size:.61rem}}
+
+
+/* One consistent compact research-card rhythm on mobile and desktop. */
+.researchCardTrigger>.researchOverview{gap:11px}
+.researchCardTrigger .researchSnapshot>div{min-height:80px;align-content:start}
+.researchCardTrigger .researchOpenButton{min-height:44px}
+.glanceWidget .dashboardFacts>div{min-height:80px}
+.profileBrowseArrow{min-height:44px;min-width:44px}
+.profileBrowseProgress strong{font-variant-numeric:tabular-nums}
+@media(max-width:420px){
+ .researchCardTrigger .researchSnapshot>div{min-height:76px}
+ .glanceWidget .dashboardFacts>div{min-height:76px}
+ .profileBrowseBar{grid-template-columns:44px minmax(0,1fr) 44px}
+}
+@media(prefers-reduced-motion:reduce){
+ .researchCardTrigger>.researchOverview,
+ .profileBrowseArrow{transition:none}
+ .researchCardTrigger:active>.researchOverview{transform:none}
+}
