@@ -38,26 +38,6 @@ function introText(value: string, fallback = "") {
   return plain.slice(0, cutoff > 120 ? cutoff : 232).trimEnd() + "…";
 }
 
-/** Compact display only: keep every original editorial note in the record.
- * Some older imports appended an explanation directly to the temperature value.
- */
-function careFactPresentation(label:string,rawValue:string,rawNote?:string){
- const value=rawValue.trim();
- const note=rawNote?.trim()||"";
- let display=value;
- if(label==="Temperature"){
-  // Accept an explicit Celsius range (plus optional Fahrenheit conversion).
-  // Everything after the range belongs in optional supporting context, not the card.
-  const match=value.match(/^(\d+(?:\.\d+)?\s*[–—-]\s*\d+(?:\.\d+)?\s*°\s*C)(?:\s*\([^)]*\))?/i);
-  if(match)display=match[1].replace(/\s*°\s*C/i,"°C").replace(/\s*[—-]\s*/g,"–");
- }else if(value.includes(";")){
-  display=value.split(";")[0].trim();
- }
- const details=[display!==value?value:"",note].filter(Boolean);
- const explanation=[...new Set(details)].join("\n");
- return {label,value:display,explanation};
-}
-
 export default async function SpeciesPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ ownerPreview?: string }> }) {
   const record = await getSpeciesRecord((await params).slug);
   if (!record) notFound();
@@ -79,8 +59,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
     {label:"Ventilation",value:record.ventilation,note:record.ventilationNote},
     {label:"Activity",value:record.activity,note:record.activityNote},
     {label:"Reproduction",value:record.reproduction,note:record.reproductionNote},
-  ].filter(entry=>typeof entry.value==="string"&&entry.value.trim().length>0&&entry.value!=="Not established")
-   .map(entry=>careFactPresentation(entry.label,entry.value,entry.note));
+  ].filter(entry=>typeof entry.value==="string"&&entry.value.trim().length>0&&entry.value!=="Not established");
   // Legacy preview copy must never masquerade as a published species description.
   const isPlaceholder = (value: string) => /temporary (?:visual )?record for testing|placeholder (?:text|description)|lorem ipsum/i.test(value);
   const summary = isPlaceholder(record.summary || "") ? "" : record.summary || "";
@@ -138,7 +117,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
             </details> : null,
             care:quickFacts.length ? <section className={styles.dashboardCare} aria-label="Basic care and behaviour">
               <div className={styles.dashboardSectionHead}><h2>Basic Care &amp; Behaviour</h2></div>
-              <dl className={styles.dashboardFacts}>{quickFacts.map(({label,value,explanation})=><div key={label} className={styles.careFact}><dt>{label}</dt><dd>{value}</dd>{explanation?<details className={styles.careFactDetails}><summary aria-label={"More about "+label} title={"More about "+label}>i</summary><p>{explanation}</p></details>:null}</div>)}</dl>
+              <dl className={styles.dashboardFacts}>{quickFacts.map(({label,value})=><div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
             </section> : null,
             moisture: moistureAvailable ? <MoistureAndHumidityWidget record={record}/> : null,
             feeding: feeding && !nutritionAvailable ? <section className={styles.speciesInfoCard}><h2>Feeding overview</h2><p>{feeding}</p></section> : null,
