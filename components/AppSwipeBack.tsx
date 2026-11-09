@@ -15,12 +15,15 @@ function standalone(){
 }
 function isInteractive(start:Element|null){
  if(!start)return true;
- if(start.closest('a,button,input,select,textarea,summary,dialog,[role="dialog"],[role="slider"],[contenteditable="true"],[data-swipe-navigation="local"],[data-shortcut-index],[data-drag-handle], [data-workspace-drop-preview]'))return true;
+ if(start.closest('a,button,input,select,textarea,summary,dialog,[role="dialog"],[role="slider"],[role="tablist"],[role="grid"],[contenteditable="true"],[data-swipe-navigation="local"],[data-shortcut-index],[data-drag-handle],[data-workspace-drop-preview]'))return true;
  if(document.querySelector('dialog[open], [aria-modal="true"]'))return true;
  if(document.querySelector('.homeCanvasEditing, .shortcutEditing, .editing'))return true;
  for(let element:Element|null=start;element&&element!==document.documentElement;element=element.parentElement){
   if(!(element instanceof HTMLElement))continue;
   const style=getComputedStyle(element);
+  // Some swipeable panels handle movement in JavaScript instead of overflow.
+  // Respect explicitly horizontal touch surfaces even when their width doesn't overflow.
+  if(style.touchAction==="pan-x"||style.touchAction==="pan-left"||style.touchAction==="pan-right")return true;
   if((style.overflowX==="auto"||style.overflowX==="scroll")&&element.scrollWidth>element.clientWidth+8)return true;
  }
  return false;
