@@ -14,6 +14,7 @@ export function SpeciesResearchEditor({record}:{record:SpeciesRecord}){
    <div className={styles.researchGrid}>{group.fields.map(([name,label,limit])=>{
     const value=record[name]||"";
     const long=limit>200;
+    if(name==="moistRefugeCondition")return <label key={name}><span>{label}</span><select name={name} defaultValue={value}><option value="">Not established</option><option value="Lightly damp">Lightly damp</option><option value="Moist">Moist</option><option value="Very moist">Very moist (never waterlogged)</option></select><small>Only the moist refuge, not the entire enclosure.</small></label>;
     if(name==="evidenceScope")return <label key={name}><span>{label}</span><select name={name} defaultValue={value}><option value="">Not recorded</option><option value="species-level">Species-level</option><option value="morph-specific">Morph-specific</option><option value="mixed">Mixed / varies by field</option></select></label>;
     if(name==="evidenceQuality")return <label key={name}><span>{label}</span><select name={name} defaultValue={value}><option value="">Not recorded</option><option value="scientific">Scientific evidence</option><option value="breeder-consensus">Breeder consensus</option><option value="limited">Limited evidence</option></select></label>;
     return <label key={name}><span>{label}</span>{long
