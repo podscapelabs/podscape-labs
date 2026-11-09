@@ -154,15 +154,23 @@ export function ResearchSourcesWidget({record}:{record:SpeciesRecord}){
  const lines=(record.researchSources||"").split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
  const links=lines.filter(s=>{try{return ["https:","http:"].includes(new URL(s).protocol)}catch{return false}});
  if(!links.length&&!has(record,["evidenceScope","evidenceQuality","evidenceNotes","lastReviewed"]))return null;
- return <section className={styles.speciesInfoCard}><h2>Research &amp; Sources</h2>
- <dl className={styles.researchFacts}>
- {record.evidenceScope?<div><dt>Evidence scope</dt><dd>{{"species-level":"Species-level","morph-specific":"Morph-specific","mixed":"Mixed species and morph evidence"}[record.evidenceScope]||record.evidenceScope}</dd></div>:null}
- {record.evidenceQuality?<div><dt>Evidence basis</dt><dd>{{"scientific":"Scientific literature","breeder-consensus":"Breeder consensus","limited":"Limited evidence"}[record.evidenceQuality]||record.evidenceQuality}</dd></div>:null}
- {record.lastReviewed?<div><dt>Last reviewed</dt><dd>{record.lastReviewed}</dd></div>:null}
- {record.evidenceNotes?<div><dt>Evidence &amp; uncertainty</dt><dd>{record.evidenceNotes}</dd></div>:null}
- </dl>
- {links.length?<div className={styles.researchLinks}><strong>Original references</strong>{links.map((url,index)=><a key={url} href={url} target="_blank" rel="noopener noreferrer" title={url}>{index+1}. {new URL(url).hostname.replace(/^www\./,"")} ↗</a>)}</div>:null}
- <details className={styles.researchContext}><summary>About this evidence</summary><p className={styles.researchDisclaimer}>Seller consensus and scientific measurements are different evidence types. Species-level findings may not have been measured for a particular morph.</p></details>
+ const review=record.lastReviewed?new Date(record.lastReviewed+"T00:00:00").toLocaleDateString("en-CA",{month:"short",year:"numeric"}):null;
+ return <section className={styles.speciesInfoCard+" "+styles.researchOverview}>
+  <h2>Research &amp; Sources</h2>
+  <div className={styles.researchSourcesSummary}>
+   <span>{links.length} reference{links.length===1?"":"s"}</span>
+   {review?<span>Reviewed {review}</span>:null}
+  </div>
+  <ResearchDialog title="Research & Sources">
+   <dl className={styles.researchFullFacts}>
+    {record.evidenceScope?<div><dt>Evidence scope</dt><dd>{{"species-level":"Species-level","morph-specific":"Morph-specific","mixed":"Mixed species and morph evidence"}[record.evidenceScope]||record.evidenceScope}</dd></div>:null}
+    {record.evidenceQuality?<div><dt>Evidence basis</dt><dd>{{"scientific":"Scientific literature","breeder-consensus":"Breeder consensus","limited":"Limited evidence"}[record.evidenceQuality]||record.evidenceQuality}</dd></div>:null}
+    {record.lastReviewed?<div><dt>Last reviewed</dt><dd>{record.lastReviewed}</dd></div>:null}
+    {record.evidenceNotes?<div><dt>Evidence &amp; uncertainty</dt><dd>{record.evidenceNotes}</dd></div>:null}
+   </dl>
+   {links.length?<div className={styles.researchDialogLinks}><strong>Original references</strong><div className={styles.researchLinks}>{links.map((url,index)=><a key={url} href={url} target="_blank" rel="noopener noreferrer" title={url}>{index+1}. {new URL(url).hostname.replace(/^www\./,"")} ↗</a>)}</div></div>:null}
+   <div className={styles.researchExpandedNote}><strong>About this evidence</strong><p>Scientific measurements and captive-care consensus are different evidence types. Findings for a named species may not have been directly tested for every hobby morph.</p></div>
+  </ResearchDialog>
  </section>;
 }
 export function HabitatSetupWidget({record}:{record:SpeciesRecord}){
