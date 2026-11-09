@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { CollectionButton } from "@/components/CollectionButton";
 import { SpeciesDashboardWorkspace } from "@/components/SpeciesDashboardWorkspace";
 import {getSpeciesTraitId} from "@/lib/species-traits";
-import {MoistureAndHumidityWidget,BreedingDevelopmentWidget,TaxonomyOriginWidget,FeedingEcologyWidget,HabitatSetupWidget,ResearchSourcesWidget} from "@/components/SpeciesResearchWidgets";
+import {MoistureAndHumidityWidget,BreedingDevelopmentWidget,TaxonomyOriginWidget,FeedingEcologyWidget,HabitatSetupWidget,BehaviourEcologyWidget,ResearchSourcesWidget} from "@/components/SpeciesResearchWidgets";
 import { PinToHome } from "@/components/PinToHome";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import { PlatformShell } from "@/components/PlatformShell";
@@ -87,10 +87,11 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
   // Specialist cards do not appear in the library until their data exists for this species.
   const hasResearch=(keys:(keyof typeof record)[])=>keys.some(key=>typeof record[key]==="string"&&Boolean((record[key] as string).trim()));
   const environmentAvailable=(Boolean(record.humidityMin?.trim())&&Boolean(record.humidityMax?.trim()))||hasResearch(["moistZoneCoverage","moistRefugeCondition","moistureGradientGuidance"]);
-  const breedingAvailable=hasResearch(["broodAverage","reproduction","incubationPeriod","maturityAge","breedingSeason"])||(Boolean(record.broodMin?.trim())&&Boolean(record.broodMax?.trim()));
-  const taxonomyAvailable=hasResearch(["taxonomicStatus","taxonomicSynonyms","nativeDistribution","naturalMicrohabitat","morphOrigin","identificationNotes","adultSizeMm","lifespan"]);
-  const nutritionAvailable=hasResearch(["stapleDiet","proteinGuidance","calciumGuidance","dietaryCautions","defensiveBehaviour","visibilityNotes","bioactiveSuitability"]);
-  const habitatAdvancedAvailable=hasResearch(["naturalMicrohabitat","substrateDepth","enclosureGuidance","moistureGradientGuidance"]);
+  const breedingAvailable=hasResearch(["broodAverage","incubationPeriod","maturityAge","breedingSeason"])||(Boolean(record.broodMin?.trim())&&Boolean(record.broodMax?.trim()));
+  const taxonomyAvailable=hasResearch(["taxonomicStatus","taxonomicSynonyms","nativeDistribution","morphOrigin","identificationNotes","adultSizeMm","lifespan"]);
+  const nutritionAvailable=hasResearch(["stapleDiet","proteinGuidance","calciumGuidance","dietaryCautions"]);
+  const behaviourAvailable=hasResearch(["defensiveBehaviour","visibilityNotes","bioactiveSuitability"]);
+  const habitatAdvancedAvailable=hasResearch(["naturalMicrohabitat","substrateDepth","enclosureGuidance"]);
   const sourcesAvailable=hasResearch(["researchSources","evidenceScope","evidenceQuality","evidenceNotes","lastReviewed"]);
 
   const notableTraits = [...new Set((record.notableTraits || []).map(trait => trait.trim()).filter(Boolean))].slice(0, 5);
@@ -153,13 +154,6 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
                 ? "Relative substrate dampness, not the percentage of the enclosure to wet. Drier does not mean bone-dry; keep an appropriate moist refuge."
                 : "Relative dampness only, not whole-enclosure moisture or air humidity. Detailed conditions await review."}</p>
             </div> : legacyMoisturePending ? <p className={styles.moisturePending}>Substrate moisture information awaiting review.</p> : null,
-            advanced: feeding || record.substrate?.trim() || relatedGuides.length ? <section className={styles.speciesInfoCard} aria-label="Advanced care">
-              <h2>Advanced Care</h2>
-              {feeding ? <div className={styles.advancedCareDetail}><strong>Feeding</strong><p>{feeding}</p></div> : null}
-              {record.substrate?.trim() ? <div className={styles.advancedCareDetail}><strong>Substrate &amp; habitat</strong><p>{introText(record.substrate)}</p></div> : null}
-              {relatedGuides.length ? <div className={styles.advancedCareDetail}><strong>Further reading</strong><div className={styles.relatedGuides}>{relatedGuides.map(guide=><Link href={`/field-guide/${guide.slug}`} key={guide.slug}><span><strong>{guide.title}</strong></span><b aria-hidden="true">→</b></Link>)}</div></div> : null}
-              <p className={styles.advancedCareNote}>General observations, not a complete husbandry prescription. Consult species-specific guides for details.</p>
-            </section> : null,
             feeding: feeding ? <section className={styles.speciesInfoCard}><h2>Feeding overview</h2><p>{feeding}</p></section> : null,
             habitat: record.substrate?.trim() ? <section className={styles.speciesInfoCard}><h2>Habitat &amp; substrate</h2><p>{introText(record.substrate)}</p></section> : null,
             traits: notableTraits.length ? <section className={styles.speciesInfoCard}><h2>Notable traits</h2><ul className={styles.compactTraits}>{notableTraits.map(trait=><li key={trait} data-trait-id={getSpeciesTraitId(trait)||undefined}>{trait}</li>)}</ul></section> : null,
@@ -168,6 +162,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
             breeding: breedingAvailable ? <BreedingDevelopmentWidget record={record}/> : null,
             taxonomy: taxonomyAvailable ? <TaxonomyOriginWidget record={record}/> : null,
             nutrition: nutritionAvailable ? <FeedingEcologyWidget record={record}/> : null,
+            behaviour: behaviourAvailable ? <BehaviourEcologyWidget record={record}/> : null,
             habitatAdvanced: habitatAdvancedAvailable ? <HabitatSetupWidget record={record}/> : null,
             sources: sourcesAvailable ? <ResearchSourcesWidget record={record}/> : null,
             personal: !previewRequested && record.kind === "species" ? <section className={styles.dashboardPersonal} aria-label="Your PodScape">
