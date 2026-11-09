@@ -2,12 +2,13 @@
 import {useEffect,useRef,useState} from "react";
 import {recordExperienceAction} from "./experience-achievements";
 import styles from "./ShortcutWelcomeTip.module.css";
+import {PodscapeLineIcon, type PodscapeIconName} from "./PodscapeLineIcon";
 
-const steps=[
- {icon:"❧",eyebrow:"WELCOME TO PODSCAPE",title:"Your hobby. Your space.",body:"PodScape brings species discovery, colony management, shopping, guides and original games together in one personal space."},
- {icon:"⌕",eyebrow:"EXPLORE YOUR PORTALS",title:"Everything has its place.",body:"Leaf Ledger is for discovering species, Manager is for keeping colonies, Shop is for products, and Fun Zone is for puzzles. Your shortcuts take you directly to each portal."},
- {icon:"⠿",eyebrow:"MAKE IT YOURS",title:"Arrange it your way.",body:"On mobile, press and hold a section to customize. On desktop, choose Edit Dashboard. Reorder blocks, add widgets, and change your shortcuts whenever you like."},
- {icon:"✧",eyebrow:"YOUR STARTING LAYOUT",title:"What's your PodScape focus?",body:"Choose the widgets you want to see first. This only changes your dashboard; every portal and tool remains available."}
+const steps: {icon:PodscapeIconName;eyebrow:string;title:string;body:string}[]=[
+ {icon:"home",eyebrow:"WELCOME TO PODSCAPE",title:"Your hobby. Your space.",body:"PodScape brings species discovery, colony management, shopping, guides and original games together in one personal space."},
+ {icon:"search",eyebrow:"EXPLORE YOUR PORTALS",title:"Everything has its place.",body:"Leaf Ledger is for discovering species, Manager is for keeping colonies, Shop is for products, and Fun Zone is for puzzles. Your shortcuts take you directly to each portal."},
+ {icon:"edit",eyebrow:"MAKE IT YOURS",title:"Arrange it your way.",body:"On mobile, press and hold a section to customize. On desktop, choose Edit Dashboard. Reorder blocks, add widgets, and change your shortcuts whenever you like."},
+ {icon:"grid",eyebrow:"YOUR STARTING LAYOUT",title:"What's your PodScape focus?",body:"Choose the widgets you want to see first. This only changes your dashboard; every portal and tool remains available."}
 ] as const;
 type Focus="default"|"discover"|"keep"|"collect"|"play";
 const choices:{id:Focus;title:string;description:string;visible:string[]}[]=[
@@ -77,7 +78,7 @@ export function ShortcutWelcomeTip({userId}:{userId:string|null}){
     <span>PODSCAPE / FIRST VISIT</span>
     <button type="button" onClick={skip} disabled={skipped&&step===steps.length-1}>Skip tutorial</button>
    </div>
-   <div className={styles.icon} aria-hidden="true">{current.icon}</div>
+   <div className={styles.icon} aria-hidden="true"><PodscapeLineIcon name={current.icon}/></div>
    <p className={styles.eyebrow}>{current.eyebrow}</p>
    <h2 id="customize-welcome-title">{current.title}</h2>
    <p id="customize-welcome-description">{current.body}</p>
