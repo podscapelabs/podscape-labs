@@ -32,6 +32,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
   const restoredRef=useRef(mode!=="catalogue");
   const pendingScrollRef=useRef<number|null>(null);
   const hydratedRef=useRef(false);
+  const [restorationReady,setRestorationReady]=useState(false);
   // Restore the exact catalogue view when returning from a species profile.
   useEffect(()=>{
     if(mode!=="catalogue")return;
@@ -48,6 +49,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
       }
     }catch{}
     hydratedRef.current=true;
+    setRestorationReady(true);
     // Preserve the scroll position until the restored filters have rendered.
     if(pendingScrollRef.current===null)restoredRef.current=true;
   },[mode,records]);
@@ -88,7 +90,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
     return ()=>{window.removeEventListener("scroll",save);window.removeEventListener("pagehide",save)};
   },[mode,query,genus,care,sort,filtersOpen]);
   useEffect(()=>{
-    if(mode!=="catalogue"||!hydratedRef.current||restoredRef.current||deferredQuery!==query.trim().toLowerCase())return;
+    if(mode!=="catalogue"||!restorationReady||restoredRef.current||deferredQuery!==query.trim().toLowerCase())return;
     let second=0;
     const first=requestAnimationFrame(()=>{second=requestAnimationFrame(()=>{
       window.scrollTo({top:pendingScrollRef.current||0,behavior:"instant"});
@@ -96,7 +98,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
       restoredRef.current=true;
     })});
     return ()=>{cancelAnimationFrame(first);cancelAnimationFrame(second)};
-  },[mode,deferredQuery,query,results.length]);
+  },[mode,deferredQuery,query,results.length,restorationReady]);
   function clear() {
     setQuery("");
     setGenus("all");
