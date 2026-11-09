@@ -101,3 +101,6 @@
   .identity small { white-space: normal; }
 }
 @media (max-width: 420px) { .filters { gap: 6px; padding-inline: 10px; } .filters select { padding-inline: 6px; } }
+
+.thumb svg{width:24px;height:24px;color:var(--forest)}
+.empty>svg{width:35px;height:35px;color:var(--forest)}
