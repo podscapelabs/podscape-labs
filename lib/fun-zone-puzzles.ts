@@ -18,25 +18,58 @@ const group=(label:string,words:string[]):ConnectionGroup=>({label,words});
 const connections=(id:string,title:string,groups:ConnectionGroup[]):ConnectionsPuzzle=>({id,title,description:"Find four groups of four related terms.",difficulty:"Medium",groups});
 const crossword=(id:string,title:string,clues:CrosswordClue[]):CrosswordPuzzle=>({id,title,description:"Solve intersecting clues about isopod biology and care.",difficulty:"Medium",clues});
 const search=(id:string,title:string,words:string[],seed:number,description="Find eight accurately named isopod terms."):SearchPuzzle=>({id,title,description,difficulty:"Medium",words,size:16,seed});
-// The original crossword uses this carefully checked 7×6 grid.
-const originalCrossword:CrosswordClue[]=crosswordClues.map((c,i)=>({...c,...([
- {r:6,c:1,dir:"across"},{r:1,c:3,dir:"down"},{r:3,c:2,dir:"down"},
- {r:4,c:0,dir:"across"},{r:2,c:2,dir:"across"}
-] as const)[i]}));
-// For new puzzles use a validated single-column vertical spine and crossing
-// horizontal words, generated from a common letter. Every intersection matches.
-// Each row of a spine crossword may also intersect neighbouring across rows.
-// Keep an explicit checker to reject any contradictory intersection.
+// Connected mini-crosswords: every run of two or more adjacent letters
+// must match exactly one clued entry. This catches ghost words like CHIDE.
+const originalCrossword:CrosswordClue[]=crosswordClues.map((c,i)=>({
+ ...c,...(i===3?{answer:"HUMUS",clue:"Dark, well-decomposed organic material in soil (5)"}:{}),
+ ...([
+  {r:6,c:0,dir:"across"},{r:0,c:5,dir:"down"},
+  {r:3,c:1,dir:"down"},{r:3,c:1,dir:"across"},
+  {r:1,c:4,dir:"across"}
+ ] as const)[i]
+}));
 function validateCrossword(clues:CrosswordClue[]){
- const used=new Map<string,string>();const rows=8,cols=13;
- for(const c of clues){
-  if(!/^[A-Z]+$/.test(c.answer))throw new Error("Invalid crossword answer");
-  for(let i=0;i<c.answer.length;i++){
-   const r=c.r+(c.dir==="down"?i:0),col=c.c+(c.dir==="across"?i:0),key=r+":"+col;
-   if(r<0||col<0||r>=rows||col>=cols||used.has(key)&&used.get(key)!==c.answer[i])throw new Error("Crossword crossing mismatch "+key);
-   used.set(key,c.answer[i]);
+ const cells=new Map<string,string>(),entries=new Set<string>();
+ for(const clue of clues){
+  if(!/^[A-Z]{2,}$/.test(clue.answer)||!clue.clue.includes("("+clue.answer.length+")"))
+   throw new Error("Invalid crossword entry");
+  const entry=clue.dir+":"+clue.r+":"+clue.c+":"+clue.answer;
+  if(entries.has(entry))throw new Error("Duplicate crossword entry");
+  entries.add(entry);
+  for(let i=0;i<clue.answer.length;i++){
+   const r=clue.r+(clue.dir==="down"?i:0),c=clue.c+(clue.dir==="across"?i:0),key=r+":"+c;
+   if(r<0||c<0||r>=8||c>=13||cells.has(key)&&cells.get(key)!==clue.answer[i])
+    throw new Error("Crossword crossing mismatch "+key);
+   cells.set(key,clue.answer[i]);
   }
  }
+ const discovered=new Set<string>();
+ for(const dir of ["across","down"] as const){
+  const dr=dir==="down"?1:0,dc=dir==="across"?1:0;
+  for(const key of cells.keys()){
+   const [r,c]=key.split(":").map(Number);
+   if(cells.has((r-dr)+":"+(c-dc)))continue;
+   let word="",rr=r,cc=c;
+   while(cells.has(rr+":"+cc)){
+    word+=cells.get(rr+":"+cc);rr+=dr;cc+=dc;
+   }
+   if(word.length<2)continue;
+   const entry=dir+":"+r+":"+c+":"+word;
+   if(!entries.has(entry))throw new Error("Unclued crossword word "+entry);
+   discovered.add(entry);
+  }
+ }
+ if(discovered.size!==entries.size)throw new Error("Missing crossword entry");
+ const positions=clues.map(clue=>new Set(Array.from({length:clue.answer.length},(_,i)=>
+  (clue.r+(clue.dir==="down"?i:0))+":"+(clue.c+(clue.dir==="across"?i:0)))));
+ const connected=new Set([0]);
+ while(true){
+  const size=connected.size;
+  for(let i=0;i<clues.length;i++)if(!connected.has(i)&&[...connected].some(j=>
+    [...positions[i]].some(pos=>positions[j].has(pos))))connected.add(i);
+  if(connected.size===size)break;
+ }
+ if(connected.size!==clues.length)throw new Error("Disconnected crossword grid");
 }
 const extra:Entry[]=[
  ...[
@@ -147,25 +180,25 @@ const extra:Entry[]=[
  // Crossword clues are positioned explicitly, validated when loaded.
  ...[
  crossword("anatomy-clues","Anatomy Terms",[
- {answer:"PLEON",clue:"The abdominal region of an isopod (5)",r:0,c:3,dir:"down"},
- {answer:"PEREON",clue:"The main thoracic body region (6)",r:0,c:3,dir:"across"},
- {answer:"LEAF",clue:"Fallen plant material commonly consumed by isopods (4)",r:1,c:3,dir:"across"},
- {answer:"EXUVIA",clue:"A shed exoskeleton (6)",r:2,c:3,dir:"across"},
- {answer:"ONISCUS",clue:"A genus of terrestrial isopods (7)",r:3,c:3,dir:"across"}
+ {answer:"PLEON",clue:"The abdominal region of an isopod (5)",r:0,c:2,dir:"across"},
+ {answer:"PEREON",clue:"The main thoracic body region (6)",r:1,c:1,dir:"down"},
+ {answer:"LEAF",clue:"Fallen plant material commonly consumed by isopods (4)",r:4,c:0,dir:"across"},
+ {answer:"EXUVIA",clue:"A shed exoskeleton (6)",r:2,c:1,dir:"across"},
+ {answer:"ONISCUS",clue:"A genus of terrestrial isopods (7)",r:0,c:5,dir:"down"}
  ]),
  crossword("forest-words","The Forest Floor",[
- {answer:"MOSS",clue:"A non-vascular plant sometimes used as a moist refuge (4)",r:0,c:4,dir:"down"},
- {answer:"MANCA",clue:"A juvenile stage in isopod development (5)",r:0,c:4,dir:"across"},
- {answer:"ONISCUS",clue:"An isopod genus (7)",r:1,c:4,dir:"across"},
- {answer:"SOIL",clue:"Ground material that may form part of substrate (4)",r:2,c:4,dir:"across"},
- {answer:"SUBSTRATE",clue:"Material lining the floor of an enclosure (9)",r:3,c:4,dir:"across"}
+ {answer:"MOSS",clue:"A non-vascular plant sometimes used as a moist refuge (4)",r:0,c:0,dir:"down"},
+ {answer:"MANCA",clue:"A juvenile stage in isopod development (5)",r:0,c:0,dir:"across"},
+ {answer:"ONISCUS",clue:"An isopod genus (7)",r:4,c:1,dir:"across"},
+ {answer:"SOIL",clue:"Ground material that may form part of substrate (4)",r:2,c:3,dir:"down"},
+ {answer:"SUBSTRATE",clue:"Material lining the floor of an enclosure (9)",r:2,c:0,dir:"across"}
  ]),
  crossword("keeper-words","The Keeper's Kit",[
- {answer:"CARE",clue:"Attention given to captive animals (4)",r:0,c:3,dir:"down"},
- {answer:"CORK",clue:"Bark material often used as a hide (4)",r:0,c:3,dir:"across"},
- {answer:"AIR",clue:"A mixture of gases exchanged through ventilation (3)",r:1,c:3,dir:"across"},
- {answer:"REFUGE",clue:"A sheltered place (6)",r:2,c:3,dir:"across"},
- {answer:"ENCLOSURE",clue:"A container housing a captive colony (9)",r:3,c:3,dir:"across"}
+ {answer:"CARE",clue:"Attention given to captive animals (4)",r:1,c:2,dir:"down"},
+ {answer:"CORK",clue:"Bark material often used as a hide (4)",r:0,c:4,dir:"down"},
+ {answer:"AIR",clue:"A mixture of gases exchanged through ventilation (3)",r:3,c:0,dir:"across"},
+ {answer:"REFUGE",clue:"A sheltered place (6)",r:0,c:8,dir:"down"},
+ {answer:"ENCLOSURE",clue:"A container housing a captive colony (9)",r:1,c:0,dir:"across"}
  ])
  ].map(p=>({gameKey:"crossword-colony" as const,mode:"crossword" as const,puzzle:p})),
  ...[
