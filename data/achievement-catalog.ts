@@ -31,6 +31,8 @@ export const achievementCatalog: AchievementDefinition[] = [
   { key:"species_personalized", title:"Ledger Designer", description:"Personalize the layout of a species profile.", exp:25, coins:0, icon:"⌕", href:"/ledger", status:"available" },
   { key:"manager_personalized", title:"Keeper's Workspace", description:"Customize your colony Manager dashboard.", exp:25, coins:0, icon:"▦", href:"/keeper", status:"available" },
   { key:"customize_three", title:"Your Little World", description:"Personalize three different PodScape workspaces.", exp:60, coins:0, icon:"✿", href:"/app", status:"available" },
+  { key:"secret_two_paths", title:"A Curious Little Detour", description:"You found an unexpected connection between your personal spaces.", exp:20, coins:0, icon:"✧", href:"/account/progress", status:"available", hidden:true },
+  { key:"secret_first_steps", title:"The Hidden Trail", description:"A small surprise for making PodScape your own.", exp:30, coins:0, icon:"❧", href:"/account/progress", status:"available", hidden:true },
   { key:"customize_all", title:"The PodScape Touch", description:"Personalize Home, shortcuts, Species and Manager.", exp:100, coins:0, icon:"✺", href:"/account/progress", status:"available", hidden:true },
   { key:"care_journal", title:"Care Journal", description:"A future milestone for consistent colony care logs.", exp:0, coins:0, icon:"▤", href:"/keeper", status:"planned" },
   { key:"puzzle_pathfinder", title:"Puzzle Pathfinder", description:"Finish your first unique Fun Zone puzzle.", exp:10, coins:0, icon:"◇", href:"/fun-zone", status:"available" },
