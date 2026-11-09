@@ -2,3 +2,8 @@
 .toast{max-width:440px;max-height:min(85dvh,450px);overflow-y:auto;overscroll-behavior:contain}
 .link:focus-visible,.close:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
 .rewards{color:var(--accent)}
+
+/* Secret achievements are clearly announced only after they are earned. */
+.toast[data-hidden="true"]{border-color:color-mix(in srgb,var(--accent) 65%,var(--border));box-shadow:0 16px 42px rgba(0,0,0,.25),0 0 0 2px color-mix(in srgb,var(--accent) 14%,transparent)}
+.toast[data-hidden="true"] .icon{background:color-mix(in srgb,var(--accent) 24%,var(--surface));font-size:30px}
+.toast[data-hidden="true"] .eyebrow{color:var(--accent);letter-spacing:.1em}
