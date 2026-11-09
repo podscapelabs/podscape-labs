@@ -151,3 +151,36 @@
 /* Legacy audit: semantic vector icons inside account controls. */
 .accountMark svg,.accountOwnerMark svg{width:24px;height:24px}
 .accountActions a > span:first-child svg,.accountOwnerGrid a > span:first-child svg,.accountOwnerOperations a > span:first-child svg,.symbol svg{width:22px;height:22px;display:inline-block;vertical-align:middle}
+
+/* Cross-device polish: stable account cards, accessible anchors, and wrapping text. */
+.accountHeader>div,.accountSummaryTop>div,.accountOwner summary>span:nth-child(2),.accordions summary>span:nth-child(2){min-width:0}
+.accountActions>a{min-width:0;text-decoration:none;transition:border-color .15s ease,background-color .15s ease}
+.accountActions>a:hover,.accountOwnerGrid>a:hover,.accountOwnerOperations>a:hover{border-color:var(--forest)}
+.accountActions>a:focus-visible,.accountSettings summary:focus-visible,.accountOwner summary:focus-visible{outline:3px solid var(--forest);outline-offset:3px}
+.accountBalances span{display:inline-flex;align-items:center;gap:6px;min-width:0}
+.accountBalances svg{width:17px;height:17px;flex:none}
+.accountSettings details,.accountOwner details{scroll-margin-top:18px}
+.accountSettings summary,.accountOwner summary{min-height:56px}
+.accountSettings .panel{overflow-wrap:anywhere}
+.accountSettings .panel input,.accountSettings .panel select,.accountSettings .panel textarea{max-width:100%;min-width:0}
+.accountSettings .panel a,.accountSettings .panel button{min-height:40px}
+@media(min-width:900px){
+ .inner{max-width:1020px;padding-inline:30px}
+ .accountActions{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+ .accountOwnerGrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .accountHeader{padding-top:38px}
+}
+@media(max-width:390px){
+ .inner{padding-inline:12px}
+ .accountSummaryTop{flex-wrap:wrap}
+ .accountSummaryTop h2{font-size:1.3rem}
+ .accountLevel{padding:7px 10px}
+ .accountProgressLabels{flex-wrap:wrap}
+ .accountActions>a{min-height:102px;padding:11px;gap:5px}
+ .accountActions small{font-size:.66rem}
+ .accountOwnerBody{padding-inline:12px}
+ .accountOwnerGrid>a{padding:9px}
+ .accountSettings .accordions summary{padding:13px 11px;gap:9px}
+ .accountSettings .panel{padding:13px}
+}
+@media(prefers-reduced-motion:reduce){.accountActions>a{transition:none}}
