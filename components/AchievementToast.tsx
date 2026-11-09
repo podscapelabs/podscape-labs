@@ -39,6 +39,6 @@ export function AchievementToast() {
       <div className={styles.rewards}>+{current.exp} EXP{current.coins>0?<><span aria-hidden="true">·</span> +{current.coins} Pod Coins</>:null}</div>
       <Link className={styles.link} href="/account/progress" onClick={dismiss}>View achievements →</Link>
     </div>
-    <button className={styles.close} type="button" aria-label="Dismiss achievement" onClick={() => setDismissed(true)}>×</button>
+    <button className={styles.close} type="button" aria-label="Dismiss achievement" onClick={dismiss}>×</button>
   </aside>, document.body);
 }
