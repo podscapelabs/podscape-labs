@@ -147,3 +147,7 @@
  .accountActions{margin-top:18px}
  .accountSettings{margin-top:22px}
 }
+
+/* Legacy audit: semantic vector icons inside account controls. */
+.accountMark svg,.accountOwnerMark svg{width:24px;height:24px}
+.accountActions a > span:first-child svg,.accountOwnerGrid a > span:first-child svg,.accountOwnerOperations a > span:first-child svg,.symbol svg{width:22px;height:22px;display:inline-block;vertical-align:middle}
