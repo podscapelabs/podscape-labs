@@ -37,9 +37,8 @@ export const SPECIES_TRAIT_GROUPS=[
   ["Recognizable hobby morph","A widely recognized morph name or distinctive captive appearance."]
  ]}
 ] as const;
-export const LEGACY_TRAIT_ALIASES:Record<string,string>={
- "Strong feeding response":"Strong protein appetite"
-};
+/** Do not reinterpret legacy generic feeding observations as protein-specific evidence. */
+export const LEGACY_TRAIT_ALIASES:Record<string,string>={};
 export function normalizeSpeciesTrait(trait:string){
  const tidy=trait.trim().replace(/\s+/g," ").slice(0,65);
  return LEGACY_TRAIT_ALIASES[tidy]||tidy;
