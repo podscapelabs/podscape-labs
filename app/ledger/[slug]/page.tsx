@@ -77,7 +77,6 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
   const summary = isPlaceholder(record.summary || "") ? "" : record.summary || "";
   const authoredAbout = isPlaceholder(record.about || "") ? "" : record.about || "";
   const about = introText(authoredAbout || summary);
-  const feeding = introText(record.feeding || "");
   // Specialist cards do not appear in the library until their data exists for this species.
   const hasResearch=(keys:(keyof typeof record)[])=>keys.some(key=>typeof record[key]==="string"&&Boolean((record[key] as string).trim()));
   const moistureAvailable=(typeof record.moistureRangeStart==="number"&&typeof record.moistureRangeEnd==="number")
@@ -85,7 +84,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
     ||hasResearch(["humidityMin","humidityMax","moistZoneCoverage","moistRefugeCondition","moistureGradientGuidance"]);
   const breedingAvailable=hasResearch(["broodAverage","incubationPeriod","maturityAge","breedingSeason"])||(Boolean(record.broodMin?.trim())&&Boolean(record.broodMax?.trim()));
   const taxonomyAvailable=hasResearch(["taxonomicStatus","taxonomicSynonyms","nativeDistribution","morphOrigin","identificationNotes"]);
-  const nutritionAvailable=hasResearch(["stapleDiet","proteinGuidance","calciumGuidance","dietaryCautions"]);
+  const nutritionAvailable=Boolean(record.feeding?.trim())||hasResearch(["stapleDiet","proteinGuidance","calciumGuidance","dietaryCautions"]);
   const behaviourAvailable=hasResearch(["adultSizeMm","lifespan","defensiveBehaviour","visibilityNotes"]);
   const habitatAdvancedAvailable=Boolean(record.ventilation?.trim()||record.substrate?.trim())||hasResearch(["naturalMicrohabitat","substrateDepth","enclosureGuidance","bioactiveSuitability"]);
   const sourcesAvailable=hasResearch(["researchSources","evidenceScope","evidenceQuality","evidenceNotes","lastReviewed"]);
@@ -132,8 +131,6 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
               <dl className={styles.dashboardFacts}>{quickFacts.map(({label,value})=><div key={label}><dt>{label}</dt><dd>{value}</dd>{label==="Care difficulty"?<small className={styles.glanceHelp}>{value==="Beginner"?"Suitable for newer keepers":value==="Intermediate"?"Some experience recommended":value==="Advanced"||value==="Expert"?"Experienced keepers recommended":null}</small>:null}</div>)}</dl>
             </section> : null,
             moisture: moistureAvailable ? <MoistureAndHumidityWidget record={record}/> : null,
-            feeding: feeding && !nutritionAvailable ? <section className={styles.speciesInfoCard}><h2>Feeding overview</h2><p>{feeding}</p></section> : null,
-            habitat: record.substrate?.trim() && !habitatAdvancedAvailable ? <section className={styles.speciesInfoCard}><h2>Habitat &amp; substrate</h2><p>{introText(record.substrate)}</p></section> : null,
             traits: notableTraits.length ? <section className={styles.speciesInfoCard}><h2>Notable traits</h2><ul className={styles.compactTraits}>{notableTraits.map(trait=><li key={trait} data-trait-id={getSpeciesTraitId(trait)||undefined}>{trait}</li>)}</ul></section> : null,
             guides: relatedGuides.length ? <section className={styles.speciesInfoCard}><h2>Related Field Guides</h2><div className={styles.relatedGuides}>{relatedGuides.map(guide=><Link href={`/field-guide/${guide.slug}`} key={guide.slug}><span><strong>{guide.title}</strong>{guide.summary?<small>{guide.summary}</small>:null}</span><b aria-hidden="true">→</b></Link>)}</div></section> : null,
             breeding: breedingAvailable ? <BreedingDevelopmentWidget record={record}/> : null,
