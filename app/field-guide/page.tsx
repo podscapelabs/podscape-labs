@@ -4,6 +4,7 @@ import { PlatformShell } from "@/components/PlatformShell";
 import { guideCategories, isGuideActive } from "@/data/guides";
 import { getGuideRecords } from "@/lib/guide-store";
 import styles from "./field-guide-home.module.css";
+import { PodscapeLineIcon, type PodscapeIconName } from "@/components/PodscapeLineIcon";
 
 export const metadata: Metadata = { title: "Field Guide | Podscape Labs", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
@@ -18,7 +19,7 @@ const topicNotes: Record<string, string> = {
   "Colony Management": "Long-term colony care.",
   Species: "Care guides for individual isopod species.",
 };
-const topicMarks = ["❧", "⌂", "◌", "♧", "≋", "✿", "✦", "❀"];
+const topicMarks: PodscapeIconName[] = ["book", "home", "leaf", "droplet", "manager", "shop", "bin", "note"];
 const urlFor = (category?: string, query?: string, view?: string) => {
   const params = new URLSearchParams();
   if (category) params.set("topic", category);
@@ -39,7 +40,7 @@ export default async function FieldGuidePage({ searchParams }: { searchParams: P
     <form action="/field-guide" method="get" className={styles.search}><input name="q" type="search" aria-label="Search guides" placeholder="Search guides..." defaultValue={q} /><button type="submit">Search</button></form>
     <nav className={styles.filters} aria-label="Filter guide topics"><Link className={`${styles.filter} ${!topic ? styles.selected : ""}`} href={urlFor(undefined, q, "all")}>All Topics</Link>{guideCategories.map((category) => <Link className={`${styles.filter} ${topic === category ? styles.selected : ""}`} href={urlFor(category, q)} key={category}>{category}</Link>)}</nav>
     {featured && !topic && !q ? <section className={styles.featured}><small>Featured guide</small><h2>{featured.title}</h2><p>{featured.summary}</p><Link href={`/field-guide/${featured.slug}`}>Read guide →</Link></section> : null}
-    <section className={styles.section}><div className={styles.heading}><h2>❧ Browse Topics</h2></div><div className={styles.topics}>{guideCategories.map((category, i) => <Link className={styles.topic} href={urlFor(category)} key={category}><div className={styles.topicArt} aria-hidden="true">{topicMarks[i]}</div><div className={styles.topicBody}><strong>{String(i+1).padStart(2,"0")} · {category}</strong><small>{topicNotes[category]}</small></div></Link>)}</div></section>
-    <section className={styles.section} id="all-guides"><div className={styles.heading}><h2>{topic || q ? "Matching Guides" : view === "all" ? "Complete Guide Library" : "Latest Guides"}</h2>{browsing ? <Link href="/field-guide#all-guides">Clear filters →</Link> : <span className={styles.latestHint}>Recently updated</span>}</div>{visibleGuides.length ? <div className={styles.guides}>{visibleGuides.map((guide, i) => <Link href={`/field-guide/${guide.slug}`} className={styles.guide} key={guide.id}><span className={styles.guideArt} aria-hidden="true">{topicMarks[guideCategories.indexOf(guide.category as typeof guideCategories[number])] || "❧"}</span><div><small>{guide.category}</small><h3>{guide.title}</h3><p>{guide.summary}</p></div><span className={styles.arrow} aria-hidden="true">→</span></Link>)}</div> : <p className={styles.empty}>{topic === "Species" && !q ? "Species-specific care guides are being prepared. Explore the Leaf Ledger for species profiles in the meantime." : "No published guides match your search yet. Try another topic."}{topic === "Species" && !q ? <> <Link href="/ledger">Explore the Leaf Ledger →</Link></> : null}</p>}</section>
+    <section className={styles.section}><div className={styles.heading}><h2>Browse Topics</h2></div><div className={styles.topics}>{guideCategories.map((category, i) => <Link className={styles.topic} href={urlFor(category)} key={category}><div className={styles.topicArt} aria-hidden="true"><PodscapeLineIcon name={topicMarks[i] || "book"} /></div><div className={styles.topicBody}><strong>{String(i+1).padStart(2,"0")} · {category}</strong><small>{topicNotes[category]}</small></div></Link>)}</div></section>
+    <section className={styles.section} id="all-guides"><div className={styles.heading}><h2>{topic || q ? "Matching Guides" : view === "all" ? "Complete Guide Library" : "Latest Guides"}</h2>{browsing ? <Link href="/field-guide#all-guides">Clear filters →</Link> : <span className={styles.latestHint}>Recently updated</span>}</div>{visibleGuides.length ? <div className={styles.guides}>{visibleGuides.map((guide, i) => <Link href={`/field-guide/${guide.slug}`} className={styles.guide} key={guide.id}><span className={styles.guideArt} aria-hidden="true"><PodscapeLineIcon name={topicMarks[guideCategories.indexOf(guide.category as typeof guideCategories[number])] || "book"} /></span><div><small>{guide.category}</small><h3>{guide.title}</h3><p>{guide.summary}</p></div><span className={styles.arrow} aria-hidden="true">→</span></Link>)}</div> : <p className={styles.empty}>{topic === "Species" && !q ? "Species-specific care guides are being prepared. Explore the Leaf Ledger for species profiles in the meantime." : "No published guides match your search yet. Try another topic."}{topic === "Species" && !q ? <> <Link href="/ledger">Explore the Leaf Ledger →</Link></> : null}</p>}</section>
   </div></div></PlatformShell>;
 }
