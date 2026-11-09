@@ -36,17 +36,19 @@ export function ManagerCareOverview({bins}:{bins:ManagerBin[]}){
  const scheduled=bins.map(bin=>careDue(bin,reminders[bin.id],now));
  const due=scheduled.filter(bin=>bin.days!==null&&bin.days<=0).sort((a,b)=>(a.days??0)-(b.days??0));
  const unconfigured=scheduled.filter(bin=>bin.intervalDays===null||bin.days===null);
+ const configured=scheduled.length-unconfigured.length;
  return <section className={styles.managerModule} aria-label="Care overview">
-  <header><div><p className={styles.managerEyebrow}>YOUR ROUTINE</p><h2>Care overview</h2></div><Link href="/keeper/schedule">Full schedule →</Link></header>
-  <div className={styles.managerPulse}>
-   <Link href="/keeper/schedule" aria-label={loaded?`View schedule: ${due.length} colonies due or overdue`:"View colony care schedule"}><strong>{loaded?due.length:"—"}</strong><span>Due or overdue <span aria-hidden="true">↗</span></span></Link>
-   <Link href="/keeper/schedule" aria-label={loaded?`Set schedules for ${unconfigured.length} colonies`:"Set colony care schedules"}><strong>{loaded?unconfigured.length:"—"}</strong><span>Needs scheduling <span aria-hidden="true">↗</span></span></Link>
-  </div>
-  {!bins.length?<p className={styles.managerModuleEmpty}>Add your first enclosure to start tracking routines.</p>
-   :!loaded?<p className={styles.managerModuleEmpty}>Loading your saved schedules…</p>
-   :due.length?<div className={styles.managerModuleList}>{due.slice(0,4).map(bin=><Link href={"/keeper/"+bin.id} key={bin.id}><span><strong>{bin.name}</strong><small>{bin.species}</small></span><em>{dueLabel(bin.days)}</em></Link>)}</div>
-   :<p className={styles.managerModuleEmpty}>{unconfigured.length?"No misting due. Set schedules for the remaining colonies.":"Nothing due today. You're up to date."}</p>}
-  <p className={styles.managerModuleFine}>Based on schedules saved on this device · Not automatic reminders or care advice.</p>
+  <header><div><p className={styles.managerEyebrow}>YOUR ROUTINE</p><h2>Care attention</h2></div><Link href="/keeper/schedule">Care Centre →</Link></header>
+  {!bins.length?<div className={styles.managerAttentionEmpty}><p>Add a colony to start organizing care.</p><Link href="/keeper/new">Add first bin →</Link></div>
+   :!loaded?<p className={styles.managerModuleEmpty}>Loading saved schedules…</p>
+   :due.length?<div className={styles.managerAttention}>
+     <div className={styles.managerAttentionCount}><strong>{due.length}</strong><span>{due.length===1?"bin needs attention":"bins need attention"}</span></div>
+     <div className={styles.managerModuleList}>{due.slice(0,3).map(bin=><Link key={bin.id} href={"/keeper/"+bin.id}><span><strong>{bin.name}</strong><small>{bin.species}</small></span><em>{dueLabel(bin.days)}</em></Link>)}</div>
+     <Link className={styles.managerAttentionAction} href="/keeper/schedule">Open care schedule →</Link>
+    </div>
+   :<div className={styles.managerAttentionEmpty}><strong>{configured>0?"All scheduled care is up to date":"Your care schedule is ready to set up"}</strong><p>{configured>0?"Nothing is currently due.":"Build your own care routine, at your pace."}</p><Link href="/keeper/schedule">{configured>0?"View care schedule →":"Set up schedules →"}</Link></div>}
+  {loaded&&unconfigured.length>0&&configured>0?<p className={styles.managerModuleFine}>{unconfigured.length} bins have no care schedule yet · Scheduling is optional</p>:null}
+  <p className={styles.managerModuleFine}>Schedules saved on this device · Not automatic reminders or care advice.</p>
  </section>;
 }
 
