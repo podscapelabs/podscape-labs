@@ -7,7 +7,7 @@ import styles from "./progress.module.css";
 
 type Achievement = {
   key: string; title: string; description: string; exp: number; coins: number; icon: string; href: string;
-  unlockedAt?: string | null; status: "available" | "planned";
+  unlockedAt?: string | null; status: "available" | "planned"; hidden?:boolean;
 };
 
 const activities = [
@@ -69,18 +69,18 @@ export default function ProgressDashboard({
       </div>
       {error ? <p className={styles.notice} role="status">Achievement history is temporarily unavailable. Please check again later.</p> : null}
       <div className={styles.achievementGrid}>
-        {shown.map(a => <button type="button" key={a.key} className={styles.achievementTile} data-earned={Boolean(a.unlockedAt)} onClick={()=>setSelected(a.key)} aria-label={a.title + (a.unlockedAt ? ", unlocked" : a.status === "planned" ? ", coming later" : ", not yet unlocked") + ". View details."}>
+        {shown.map(a => <button type="button" key={a.key} className={styles.achievementTile} data-earned={Boolean(a.unlockedAt)} onClick={()=>setSelected(a.key)} aria-label={(a.hidden&&!a.unlockedAt?"Secret achievement":a.title) + (a.unlockedAt ? ", unlocked" : a.status === "planned" ? ", coming later" : ", not yet unlocked") + ". View details."}>
           <span className={styles.medallion} data-earned={Boolean(a.unlockedAt)} aria-hidden="true">
-            <span className={styles.medallionRing}>{a.icon}</span>
+            <span className={styles.medallionRing}>{a.hidden&&!a.unlockedAt?"?":a.icon}</span>
             {!a.unlockedAt ? <span className={styles.lockMark}>◇</span> : null}
           </span>
           <span className={styles.tileCopy}><span className={styles.tileStatus}>{a.unlockedAt ? "✓ Unlocked" : a.status === "planned" ? "Coming later" : "Locked"}</span>
-            <strong>{a.title}</strong><span className={styles.tileDescription}>{a.description}</span>
-            {a.status==="available" ? <span className={styles.tileReward}>+{a.exp} EXP{a.coins ? ` · +${a.coins} Pod Coins (legacy)` : ""}</span> : <span className={styles.tileRewardMuted}>Rewards not finalized</span>}</span>
+            <strong>{a.hidden&&!a.unlockedAt?"Secret Achievement":a.title}</strong><span className={styles.tileDescription}>{a.hidden&&!a.unlockedAt?"A little surprise for curious keepers.":a.description}</span>
+            {a.status==="available"&&!a.hidden||a.unlockedAt ? <span className={styles.tileReward}>+{a.exp} EXP{a.coins ? ` · +${a.coins} Pod Coins (legacy)` : ""}</span> : <span className={styles.tileRewardMuted}>Rewards not finalized</span>}</span>
         </button>)}
       </div>
       {!shown.length ? <p className={styles.empty}>No achievements in this view yet.</p> : null}
-      <p className={styles.caption}>Early-access achievements unlock automatically from verified species discoveries, collection entries, and completed Fun Zone challenges. Each eligible milestone pays EXP once; puzzle milestones do not award Pod Coins.</p>
+      <p className={styles.caption}>Early-access achievements unlock automatically from verified species discoveries, collection entries, completed tutorials, customization milestones, and Fun Zone challenges. Each eligible milestone pays EXP once; puzzle milestones do not award Pod Coins.</p>
     </section> : null}
 
     {view === "explore" ? <section className={styles.explore} aria-labelledby="explore-title"><div className={styles.sectionHeading}><h2 id="explore-title">Explore PodScape</h2><span>Find something new</span></div><p className={styles.caption}>These are suggested destinations, not EXP-earning quests yet.</p><div className={styles.exploreGrid}>{activities.map(a=><Link href={a.href} className={styles.exploreTile} key={a.href}><span className={styles.exploreIcon} aria-hidden="true">{a.icon}</span><strong>{a.title}</strong><small>{a.description}</small><span className={styles.exploreArrow} aria-hidden="true">↗</span></Link>)}</div></section> : null}
@@ -95,10 +95,10 @@ export default function ProgressDashboard({
     <button type="button" className={styles.closeModal} aria-label="Close achievement details" onClick={()=>setSelected(null)}>×</button>
     <div className={styles.modalEmblem} aria-hidden="true">{selectedAchievement.unlockedAt ? "✦" : "❧"}</div>
     <span className={styles.tileStatus}>{selectedAchievement.unlockedAt?"✓ Unlocked":selectedAchievement.status==="planned"?"Coming later":"Not yet unlocked"}</span>
-    <h2 id="achievement-detail-title">{selectedAchievement.title}</h2><p>{selectedAchievement.description}</p>
-    {selectedAchievement.status==="available" ? <strong className={styles.modalReward}>+{selectedAchievement.exp} EXP{selectedAchievement.coins ? ` · +${selectedAchievement.coins} Pod Coins (legacy reward)` : ""}</strong> : <p>Milestone and rewards are still being designed.</p>}
+    <h2 id="achievement-detail-title">{selectedAchievement.hidden&&!selectedAchievement.unlockedAt?"Secret Achievement":selectedAchievement.title}</h2><p>{selectedAchievement.hidden&&!selectedAchievement.unlockedAt?"A secret milestone is waiting to be discovered.":selectedAchievement.description}</p>
+    {selectedAchievement.status==="available"&&(!selectedAchievement.hidden||selectedAchievement.unlockedAt) ? <strong className={styles.modalReward}>+{selectedAchievement.exp} EXP{selectedAchievement.coins ? ` · +${selectedAchievement.coins} Pod Coins (legacy reward)` : ""}</strong> : <p>Milestone and rewards are still being designed.</p>}
     {selectedAchievement.unlockedAt ? <p>Earned {new Date(selectedAchievement.unlockedAt).toLocaleDateString("en-CA",{year:"numeric",month:"long",day:"numeric"})}</p> : null}
-    {selectedAchievement.status==="available"&&!selectedAchievement.unlockedAt ? <Link href={selectedAchievement.href} onClick={()=>setSelected(null)}>Keep exploring →</Link> : null}
+    {selectedAchievement.status==="available"&&!selectedAchievement.unlockedAt&&!selectedAchievement.hidden ? <Link href={selectedAchievement.href} onClick={()=>setSelected(null)}>Keep exploring →</Link> : null}
   </div></div> : null}
   </main>;
 }
