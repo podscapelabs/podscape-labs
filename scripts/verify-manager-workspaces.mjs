@@ -12,7 +12,8 @@ assert.match(hub,/mode=care/,"Direct Quick Care must stay in care mode");
 for(const route of ["details","history","qr","care-reminders"])assert.ok(hub.includes(route),"Missing categorized colony tool: "+route);
 assert.match(hub,/logKeeperEvent\(/,"Private notes still use the owner-scoped care server action");
 assert.match(hub,/undoKeeperEvent\(/,"Private notes must retain Undo");
-assert.match(hub,/notes & recent activity/i,"Recent activity summary should be visible");
+assert.match(hub,/Recent care/,"Recent care widget should be available");
+assert.match(hub,/ColonyDashboardLayout/,"Colony must use shared customization controls");
 assert.match(scanner,/speciesBins=selected\?bins\.filter/,"Species-scoped switching must remain");
 assert.match(scanner,/\(multiCare\?bins:speciesBins\)\.map/,"All-bin selection should only appear in Multi-care");
 assert.match(scanner,/showBinPicker/,"Other bins must be hidden until requested");
@@ -28,3 +29,16 @@ assert.match(overview,/Scheduling is optional/,"Care schedule must be optional")
 const css=read("app/keeper/[id]/ColonyWorkspace.module.css");
 assert.match(css,/\.featuredTool/,"Primary Quick Care tile must stand out");
 console.log("Manager workspace regression tests passed: categorized colony tools, member-scoped care links, contextual switching, batch care, Undo and compact summaries.");
+
+const widgets=read("components/ColonyDashboardLayout.tsx");
+for(const id of ["shortcuts","care","population","environment","observations","activity"])
+ assert.match(widgets,new RegExp('\\\"'+id+'\\\"'),"Missing colony dashboard widget "+id);
+assert.match(widgets,/podscape-colony-dashboard-v1:/,"Saved preferences must be colony-specific");
+assert.match(widgets,/scope\+"\:"\+colonyId/,"Preferences must be scoped to the signed-in member and colony");
+assert.match(widgets,/localStorage\.setItem\(storageKey/,"Only layout preferences are saved locally");
+assert.match(widgets,/WorkspaceEditBlock/,"Reuse the PodScape dashboard drag/edit system");
+assert.match(widgets,/onLongPress/,"Support hold to customize on mobile");
+assert.match(widgets,/Reset this colony dashboard/,"Reset must explicitly preserve records");
+assert.match(hub,/forceVisible=\{initialPanel==="observation"/,"Deep-linked observations remain accessible even when hidden");
+assert.match(colonyPage,/scope=\{user\?\.id/,"Layout storage must use authenticated member identity");
+assert.match(hub,/No live humidity or temperature readings/,"Environment cards must not imply sensor data");
