@@ -59,7 +59,7 @@ function ManagerQuickShortcuts({ids,change,primaryHref,canvasEditing}:{ids:strin
  const destination=(tool:Tool)=>tool.href;
  return <>
   {editing&&!canvasEditing?<div className={homeStyles.jiggleToolbar} role="region" aria-label="Customize Manager shortcuts">
-    <span className={homeStyles.jiggleHint}>✧ <strong>Arrange your shortcuts</strong><small>Drag icons or use the move buttons. Tap one to replace it.</small></span>
+    <span className={homeStyles.jiggleHint}><PodscapeLineIcon name="grip" /> <strong>Arrange your shortcuts</strong><small>Drag icons or use the move buttons. Tap one to replace it.</small></span>
     <button type="button" className={homeStyles.jiggleDone} onClick={done}>Done</button>
     <label className={homeStyles.jigglePicker}>Replace {current.label}
      <select value={current.id} onChange={event=>change(swapManagerSlot(ids,selected,event.target.value))}>
