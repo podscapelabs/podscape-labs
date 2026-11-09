@@ -6,12 +6,12 @@ import {moveBlock,dropBlock,uniqueAllowed} from "./workspace-layout";
 import homeStyles from "./PodscapeHome.module.css";
 import styles from "./SpeciesProfile.module.css";
 
-export const speciesWidgetIds=["care","moisture","about","advanced","feeding","habitat","traits","guides","environment","breeding","taxonomy","nutrition","habitatAdvanced","sources"] as const;
+export const speciesWidgetIds=["care","moisture","about","advanced","feeding","habitat","traits","guides","environment","breeding","taxonomy","nutrition","habitatAdvanced","sources","personal","navigation"] as const;
 export type SpeciesWidgetId=(typeof speciesWidgetIds)[number];
 export const speciesWidgetLabels:Record<SpeciesWidgetId,string>={
  about:"Species overview",care:"Basic Care & Behaviour",moisture:"Moisture preference",advanced:"Advanced Care",
  feeding:"Feeding overview",habitat:"Habitat & substrate",traits:"Notable traits",guides:"Related Field Guides",
- environment:"Moisture & Humidity",breeding:"Breeding & Development",taxonomy:"Taxonomy & Origin",nutrition:"Feeding & Ecology",habitatAdvanced:"Habitat & Setup",sources:"Research & Sources"
+ environment:"Moisture & Humidity",breeding:"Breeding & Development",taxonomy:"Taxonomy & Origin",nutrition:"Feeding & Ecology",habitatAdvanced:"Habitat & Setup",sources:"Research & Sources",personal:"My Species Tools",navigation:"Explore Species"
 };
 const descriptions:Record<SpeciesWidgetId,string>={
  about:"A short introduction to the species",care:"Essential care, activity and breeding at a glance",advanced:"Feeding and substrate details when you want more depth",
@@ -19,10 +19,10 @@ const descriptions:Record<SpeciesWidgetId,string>={
  traits:"Distinctive characteristics",guides:"Supporting species-specific guides",
  environment:"Relative humidity, moist-zone coverage and moist-refuge substrate",breeding:"Brood measurements, reproduction and maturity",
  taxonomy:"Identification, scientific names, origins and morphology",nutrition:"Diet, supplements and feeding cautions",
- habitatAdvanced:"Enclosure setup and natural microhabitat",sources:"Reference links, evidence and review scope"
+ habitatAdvanced:"Enclosure setup and natural microhabitat",sources:"Reference links, evidence and review scope",personal:"Collection and pin-to-home shortcuts",navigation:"Related species guides and catalogue navigation"
 };
 const defaultOrder:SpeciesWidgetId[]=[...speciesWidgetIds];
-const defaultVisible:SpeciesWidgetId[]=["care","moisture","about"];
+const defaultVisible:SpeciesWidgetId[]=["care","moisture","about","personal","navigation"];
 type Layout={order:SpeciesWidgetId[];visible:SpeciesWidgetId[]};
 const defaultLayout=():Layout=>({order:[...defaultOrder],visible:[...defaultVisible]});
 function normalize(value:unknown):Layout{
@@ -78,22 +78,14 @@ export function SpeciesDashboardWorkspace({widgets,scope,preview=false}:{widgets
  const toggle=(id:SpeciesWidgetId)=>update({...layout,visible:layout.visible.includes(id)?layout.visible.filter(v=>v!==id):[...layout.visible,id]});
  const reveal=(id:SpeciesWidgetId)=>{if(!layout.visible.includes(id))toggle(id);setLibraryOpen(false)};
  return <div className={`${styles.speciesWorkspace} ${canvasEditing?homeStyles.homeCanvasEditing:""}`} data-workspace-root="species" onPointerMove={event=>{if(canvasEditing)dragMove(event)}} onPointerUp={()=>{if(canvasEditing)stop()}} onPointerCancel={()=>{if(canvasEditing)stop()}}>
-  {!preview&&<div className={styles.speciesCustomizeIntro}>
-   <span><strong>Your Species Dashboard</strong><small>{hydrated?"Your layout follows you across Leaf Ledger species.":"A personal space for species discovery."}</small></span>
-   <button type="button" onClick={()=>enterCanvas()} aria-label="Customize Species Dashboard">✧ Customize</button>
-  </div>}
   {canvasEditing&&<WorkspaceEditToolbar title="Arrange your Species Dashboard" description="Drag blocks to move them. Changes apply to every species profile." onAdd={()=>{done();setLibraryOpen(true)}} onReset={reset} onDone={done}/>}
   {visible.map((id,index)=><WorkspaceEditBlock key={id} id={id} scope="species" label={speciesWidgetLabels[id]} index={index} count={visible.length} editing={canvasEditing} dragging={dragging===id} required={false} onMove={move} onRemove={item=>toggle(item)} begin={begin} move={dragMove} stop={stop} onLongPress={!preview?()=>enterCanvas(id):undefined}>{widgets[id]}</WorkspaceEditBlock>)}
   {!preview&&hydrated&&!canvasEditing&&<div className={homeStyles.addWidgetFooter}><button type="button" className={homeStyles.addWidgetButton} onClick={()=>setLibraryOpen(true)}><span aria-hidden="true">＋</span> Add Widget</button></div>}
-  {hidden.length>0&&<details className={styles.speciesAllDetails}>
-   <summary>All Species Details <span>{hidden.length} section{hidden.length===1?"":"s"} outside your dashboard</span></summary>
-   <div className={styles.speciesHiddenWidgets}>{hidden.map(id=><section key={id} className={styles.speciesHiddenSection}>{widgets[id]}{!preview&&<button type="button" onClick={()=>reveal(id)}>+ Show on dashboard</button>}</section>)}</div>
-  </details>}
   {available.length===0&&<p className={styles.empty}>Species information is being prepared.</p>}
   {libraryOpen&&!preview&&<div className={homeStyles.homeEditorOverlay} onPointerDown={event=>{if(event.target===event.currentTarget)setLibraryOpen(false)}}>
    <div className={homeStyles.widgetLibrary} role="dialog" aria-modal="true" aria-labelledby="species-widget-library">
     <div className={homeStyles.homeEditorHead}><div><small>YOUR HOBBY, YOUR SPACE</small><h2 id="species-widget-library">Species Widget Library</h2></div><button type="button" onClick={()=>setLibraryOpen(false)}>Done</button></div>
-    <p>Pick the information you care about. Your choices appear on every species profile; missing facts remain hidden until researched.</p>
+    <p>Pick the information you care about. Hold any dashboard block to rearrange or remove it. Your layout carries across all species; missing facts remain hidden until researched.</p>
     <div className={homeStyles.widgetLibraryActions}><span>{visible.length} active widgets</span><button type="button" onClick={()=>{setLibraryOpen(false);enterCanvas()}}>Arrange Dashboard</button></div>
     <div className={homeStyles.widgetLibraryGroups}><section><h3>Species information</h3><div className={homeStyles.widgetGallery}>{speciesWidgetIds.map(id=><article key={id} className={homeStyles.widgetGalleryCard}><div className={homeStyles.widgetPreview}><span aria-hidden="true">✧</span><div><strong>{speciesWidgetLabels[id]}</strong><small>{descriptions[id]}</small></div></div><div className={homeStyles.widgetGalleryCopy}><strong>{speciesWidgetLabels[id]}</strong><p>{available.includes(id)?"Available for this species":"No information for this species yet — your preference still applies to others."}</p><button type="button" className={layout.visible.includes(id)?homeStyles.widgetRemove:homeStyles.widgetAdd} onClick={()=>toggle(id)}>{layout.visible.includes(id)?"✓ Added · Remove":"+ Add to Dashboard"}</button></div></article>)}</div></section></div>
     <div className={homeStyles.widgetLibraryFooter}><small>One layout for all species · Saved on this device</small><button type="button" onClick={reset}>Reset layout</button></div>
