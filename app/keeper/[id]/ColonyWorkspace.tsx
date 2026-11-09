@@ -8,134 +8,94 @@ import {logKeeperEvent,undoKeeperEvent} from "@/app/keeper/actions";
 import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
 import styles from "./ColonyWorkspace.module.css";
 
-type Action={label:string;kind:"feeding"|"maintenance";note:string;icon:"droplet"|"leaf"|"note"|"jar"};
-const actions:Action[]=[
- {label:"Misted",kind:"maintenance",note:"Misted",icon:"droplet"},
- {label:"Fed",kind:"feeding",note:"Fed",icon:"leaf"},
- {label:"Spot cleaned",kind:"maintenance",note:"Spot cleaned",icon:"jar"},
- {label:"Leaf litter",kind:"maintenance",note:"Leaf litter added",icon:"leaf"}
-];
 type CareEvent={id:string;kind:string;note:string;createdAt:string;quantityChange:number|null};
-type Colony={id:string;name:string;label:string;species:string;image:string|null;status:string;breeding:string;quantity:number;archived:boolean;};
+type Colony={id:string;name:string;label:string;species:string;image:string|null;status:string;breeding:string;quantity:number;archived:boolean};
 function dayLabel(timestamp:string){
  const d=new Date(timestamp);
  return Number.isNaN(d.getTime())?"Date unavailable":d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
 }
-function lastCare(events:CareEvent[],note:string){return events.find(item=>item.note===note)?.createdAt;}
-function syncMisting(id:string,now:string){
- try{
-  const key="podscape-keeper-reminder-"+id;
-  const previous=localStorage.getItem(key);
-  if(previous){
-   const parsed=JSON.parse(previous);
-   if(Number.isInteger(parsed.intervalDays)){
-    const date=new Date(now);
-    const day=[date.getFullYear(),String(date.getMonth()+1).padStart(2,"0"),String(date.getDate()).padStart(2,"0")].join("-");
-    localStorage.setItem(key,JSON.stringify({...parsed,lastMisted:day,updatedAt:now}));
-    return previous;
-   }
-  }
- }catch{/* The server care log still saves when local device settings are inaccessible. */}
- return undefined;
-}
-export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,referenceUrl}:{colony:Colony;initialEvents:CareEvent[];careDates:Record<string,string>;initialPanel?:string;referenceUrl?:string}){
+export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,referenceUrl}:{
+ colony:Colony;initialEvents:CareEvent[];careDates:Record<string,string>;initialPanel?:string;referenceUrl?:string
+}){
  const router=useRouter();
  const [events,setEvents]=useState(initialEvents);
- const dateFor=(note:string)=>lastCare(events,note)||careDates[note]||"";
  const [pending,start]=useTransition();
- const [message,setMessage]=useState("");
- const [error,setError]=useState("");
  const [observation,setObservation]=useState("");
- const [lastSaved,setLastSaved]=useState<{id:string;note:string;previousReminder?:string}|null>(null);
+ const [error,setError]=useState("");
+ const [message,setMessage]=useState("");
+ const [lastSaved,setLastSaved]=useState<string|null>(null);
  const [undoing,setUndoing]=useState(false);
- function record(action:Action){
-  if(pending||undoing||colony.archived)return;
-  setMessage("");setError("");
-  start(async()=>{
-   try{
-    const result=await logKeeperEvent({id:colony.id,kind:action.kind,note:action.note});
-    if(!result.success||!result.id){setError(result.error||"Could not save care.");return;}
-    const savedId: string = result.id;
-    const now=new Date().toISOString();
-    const previousReminder=action.note==="Misted"?syncMisting(colony.id,now):undefined;
-    setEvents(old=>[{id:savedId,kind:action.kind,note:action.note,createdAt:now,quantityChange:null},...old]);
-    setLastSaved({id:savedId,note:action.note,previousReminder});
-    setMessage(action.label+" recorded");
-    router.refresh();
-   }catch{setError("Could not save care. Please try again.");}
-  });
- }
+ const [notesOpen,setNotesOpen]=useState(initialPanel==="observation");
+ const id=encodeURIComponent(colony.id);
+ const careUrl="/keeper/scan?bin="+id+"&mode=care";
+ const lastMisted=events.find(x=>x.note==="Misted")?.createdAt||careDates.Misted;
+ const lastFed=events.find(x=>x.note==="Fed")?.createdAt||careDates.Fed;
  function recordObservation(event:FormEvent<HTMLFormElement>){
   event.preventDefault();
-  if(pending||undoing||colony.archived||!observation.trim())return;
-  const text=observation.trim();
+  const note=observation.trim();
+  if(!note||pending||undoing||colony.archived)return;
   setError("");setMessage("");
   start(async()=>{
    try{
-    const result=await logKeeperEvent({id:colony.id,kind:"observation",note:text});
-    if(!result.success||!result.id){setError(result.error||"Unable to save observation.");return;}
-    const savedId: string = result.id;
-    const now=new Date().toISOString();
-    setEvents(old=>[{id:savedId,kind:"observation",note:text,createdAt:now,quantityChange:null},...old]);
-    setLastSaved({id:savedId,note:text});
-    setObservation("");
-    setMessage("Observation saved");
-    router.refresh();
-   }catch{setError("Unable to save observation. Please retry.");}
+    const result=await logKeeperEvent({id:colony.id,kind:"observation",note});
+    if(!result.success||!result.id){setError(result.error||"Unable to save note.");return;}
+    const createdAt=new Date().toISOString();
+    setEvents(old=>[{id:result.id!,kind:"observation",note,createdAt,quantityChange:null},...old]);
+    setLastSaved(result.id);setObservation("");setMessage("Note saved to this colony.");
+    setNotesOpen(false);router.refresh();
+   }catch{setError("Unable to save note. Please retry.");}
   });
  }
  async function undo(){
   if(!lastSaved||pending||undoing)return;
   setUndoing(true);setError("");
   try{
-   const result=await undoKeeperEvent({id:lastSaved.id,enclosureId:colony.id});
-   if(!result.success){setError(result.error||"Unable to undo that action.");return;}
-   if(lastSaved.note==="Misted"&&lastSaved.previousReminder!==undefined){
-    try{localStorage.setItem("podscape-keeper-reminder-"+colony.id,lastSaved.previousReminder)}catch{}
-   }
-   setEvents(old=>old.filter(item=>item.id!==lastSaved.id));
-   setMessage("Care entry undone.");
-   setLastSaved(null);
+   const result=await undoKeeperEvent({id:lastSaved,enclosureId:colony.id});
+   if(!result.success){setError(result.error||"Could not undo note.");return;}
+   setEvents(old=>old.filter(x=>x.id!==lastSaved));setLastSaved(null);setMessage("Note removed.");
    router.refresh();
-  }catch{setError("Could not undo. The care record may still be saved.");}
+  }catch{setError("Could not undo. Your record may still be saved.");}
   finally{setUndoing(false);}
  }
+ const tiles=[
+  {title:"Quick Care",detail:"Misting, feeding & care logs",href:careUrl,icon:"droplet" as const,featured:true},
+  {title:"Colony Details",detail:"Population, habitat & status",href:"/keeper/"+id+"/details",icon:"jar" as const},
+  {title:"Care Schedule",detail:"Set routines for this enclosure",href:"/keeper/"+id+"/details?panel=care#care-reminders",icon:"calendar" as const},
+  {title:"History",detail:"Every recorded care action",href:"/keeper/"+id+"/history",icon:"note" as const},
+  {title:"QR Label",detail:"Print, scan & identify",href:"/keeper/qr?bin="+id,icon:"qr" as const}
+ ];
  return <div className={styles.root}>
-  <nav className={styles.breadcrumb} aria-label="Colony navigation"><Link href="/keeper">← Manager</Link><span>/</span><Link href="/keeper/collection">My Colonies</Link></nav>
+  <nav className={styles.breadcrumb} aria-label="Colony navigation"><Link href="/keeper">Manager</Link><span>/</span><Link href="/keeper/collection">My Colonies</Link><span>/</span><span>{colony.name}</span></nav>
   <header className={styles.hero}>
-   <div className={styles.heroImage}>{colony.image?<Image src={colony.image} alt="" fill sizes="(max-width:720px) 110px,160px" style={{objectFit:"cover"}}/>:<PodscapeLineIcon name="jar"/>}</div>
-   <div className={styles.heroText}><p>MANAGER / COLONY WORKSPACE</p><h1>{colony.species}</h1><strong>{colony.name}</strong><span>{colony.label||"No bin location recorded"} · {colony.status.replaceAll("-"," ")}</span></div>
-  </header>
-  <div className={styles.metrics} aria-label="Colony overview">
-   <div><span>Recorded population</span><strong>{colony.quantity.toLocaleString()}</strong></div>
-   <div><span>Last misted</span><strong>{dateFor("Misted")?dayLabel(dateFor("Misted")):"Not logged"}</strong></div>
-   <div><span>Breeding</span><strong>{colony.breeding.replaceAll("-"," ")}</strong></div>
-  </div>
-  <section className={styles.care} aria-labelledby="care-heading">
-   <div className={styles.sectionTitle}><div><p>DAILY CARE</p><h2 id="care-heading">Quick Care</h2></div><Link href={"/keeper/"+colony.id+"/history"}>View history →</Link></div>
-   <p className={styles.description}>Tap an action to save it to this bin&apos;s private care history.</p>
-   {colony.archived?<p className={styles.warning}>This bin is archived. Restore it in Details before recording care.</p>:null}
-   <div className={styles.actions}>{actions.map(action=><button type="button" key={action.note} disabled={pending||undoing||colony.archived} onClick={()=>record(action)}><PodscapeLineIcon name={action.icon}/><strong>{action.label}</strong><small>{dateFor(action.note)?"Last: "+dayLabel(dateFor(action.note)):"Not logged yet"}</small></button>)}</div>
-   <details className={styles.observation} id="observation" open={initialPanel==="observation"}><summary>+ Add an observation or care note</summary>
-    <form onSubmit={recordObservation}><label htmlFor="colony-observation">What did you notice?</label><textarea id="colony-observation" rows={3} maxLength={1500} value={observation} onChange={event=>setObservation(event.target.value)} placeholder="New mancae spotted, habitat changes, feeding notes…" required/><button type="submit" disabled={pending||undoing||colony.archived||!observation.trim()}>{pending?"Saving…":"Save observation"}</button></form>
-   </details>
-   <Link className={styles.bulkLink} href="/keeper/scan?manual=1">Log care for multiple bins →</Link>
-   {error?<p className={styles.warning} role="alert">{error}</p>:null}
-   {message?<div className={styles.notice} role="status"><span>{message}</span>{lastSaved?<button type="button" onClick={undo} disabled={pending||undoing}>{undoing?"Undoing…":"Undo"}</button>:null}</div>:null}
-  </section>
-  <section className={styles.tools} aria-labelledby="tools-heading">
-   <div className={styles.sectionTitle}><div><p>YOUR BIN</p><h2 id="tools-heading">Colony tools</h2></div></div>
-   <div className={styles.toolGrid}>
-    <Link href={"/keeper/"+colony.id+"/details"}><PodscapeLineIcon name="note"/><strong>Edit details</strong><small>Population, habitat and notes</small></Link>
-    <Link href={"/keeper/qr?bin="+encodeURIComponent(colony.id)}><PodscapeLineIcon name="qr"/><strong>QR Label</strong><small>Print or download</small></Link>
-    <Link href={"/keeper/"+colony.id+"/details?panel=care#care-reminders"}><PodscapeLineIcon name="calendar"/><strong>Care schedule</strong><small>Set this bin’s misting interval</small></Link>
-    <Link href={"/keeper/"+colony.id+"/history"}><PodscapeLineIcon name="jar"/><strong>Care history</strong><small>Review previous records</small></Link>
+   <div className={styles.heroImage}>{colony.image?<Image src={colony.image} alt="" fill sizes="(max-width:720px) 70px,96px" style={{objectFit:"cover"}}/>:<PodscapeLineIcon name="jar"/>}</div>
+   <div className={styles.heroText}>
+    <p>MANAGER / COLONY</p><h1>{colony.species}</h1><strong>{colony.name}</strong>
+    <span>{colony.label||"No location assigned"} · {colony.status.replaceAll("-"," ")}{colony.archived?" · Archived":""}</span>
    </div>
+  </header>
+  <div className={styles.metrics} aria-label="At a glance">
+   <div><span>Estimated population</span><strong>~{colony.quantity.toLocaleString()}</strong></div>
+   <div><span>Last misted</span><strong>{lastMisted?dayLabel(lastMisted):"Not yet logged"}</strong></div>
+   <div><span>Last fed</span><strong>{lastFed?dayLabel(lastFed):"Not yet logged"}</strong></div>
+  </div>
+  <section className={styles.tools} aria-labelledby="colony-tools-heading">
+   <div className={styles.sectionTitle}><div><p>YOUR COLONY / WORKSPACES</p><h2 id="colony-tools-heading">What would you like to do?</h2></div></div>
+   <div className={styles.toolGrid}>{tiles.map(tile=><Link key={tile.title} className={tile.featured?styles.featuredTool:undefined} href={tile.href}>
+    <PodscapeLineIcon name={tile.icon}/><strong>{tile.title}</strong><small>{tile.detail}</small><span className={styles.toolArrow} aria-hidden="true">↗</span>
+   </Link>)}</div>
   </section>
-  <section className={styles.history} aria-labelledby="recent-care-heading">
-   <div className={styles.sectionTitle}><div><p>YOUR RECORDS</p><h2 id="recent-care-heading">Recent activity</h2></div><Link href={"/keeper/"+colony.id+"/history"}>View all →</Link></div>
-   {events.length?<div className={styles.historyList}>{events.slice(0,4).map(event=><div key={event.id}><span><strong>{event.note}</strong><small>{event.kind.replaceAll("-"," ")}</small></span><time dateTime={event.createdAt}>{dayLabel(event.createdAt)}</time></div>)}</div>:<p className={styles.empty}>No care records yet. Your first log will appear here.</p>}
+  <section className={styles.care} aria-labelledby="colony-notes-heading">
+   <div className={styles.sectionTitle}><div><p>YOUR RECORDS</p><h2 id="colony-notes-heading">Notes & recent activity</h2></div><Link href={"/keeper/"+id+"/history"}>Full history →</Link></div>
+   {events.length?<div className={styles.historyList}>{events.slice(0,3).map(event=><div key={event.id}><span><strong>{event.note||event.kind.replaceAll("-"," ")}</strong><small>{event.kind.replaceAll("-"," ")}</small></span><time dateTime={event.createdAt}>{dayLabel(event.createdAt)}</time></div>)}</div>:<p className={styles.empty}>Nothing logged yet. Your first care entry will appear here.</p>}
+   <div className={styles.noteToggle}><button type="button" aria-expanded={notesOpen} aria-controls="colony-note-editor" onClick={()=>setNotesOpen(x=>!x)} disabled={colony.archived}>{notesOpen?"Close note":"＋ Add a note"}</button></div>
+   {notesOpen?<form className={styles.noteForm} id="colony-note-editor" onSubmit={recordObservation}>
+    <label htmlFor="colony-observation">Colony observation</label>
+    <textarea id="colony-observation" rows={3} maxLength={1500} placeholder="New mancae, changes in activity, feeding observations…" value={observation} onChange={e=>setObservation(e.target.value)} required/>
+    <button type="submit" disabled={pending||undoing||!observation.trim()||colony.archived}>{pending?"Saving…":"Save note"}</button>
+   </form>:null}
+   {error?<p className={styles.warning} role="alert">{error}</p>:null}
+   {message?<div className={styles.notice} role="status"><span>{message}</span>{lastSaved?<button type="button" onClick={undo} disabled={undoing||pending}>{undoing?"Undoing…":"Undo"}</button>:null}</div>:null}
   </section>
-  {referenceUrl?<Link className={styles.reference} href={referenceUrl}>Explore this species in Leaf Ledger →</Link>:null}
+  {referenceUrl?<Link className={styles.reference} href={referenceUrl}>Explore {colony.species} in Leaf Ledger →</Link>:null}
  </div>;
 }
