@@ -1,4 +1,4 @@
-export type PodscapeIconName = "search"|"leaf"|"jar"|"shop"|"book"|"community"|"vendor"|"creative"|"podbound"|"home"|"scan"|"manager"|"menu"|"qr"|"bin"|"droplet"|"calendar"|"note"|"crossword"|"connections"|"letters"|"challenge"|"quiz"|"word-search"|"achievement"|"check"|"lock"|"arrow-right"|"close"|"edit"|"grid"|"trophy"|"grip"|"arrow-up"|"arrow-down";
+export type PodscapeIconName = "search"|"leaf"|"jar"|"shop"|"book"|"community"|"vendor"|"creative"|"podbound"|"home"|"scan"|"manager"|"menu"|"qr"|"bin"|"droplet"|"calendar"|"note"|"crossword"|"connections"|"letters"|"challenge"|"quiz"|"word-search"|"achievement"|"check"|"lock"|"arrow-right"|"close"|"edit"|"grid"|"trophy"|"grip"|"arrow-up"|"arrow-down"|"bookmark"|"news"|"gamepad";
 
 export function PodscapeLineIcon({name}:{name:PodscapeIconName}){
  const common={viewBox:"0 0 32 32",fill:"none",stroke:"currentColor",strokeWidth:1.65,strokeLinecap:"round" as const,strokeLinejoin:"round" as const,"aria-hidden":true};
@@ -34,6 +34,9 @@ export function PodscapeLineIcon({name}:{name:PodscapeIconName}){
  if(name==="grip")return <svg {...common}><circle cx="11" cy="8" r="1.7" fill="currentColor" stroke="none"/><circle cx="21" cy="8" r="1.7" fill="currentColor" stroke="none"/><circle cx="11" cy="16" r="1.7" fill="currentColor" stroke="none"/><circle cx="21" cy="16" r="1.7" fill="currentColor" stroke="none"/><circle cx="11" cy="24" r="1.7" fill="currentColor" stroke="none"/><circle cx="21" cy="24" r="1.7" fill="currentColor" stroke="none"/></svg>;
  if(name==="arrow-up")return <svg {...common}><path d="M16 27V5m-9 9 9-9 9 9"/></svg>;
  if(name==="arrow-down")return <svg {...common}><path d="M16 5v22m-9-9 9 9 9-9"/></svg>;
+ if(name==="bookmark")return <svg {...common}><path d="M8 5h16v23l-8-6-8 6V5Z"/></svg>;
+ if(name==="news")return <svg {...common}><rect x="5" y="5" width="22" height="22" rx="2"/><path d="M9 10h6v6H9zM18 10h5M18 14h5M9 20h14M9 23h14"/></svg>;
+ if(name==="gamepad")return <svg {...common}><path d="M9 12h14c4 0 5 4 6 9 .5 3-2.5 5-5 3l-4-3H12l-4 3c-2.5 2-5.5 0-5-3 1-5 2-9 6-9Z"/><path d="M9 17h7m-3.5-3.5v7M21 16.5h.01M24 19h.01"/></svg>;
  if(name==="menu")return <svg {...common}><path d="M7 9h18M7 16h18M7 23h18"/></svg>;
  return null;
 }
