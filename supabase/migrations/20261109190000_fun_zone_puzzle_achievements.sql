@@ -26,7 +26,7 @@ returns table(achievement_key text, exp_awarded integer)
 language plpgsql security definer set search_path=''
 as $$
 declare
- did_insert boolean := false;
+ inserted_count bigint := 0;
  puzzle_count integer;
  game_count integer;
  reward record;
@@ -40,8 +40,8 @@ begin
  insert into public.member_puzzle_completions(user_id,game_key,puzzle_id)
  values(p_user_id,p_game_key,p_puzzle_id)
  on conflict do nothing;
- get diagnostics did_insert = row_count;
- if not did_insert then return; end if;
+ get diagnostics inserted_count = row_count;
+ if inserted_count=0 then return; end if;
 
  select count(*), count(distinct game_key) into puzzle_count,game_count
  from public.member_puzzle_completions where user_id=p_user_id;
