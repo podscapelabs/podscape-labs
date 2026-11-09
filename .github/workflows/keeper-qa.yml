@@ -36,5 +36,7 @@ jobs:
         run: pnpm run test:fun-zone
       - name: Onboarding and customization achievement checks
         run: node scripts/verify-experience-achievements.mjs
+      - name: Manager workspace regression checks
+        run: node scripts/verify-manager-workspaces.mjs
       - name: Build Next.js application
         run: pnpm run build
