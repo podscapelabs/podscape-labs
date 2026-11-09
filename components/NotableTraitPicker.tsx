@@ -1,6 +1,6 @@
 "use client";
 
-import {useMemo,useState} from "react";
+import {useEffect,useMemo,useState} from "react";
 import styles from "./NotableTraitPicker.module.css";
 
 const TRAIT_OPTIONS=[
@@ -16,6 +16,17 @@ export function NotableTraitPicker({initialTraits=[]}:{initialTraits?:string[]})
  const [search,setSearch]=useState("");
  const [custom,setCustom]=useState("");
  const [error,setError]=useState("");
+ useEffect(()=>{
+  const imported=(event:Event)=>{
+   const incoming=(event as CustomEvent<{traits:string[]}>).detail?.traits;
+   if(!Array.isArray(incoming))return;
+   setTraits(Array.from(new Set(incoming.map(tidy).filter(Boolean))).slice(0,MAX));
+   setError("");
+  };
+  window.addEventListener("podscape-ledger-traits-import",imported);
+  return ()=>window.removeEventListener("podscape-ledger-traits-import",imported);
+ },[]);
+
  const matches=useMemo(()=>TRAIT_OPTIONS.map(group=>({...group,values:group.values.filter(value=>value.toLowerCase().includes(search.trim().toLowerCase()))})).filter(group=>group.values.length),[search]);
  const add=(value:string)=>{
   const clean=tidy(value);
