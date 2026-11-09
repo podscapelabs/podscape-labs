@@ -29,7 +29,7 @@
 
 /* Personal navigation: long-press a homepage shortcut to customize. */
 .shortcutEditor{display:grid;gap:13px;margin:13px 0 8px;padding:16px;border:1px solid var(--line);border-radius:18px;background:var(--paper);box-shadow:var(--shadow-soft);color:var(--ink)}
-.shortcutEditHead{display:flex;align-items:start;justify-content:space-between;gap:12px}.shortcutEditHead>div{display:grid;gap:4px}.shortcutEditHead strong{font:400 1.4rem var(--serif)}.shortcutEditHead small{font-size:.72rem;color:var(--muted)}.shortcutEditHead button{flex:none;border:0;border-radius:11px;background:var(--forest);color:var(--paper);padding:10px 17px;font-size:.77rem;font-weight:800;cursor:pointer}
+.shortcutEditHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.shortcutEditHead>div{display:grid;gap:4px}.shortcutEditHead strong{font:400 1.4rem var(--serif)}.shortcutEditHead small{font-size:.72rem;color:var(--muted)}.shortcutEditHead button{flex:none;border:0;border-radius:11px;background:var(--forest);color:var(--paper);padding:10px 17px;font-size:.77rem;font-weight:800;cursor:pointer}
 .shortcutEditor>label{display:grid;gap:7px;font-size:.74rem;font-weight:750}.shortcutEditor select{min-height:44px;padding:9px;border:1px solid var(--line);border-radius:10px;background:var(--paper-strong);color:var(--ink);font:inherit;font-size:16px}
 .shortcutEditActions{display:flex;flex-wrap:wrap;gap:8px}.shortcutEditActions button{flex:1;min-height:42px;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--paper-strong);color:var(--ink);font-size:.72rem;font-weight:700;cursor:pointer}.shortcutEditActions button:disabled{opacity:.4;cursor:not-allowed}.shortcutEditor>small{font-size:.66rem;color:var(--muted)}
 .shortcutEditing .shortcut{touch-action:none;cursor:grab;-webkit-touch-callout:none;user-select:none}.shortcutEditing .shortcut:active{cursor:grabbing}.shortcutEditing .shortcutSelected{outline:2px solid var(--forest);outline-offset:2px}
@@ -206,7 +206,7 @@
 
 /* Personal favorites: resolved from published content or the member's own colonies. */
 .pinnedGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
-.pinnedCard{position:relative;display:grid;grid-template-columns:50px minmax(0,1fr);gap:10px;align-items:start;padding:14px 42px 14px 14px;min-height:138px;border:1px solid var(--line);border-radius:17px;background:var(--paper)}
+.pinnedCard{position:relative;display:grid;grid-template-columns:50px minmax(0,1fr);gap:10px;align-items:flex-start;padding:14px 42px 14px 14px;min-height:138px;border:1px solid var(--line);border-radius:17px;background:var(--paper)}
 .pinnedIcon{display:grid;place-items:center;width:45px;height:45px;border-radius:13px;background:color-mix(in srgb,var(--forest) 11%,var(--paper));color:var(--forest)}
 .pinnedIcon svg{width:26px;height:26px}
 .pinnedCard>div{min-width:0}
