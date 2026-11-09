@@ -11,7 +11,7 @@ export type SpeciesWidgetId=(typeof speciesWidgetIds)[number];
 export const speciesWidgetLabels:Record<SpeciesWidgetId,string>={
  about:"Species overview",care:"Basic Care & Behaviour",moisture:"Moisture preference",
  feeding:"Feeding overview",habitat:"Habitat & substrate",traits:"Notable traits",guides:"Related Field Guides",
- environment:"Moisture & Humidity",breeding:"Breeding & Development",taxonomy:"Taxonomy & Origin",nutrition:"Feeding & Ecology",habitatAdvanced:"Habitat & Setup",behaviour:"Behaviour & Ecology",sources:"Research & Sources",personal:"My Species Tools",navigation:"Explore Species"
+ environment:"Moisture & Humidity",breeding:"Breeding & Development",taxonomy:"Taxonomy & Origin",nutrition:"Feeding & Nutrition",habitatAdvanced:"Habitat & Setup",behaviour:"Behaviour & Ecology",sources:"Research & Sources",personal:"My Species Tools",navigation:"Explore Species"
 };
 const descriptions:Record<SpeciesWidgetId,string>={
  about:"A short introduction to the species",care:"Essential care, activity and breeding at a glance",
@@ -30,7 +30,8 @@ function normalize(value:unknown):Layout{
  const obj=value as Partial<Layout>;
  // Migrate layouts saved before Basic Care and Behaviour were combined.
  const oldOrder:unknown[]=Array.isArray(obj.order)?obj.order:[];
- const ordered=oldOrder.filter(id=>id!=="behaviour");
+ // Behaviour is now a valid specialist widget; never drop it from persisted layouts.
+ const ordered=oldOrder;
  const order=[...uniqueAllowed(ordered,defaultOrder),...defaultOrder].filter((v,i,a)=>a.indexOf(v)===i);
  const existing:unknown[]=Array.isArray(obj.visible)?obj.visible:defaultVisible;
  const migrated=existing.includes("behaviour")&&!existing.includes("care")?[...existing,"care"]:existing;
