@@ -38,6 +38,18 @@ function introText(value: string, fallback = "") {
   return plain.slice(0, cutoff > 120 ? cutoff : 232).trimEnd() + "…";
 }
 
+/** Display Fahrenheit from a clearly parsed Celsius range without changing stored care data. */
+function displayTemperature(value:string){
+ const source=value.trim();
+ if(/°\s*F\b/i.test(source))return source;
+ const match=source.match(/^(\d+(?:\.\d+)?)\s*[–—-]\s*(\d+(?:\.\d+)?)\s*°\s*C\s*$/i);
+ if(!match)return source;
+ const lo=Number(match[1]),hi=Number(match[2]);
+ if(!Number.isFinite(lo)||!Number.isFinite(hi)||lo>hi)return source;
+ const toF=(c:number)=>Math.round(c*9/5+32);
+ return `${match[1]}–${match[2]}°C (${toF(lo)}–${toF(hi)}°F)`;
+}
+
 export default async function SpeciesPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ ownerPreview?: string }> }) {
   const record = await getSpeciesRecord((await params).slug);
   if (!record) notFound();
@@ -55,7 +67,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
   // Only render explicitly authored species facts. Empty fields never become assumptions.
   const quickFacts = [
     {label:"Care level",value:record.careLevel},
-    {label:"Temperature",value:record.temperature,note:record.temperatureNote},
+    {label:"Temperature",value:displayTemperature(record.temperature),note:record.temperatureNote},
     {label:"Ventilation",value:record.ventilation,note:record.ventilationNote},
     {label:"Activity",value:record.activity,note:record.activityNote},
     {label:"Reproduction",value:record.reproduction,note:record.reproductionNote},
