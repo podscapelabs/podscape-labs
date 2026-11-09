@@ -12,6 +12,7 @@ import { PlatformShell } from "@/components/PlatformShell";
 import Image from "next/image";
 import { SpeciesDiscoveryTracker } from "@/components/SpeciesDiscoveryTracker";
 import styles from "@/components/SpeciesProfile.module.css";
+import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
 import homeStyles from "@/components/PodscapeHome.module.css";
 import { isSpeciesRecordActive, speciesDisplayName, speciesGenus, speciesRecordLabel, speciesScientificName } from "@/data/species";
 import { isGuideActive } from "@/data/guides";
@@ -133,7 +134,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
         <div className={styles.dashboardBody}>
           <SpeciesDashboardWorkspace scope={user?.id || "guest"} preview={previewRequested} widgets={{
             about:about ? <details className={styles.dashboardAbout}>
-              <summary><span className={styles.aboutSymbol} aria-hidden="true">❧</span><span className={styles.aboutSummary}><strong>About {displayName}</strong><span className={styles.aboutPreview}>{about}</span></span><span className={styles.aboutChevron} aria-hidden="true">⌄</span></summary>
+              <summary><span className={styles.aboutSymbol} aria-hidden="true"><PodscapeLineIcon name="book" /></span><span className={styles.aboutSummary}><strong>About {displayName}</strong><span className={styles.aboutPreview}>{about}</span></span><span className={styles.aboutChevron} aria-hidden="true">⌄</span></summary>
               <div className={styles.aboutFull}><p>{authoredAbout || summary}</p></div>
             </details> : null,
             care:quickFacts.length ? <section className={styles.dashboardCare+" "+styles.glanceWidget} aria-label="At a Glance">
