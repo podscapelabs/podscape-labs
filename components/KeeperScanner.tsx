@@ -7,6 +7,7 @@ import jsQR from "jsqr";
 import { logKeeperEvent, undoKeeperEvent, logKeeperEventBatch, undoKeeperEventBatch } from "@/app/keeper/actions";
 import styles from "./KeeperScanner.module.css";
 import {WorkspaceSectionHeader} from "./PodscapeWorkspaceUI";
+import {PodscapeLineIcon} from "./PodscapeLineIcon";
 type Bin = { id:string; name:string; label:string; speciesId:string; species:string; quantity:number; status:string; breeding:string; image:string|null };
 type DetectedCode = { rawValue:string };
 type QRDetector = { detect:(source:HTMLVideoElement)=>Promise<DetectedCode[]> };
@@ -19,7 +20,7 @@ function readId(value:string):string|null {
  if (/^[a-f\d-]{36}$/i.test(raw)) return raw;
  try {const url=new URL(raw);if(url.protocol!=="https:"&&url.protocol!=="http:")return null;const path=url.pathname.match(/\/(?:keeper|bins?)\/([a-f\d-]{36})(?:\/|$)/i);return path?.[1]||url.searchParams.get("bin")||null;}catch{return null;}
 }
-const tasks=[{label:"Misted",kind:"maintenance",note:"Misted",icon:"◌"},{label:"Fed",kind:"feeding",note:"Fed",icon:"◈"},{label:"Spot cleaned",kind:"maintenance",note:"Spot cleaned",icon:"✧"},{label:"Leaf litter",kind:"maintenance",note:"Leaf litter added",icon:"❧"}] as const;
+const tasks=[{label:"Misted",kind:"maintenance",note:"Misted",icon:"droplet"},{label:"Fed",kind:"feeding",note:"Fed",icon:"jar"},{label:"Spot cleaned",kind:"maintenance",note:"Spot cleaned",icon:"bin"},{label:"Leaf litter",kind:"maintenance",note:"Leaf litter added",icon:"leaf"}] as const;
 type CareRecord={id:string;binId:string;label:string;note:string;createdAt:string;previous:string|null;reminderBefore?:string|null};
 type LastOperation={records:CareRecord[];label:string};
 type ActivityEntry={id:string;kind:string;note:string;createdAt:string;quantityChange:number|null};
@@ -229,14 +230,14 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careMode=f
  {state==="idle"&&!selected?<section className={styles.quickChoose} aria-label="Choose a bin to log care">
    <div className={styles.quickChooseHeader}><div><p className={styles.kicker}>YOUR ENCLOSURES</p><h2>Choose a bin</h2><p>Tap a colony to start logging care.</p></div><span>{bins.length} {bins.length===1?"bin":"bins"}</span></div>
    {bins.length?<><div className={styles.quickChooseSearch}><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" aria-label="Find a bin to log care" placeholder="Search species or bin name…" value={binSearch} onChange={event=>{setBinSearch(event.target.value);setShowAllBins(false)}} autoComplete="off"/>{binSearch?<button type="button" aria-label="Clear bin search" onClick={()=>setBinSearch("")}>×</button>:null}</div>
-    <div className={styles.quickChooseList}>{filteredBins.length?visibleChoices.map(bin=><button key={bin.id} type="button" className={styles.quickChooseBin} onClick={()=>match(bin.id)}><span className={styles.quickChoosePhoto}>{bin.image?<Image src={bin.image} alt="" fill sizes="46px"/>:<span aria-hidden="true">❧</span>}</span><span className={styles.quickChooseIdentity}><strong>{bin.species}</strong><small>{bin.name}{bin.label?" · "+bin.label:""}</small></span><span aria-hidden="true" className={styles.quickChooseArrow}>→</span></button>):<p className={styles.quickChooseEmpty}>No matching bins. Try another species or enclosure name.</p>}</div>{!binSearch.trim()&&!showAllBins&&filteredBins.length>8?<button type="button" className={styles.showMoreBins} onClick={()=>setShowAllBins(true)}>Show all {filteredBins.length} bins ↓</button>:null}{showAllBins&&filteredBins.length>8&&!binSearch.trim()?<button type="button" className={styles.showMoreBins} onClick={()=>setShowAllBins(false)}>Show fewer bins ↑</button>:null}</>
+    <div className={styles.quickChooseList}>{filteredBins.length?visibleChoices.map(bin=><button key={bin.id} type="button" className={styles.quickChooseBin} onClick={()=>match(bin.id)}><span className={styles.quickChoosePhoto}>{bin.image?<Image src={bin.image} alt="" fill sizes="46px"/>:<span aria-hidden="true"><PodscapeLineIcon name="bin"/></span>}</span><span className={styles.quickChooseIdentity}><strong>{bin.species}</strong><small>{bin.name}{bin.label?" · "+bin.label:""}</small></span><span aria-hidden="true" className={styles.quickChooseArrow}>→</span></button>):<p className={styles.quickChooseEmpty}>No matching bins. Try another species or enclosure name.</p>}</div>{!binSearch.trim()&&!showAllBins&&filteredBins.length>8?<button type="button" className={styles.showMoreBins} onClick={()=>setShowAllBins(true)}>Show all {filteredBins.length} bins ↓</button>:null}{showAllBins&&filteredBins.length>8&&!binSearch.trim()?<button type="button" className={styles.showMoreBins} onClick={()=>setShowAllBins(false)}>Show fewer bins ↑</button>:null}</>
     :<div className={styles.quickChooseEmpty}>You do not have any active bins yet. <Link href="/keeper/new">Add your first bin →</Link></div>}
    <div className={styles.quickChooseFooter}><button type="button" onClick={beginScan}>▣ Scan a QR label instead</button><Link href="/keeper/new">+ Add bin</Link></div>
   </section>:null}
  {selected&&state==="idle"?<div className={styles.careWorkspace}>
    <div className={styles.careTopline}><span>MANAGER / COLONY WORKSPACE</span><Link href="/keeper">← Manager</Link></div>
    <div className={styles.careIdentity}>
-    {selected.image?<div className={styles.careThumb}><Image src={selected.image} alt="" fill sizes="84px"/></div>:<div className={styles.careThumbFallback}>❧</div>}
+    {selected.image?<div className={styles.careThumb}><Image src={selected.image} alt="" fill sizes="84px"/></div>:<div className={styles.careThumbFallback}><PodscapeLineIcon name="bin"/></div>}
     <div className={styles.careIdentityText}><h1>{selected.species}</h1><p><strong>{selected.name}</strong>{selected.label?" · "+selected.label:""}</p><span>{selected.status.replaceAll("-"," ")} · Breeding: {selected.breeding.replaceAll("-"," ")}</span></div>
    </div>
    <div className={styles.populationStrip} aria-label="Estimated population counts"><div><small>This bin</small><strong>~{selected.quantity.toLocaleString()}</strong></div><div><small>{selected.species} · {speciesBins.length} {speciesBins.length===1?"bin":"bins"}</small><strong>~{speciesPopulation.toLocaleString()} total</strong></div></div>
@@ -264,7 +265,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careMode=f
     const logged=multiCare?chosenBins.length>0&&chosenBins.every(id=>recent.some(r=>r.binId===id&&r.label===t.label)):recent.some(r=>r.binId===selected.id&&r.label===t.label);
     const last=lastDates[selected.id]?.[t.note];
     return <button type="button" key={t.label} className={logged?styles.careTileLogged:styles.careTile} disabled={pending||undoPending||(multiCare&&chosenBins.length===0)} onClick={()=>multiCare?saveMultiple(t.kind,t.note,t.label):save(t.kind,t.note,t.label)}>
-      <span className={styles.careTileTop}><span aria-hidden="true">{t.icon}</span><span aria-hidden="true">{logged?"✓":""}</span></span>
+      <span className={styles.careTileTop}><span aria-hidden="true"><PodscapeLineIcon name={t.icon}/></span><span aria-hidden="true">{logged?"✓":""}</span></span>
       <strong>{t.label}</strong><small>{multiCare?(logged?"Saved for selected bins":chosenBins.filter(id=>recent.some(r=>r.binId===id&&r.label===t.label)).length+" of "+chosenBins.length+" logged"):(logged?"Saved this session · ":"Last: ")+formatLast(last)}</small>
     </button>;
    })}</div>
