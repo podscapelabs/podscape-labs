@@ -2,6 +2,7 @@
 
 import {useEffect,useState} from "react";
 import styles from "./InstallPodscape.module.css";
+import {PodscapeLineIcon} from "./PodscapeLineIcon";
 
 type Browser="ios-safari"|"ios-other"|"android"|"desktop";
 type InstallEvent=Event&{prompt:()=>Promise<void>;userChoice:Promise<{outcome:"accepted"|"dismissed"}>};
@@ -49,7 +50,7 @@ export function InstallPodscape({variant="banner"}:{variant?:"banner"|"settings"
   try{await installPrompt.prompt();const result=await installPrompt.userChoice;if(result.outcome==="accepted")setInstallPrompt(null);else setExpanded(true)}catch{setExpanded(true)}
  };
  return <section className={variant==="banner"?styles.banner:styles.settings} aria-label="Install Podscape">
-  <span className={styles.mark} aria-hidden="true">❧</span>
+  <span className={styles.mark} aria-hidden="true"><PodscapeLineIcon name="home"/></span>
   <div className={styles.body}>
    <strong>{variant==="banner"?"Make Podscape an app":"Add Podscape to your Home Screen"}</strong>
    <p>{variant==="banner"?"One tap from your Home Screen, without opening the browser first.":"Keep Podscape a tap away on your phone or supported computer."}</p>
