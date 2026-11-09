@@ -76,7 +76,7 @@ export default function ProgressDashboard({
           </span>
           <span className={styles.tileCopy}><span className={styles.tileStatus}>{a.unlockedAt ? "✓ Unlocked" : a.status === "planned" ? "Coming later" : "Locked"}</span>
             <strong>{a.hidden&&!a.unlockedAt?"Secret Achievement":a.title}</strong><span className={styles.tileDescription}>{a.hidden&&!a.unlockedAt?"A little surprise for curious keepers.":a.description}</span>
-            {a.status==="available"&&!a.hidden||a.unlockedAt ? <span className={styles.tileReward}>+{a.exp} EXP{a.coins ? ` · +${a.coins} Pod Coins (legacy)` : ""}</span> : <span className={styles.tileRewardMuted}>Rewards not finalized</span>}</span>
+            {(a.status==="available"&&(!a.hidden||Boolean(a.unlockedAt))) ? <span className={styles.tileReward}>+{a.exp} EXP{a.coins ? ` · +${a.coins} Pod Coins (legacy)` : ""}</span> : <span className={styles.tileRewardMuted}>{a.hidden&&!a.unlockedAt?"Secret reward": "Rewards not finalized"}</span>}</span>
         </button>)}
       </div>
       {!shown.length ? <p className={styles.empty}>No achievements in this view yet.</p> : null}
@@ -96,7 +96,7 @@ export default function ProgressDashboard({
     <div className={styles.modalEmblem} aria-hidden="true">{selectedAchievement.unlockedAt ? "✦" : "❧"}</div>
     <span className={styles.tileStatus}>{selectedAchievement.unlockedAt?"✓ Unlocked":selectedAchievement.status==="planned"?"Coming later":"Not yet unlocked"}</span>
     <h2 id="achievement-detail-title">{selectedAchievement.hidden&&!selectedAchievement.unlockedAt?"Secret Achievement":selectedAchievement.title}</h2><p>{selectedAchievement.hidden&&!selectedAchievement.unlockedAt?"A secret milestone is waiting to be discovered.":selectedAchievement.description}</p>
-    {selectedAchievement.status==="available"&&(!selectedAchievement.hidden||selectedAchievement.unlockedAt) ? <strong className={styles.modalReward}>+{selectedAchievement.exp} EXP{selectedAchievement.coins ? ` · +${selectedAchievement.coins} Pod Coins (legacy reward)` : ""}</strong> : <p>Milestone and rewards are still being designed.</p>}
+    {selectedAchievement.status==="available"&&(!selectedAchievement.hidden||selectedAchievement.unlockedAt) ? <strong className={styles.modalReward}>+{selectedAchievement.exp} EXP{selectedAchievement.coins ? ` · +${selectedAchievement.coins} Pod Coins (legacy reward)` : ""}</strong> : <p>{selectedAchievement.hidden&&!selectedAchievement.unlockedAt?"Reward revealed when unlocked.":"Milestone and rewards are still being designed."}</p>}
     {selectedAchievement.unlockedAt ? <p>Earned {new Date(selectedAchievement.unlockedAt).toLocaleDateString("en-CA",{year:"numeric",month:"long",day:"numeric"})}</p> : null}
     {selectedAchievement.status==="available"&&!selectedAchievement.unlockedAt&&!selectedAchievement.hidden ? <Link href={selectedAchievement.href} onClick={()=>setSelected(null)}>Keep exploring →</Link> : null}
   </div></div> : null}
