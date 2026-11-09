@@ -2,24 +2,29 @@
 export const speciesResearchGroups=[
  {id:"identity",title:"Taxonomy & origin",fields:[
   ["taxonomicStatus","Taxonomic status",120],["taxonomicSynonyms","Synonyms / historic names",300],
-  ["nativeDistribution","Native distribution",300],["naturalMicrohabitat","Natural microhabitat",300],
+  ["nativeDistribution","Native distribution",300],
   ["morphOrigin","Captive morph origin",240],["identificationNotes","Identification notes & lookalikes",500],
   ["adultSizeMm","Typical adult length (mm)",40],["lifespan","Lifespan (if established)",100]
  ]},
- {id:"environment",title:"Moisture & habitat",fields:[
+ {id:"environment",title:"Moisture & humidity",fields:[
   ["humidityMin","RH lower bound (%)",3],["humidityMax","RH upper bound (%)",3],
   ["moistZoneCoverage","Approximate moist-zone coverage (% of floor area)",3],
   ["moistRefugeCondition","Moist-refuge substrate condition",120],
-  ["moistureGradientGuidance","Moisture gradient / dry-side guidance",350],
+  ["moistureGradientGuidance","Moisture gradient / dry-side guidance",350]
+ ]},
+ {id:"habitat",title:"Habitat & enclosure",fields:[
+  ["naturalMicrohabitat","Natural microhabitat",300],
   ["substrateDepth","Substrate depth",100],["enclosureGuidance","Enclosure setup guidance",350]
  ]},
  {id:"breeding",title:"Breeding & development",fields:[
   ["broodAverage","Average young per brood",8],["broodMin","Observed brood minimum",8],["broodMax","Observed brood maximum",8],
   ["incubationPeriod","Incubation / brooding period",100],["maturityAge","Age at maturity",100],["breedingSeason","Breeding season",120]
  ]},
- {id:"nutrition",title:"Feeding & ecology",fields:[
+ {id:"nutrition",title:"Feeding & nutrition",fields:[
   ["stapleDiet","Staple diet",300],["proteinGuidance","Protein guidance",240],
-  ["calciumGuidance","Calcium guidance",200],["dietaryCautions","Dietary cautions",240],
+  ["calciumGuidance","Calcium guidance",200],["dietaryCautions","Dietary cautions",240]
+ ]},
+ {id:"behaviour",title:"Behaviour & bioactive ecology",fields:[
   ["defensiveBehaviour","Defensive behaviour",200],["visibilityNotes","Visibility & activity notes",200],
   ["bioactiveSuitability","Bioactive suitability",240]
  ]},
