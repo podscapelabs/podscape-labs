@@ -1285,3 +1285,20 @@ h1, h2, h3 { text-wrap: balance; }
  .v2-site:has(.v2-search-page) .v2-search-page>input{min-height:48px;font-size:16px;border-radius:12px}
  .v2-site:has(.v2-search-page) .v2-search-page>div:not(.v2-empty-state){margin-top:18px}
 }
+
+/* Owner desks: compact PodScape workspace treatment shared by Species, Guides and Lab. */
+.admin-ledger-desk{min-width:0;padding:clamp(14px,2.6vw,34px) clamp(12px,3vw,38px) clamp(34px,5vw,72px);color:var(--ink);background:var(--canvas)}
+.admin-ledger-desk .admin-dashboard-head{width:min(100%,1500px);margin:0 auto clamp(14px,2vw,24px);min-width:0}
+.admin-ledger-desk .admin-dashboard-head h1{font-size:clamp(2rem,4vw,3.6rem);line-height:1.08;letter-spacing:-.035em}
+.admin-ledger-desk .admin-ledger-layout{align-items:start;gap:clamp(10px,1.5vw,20px)}
+.admin-ledger-desk .admin-record-list,.admin-ledger-desk .admin-record-editor{min-width:0;border:1px solid var(--line);border-radius:18px;background:var(--paper);overflow-wrap:anywhere}
+.admin-ledger-desk .admin-record-list{overflow:hidden}
+.admin-ledger-desk .admin-record-list nav{min-width:0}
+.admin-ledger-desk .admin-record-list a,.admin-ledger-desk .admin-record-list button{min-height:42px}
+.admin-ledger-desk .admin-record-editor form,.admin-ledger-desk .admin-record-editor fieldset{min-width:0}
+.admin-ledger-desk .admin-record-editor input,.admin-ledger-desk .admin-record-editor select,.admin-ledger-desk .admin-record-editor textarea{max-width:100%;min-width:0;border-radius:10px}
+.admin-ledger-desk .admin-record-editor button,.admin-ledger-desk .admin-record-editor .button{min-height:42px}
+.admin-ledger-desk :is(a,button,input,select,textarea,summary):focus-visible{outline:3px solid var(--forest);outline-offset:2px}
+@media(min-width:1200px){.admin-ledger-desk .admin-ledger-layout{grid-template-columns:minmax(255px,.28fr) minmax(0,1fr)}}
+@media(max-width:700px){.admin-ledger-desk{padding-inline:12px}.admin-ledger-desk .admin-ledger-layout{grid-template-columns:minmax(0,1fr)}.admin-ledger-desk .admin-record-list,.admin-ledger-desk .admin-record-editor{border-radius:14px}.admin-ledger-desk .admin-dashboard-head h1{font-size:clamp(2rem,9vw,3rem)}}
+@media(prefers-reduced-motion:reduce){.admin-ledger-desk *{scroll-behavior:auto}}
