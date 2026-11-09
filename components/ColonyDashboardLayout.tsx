@@ -1,5 +1,5 @@
 "use client";
-import {useEffect,useState,type ReactNode} from "react";
+import {useEffect,useRef,useState,type ReactNode} from "react";
 import {WorkspaceEditBlock,WorkspaceEditToolbar,useWorkspaceDrag} from "./WorkspaceEditCanvas";
 import {moveBlock,dropBlock,uniqueAllowed} from "./workspace-layout";
 import home from "./PodscapeHome.module.css";
@@ -28,16 +28,35 @@ export function ColonyDashboardLayout({scope,colonyId,widgets,forceVisible}:{
 }){
  const storageKey="podscape-colony-dashboard-v1:"+scope+":"+colonyId;
  const [layout,setLayout]=useState<Layout>(defaultColonyLayout);
- const [ready,setReady]=useState(false);
+ const [hydratedKey,setHydratedKey]=useState("");
+ const ready=hydratedKey===storageKey;
+ const triggerRef=useRef<HTMLButtonElement>(null);
+ const closeRef=useRef<HTMLButtonElement>(null);
  const [editing,setEditing]=useState(false);
  const [libraryOpen,setLibraryOpen]=useState(false);
  useEffect(()=>{
   try{const saved=localStorage.getItem(storageKey);setLayout(saved?normalizeColonyLayout(JSON.parse(saved)):defaultColonyLayout())}
   catch{setLayout(defaultColonyLayout())}
-  setReady(true);
+  setHydratedKey(storageKey);
  },[storageKey]);
- const update=(next:Layout)=>{const clean=normalizeColonyLayout(next);setLayout(clean);try{localStorage.setItem(storageKey,JSON.stringify(clean))}catch{}};
- const visible=layout.order.filter(id=>layout.visible.includes(id)||id===forceVisible);
+ useEffect(()=>{
+  if(!libraryOpen)return;
+  const previous=document.activeElement instanceof HTMLElement?document.activeElement:null;
+  const onKey=(event:KeyboardEvent)=>{
+   if(event.key==="Escape"){event.preventDefault();setLibraryOpen(false);return;}
+   if(event.key!=="Tab")return;
+   const buttons=Array.from(document.querySelectorAll<HTMLElement>("[data-colony-widget-library] button:not([disabled])"));
+   if(!buttons.length)return;
+   const first=buttons[0],last=buttons[buttons.length-1];
+   if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+   else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+  };
+  closeRef.current?.focus();
+  document.addEventListener("keydown",onKey);
+  return ()=>{document.removeEventListener("keydown",onKey);previous?.focus();};
+ },[libraryOpen]);
+ const update=(next:Layout)=>{if(!ready)return;const clean=normalizeColonyLayout(next);setLayout(clean);try{localStorage.setItem(storageKey,JSON.stringify(clean))}catch{}};
+ const visible=(ready?layout:defaultColonyLayout()).order.filter(id=>ready?(layout.visible.includes(id)||id===forceVisible):defaultVisible.includes(id));
  const reorder=(from:ColonyWidgetId,to:ColonyWidgetId)=>update({...layout,order:dropBlock(layout.order,from,to)});
  const move=(id:ColonyWidgetId,delta:number)=>update({...layout,order:moveBlock(layout.order,visible,id,delta)});
  const {dragging,begin,move:dragMove,stop}=useWorkspaceDrag<ColonyWidgetId>("colony",visible,reorder);
@@ -48,24 +67,24 @@ export function ColonyDashboardLayout({scope,colonyId,widgets,forceVisible}:{
   onPointerMove={event=>{if(editing)dragMove(event)}} onPointerUp={()=>{if(editing)stop()}} onPointerCancel={()=>{if(editing)stop()}}>
   {!editing?<div className={styles.dashboardHeading}>
     <div><p>YOUR COLONY, YOUR SPACE</p><h2>Colony dashboard</h2><small>See what matters. Open a focused workspace for more.</small></div>
-    <button type="button" onClick={()=>setLibraryOpen(true)}>✎ Customize</button>
+    <button ref={triggerRef} type="button" onClick={()=>setLibraryOpen(true)} disabled={!ready}>✎ Customize</button>
    </div>:<WorkspaceEditToolbar title="Arrange your colony" description="Drag or move widgets. Your changes apply to this colony on this device." onAdd={()=>{done();setLibraryOpen(true)}} onReset={reset} onDone={done}/>}
-  <div className={styles.colonyWidgetGrid}>
-   {visible.map((id,index)=><WorkspaceEditBlock key={id} id={id} scope="colony" label={labels[id]} index={index} count={visible.length} editing={editing} dragging={dragging===id} required={false}
+  <div className={styles.colonyWidgetGrid} aria-busy={!ready}>
+   {ready?visible.map((id,index)=><WorkspaceEditBlock key={id} id={id} scope="colony" label={labels[id]} index={index} count={visible.length} editing={editing} dragging={dragging===id} required={false}
      onMove={move} onRemove={toggle} begin={begin} move={dragMove} stop={stop} onLongPress={()=>setEditing(true)}>
      {widgets[id]}
-    </WorkspaceEditBlock>)}
+    </WorkspaceEditBlock>):<p className={styles.emptyDashboard}>Loading your colony layout…</p>}
   </div>
   {ready&&!editing?<div className={styles.addWidgetFooter}><button type="button" onClick={()=>setLibraryOpen(true)}>＋ Add widgets</button></div>:null}
   {ready&&!visible.length?<p className={styles.emptyDashboard}>This colony dashboard is clear. Add a widget to begin.</p>:null}
   {libraryOpen?<div className={home.homeEditorOverlay} onPointerDown={event=>{if(event.target===event.currentTarget)setLibraryOpen(false)}}>
-   <div className={styles.colonyWidgetLibrary} role="dialog" aria-modal="true" aria-labelledby="colony-widget-heading">
-    <header className={styles.libraryHeader}><div><small>PERSONALIZE THIS COLONY</small><h2 id="colony-widget-heading">Colony widgets</h2></div><button type="button" onClick={()=>setLibraryOpen(false)}>Done</button></header>
+   <div data-colony-widget-library className={styles.colonyWidgetLibrary} role="dialog" aria-modal="true" aria-labelledby="colony-widget-heading">
+    <header className={styles.libraryHeader}><div><small>PERSONALIZE THIS COLONY</small><h2 id="colony-widget-heading">Colony widgets</h2></div><button ref={closeRef} type="button" onClick={()=>setLibraryOpen(false)}>Done</button></header>
     <p>Choose what&apos;s useful to you. Every colony can have its own layout; hiding widgets never changes your records.</p>
     <div className={styles.libraryControls}><span>{visible.length} of {colonyWidgetIds.length} shown</span><button type="button" onClick={()=>{setLibraryOpen(false);setEditing(true)}}>Arrange widgets</button></div>
     {Object.entries(groups).map(([group,items])=><section className={styles.libraryGroup} key={group}>
       <h3>{group}</h3><div className={styles.libraryGrid}>{items.map(([id,title,description])=><article className={styles.libraryCard} key={id}>
-       <strong>{title}</strong><small>{description}</small><button type="button" aria-pressed={layout.visible.includes(id as ColonyWidgetId)} onClick={()=>toggle(id as ColonyWidgetId)}>{layout.visible.includes(id as ColonyWidgetId)?"✓ Added":"+ Add widget"}</button>
+       <strong>{title}</strong><small>{description}</small><button type="button" aria-pressed={layout.visible.includes(id as ColonyWidgetId)} aria-label={(layout.visible.includes(id as ColonyWidgetId)?"Remove ":"Add ")+title} onClick={()=>toggle(id as ColonyWidgetId)}>{layout.visible.includes(id as ColonyWidgetId)?"✓ Added":"+ Add widget"}</button>
       </article>)}</div>
      </section>)}
     <footer className={styles.libraryFooter}><button type="button" onClick={reset}>Reset colony</button><button type="button" onClick={()=>setLibraryOpen(false)}>Done</button></footer>
