@@ -1,4 +1,5 @@
 import {NextResponse} from "next/server";
+import {isAdminAuthenticated} from "@/lib/admin-auth";
 import {customerSupabase} from "@/lib/customer-auth/server";
 import {testerAccessStatus} from "@/lib/customer-auth/access";
 import {getSupabaseAdmin} from "@/lib/supabase-admin";
@@ -53,7 +54,7 @@ export async function POST(request:Request){
  const {data:{user},error}=await db.auth.getUser();
  if(error||!user?.id||!user.email||!user.email_confirmed_at)
   return NextResponse.json({error:"Verified account required"},{status:401});
- if(user.app_metadata?.role!=="owner"&&(await testerAccessStatus(user.email))!=="approved")
+ if(user.app_metadata?.role!=="owner"&&(await testerAccessStatus(user.email))!=="approved"&&!(await isAdminAuthenticated()))
   return NextResponse.json({error:"Early Access invitation required"},{status:403});
  let body:unknown;try{body=await request.json()}catch{return NextResponse.json({error:"Invalid JSON"},{status:400})}
  if(!body||typeof body!=="object")return NextResponse.json({error:"Invalid payload"},{status:400});
@@ -66,7 +67,7 @@ export async function POST(request:Request){
  if(saveError){console.error("Experience achievement failed",saveError.code);return NextResponse.json({error:"Progress unavailable"},{status:503})}
  const unlocked=(Array.isArray(data)?data:[]).flatMap(row=>{
   const definition=achievementCatalog.find(item=>item.key===row.achievement_key&&item.status==="available");
-  return definition?[{id:definition.key,title:definition.title,description:definition.description,exp:definition.exp,coins:0}]:[];
+  return definition?[{id:definition.key,title:definition.title,description:definition.description,exp:definition.exp,coins:0,hidden:definition.hidden===true}]:[];
  });
  return NextResponse.json({saved:true,unlocked});
 }
