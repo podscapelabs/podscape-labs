@@ -5,7 +5,7 @@ function has(record:SpeciesRecord,keys:(keyof SpeciesRecord)[]){return keys.some
 function Details({title,rows,note}:{title:string;rows:{label:string;value:string|undefined}[];note?:string}){
  const active=rows.filter(r=>r.value?.trim());
  if(!active.length)return null;
- return <section className={styles.speciesInfoCard}><h2>{title}</h2><dl className={styles.researchFacts}>{active.map(r=><div key={r.label}><dt>{r.label}</dt><dd>{r.value}</dd></div>)}</dl>{note?<p className={styles.researchDisclaimer}>{note}</p>:null}</section>;
+ return <section className={styles.speciesInfoCard}><h2>{title}</h2><dl className={styles.researchFacts}>{active.map(r=><div key={r.label}><dt>{r.label}</dt><dd>{r.value}</dd></div>)}</dl>{note?<details className={styles.researchContext}><summary>Research context</summary><p className={styles.researchDisclaimer}>{note}</p></details>:null}</section>;
 }
 function validPercent(v:string|undefined){
  if(!v||!/^(?:100|[1-9]?\d)$/.test(v.trim()))return null;
@@ -113,7 +113,7 @@ export function ResearchSourcesWidget({record}:{record:SpeciesRecord}){
  {record.evidenceNotes?<div><dt>Evidence &amp; uncertainty</dt><dd>{record.evidenceNotes}</dd></div>:null}
  </dl>
  {links.length?<div className={styles.researchLinks}><strong>Original references</strong>{links.map((url,index)=><a key={url} href={url} target="_blank" rel="noopener noreferrer" title={url}>{index+1}. {new URL(url).hostname.replace(/^www\./,"")} ↗</a>)}</div>:null}
- <p className={styles.researchDisclaimer}>Seller consensus and scientific measurements are different evidence types. Species-level findings may not have been measured for a particular morph.</p>
+ <details className={styles.researchContext}><summary>About this evidence</summary><p className={styles.researchDisclaimer}>Seller consensus and scientific measurements are different evidence types. Species-level findings may not have been measured for a particular morph.</p></details>
  </section>;
 }
 export function HabitatSetupWidget({record}:{record:SpeciesRecord}){
