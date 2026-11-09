@@ -21,3 +21,16 @@
 .back{min-height:48px;margin-top:16px;padding:10px 16px;border:1px solid var(--line);border-radius:13px;background:var(--paper-strong);color:var(--forest);font-weight:800;cursor:pointer}
 .dialog button:focus-visible{outline:3px solid var(--forest);outline-offset:3px}
 @media(max-width:720px){.dialog{max-height:calc(100dvh - 48px);overflow-y:auto}}
+
+/* First-visit personalization choices follow PodScape's compact portal style. */
+.dialog{max-height:min(92dvh,760px);overflow-y:auto}
+.layoutChoices{border:0;padding:0;margin:18px 0 6px;display:grid;gap:7px;text-align:left}
+.layoutChoices legend{font-size:.7rem;font-weight:800;color:var(--forest);margin-bottom:8px}
+.layoutChoice{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;background:var(--paper-strong);padding:10px 12px;cursor:pointer}
+.layoutChoice[data-selected=true]{border-color:var(--forest);background:color-mix(in srgb,var(--forest) 9%,var(--paper))}
+.layoutChoice input{accent-color:var(--forest);width:18px;height:18px;flex:none}
+.layoutChoice span{display:grid;gap:3px}
+.layoutChoice strong{font-size:.8rem;color:var(--ink)}
+.layoutChoice small{font-size:.7rem;color:var(--muted)}
+.dialog .skipNote{font-size:.7rem!important;line-height:1.5;margin:4px 0!important}
+@media(max-width:720px){.dialog{padding:18px}.icon{width:52px;height:52px;font-size:2rem;margin-bottom:11px}.layoutChoice{padding:8px 10px}.layoutChoice small{font-size:.66rem}}
