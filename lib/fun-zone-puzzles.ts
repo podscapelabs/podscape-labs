@@ -162,7 +162,7 @@ const extra:Entry[]=[
  {answer:"PLEON",clue:"The abdominal region of an isopod (5)",r:0,c:3,dir:"down"},
  {answer:"PEREON",clue:"The main thoracic body region (6)",r:0,c:3,dir:"across"},
  {answer:"LEAF",clue:"Fallen plant material commonly consumed by isopods (4)",r:1,c:3,dir:"across"},
- {answer:"EXUVIA",clue:"A shed exoskeleton (6)",r:2,c:1,dir:"across"},
+ {answer:"EXUVIA",clue:"A shed exoskeleton (6)",r:2,c:3,dir:"across"},
  {answer:"ONISCUS",clue:"A genus of terrestrial isopods (7)",r:3,c:3,dir:"across"}
  ]),
  crossword("forest-words","The Forest Floor",[
