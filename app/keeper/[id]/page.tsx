@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import { PlatformShell, Breadcrumbs } from "@/components/PlatformShell";
 import { KeeperControls } from "@/components/KeeperWorkspace";
 import { KeeperBinTools } from "@/components/KeeperBinTools";
+import { PinToHome } from "@/components/PinToHome";
+import { customerSupabase } from "@/lib/customer-auth/server";
 import { getEnclosure } from "@/lib/keeper";
 import { getSpeciesRecords } from "@/lib/species-store";
 import { speciesDisplayName, speciesScientificName } from "@/data/species";
@@ -16,9 +18,12 @@ export default async function EnclosurePage({params}:{params:Promise<{id:string}
  const {id}=await params;if(!/^[a-f0-9-]{36}$/i.test(id))notFound();
  const data=await getEnclosure(id);if(!data)notFound();
  const {enclosure,events}=data;
+ const db=await customerSupabase();
+ const {data:{user}}=db?await db.auth.getUser():{data:{user:null}};
  const record=(await getSpeciesRecords()).find(x=>x.id===enclosure.speciesId);
  return <PlatformShell><main className={styles.page}><div className="v2-container"><Breadcrumbs items={[{label:"My Collection",href:"/ledger/my-collection"},{label:enclosure.name}]}/><header className={styles.colonyHero}>{record?.image?<Image src={record.image} alt={record.imageAlt||""} fill sizes="(max-width: 720px) 100vw, 1100px" priority/>:null}<div><p className={styles.kicker}>KEEPER / PRIVATE ENCLOSURE</p><h1>{enclosure.name}</h1><p>{record?speciesDisplayName(record):"Unlinked species"}</p><span>{enclosure.label||"No bin label"}</span><span className={styles.status}>● {enclosure.status.replaceAll("-"," ")}</span></div></header><p className={styles.lead}>{record?<><em>{speciesScientificName(record)}</em> · <Link href={`/ledger/${record.slug}`}>View species reference ↗</Link></>:null}</p>
  <div className={styles.quickLinks}><Link href={"/keeper/scan?bin="+enclosure.id}>▣ Quick Care</Link><Link href={"/keeper/"+enclosure.id+"/history"}>Care history</Link><Link href="/keeper/schedule">Schedule</Link></div>
+ <PinToHome pin={{kind:"colony",id:enclosure.id}} userId={user?.id||null}/>
  <KeeperBinTools binId={enclosure.id} binName={enclosure.name} species={record?speciesDisplayName(record):"Your colony"}/>
  <p><Link href={"/keeper/"+enclosure.id+"/history"}>View complete care history →</Link></p>
  <KeeperControls entry={enclosure}/>

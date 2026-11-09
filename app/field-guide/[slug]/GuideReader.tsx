@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import styles from "./reader.module.css";
 
@@ -18,17 +18,31 @@ function Body({ text }: { text: string }) {
 export default function GuideReader({title,summary,category,date,sections,caution,related}:{title:string;summary:string;category:string;date:string;sections:Section[];caution?:string;related:Related[]}) {
   const [index,setIndex] = useState(0);
   const [menu,setMenu] = useState(false);
+  const readerRef = useRef<HTMLDivElement>(null);
+  const chapterHeadingRef = useRef<HTMLHeadingElement>(null);
+  const previousIndexRef = useRef(0);
+  // Changing chapters replaces variable-height content. Re-anchor the reader
+  // after React commits the new chapter, rather than scrolling to page top.
+  useLayoutEffect(() => {
+    if (previousIndexRef.current === index) return;
+    previousIndexRef.current = index;
+    const reader = readerRef.current;
+    if (!reader) return;
+    const top = window.scrollY + reader.getBoundingClientRect().top - 84;
+    window.scrollTo({ top: Math.max(0, top), behavior: "instant" });
+    chapterHeadingRef.current?.focus({ preventScroll: true });
+  }, [index]);
   const current = sections[index];
-  const change = (next:number) => {setIndex(next);setMenu(false);window.scrollTo({top:0,behavior:"smooth"});};
+  const change = (next:number) => { if (next < 0 || next >= sections.length) return; setIndex(next); setMenu(false); };
   return <article className={styles.page}><div className={styles.wrap}>
     <Link href="/field-guide" className={styles.back}>← Field Guide</Link>
     <header className={styles.hero}><span className={styles.kicker}>PODSCAPE FIELD GUIDE / {category}</span><h1>{title}</h1><p>{summary}</p><div className={styles.meta}><span>Updated {date}</span><span>{sections.length} chapters</span></div></header>
     {sections.length ? <>
-      <div className={styles.reader}>
+      <div className={styles.reader} ref={readerRef}>
         <div className={styles.chapterBar}><span>CHAPTER {String(index+1).padStart(2,"0")} / {String(sections.length).padStart(2,"0")}</span><button type="button" onClick={()=>setMenu(!menu)} aria-expanded={menu} aria-controls="guide-chapters">Chapters <span aria-hidden="true">{menu?"−":"⌄"}</span></button></div>
         <div className={styles.progress}><div style={{width:`${(index+1)/sections.length*100}%`}} /></div>
         {menu ? <nav id="guide-chapters" className={styles.chapters} aria-label="Guide chapters">{sections.map((s,i)=><button type="button" key={s.id} aria-current={i===index?"step":undefined} onClick={()=>change(i)}><span>{String(i+1).padStart(2,"0")}</span>{s.heading}</button>)}</nav>:null}
-        <section className={styles.chapter} aria-live="polite"><span className={styles.chapterLabel}>SECTION {String(index+1).padStart(2,"0")}</span><h2>{current.heading}</h2>{index===0&&caution?<aside className={styles.note}><strong>FIELD NOTE</strong><p>{caution}</p></aside>:null}<Body text={current.body}/></section>
+        <section className={styles.chapter} aria-live="polite"><span className={styles.chapterLabel}>SECTION {String(index+1).padStart(2,"0")}</span><h2 ref={chapterHeadingRef} tabIndex={-1}>{current.heading}</h2>{index===0&&caution?<aside className={styles.note}><strong>FIELD NOTE</strong><p>{caution}</p></aside>:null}<Body text={current.body}/></section>
         <div className={styles.controls}><button type="button" onClick={()=>change(index-1)} disabled={index===0}>← Previous</button>{index<sections.length-1?<button type="button" className={styles.next} onClick={()=>change(index+1)}>Next chapter →</button>:<Link className={styles.next} href="/field-guide">All guides →</Link>}</div>
       </div>
     </>:<p>This guide is awaiting its first chapter.</p>}

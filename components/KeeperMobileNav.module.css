@@ -49,3 +49,44 @@
   .primary svg { width: 28px; height: 28px; }
   .primary small { font-weight: 800; }
 }
+
+/* Inline navigation customization on mobile. */
+.editor{display:none}
+@media(max-width:720px){
+ .editing .item{touch-action:none;cursor:grab;-webkit-touch-callout:none;user-select:none}
+ .editing .item:active{cursor:grabbing}
+ .editing .selected{border-radius:16px;outline:2px solid var(--accent,var(--forest));outline-offset:2px}
+ .editor{position:fixed;z-index:61;display:grid;gap:12px;left:12px;right:12px;bottom:calc(91px + env(safe-area-inset-bottom,0px));max-width:540px;margin:auto;padding:17px;border:1px solid var(--border,var(--line));border-radius:20px;background:var(--surface,var(--paper));color:var(--text-primary,var(--ink));box-shadow:var(--shadow)}
+ .editorHeading{display:flex;align-items:start;justify-content:space-between;gap:12px}
+ .editorHeading div{display:grid;gap:5px}
+ .editorHeading strong{font:400 1.35rem var(--serif)}
+ .editorHeading small{color:var(--text-secondary,var(--muted));font-size:.73rem}
+ .editorHeading button{border:0;border-radius:10px;background:var(--accent,var(--forest));color:var(--background,var(--paper));padding:10px 14px;font-size:.78rem;font-weight:800;cursor:pointer}
+ .replace{display:grid;gap:7px;font-size:.74rem;font-weight:750}
+ .replace select{min-height:44px;width:100%;border:1px solid var(--border,var(--line));border-radius:10px;padding:9px;background:var(--surface-secondary,var(--paper-strong));color:var(--text-primary,var(--ink));font-size:16px}
+ .editorActions{display:flex;flex-wrap:wrap;gap:8px}
+ .editorActions button{flex:1;min-height:38px;border:1px solid var(--border,var(--line));border-radius:10px;background:var(--surface-secondary,var(--paper-strong));color:var(--text-primary,var(--ink));font-size:.7rem;font-weight:700;cursor:pointer}
+ .editorActions button:disabled{opacity:.4;cursor:not-allowed}
+ .editor>p{margin:0;color:var(--text-secondary,var(--muted));font-size:.65rem;line-height:1.4}
+}
+
+/* Buttons navigate via the app router: iOS must not treat them as previewable links. */
+.nav>.item{appearance:none;border:0;font:inherit;cursor:pointer;background:transparent;padding:0;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+.nav>.primary{border:3px solid var(--surface,var(--paper));background:var(--accent,var(--forest));color:var(--background,var(--paper-strong))}
+.nav>.item span,.nav>.item small{-webkit-user-select:none;user-select:none;pointer-events:none}
+@media(max-width:720px){.nav.editing>.item{touch-action:none}}
+
+/* Center button stays prominent; all buttons jiggle gently during editing. */
+@keyframes podscapeToolbarJiggle{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg)}}
+@media(max-width:720px){
+.nav.editing>.item.jiggling{animation:podscapeToolbarJiggle .22s ease-in-out infinite;transform-origin:50% 60%;touch-action:none}
+.nav.editing>.item.selected{outline:2px solid var(--moss-light,var(--accent,var(--forest)));outline-offset:2px}
+.editor{gap:10px;padding:13px}
+.editorHeading strong{font-size:1.14rem}
+.editorHeading small{font-size:.66rem}
+.resetLink{justify-self:start;border:0;padding:4px 0;background:transparent;color:var(--accent,var(--forest));font-size:.7rem;font-weight:750;cursor:pointer}
+}
+@media(prefers-reduced-motion:reduce){.nav.editing>.item.jiggling{animation:none}}
+
+/* Long custom destination names must not push the five-icon toolbar out of shape. */
+@media(max-width:720px){.nav>.item{min-width:0}.nav>.item small{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;overflow-wrap:anywhere;max-width:100%;line-height:1.1;text-align:center}}

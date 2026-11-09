@@ -30,3 +30,5 @@
   .fields .check { align-items: center; font-size: .68rem; }
   .toggle { min-height: 44px; }
 }
+
+.skuHint { display:block; color: var(--muted); font-size: .64rem; line-height: 1.4; overflow-wrap: anywhere; margin-top: 4px; }

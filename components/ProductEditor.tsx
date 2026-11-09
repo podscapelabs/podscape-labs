@@ -4,6 +4,7 @@ import { deleteProductRecord, saveProductRecord, toggleProductArchive } from "@/
 import { ProductPhotoEditor } from "@/components/ProductPhotoEditor";
 import { ProductVariantEditor } from "@/components/ProductVariantEditor";
 import { productCategories, type ProductInventoryAdjustment, type ProductRecord, type ProductVariantRecord } from "@/data/products";
+import { productSlug, productSuggestedTags } from "@/lib/product-identifiers";
 import styles from "./ProductEditor.module.css";
 
 type SpeciesOption = { id: string; commonName: string; scientificName: string; genus: string; species: string; morph: string; summary: string };
@@ -12,6 +13,12 @@ export function ProductEditor({ product, speciesOptions, variants, adjustments, 
   const [linkedSpeciesId, setLinkedSpeciesId] = useState(product.speciesRecordId || "");
   const [title, setTitle] = useState(product.title);
   const [summary, setSummary] = useState(product.summary);
+  const [category, setCategory] = useState(product.category);
+  const [slug, setSlug] = useState(product.slug);
+  const [slugEdited, setSlugEdited] = useState(false);
+  const [tags, setTags] = useState(product.tags.join(", "));
+  const [tagsEdited, setTagsEdited] = useState(false);
+  const newDraft = product.slug === `draft-${product.id.slice(-8)}`;
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [deleteText, setDeleteText] = useState("");
   const [deleting, setDeleting] = useState(false);
@@ -36,6 +43,10 @@ export function ProductEditor({ product, speciesOptions, variants, adjustments, 
     }
   }
   const selectedSpecies = speciesOptions.find((species) => species.id === linkedSpeciesId);
+  const suggestedTags = productSuggestedTags(category, title, selectedSpecies);
+  const displayedTags = tagsEdited || tags.trim() ? tags : suggestedTags.join(", ");
+  const displayedSlug = slugEdited || !newDraft ? slug : productSlug(title === "Untitled product" ? "" : title);
+  function resetSlug() { setSlug(productSlug(title)); setSlugEdited(true); }
   function selectSpecies(id: string) {
     setLinkedSpeciesId(id);
   }
@@ -50,6 +61,8 @@ export function ProductEditor({ product, speciesOptions, variants, adjustments, 
     {error ? <p className="admin-save-message is-error">{error}</p> : null}
     <form className={`admin-species-form ${styles.form}`} id="product-editor-form" action={saveProductRecord}>
       <input type="hidden" name="id" value={product.id} />
+      <input type="hidden" name="tagsMode" value={tagsEdited ? "manual" : "suggested"} />
+      <input type="hidden" name="slugMode" value={newDraft && !slugEdited ? "auto" : "manual"} />
       <nav className={styles.sectionNav} aria-label="Jump to product sections">
         <a href="#product-ledger">01 Species</a>
         <a href="#product-basics">02 Listing</a>
@@ -66,16 +79,16 @@ export function ProductEditor({ product, speciesOptions, variants, adjustments, 
         <p className={styles.ledgerHelp}>Autofill only replaces the product name; it adds the Ledger summary only when the description is empty. Scientific identity is synced securely from the Ledger when you save. Prices and inventory remain separate.</p>
       </fieldset>
       <fieldset id="product-basics" className={styles.basics}><legend><span aria-hidden="true">02</span> Basic information</legend>
-        <div className="admin-form-grid two"><label><span>Product name</span><input name="title" value={title} onChange={(event) => setTitle(event.target.value)} required maxLength={180} /></label><label><span>Category</span><select name="category" defaultValue={product.category}>{productCategories.map((category) => <option value={category} key={category}>{category}</option>)}</select></label></div>
+        <div className="admin-form-grid two"><label><span>Product name</span><input name="title" value={title} onChange={(event) => setTitle(event.target.value)} required maxLength={180} /></label><label><span>Category</span><select name="category" value={category} onChange={(event) => setCategory(event.target.value)}>{productCategories.map((category) => <option value={category} key={category}>{category}</option>)}</select></label></div>
         <label><span>Short description</span><textarea name="summary" value={summary} onChange={(event) => setSummary(event.target.value)} rows={3} maxLength={600} /></label>
         <label><span>Full description</span><textarea name="description" defaultValue={product.description} rows={4} maxLength={8000} placeholder="Describe what is included, the species or product, and what buyers should know." /></label>
         <details className={styles.advanced}>
           <summary>Advanced listing options <span>URL & tags</span></summary>
-        <div className="admin-form-grid two"><label><span>URL slug</span><input name="slug" defaultValue={product.slug} /></label><label><span>Tags · comma separated</span><input name="tags" defaultValue={product.tags.join(", ")} /></label></div>
+        <div className="admin-form-grid two"><label><span>URL slug</span><input name="slug" value={displayedSlug} onChange={(event) => { setSlug(event.target.value); setSlugEdited(true); }} placeholder="Generated from product name" /><small className={styles.identifierHelp}>{newDraft && !slugEdited ? "Auto-generated from the name when saved." : "Saved URLs remain stable when you rename a product."}</small><button type="button" className={styles.identifierButton} onClick={resetSlug}>Use product name</button></label><label><span>Tags · comma separated</span><input name="tags" value={displayedTags} onChange={(event) => { setTags(event.target.value); setTagsEdited(true); }} /><small className={styles.identifierHelp}>Suggested from category and Leaf Ledger. Add or remove any tags.</small><button type="button" className={styles.identifierButton} onClick={() => { setTags(suggestedTags.join(", ")); setTagsEdited(true); }}>Refresh suggestions</button></label></div>
         </details>
       </fieldset>
       <fieldset id="product-stock" className={styles.inventory}><legend><span aria-hidden="true">03</span> Pricing & inventory</legend><p className={styles.sectionHint}>Set your pack sizes, prices and stock. You can add more variants whenever you need them.</p>
-        <ProductVariantEditor initialVariants={variants} />
+        <ProductVariantEditor initialVariants={variants} productId={product.id} category={category} speciesName={selectedSpecies?.commonName || selectedSpecies?.morph || title} />
         <div className="admin-form-grid two"><label><span>Availability</span><select name="availability" defaultValue={product.availability}><option value="coming-soon">Coming soon</option><option value="in-stock">In stock</option><option value="sold-out">Sold out</option></select></label><label><span>Stock adjustment reason</span><select name="inventoryAdjustmentReason" defaultValue="manual"><option value="manual">Manual count</option><option value="return">Return</option><option value="damage">Damaged or removed</option><option value="correction">Correction</option></select></label></div>
         <label><span>Stock adjustment note · optional</span><input name="inventoryAdjustmentNote" maxLength={1000} placeholder="For example: received a new shipment" /></label>
         {!normalized ? <p className="admin-inline-note">The normalized inventory history becomes available after the additive Shop Manager database migration is applied. Existing product information remains intact.</p> : null}

@@ -46,3 +46,78 @@
   .accordions summary { padding: 22px 26px; }
 }
 @media (prefers-reduced-motion: reduce) { .chevron { transition: none; } }
+
+/* Owner Tools: open desks directly from the account accordion. */
+.ownerDeskList{display:grid;gap:7px}
+.panel .ownerDeskList a{display:flex;align-items:center;gap:12px;min-width:0;margin:0;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--paper-strong);color:var(--ink);text-decoration:none}
+.panel .ownerDeskList a:hover{border-color:var(--forest)}
+.ownerDeskSymbol{display:grid;place-items:center;flex:none;width:37px;height:37px;border-radius:10px;background:color-mix(in srgb,var(--forest) 10%,var(--paper));color:var(--forest);font-size:1.3rem}
+.ownerDeskText{display:grid;gap:2px;flex:1;min-width:0}
+.ownerDeskText strong{font:400 1.15rem/1.2 var(--serif)}
+.ownerDeskText small{font-size:.69rem;line-height:1.4;color:var(--muted)}
+.ownerDeskArrow{flex:none;color:var(--forest);font-size:1.2rem}
+.ownerGroupLabel{margin:20px 0 10px;color:var(--muted);font-size:.68rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+@media(max-width:700px){.panel .ownerDeskList a{padding:11px;gap:10px}.ownerDeskText strong{font-size:1.07rem}}
+
+/* Account 2.0: account management, not a second personalized home dashboard. */
+.accountHeader{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:29px 2px 17px}
+.accountHeader h1{margin:7px 0 5px;font:400 clamp(2.45rem,7vw,3.5rem)/1.05 var(--serif);letter-spacing:-.035em}
+.accountHeader p:last-child{margin:0;color:var(--muted);font-size:.82rem}
+.accountMark{display:grid;place-items:center;flex:none;width:51px;height:51px;border-radius:50%;background:color-mix(in srgb,var(--forest) 10%,var(--paper));color:var(--forest);font-size:1.65rem}
+.accountSummary{padding:20px 22px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(125deg,color-mix(in srgb,var(--forest) 8%,var(--paper)),var(--paper))}
+.accountSummaryTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.accountSummaryTop small{font-size:.61rem;font-weight:800;letter-spacing:.12em;color:var(--forest)}
+.accountSummaryTop h2{margin:5px 0;font:400 1.55rem/1.2 var(--serif)}
+.accountSummaryTop h2 span{color:var(--forest)}
+.accountSummaryTop p{margin:0;color:var(--muted);font-size:.72rem}
+.accountLevel{display:flex;align-items:center;gap:5px;flex:none;padding:9px 12px;border-radius:99px;background:var(--forest);color:#fff9ec;font-size:.7rem}
+.accountLevel strong{font-size:.95rem}
+.accountProgressLabels{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:19px 0 8px;color:var(--muted);font-size:.68rem}
+.accountProgressLabels a{color:var(--forest);font-weight:800;white-space:nowrap}
+.accountBalances{display:flex;flex-wrap:wrap;gap:9px 18px;margin-top:12px;color:var(--forest);font-size:.76rem;font-weight:750}
+.accountActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:15px 0 22px}
+.accountActions>a{position:relative;display:grid;align-content:start;gap:7px;min-height:113px;padding:15px;border:1px solid var(--line);border-radius:16px;background:var(--paper);color:var(--ink)}
+.accountActions>a>span{color:var(--forest);font-size:1.35rem}
+.accountActions strong{font:400 1.2rem/1.2 var(--serif)}
+.accountActions small{color:var(--muted);font-size:.68rem;padding-right:15px}
+.accountActions b{position:absolute;right:12px;bottom:11px;color:var(--forest);font-size:.83rem}
+.accountOwner{margin:0 0 23px;border:1px solid var(--line);border-radius:17px;background:var(--paper);overflow:hidden}
+.accountOwner summary{display:flex;align-items:center;gap:13px;padding:17px 18px;list-style:none;cursor:pointer}
+.accountOwner summary::-webkit-details-marker{display:none}
+.accountOwnerMark{display:grid;place-items:center;flex:none;width:42px;height:42px;border-radius:12px;background:color-mix(in srgb,var(--forest) 10%,var(--paper));color:var(--forest);font-size:1.45rem}
+.accountOwner summary>span:nth-child(2){display:grid;flex:1;gap:4px}
+.accountOwner summary strong{font:400 1.35rem var(--serif)}
+.accountOwner summary small{color:var(--muted);font-size:.7rem}
+.accountOwner details[open] .chevron{transform:rotate(180deg)}
+.accountOwnerBody{padding:2px 17px 18px;border-top:1px solid var(--line)}
+.accountGroupLabel{margin:15px 0 10px;color:var(--forest);font-size:.64rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase}
+.accountOwnerGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.accountOwnerGrid>a{display:grid;align-content:start;gap:5px;min-width:0;min-height:105px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--paper-strong);color:var(--ink)}
+.accountOwnerGrid>a>span{color:var(--forest);font-size:1.3rem}
+.accountOwnerGrid strong{font:400 1.02rem/1.2 var(--serif);overflow-wrap:anywhere}
+.accountOwnerGrid small{color:var(--muted);font-size:.64rem}
+.accountOwnerOperations{display:grid;gap:7px}
+.accountOwnerOperations>a{display:flex;align-items:center;gap:11px;min-height:43px;padding:9px 12px;border:1px solid var(--line);border-radius:11px;background:var(--paper-strong);color:var(--ink)}
+.accountOwnerOperations>a>span:first-child{color:var(--forest);font-size:1.15rem}
+.accountOwnerOperations strong{flex:1;font-size:.77rem}
+.accountOwnerOperations>a>span:last-child{color:var(--forest)}
+.accountSettingsHeading{margin:0 2px 10px}
+.accountSettingsHeading h2{margin:0 0 3px;font:400 1.6rem var(--serif)}
+.accountSettingsHeading p{margin:0;color:var(--muted);font-size:.73rem}
+.accountSettings .accordions{margin:0}
+.accountSettings .accordions summary{padding:15px 17px}
+.accountSettings .accordions strong{font-size:1.13rem}
+.accountSettings .accordions small{font-size:.68rem}
+.accountActions>a:focus-visible,.accountOwner a:focus-visible,.accountOwner summary:focus-visible{outline:2px solid var(--forest);outline-offset:2px}
+@media(max-width:700px){
+ .accountHeader{padding:21px 2px 14px}
+ .accountMark{width:42px;height:42px}
+ .accountSummary{padding:16px}
+ .accountSummaryTop h2{font-size:1.32rem}
+ .accountSummaryTop p{font-size:.68rem}
+ .accountActions{gap:8px}
+ .accountActions>a{padding:13px;min-height:108px}
+ .accountActions strong{font-size:1.08rem}
+ .accountOwnerGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .accountOwnerGrid>a{min-height:97px;padding:11px}
+}

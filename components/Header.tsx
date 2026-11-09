@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { navigation } from "@/data/platform";
-import { ArrowUpRightIcon } from "./Icons";
-import { SearchIcon, UserIcon } from "./PlatformIcons";
+import { UserIcon } from "./PlatformIcons";
+import { HeaderSearch } from "./HeaderSearch";
 import { ThemeToggle } from "./ThemeToggle";
 
 function PlatformLink({ href, children }: { href: string; children: React.ReactNode }) {
@@ -22,10 +22,10 @@ export function Header() {
           {navigation.map((item) => <PlatformLink href={item.href} key={item.label}>{item.label}</PlatformLink>)}
         </nav>
         <div className="v2-header-tools">
-          <Link className="v2-icon-button v2-search-button" href="/search" aria-label="Search Podscape"><SearchIcon /></Link>
+          <HeaderSearch/>
           <Link className="v2-icon-button v2-account-button" href="/account" aria-label="Your Podscape account"><UserIcon /></Link>
           <ThemeToggle />
-          <a className="v2-podbound-cta" href="https://www.podbound.net" target="_blank" rel="noreferrer">PodBound <ArrowUpRightIcon /></a>
+          <Link className="v2-podbound-cta" href="/podbound">PodBound <span aria-hidden="true">→</span></Link>
 
         </div>
       </div>

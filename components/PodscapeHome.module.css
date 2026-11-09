@@ -6,3 +6,217 @@
 .welcome{display:flex;align-items:center;gap:15px;padding:13px 17px;margin-bottom:13px;border:1px solid var(--line);border-radius:20px;background:var(--paper);color:inherit;text-decoration:none}.welcomeMark{display:grid;place-items:center;flex:none;width:55px;height:55px;border-radius:50%;background:color-mix(in srgb,var(--moss) 18%,var(--paper));color:var(--forest)}.welcomeMark svg{width:31px;height:31px}.welcome>div{min-width:0;flex:1}.welcome h1{margin:0;font:400 1.5rem/1.15 var(--serif)}.welcome p{margin:4px 0 0;font-size:.78rem;color:var(--muted)}.welcomeArrow{display:grid;place-items:center;flex:none;width:33px;height:33px;border:1px solid var(--line);border-radius:50%}.hero{height:285px;min-height:0}.heroContent{width:62%}.hero h2{font-size:clamp(2.1rem,5vw,3.4rem)}.shortcuts{grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:13px 0 22px}.shortcut{min-height:94px;gap:7px}.section{margin-top:23px}.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}.tile{display:block;min-width:0;overflow:hidden;border:1px solid var(--line);border-radius:17px;background:var(--paper);color:inherit;text-decoration:none}.tileVisual{position:relative;height:130px;overflow:hidden;background:color-mix(in srgb,var(--moss) 13%,var(--paper))}.tileVisual img{object-fit:cover}.tilePlaceholder{display:grid;place-items:center;height:100%;color:var(--forest)}.tilePlaceholder svg{width:48px;height:48px}.tileTag{position:absolute;bottom:9px;left:9px;padding:5px 8px;border-radius:30px;background:var(--paper);color:var(--ink);font-size:.57rem;font-weight:750;letter-spacing:.03em}.tileCopy{position:relative;display:flex;flex-direction:column;gap:5px;min-height:92px;padding:12px 34px 12px 12px}.tileCopy strong{font:400 1.18rem/1.15 var(--serif)}.tileCopy small{font-size:.74rem;line-height:1.3;color:var(--muted)}.tileArrow{position:absolute;right:9px;bottom:12px;display:grid;place-items:center;width:25px;height:25px;border:1px solid var(--line);border-radius:50%;font-size:.85rem}
 @media(max-width:720px){.main{padding-top:10px}.welcome{gap:10px;padding:9px 11px;margin-bottom:10px;border-radius:16px}.welcomeMark{width:43px;height:43px}.welcomeMark svg{width:25px;height:25px}.welcome h1{font-size:1.2rem}.welcome p{font-size:.7rem}.welcomeArrow{width:28px;height:28px}.hero{height:215px;min-height:0}.heroContent{width:67%;padding:17px}.hero h2{font-size:1.95rem;line-height:1.03}.hero p{font-size:.72rem}.shortcuts{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;overflow:visible;margin:11px 0 18px;padding:0}.shortcut{min-width:0;min-height:74px;gap:5px;padding:7px 1px;font-size:.65rem}.shortcutIcon{width:29px;height:29px}.shortcutIcon svg{width:20px;height:20px}.section{margin-top:17px}.heading{margin-bottom:9px}.heading h2{font-size:1.28rem}.tiles{gap:6px}.tile{border-radius:12px}.tileVisual{height:95px}.tileTag{left:5px;bottom:6px;font-size:.46rem;padding:4px 5px;max-width:calc(100% - 10px)}.tilePlaceholder svg{width:32px;height:32px}.tileCopy{min-height:96px;padding:9px 22px 9px 8px;gap:5px}.tileCopy strong{font-size:.94rem;line-height:1.1}.tileCopy small{font-size:.61rem;line-height:1.2}.tileArrow{width:20px;height:20px;right:5px;bottom:8px;font-size:.7rem}}
 @media(max-width:380px){.welcome h1{font-size:1.05rem}.hero h2{font-size:1.7rem}.tileCopy strong{font-size:.84rem}.tileCopy small{font-size:.58rem}}
+
+/* Homepage editorial cards: fixed heights, independent of CMS description length. */
+.tile { display:flex; flex-direction:column; height:250px; }
+.tileVisual { flex:0 0 130px; }
+.tileCopy { flex:1; min-height:0; overflow:hidden; }
+.tileCopy strong { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-clamp:2; overflow:hidden; overflow-wrap:anywhere; }
+.tileCopy small { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; line-clamp:3; overflow:hidden; overflow-wrap:anywhere; }
+@media(max-width:720px) {
+  .tile { height:205px; }
+  .tileVisual { flex-basis:95px; }
+  .tileCopy { min-height:0; }
+  .tileCopy small { -webkit-line-clamp:3; line-clamp:3; }
+}
+
+/* Spotlight: touch-first, user-controlled carousel with no automatic advance. */
+.spotlightHint{color:var(--muted);font-size:.71rem}
+.spotlightRail{display:flex;gap:11px;overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x mandatory;scroll-padding-inline:2px;padding:2px 2px 12px;scrollbar-width:thin}
+.spotlightRail>.tile{flex:0 0 calc((100% - 22px) / 3);scroll-snap-align:start}
+.spotlightRail:focus-visible{outline:2px solid var(--forest);outline-offset:3px;border-radius:10px}
+@media(max-width:720px){.spotlightRail{gap:6px;padding-bottom:10px}.spotlightRail>.tile{flex-basis:calc((100% - 12px) / 3)}.spotlightHint{font-size:.66rem}}
+
+/* Personal navigation: long-press a homepage shortcut to customize. */
+.shortcutEditor{display:grid;gap:13px;margin:13px 0 8px;padding:16px;border:1px solid var(--line);border-radius:18px;background:var(--paper);box-shadow:var(--shadow-soft);color:var(--ink)}
+.shortcutEditHead{display:flex;align-items:start;justify-content:space-between;gap:12px}.shortcutEditHead>div{display:grid;gap:4px}.shortcutEditHead strong{font:400 1.4rem var(--serif)}.shortcutEditHead small{font-size:.72rem;color:var(--muted)}.shortcutEditHead button{flex:none;border:0;border-radius:11px;background:var(--forest);color:var(--paper);padding:10px 17px;font-size:.77rem;font-weight:800;cursor:pointer}
+.shortcutEditor>label{display:grid;gap:7px;font-size:.74rem;font-weight:750}.shortcutEditor select{min-height:44px;padding:9px;border:1px solid var(--line);border-radius:10px;background:var(--paper-strong);color:var(--ink);font:inherit;font-size:16px}
+.shortcutEditActions{display:flex;flex-wrap:wrap;gap:8px}.shortcutEditActions button{flex:1;min-height:42px;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--paper-strong);color:var(--ink);font-size:.72rem;font-weight:700;cursor:pointer}.shortcutEditActions button:disabled{opacity:.4;cursor:not-allowed}.shortcutEditor>small{font-size:.66rem;color:var(--muted)}
+.shortcutEditing .shortcut{touch-action:none;cursor:grab;-webkit-touch-callout:none;user-select:none}.shortcutEditing .shortcut:active{cursor:grabbing}.shortcutEditing .shortcutSelected{outline:2px solid var(--forest);outline-offset:2px}
+
+/* Navigation shortcuts are buttons rather than Safari-previewable anchor links. */
+.shortcuts>.shortcut{appearance:none;color:var(--ink);cursor:pointer;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation;padding:0;font:400 .87rem/1.2 var(--serif)}
+.shortcuts>.shortcut span{-webkit-user-select:none;user-select:none;pointer-events:none}
+@media(max-width:720px){.shortcuts>.shortcut{font-size:.65rem;padding:7px 1px}.shortcuts.shortcutEditing>.shortcut{touch-action:none}}
+
+/* Personal homepage experiment: the editorial foundation above remains fixed. */
+.widgetArea{margin-top:26px}
+.widgetControls{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.widgetControls>div>small{font-size:.58rem;letter-spacing:.11em;font-weight:800;color:var(--forest)}
+.widgetControls h2{margin:4px 0 0;font:400 1.55rem/1.15 var(--serif)}
+.widgetControls>button{flex:none;border:1px solid var(--line);border-radius:99px;background:var(--paper);color:var(--forest);padding:10px 13px;font-size:.73rem;font-weight:750;cursor:pointer}
+.widgetEditor{padding:17px;border:1px solid var(--line);border-radius:18px;background:var(--paper);box-shadow:var(--shadow-soft)}
+.widgetEditor>strong{font:400 1.5rem var(--serif)}
+.widgetEditor>p{margin:7px 0 17px;color:var(--muted);font-size:.78rem;line-height:1.5}
+.widgetEditorList{display:grid;gap:8px}
+.widgetEditorRow{display:flex;align-items:center;gap:9px;min-width:0;padding:12px 9px;border:1px solid var(--line);border-radius:12px;background:var(--paper-strong)}
+.widgetGrip{flex:none;color:var(--forest);font-size:1.1rem;cursor:grab}
+.widgetEditorRow>div{display:grid;gap:3px;flex:1;min-width:0}
+.widgetEditorRow>div strong{font:400 1.05rem/1.2 var(--serif)}
+.widgetEditorRow>div small{color:var(--muted);font-size:.68rem;line-height:1.3}
+.widgetVisibility{display:grid;place-items:center;flex:none;width:28px;height:35px}
+.widgetVisibility input{accent-color:var(--forest);width:18px;height:18px;cursor:pointer}
+.widgetEditorRow>button{width:34px;height:36px;flex:none;border:1px solid var(--line);border-radius:9px;background:var(--paper);color:var(--ink);cursor:pointer}
+.widgetEditorRow>button:disabled{opacity:.28;cursor:default}
+.widgetEditorFooter{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}
+.widgetEditorFooter small{font-size:.68rem;color:var(--muted)}
+.widgetEditorFooter button{flex:none;border:1px solid var(--line);border-radius:11px;padding:9px;background:var(--paper-strong);color:var(--forest);font-size:.69rem;font-weight:750;cursor:pointer}
+.widgetCard{display:flex;align-items:center;gap:15px;flex-wrap:wrap;margin-top:12px;padding:19px;border:1px solid var(--line);border-radius:19px;background:var(--paper)}
+.widgetSymbol{display:grid;place-items:center;flex:none;width:53px;height:53px;border-radius:16px;background:color-mix(in srgb,var(--forest) 12%,var(--paper));color:var(--forest);font-size:1.55rem}
+.widgetSymbol svg{width:27px;height:27px}
+.widgetCard>div{flex:1;min-width:170px}
+.widgetCard>div small{color:var(--forest);font-size:.58rem;font-weight:800;letter-spacing:.1em}
+.widgetCard h3{margin:5px 0;font:400 1.4rem/1.12 var(--serif)}
+.widgetCard p{margin:0;color:var(--muted);font-size:.76rem;line-height:1.5}
+.widgetCard>a{color:var(--forest);font-size:.73rem;font-weight:750;white-space:nowrap}
+.widgetRecentIcon{display:flex;height:130px;align-items:center;justify-content:center;flex-direction:column;gap:9px;color:var(--forest);background:color-mix(in srgb,var(--moss) 12%,var(--paper))}
+.widgetRecentIcon svg{width:34px;height:34px}
+.widgetRecentIcon small{font-size:.57rem;font-weight:800;letter-spacing:.04em}
+.widgetEmpty{padding:15px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);font-size:.76rem}
+.srOnly{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+@media(max-width:720px){
+.widgetArea{margin-top:19px}
+.widgetControls h2{font-size:1.3rem}
+.widgetControls>button{font-size:.67rem;padding:9px 11px}
+.widgetEditor{padding:12px}
+.widgetEditorRow{gap:6px;padding:10px 7px}
+.widgetEditorRow>div strong{font-size:.92rem}
+.widgetEditorRow>div small{font-size:.6rem}
+.widgetEditorRow>button{width:29px;height:35px}
+.widgetGrip{font-size:.9rem}
+.widgetCard{padding:14px;gap:11px}
+.widgetSymbol{width:41px;height:41px;border-radius:12px}
+.widgetSymbol svg{width:22px;height:22px}
+.widgetCard>div{min-width:125px}
+.widgetCard h3{font-size:1.18rem}
+.widgetCard>a{width:100%;padding-left:52px}
+.widgetRecentIcon{height:95px}
+.widgetRecentIcon svg{width:25px;height:25px}
+.widgetRecentIcon small{font-size:.5rem}
+}
+
+/* iOS-like edit mode: gentle movement replaces the large reorder controls. */
+@keyframes podscapeIconJiggle{0%,100%{transform:rotate(-1.25deg)}50%{transform:rotate(1.25deg)}}
+.shortcutEditing .shortcut.jiggling{animation:podscapeIconJiggle .22s ease-in-out infinite;transform-origin:50% 58%;touch-action:none;-webkit-touch-callout:none}
+.shortcutEditing .shortcutSelected{outline:2px solid var(--moss-light);outline-offset:2px;box-shadow:0 5px 14px color-mix(in srgb,var(--forest) 16%,transparent)}
+.jiggleToolbar{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px 14px;margin:11px 0 14px;padding:14px;border:1px solid var(--line);border-radius:17px;background:var(--paper)}
+.jiggleHint{display:grid;gap:3px;min-width:0;color:var(--ink)}
+.jiggleHint>strong{font:400 1.15rem/1.2 var(--serif)}
+.jiggleHint>small{font-size:.69rem;color:var(--muted);line-height:1.35}
+.jiggleDone{border:0;border-radius:12px;background:var(--forest);color:var(--paper);font-size:.75rem;font-weight:800;min-height:40px;padding:0 16px;cursor:pointer}
+.jigglePicker{display:grid;gap:6px;grid-column:1/-1;font-size:.72rem;color:var(--muted);font-weight:700}
+.jigglePicker select{min-height:43px;min-width:0;width:100%;border:1px solid var(--line);border-radius:10px;padding:8px 11px;background:var(--paper-strong);color:var(--ink);font-size:16px}
+.jiggleReset{justify-self:start;border:0;padding:4px 0;background:transparent;color:var(--forest);font-size:.71rem;font-weight:750;cursor:pointer}
+@media(max-width:720px){.jiggleToolbar{margin:10px 0;padding:11px;gap:9px}.jiggleHint>strong{font-size:1.05rem}.jiggleHint>small{font-size:.64rem}}
+@media(prefers-reduced-motion:reduce){.shortcutEditing .shortcut.jiggling{animation:none}}
+
+/* Home edit entry sits beside the welcome card, not between editorial sections. */
+.homeGreetingRow{display:flex;align-items:stretch;gap:9px;margin-bottom:13px}
+.homeGreetingRow .welcome{flex:1;min-width:0;margin-bottom:0}
+.editHomeButton{display:flex;flex:none;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:84px;padding:10px;border:1px solid var(--line);border-radius:17px;background:var(--paper);color:var(--forest);font-size:.7rem;font-weight:750;cursor:pointer}
+.editHomeButton>span:first-child{font-size:1.3rem;line-height:1}
+.editHomeButton:hover{border-color:var(--forest)}
+/* The editor opens as a separate sheet; homepage sections stay in place. */
+.homeEditorOverlay{position:fixed;z-index:105;inset:0;display:flex;align-items:flex-end;justify-content:center;padding:15px;background:rgba(5,19,12,.65);backdrop-filter:blur(3px)}
+.homeEditorOverlay>.widgetEditor{width:min(100%,560px);max-height:min(82dvh,720px);overflow-y:auto;overscroll-behavior:contain;padding:22px;border-radius:22px;box-shadow:0 20px 70px rgba(0,0,0,.26)}
+.homeEditorHead{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.homeEditorHead small{display:block;font-size:.6rem;font-weight:800;letter-spacing:.1em;color:var(--forest)}
+.homeEditorHead h2{font:400 1.8rem/1.15 var(--serif);margin:5px 0 0}
+.homeEditorHead button{flex:none;border:0;border-radius:11px;padding:10px 16px;min-height:43px;background:var(--forest);color:var(--paper);font-size:.76rem;font-weight:800;cursor:pointer}
+@media(min-width:721px){.homeEditorOverlay{align-items:center}}
+@media(max-width:720px){.homeGreetingRow{gap:7px;margin-bottom:10px}.homeGreetingRow .welcome{margin-bottom:0}.editHomeButton{min-width:66px;padding:8px 5px;border-radius:14px;font-size:.61rem;gap:4px}.editHomeButton>span:first-child{font-size:1.08rem}.homeEditorOverlay{padding:0 0 env(safe-area-inset-bottom,0px)}.homeEditorOverlay>.widgetEditor{border-radius:23px 23px 0 0;max-height:82dvh;padding:18px 14px}.homeEditorHead h2{font-size:1.55rem}}
+
+/* Personal pins may include longer game and feature names. */
+.shortcuts>.shortcut{min-width:0;overflow:hidden}
+.shortcuts>.shortcut>span:last-child{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;overflow-wrap:anywhere;max-width:100%;padding-inline:2px}
+
+/* The homepage ends at its last visible widget, not an empty padded panel.
+   Reserve only the space needed to reveal the final card above the floating nav.
+   Adding widgets naturally extends document height. */
+.site{min-height:0}
+.main{padding-bottom:28px}
+@media(max-width:720px){
+  .main{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+  .widgetArea{margin-bottom:0}
+  .widgetArea>.section:last-child,.widgetArea>.widgetCard:last-child{margin-bottom:0}
+}
+
+/* Widget Library: previews and one-tap collection management. */
+.widgetLibrary{display:flex;flex-direction:column;gap:0}
+.widgetLibrary>.homeEditorHead{flex:none}
+.widgetLibrary>.homeEditorHead+p{flex:none}
+.widgetTabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;flex:none;padding:5px;border-radius:14px;background:var(--paper-strong);margin:4px 0 15px}
+.widgetTabs button{min-height:41px;border:0;border-radius:10px;background:transparent;color:var(--muted);font-size:.77rem;font-weight:750;cursor:pointer}
+.widgetTabs button.widgetTabActive{background:var(--paper);color:var(--forest);box-shadow:0 1px 7px color-mix(in srgb,var(--ink) 10%,transparent)}
+.widgetTabs span{font-weight:500}
+.widgetLibraryGroups{overflow-y:auto;overscroll-behavior:contain;flex:1;min-height:0;padding:0 3px 8px}
+.widgetLibraryGroups>section{margin:0 0 20px}
+.widgetLibraryGroups h3{margin:0 0 10px;font:400 1.35rem/1.2 var(--serif);color:var(--ink)}
+.widgetGallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.widgetGalleryCard{display:flex;flex-direction:column;min-width:0;border:1px solid var(--line);border-radius:15px;overflow:hidden;background:var(--paper)}
+.widgetPreview{position:relative;display:flex;align-items:center;gap:10px;min-height:100px;padding:14px 13px;background:color-mix(in srgb,var(--forest) 10%,var(--paper));color:var(--forest)}
+.widgetPreview>span{display:grid;place-items:center;flex:none;width:45px;height:45px;border-radius:14px;background:color-mix(in srgb,var(--forest) 13%,var(--paper))}
+.widgetPreview svg{width:27px;height:27px}
+.widgetPreview>div{display:grid;gap:5px;min-width:0}
+.widgetPreview strong{font:400 1rem/1.1 var(--serif);color:var(--ink)}
+.widgetPreview small{font-size:.61rem;line-height:1.3;color:var(--muted)}
+.widgetPreview i{position:absolute;top:7px;right:8px;font:600 .53rem/1 sans-serif;letter-spacing:.04em;color:var(--muted);font-style:normal;text-transform:uppercase}
+.widgetGalleryCopy{display:flex;flex:1;flex-direction:column;align-items:flex-start;gap:6px;padding:12px}
+.widgetGalleryCopy>strong{font:400 1.2rem/1.15 var(--serif)}
+.widgetGalleryCopy p{margin:0 0 8px;font-size:.68rem;line-height:1.45;color:var(--muted);flex:1}
+.widgetGalleryCopy button{min-height:38px;width:100%;border-radius:10px;padding:8px;border:1px solid var(--forest);font-size:.72rem;font-weight:800;cursor:pointer}
+.widgetAdd{background:var(--forest);color:var(--paper)}
+.widgetRemove{background:var(--paper);color:var(--forest)}
+.widgetArrange{overflow-y:auto;overscroll-behavior:contain;flex:1;min-height:0;padding:0 3px 8px}
+.widgetArrange>p{margin:0 0 12px;font-size:.73rem;color:var(--muted);line-height:1.4}
+.widgetArrangeEmpty{padding:17px;border:1px dashed var(--line);border-radius:13px;color:var(--muted);font-size:.75rem}
+.widgetArrangeEmpty button{border:0;background:transparent;color:var(--forest);font-weight:750;text-decoration:underline;cursor:pointer}
+.widgetArrangeRow{display:flex;align-items:center;gap:9px;margin:0 0 7px;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--paper-strong)}
+.widgetArrangeIcon{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:9px;background:color-mix(in srgb,var(--forest) 11%,var(--paper));color:var(--forest)}
+.widgetArrangeIcon svg{width:21px;height:21px}
+.widgetArrangeRow>strong{flex:1;min-width:0;font:400 1rem/1.1 var(--serif)}
+.widgetArrangeRow>button{width:32px;height:36px;flex:none;border:1px solid var(--line);border-radius:9px;background:var(--paper);color:var(--forest);cursor:pointer}
+.widgetArrangeRow>button:last-child{color:var(--muted)}
+.widgetArrangeRow>button:disabled{opacity:.34;cursor:default}
+.widgetLibraryFooter{display:flex;align-items:center;justify-content:space-between;gap:10px;flex:none;padding:14px 0 0;border-top:1px solid var(--line);margin-top:5px}
+.widgetLibraryFooter small{color:var(--muted);font-size:.66rem;line-height:1.3}
+.widgetLibraryFooter button{flex:none;border:1px solid var(--line);border-radius:9px;background:var(--paper-strong);color:var(--forest);padding:8px;font-size:.7rem;font-weight:750;cursor:pointer}
+.homeEditorOverlay>.widgetLibrary{max-height:min(86dvh,760px);overflow:hidden}
+@media(max-width:720px){
+ .homeEditorOverlay>.widgetLibrary{max-height:88dvh;height:88dvh;padding:16px 13px}
+ .widgetGallery{gap:8px}
+ .widgetPreview{min-height:93px;padding:19px 9px 10px;gap:7px}
+ .widgetPreview>span{width:34px;height:34px;border-radius:10px}
+ .widgetPreview svg{width:21px;height:21px}
+ .widgetPreview strong{font-size:.86rem}
+ .widgetPreview small{font-size:.55rem}
+ .widgetGalleryCopy{padding:10px}
+ .widgetGalleryCopy>strong{font-size:1.05rem}
+ .widgetGalleryCopy p{font-size:.63rem}
+ .widgetGalleryCopy button{font-size:.66rem}
+ .widgetArrangeRow{gap:6px;padding:8px}
+ .widgetArrangeRow>strong{font-size:.87rem}
+ .widgetArrangeRow>button{width:29px;height:33px}
+}
+
+/* Touch dragging is limited to the grip so scrolling the library stays natural. */
+.widgetArrangeRow .widgetGrip{display:grid;place-items:center;flex:none;width:23px;min-height:35px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.widgetArrangeRow .widgetGrip:active{cursor:grabbing}
+.widgetArrangeRow .widgetGrip:focus-visible{outline:2px solid var(--forest);outline-offset:2px;border-radius:5px}
+
+/* Personal favorites: resolved from published content or the member's own colonies. */
+.pinnedGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.pinnedCard{position:relative;display:grid;grid-template-columns:50px minmax(0,1fr);gap:10px;align-items:start;padding:14px 42px 14px 14px;min-height:138px;border:1px solid var(--line);border-radius:17px;background:var(--paper)}
+.pinnedIcon{display:grid;place-items:center;width:45px;height:45px;border-radius:13px;background:color-mix(in srgb,var(--forest) 11%,var(--paper));color:var(--forest)}
+.pinnedIcon svg{width:26px;height:26px}
+.pinnedCard>div{min-width:0}
+.pinnedCard>div small{display:block;font-size:.59rem;letter-spacing:.08em;font-weight:800;color:var(--forest)}
+.pinnedCard>div strong{display:block;margin:6px 0;font:400 1.25rem/1.14 var(--serif);overflow-wrap:anywhere}
+.pinnedCard>div p{margin:0;color:var(--muted);font-size:.72rem;line-height:1.4;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.pinnedCard>a{grid-column:2;color:var(--forest);font-size:.71rem;font-weight:800}
+.pinnedCard>button{position:absolute;top:9px;right:9px;width:30px;height:30px;border:1px solid var(--line);border-radius:50%;background:var(--paper-strong);color:var(--muted);font-size:1.15rem;cursor:pointer}
+.pinnedCard>button:hover{color:var(--forest);border-color:var(--forest)}
+.widgetPinEmpty{padding:20px;border:1px dashed var(--line);border-radius:15px;color:var(--muted);background:var(--paper)}
+.widgetPinEmpty p{margin:0 0 9px;font-size:.78rem;line-height:1.5}
+.widgetPinEmpty a{color:var(--forest);font-size:.76rem;font-weight:800}
+@media(max-width:720px){.pinnedGrid{grid-template-columns:1fr;gap:8px}.pinnedCard{min-height:108px;padding:12px 40px 12px 12px;gap:9px}.pinnedIcon{width:40px;height:40px}.pinnedIcon svg{width:23px;height:23px}.pinnedCard>div strong{font-size:1.13rem}.pinnedCard>div p{font-size:.69rem}}

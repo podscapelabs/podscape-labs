@@ -1,19 +1,42 @@
 "use client";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
-import { PodscapeLineIcon, type PodscapeIconName } from "./PodscapeLineIcon";
+import {usePathname,useRouter} from "next/navigation";
+import {PodscapeLineIcon} from "./PodscapeLineIcon";
+import {choiceById,navigationChoices,navigationGroups,swapNavigationSlot} from "./navigation-customization";
+import {useNavigationPreferences} from "./useNavigationPreferences";
+import {useShortcutEditor} from "./useShortcutEditor";
 import styles from "./KeeperMobileNav.module.css";
-const items: {href:string;icon:PodscapeIconName;label:string;primary?:boolean}[] = [
- {href:"/app",icon:"home",label:"Home"},
- {href:"/shop",icon:"shop",label:"Shop"},
- {href:"/keeper/scan",icon:"scan",label:"Scan",primary:true},
- {href:"/keeper",icon:"manager",label:"Manager"},
- {href:"/menu",icon:"menu",label:"Menu"}
-];
+
 export function GlobalMobileNav(){
- const pathname=usePathname();
- const excluded=pathname==="/"||pathname==="/admin"||pathname.startsWith("/admin/")&&pathname!=="/admin/preview"||pathname.startsWith("/account/login")||pathname.startsWith("/account/register")||pathname.startsWith("/account/reset")||pathname.startsWith("/auth/");
- if(excluded)return null;
- const active=pathname.startsWith("/keeper/scan")?"Scan":pathname.startsWith("/keeper")?"Manager":pathname.startsWith("/shop")?"Shop":pathname==="/menu"||pathname.startsWith("/fun-zone")||pathname.startsWith("/field-guide")||pathname.startsWith("/ledger")||pathname.startsWith("/explore")?"Menu":"Home";
- return <nav className={styles.nav} aria-label="PodScape mobile navigation">{items.map(item=><Link href={item.href} key={item.label} aria-current={active===item.label?"page":undefined} className={`${styles.item} ${item.primary?styles.primary:""} ${active===item.label?styles.active:""}`}><span><PodscapeLineIcon name={item.icon}/></span><small>{item.label}</small></Link>)}</nav>;
+  const pathname=usePathname();
+  const router=useRouter();
+  const {ids,change,reset}=useNavigationPreferences("bottom");
+  const {editing,selected,setSelected,handlers,done}=useShortcutEditor(ids,change);
+  const excluded=pathname==="/"||pathname==="/admin"||pathname.startsWith("/admin/")&&pathname!=="/admin/preview"||pathname.startsWith("/account/login")||pathname.startsWith("/account/register")||pathname.startsWith("/account/reset")||pathname.startsWith("/auth/");
+  if(excluded)return null;
+  const items=ids.map(id=>choiceById.get(id)).filter((x):x is NonNullable<typeof x>=>Boolean(x));
+  const selectedItem=items[selected]||items[0];
+  const activeFor=(href:string)=>href==="/app"?pathname==="/app":href==="/menu"?pathname==="/menu":pathname===href||pathname.startsWith(href+"/");
+  return <>
+    {editing&&<div className={styles.editor} role="region" aria-label="Customize bottom navigation">
+      <div className={styles.editorHeading}>
+        <div><strong>Arrange your toolbar</strong><small>Drag icons to move them. Tap one to replace it.</small></div>
+        <button type="button" onClick={done}>Done</button>
+      </div>
+      <label className={styles.replace}>Replace {selectedItem?.label||"shortcut"}
+        <select value={selectedItem?.id||""} onChange={event=>change(swapNavigationSlot(ids,selected,event.target.value))}>
+          {navigationGroups.map(group=><optgroup label={group} key={group}>{navigationChoices.filter(item=>item.group===group).map(item=><option value={item.id} key={item.id}>{item.label}{item.planned?" (coming later)":""}{ids.includes(item.id)&&item.id!==selectedItem?.id?" (swap)":""}</option>)}</optgroup>)}
+        </select>
+      </label>
+      <button type="button" className={styles.resetLink} onClick={()=>{reset();setSelected(0)}}>Reset toolbar</button>
+    </div>}
+    <nav className={`${styles.nav} ${editing?styles.editing:""}`} aria-label="PodScape mobile navigation">
+      {items.map((item,index)=><button type="button" data-shortcut-index={index} key={item.id} style={editing?{animationDelay:`${index*-70}ms`}:undefined}
+        aria-current={!editing&&activeFor(item.href)?"page":undefined}
+        aria-label={editing?`Choose ${item.label} to customize`:item.label}
+        className={`${styles.item} ${index===Math.floor(items.length/2)?styles.primary:""} ${!editing&&activeFor(item.href)?styles.active:""} ${editing?styles.jiggling:""} ${editing&&selected===index?styles.selected:""}`}
+        {...handlers(index)} onClick={event=>{handlers(index).onClick(event);if(!event.defaultPrevented)router.push(item.href)}}>
+        <span><PodscapeLineIcon name={item.icon}/></span><small>{item.label}</small>
+      </button>)}
+    </nav>
+  </>;
 }
