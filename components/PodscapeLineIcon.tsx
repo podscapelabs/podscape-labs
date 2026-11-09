@@ -1,4 +1,4 @@
-export type PodscapeIconName = "search"|"leaf"|"jar"|"shop"|"book"|"community"|"vendor"|"creative"|"podbound"|"home"|"scan"|"manager"|"menu"|"qr"|"bin"|"droplet"|"calendar"|"note"|"crossword"|"connections"|"letters"|"challenge"|"quiz"|"word-search"|"achievement"|"check"|"lock"|"arrow-right"|"close"|"edit"|"grid"|"trophy";
+export type PodscapeIconName = "search"|"leaf"|"jar"|"shop"|"book"|"community"|"vendor"|"creative"|"podbound"|"home"|"scan"|"manager"|"menu"|"qr"|"bin"|"droplet"|"calendar"|"note"|"crossword"|"connections"|"letters"|"challenge"|"quiz"|"word-search"|"achievement"|"check"|"lock"|"arrow-right"|"close"|"edit"|"grid"|"trophy"|"grip"|"arrow-up"|"arrow-down";
 
 export function PodscapeLineIcon({name}:{name:PodscapeIconName}){
  const common={viewBox:"0 0 32 32",fill:"none",stroke:"currentColor",strokeWidth:1.65,strokeLinecap:"round" as const,strokeLinejoin:"round" as const,"aria-hidden":true};
@@ -31,6 +31,9 @@ export function PodscapeLineIcon({name}:{name:PodscapeIconName}){
  if(name==="close")return <svg {...common}><path d="m8 8 16 16M24 8 8 24"/></svg>;
  if(name==="edit")return <svg {...common}><path d="M7 25h18M9 20l13-13 4 4-13 13-5 1 1-5ZM19 10l4 4"/></svg>;
  if(name==="grid")return <svg {...common}><rect x="5" y="5" width="9" height="9" rx="1.5"/><rect x="18" y="5" width="9" height="9" rx="1.5"/><rect x="5" y="18" width="9" height="9" rx="1.5"/><rect x="18" y="18" width="9" height="9" rx="1.5"/></svg>;
+ if(name==="grip")return <svg {...common}><circle cx="11" cy="8" r="1.7" fill="currentColor" stroke="none"/><circle cx="21" cy="8" r="1.7" fill="currentColor" stroke="none"/><circle cx="11" cy="16" r="1.7" fill="currentColor" stroke="none"/><circle cx="21" cy="16" r="1.7" fill="currentColor" stroke="none"/><circle cx="11" cy="24" r="1.7" fill="currentColor" stroke="none"/><circle cx="21" cy="24" r="1.7" fill="currentColor" stroke="none"/></svg>;
+ if(name==="arrow-up")return <svg {...common}><path d="M16 27V5m-9 9 9-9 9 9"/></svg>;
+ if(name==="arrow-down")return <svg {...common}><path d="M16 5v22m-9-9 9 9 9-9"/></svg>;
  if(name==="menu")return <svg {...common}><path d="M7 9h18M7 16h18M7 23h18"/></svg>;
  return null;
 }
