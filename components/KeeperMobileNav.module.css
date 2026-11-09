@@ -161,3 +161,12 @@
  .resetLink:focus-visible,.nav>.item:focus-visible{outline:3px solid var(--accent,var(--forest));outline-offset:3px}
  .editor{max-height:min(67dvh,480px);overflow-y:auto;overscroll-behavior:contain}
 }
+
+/* Phone navigation safe-area and reduced-viewport polish. */
+@media(max-width:720px){
+ .nav{bottom:max(9px,env(safe-area-inset-bottom,0px));width:calc(100% - 24px)}
+ .editor{bottom:calc(91px + env(safe-area-inset-bottom,0px));max-height:min(65dvh,460px)}
+ .nav>.item{min-width:0}
+}
+@media(max-width:350px){.nav{left:8px;right:8px;width:calc(100% - 16px);padding-inline:4px}.nav>.item small{font-size:.5rem}.nav>.primary{width:min(56px,100%);height:58px;min-height:58px}}
+@media(prefers-reduced-motion:reduce){.nav.editing>.item.jiggling{animation:none}}
