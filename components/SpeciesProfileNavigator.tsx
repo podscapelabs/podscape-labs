@@ -33,7 +33,10 @@ export function SpeciesProfileNavigator({currentSlug,catalogue,children}:{
  const navigate=(item:SpeciesNavItem|null|undefined)=>{if(item)router.push("/ledger/"+encodeURIComponent(item.slug))};
  const start=(event:TouchEvent<HTMLDivElement>)=>{
   if(event.touches.length!==1||((event.target as HTMLElement).closest("a,button,input,select,textarea,[role=dialog]"))){gesture.current=null;return;}
-  gesture.current={x:event.touches[0].clientX,y:event.touches[0].clientY};
+  const x=event.touches[0].clientX;
+  // Preserve iOS Safari's native edge-swipe Back gesture.
+  if(x<30||x>window.innerWidth-30){gesture.current=null;return;}
+  gesture.current={x,y:event.touches[0].clientY};
  };
  const end=(event:TouchEvent<HTMLDivElement>)=>{
   const first=gesture.current;gesture.current=null;
