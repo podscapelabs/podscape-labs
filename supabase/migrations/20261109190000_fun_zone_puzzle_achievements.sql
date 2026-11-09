@@ -20,7 +20,7 @@ create policy "Members read their puzzle completions" on public.member_puzzle_co
 
 -- This is a privileged server-only transaction: never call it from a browser.
 create or replace function public.record_member_puzzle_completion(
- p_user_id uuid, p_game_key text, p_puzzle_id text
+ p_user_id uuid, p_game_key text, p_puzzle_id text, p_previous_puzzle_id text
 )
 returns table(achievement_key text, exp_awarded integer)
 language plpgsql security definer set search_path=''
@@ -37,6 +37,11 @@ begin
     or length(p_game_key)>60 or length(p_puzzle_id)>80 then
   raise exception 'Invalid puzzle completion';
  end if;
+ perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(p_user_id::text || ':' || p_game_key,0));
+ if p_previous_puzzle_id is not null and not exists (
+  select 1 from public.member_puzzle_completions
+  where user_id=p_user_id and game_key=p_game_key and puzzle_id=p_previous_puzzle_id
+ ) then raise exception 'Previous puzzle must be completed first'; end if;
  insert into public.member_puzzle_completions(user_id,game_key,puzzle_id)
  values(p_user_id,p_game_key,p_puzzle_id)
  on conflict do nothing;
@@ -83,5 +88,5 @@ begin
  end loop;
 end;
 $$;
-revoke all on function public.record_member_puzzle_completion(uuid,text,text) from public,anon,authenticated;
-grant execute on function public.record_member_puzzle_completion(uuid,text,text) to service_role;
+revoke all on function public.record_member_puzzle_completion(uuid,text,text,text) from public,anon,authenticated;
+grant execute on function public.record_member_puzzle_completion(uuid,text,text,text) to service_role;
