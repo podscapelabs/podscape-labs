@@ -68,7 +68,7 @@ export function AppSwipeBack(){
    started.current=null;
    hideHint();
    if(!standalone()||event.touches.length!==1||navigating.current)return;
-   if(pathname==="/"||pathname==="/app"||pathname.startsWith("/admin")||pathname.startsWith("/auth/")||pathname.startsWith("/account/login")||pathname.startsWith("/account/register"))return;
+   if(pathname==="/"||pathname==="/app"||pathname.startsWith("/admin")||pathname.startsWith("/auth/")||pathname.startsWith("/account/login")||pathname.startsWith("/account/register")||pathname.startsWith("/account/reset"))return;
    if(historyRef.current.length<2)return;
    const touch=event.touches[0];
    if(touch.clientX<RESERVED_EDGE||touch.clientX>window.innerWidth-RESERVED_EDGE)return;
