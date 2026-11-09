@@ -1,35 +1,15 @@
 "use client";
 import { useState, useRef, useMemo } from "react";
 import type {SearchPuzzle} from "@/lib/fun-zone-puzzles";
+import {makeWordSearchPuzzle} from "@/lib/fun-zone-logic";
 import {usePuzzleCompletion,PuzzleSaveStatus} from "@/components/usePuzzleCompletion";
 import Link from "next/link";
 import styles from "./game.module.css";
 
 type Point={r:number;c:number};
-const directions=[[0,1],[1,0],[1,1],[1,-1],[0,-1],[-1,0],[-1,-1],[-1,1]];
-function makePuzzle(WORDS:string[],SIZE:number,initialSeed:number){
- const grid=Array.from({length:SIZE},()=>Array.from({length:SIZE},()=> ""));
- const locations:Record<string,string[]>={};
- let seed=initialSeed;const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296};
- for(const word of [...WORDS].sort((a,b)=>b.length-a.length)){
-  let placed=false;
-  for(let attempt=0;attempt<10000&&!placed;attempt++){
-   const [dr,dc]=directions[Math.floor(random()*directions.length)];
-   const r=Math.floor(random()*SIZE),c=Math.floor(random()*SIZE);
-   const cells=Array.from({length:word.length},(_,i)=>({r:r+i*dr,c:c+i*dc}));
-   if(cells.some((p,i)=>p.r<0||p.c<0||p.r>=SIZE||p.c>=SIZE||(grid[p.r][p.c]!==""&&grid[p.r][p.c]!==word[i])))continue;
-   cells.forEach((p,i)=>grid[p.r][p.c]=word[i]);
-   locations[word]=cells.map(p=>p.r+"-"+p.c);placed=true;
-  }
-  if(!placed)throw new Error("Puzzle placement failed");
- }
- const letters="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
- grid.forEach(row=>row.forEach((v,i)=>{if(!v)row[i]=letters[Math.floor(random()*letters.length)]}));
- return {grid,locations};
-}
 export default function GenusWordSearch({puzzleData}:{puzzleData:SearchPuzzle}){
  const {words:WORDS,size:SIZE}=puzzleData;
- const puzzle=useMemo(()=>makePuzzle(puzzleData.words,puzzleData.size,puzzleData.seed),[puzzleData]);
+ const puzzle=useMemo(()=>makeWordSearchPuzzle(puzzleData.words,puzzleData.size,puzzleData.seed),[puzzleData]);
  const {saved,record,retry}=usePuzzleCompletion("word-search",puzzleData.id);
  const [found,setFound]=useState<string[]>([]);
  const [hinted,setHinted]=useState<string|null>(null);
