@@ -2,7 +2,9 @@ import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PRIVATE_AREAS = ["/app", "/menu", "/explore", "/ledger", "/poddex", "/keeper", "/fun-zone", "/shop", "/field-guide", "/from-the-lab", "/search", "/api/progress", "/api/search"];
+// Discovery portals are public. Member data and actions have separate guards.
+// Never gate the public Ledger, Shop, Fun Zone, Guides, Search or app homepage.
+const PRIVATE_AREAS = ["/keeper/collection", "/keeper/scan", "/keeper/qr", "/keeper/schedule", "/keeper/activity", "/keeper/new", "/api/progress"];
 
 function isPrivateArea(pathname: string): boolean {
   return PRIVATE_AREAS.some((area) => pathname === area || pathname.startsWith(area + "/"));
@@ -32,6 +34,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
   const protectedPage = isPrivateArea(pathname);
+  // Public portal routes never need membership, even if auth cookies are stale.
+  if (!protectedPage) return NextResponse.next();
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
     || process.env.SUPABASE_PUBLISHABLE_KEY
