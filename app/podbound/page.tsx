@@ -39,7 +39,7 @@ export default async function PodBoundHome() {
     <Header />
     <main id="platform-main" className={styles.main}>
       <section className={styles.hero} aria-labelledby="game-title">
-        <div className={styles.heroArt} aria-hidden="true"><span className={styles.cardBack}><PodscapeLineIcon name="podbound" /></span><span className={styles.cardFront}><PodscapeLineIcon name="leaf" /></span><span className={styles.heroDecoration}>✧</span></div>
+        <div className={styles.heroArt} aria-hidden="true"><span className={styles.cardBack}><PodscapeLineIcon name="podbound" /></span><span className={styles.cardFront}><PodscapeLineIcon name="leaf" /></span></div>
         <div className={styles.heroCopy}>
           <p className={styles.kicker}>SMALL CREATURES. BIG DECISIONS.</p>
           <h1 id="game-title">PodBound</h1>
