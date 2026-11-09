@@ -4,6 +4,7 @@ import Link from "next/link";
 import type {Game} from "@/lib/fun-zone-games";
 import type {Puzzle,QuizPuzzle,ConnectionsPuzzle,BurrowPuzzle,CrosswordPuzzle} from "@/lib/fun-zone-puzzles";
 import {usePuzzleCompletion,PuzzleSaveStatus} from "./usePuzzleCompletion";
+import {scoreWordGuess} from "@/lib/fun-zone-logic";
 import styles from "./PlayGame.module.css";
 import {WorkspaceLinks} from "./PodscapeWorkspaceUI";
 
@@ -56,17 +57,6 @@ function Connections({puzzle,onComplete}:{puzzle:ConnectionsPuzzle;onComplete:Co
   </>}
  </div>;
 }
-type TileResult="correct"|"present"|"absent";
-function scoreGuess(guess:string,target:string):TileResult[]{
- const result:Array<TileResult>=Array(5).fill("absent");
- const available=new Map<string,number>();
- for(let i=0;i<5;i++){if(guess[i]===target[i])result[i]="correct";else available.set(target[i],(available.get(target[i])||0)+1);}
- for(let i=0;i<5;i++)if(result[i]!=="correct"){
-  const count=available.get(guess[i])||0;
-  if(count>0){result[i]="present";available.set(guess[i],count-1)}
- }
- return result;
-}
 function Burrow({puzzle,onComplete}:{puzzle:BurrowPuzzle;onComplete:Completion}){
  const {answer:target,clue,note}=puzzle;
  const [guesses,setGuesses]=useState<string[]>([]),[entry,setEntry]=useState("");
@@ -78,9 +68,9 @@ function Burrow({puzzle,onComplete}:{puzzle:BurrowPuzzle;onComplete:Completion})
   if(word===target)onComplete({guesses:next});
  };
  const restart=()=>{setGuesses([]);setEntry("");};
- const keyboard=new Map<string,TileResult>();
- const rank:Record<TileResult,number>={absent:1,present:2,correct:3};
- guesses.forEach(guess=>scoreGuess(guess,target).forEach((result,i)=>{
+ const keyboard=new Map<string,ReturnType<typeof scoreWordGuess>[number]>();
+ const rank:Record<ReturnType<typeof scoreWordGuess>[number],number>={absent:1,present:2,correct:3};
+ guesses.forEach(guess=>scoreWordGuess(guess,target).forEach((result,i)=>{
   const key=guess[i],previous=keyboard.get(key);
   if(!previous||rank[result]>rank[previous])keyboard.set(key,result);
  }));
