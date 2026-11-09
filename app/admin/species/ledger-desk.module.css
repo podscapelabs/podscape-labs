@@ -112,3 +112,48 @@
 .moistureRangeFields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .moistureRangeFields>label{display:grid;gap:6px;min-width:0}
 @media(max-width:540px){.moistureRangeFields{grid-template-columns:1fr}}
+
+
+/* Owner Quick Import: deliberate review before touching the guided editor. */
+.quickImportRoot{min-width:0;border-bottom:1px solid var(--line)}
+.quickImportEntry{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px clamp(18px,4vw,42px);background:var(--paper)}
+.quickImportEntry>div{display:grid;gap:4px}
+.quickImportEntry strong{color:var(--ink);font-size:.84rem}
+.quickImportEntry strong span{color:var(--forest)}
+.quickImportEntry small{font-size:.7rem;color:var(--muted);line-height:1.4}
+.quickImportEntry>button,.quickImportTools>button{min-height:42px;flex:none;padding:9px 12px;background:var(--paper);border:1px solid var(--line);border-radius:11px;color:var(--forest);font-size:.73rem;font-weight:760;cursor:pointer}
+.quickImportEntry>button{background:var(--forest);color:var(--paper)}
+.quickImportPanel{display:grid;gap:12px;padding:15px clamp(18px,4vw,42px) 19px;background:var(--paper);border-top:1px solid var(--line)}
+.quickImportTop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.quickImportTop strong{color:var(--ink);font-family:var(--serif);font-size:1.24rem}
+.quickImportTop button{width:40px;height:40px;border:1px solid var(--line);border-radius:50%;background:var(--paper);color:var(--ink);cursor:pointer}
+.quickImportPanel>p{margin:0;color:var(--muted);font-size:.76rem;line-height:1.5}
+.quickImportPanel>label{color:var(--ink);font-size:.72rem;font-weight:750}
+.quickImportPanel>textarea{display:block;box-sizing:border-box;width:100%;min-width:0;min-height:145px;padding:12px;border-radius:12px;background:var(--paper-strong);border:1px solid var(--line);color:var(--ink);font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.75rem;line-height:1.5;resize:vertical}
+.quickImportTools{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.quickImportReview{display:grid;gap:12px}
+.quickImportReview h3{margin:0;color:var(--ink);font-size:1rem}
+.quickImportReview>p,.quickImportReview>small{margin:0;color:var(--muted);font-size:.73rem}
+.quickImportModes{display:flex;flex-wrap:wrap;gap:8px}
+.quickImportModes label{display:inline-flex;align-items:center;gap:7px;min-height:43px;padding:9px 11px;border:1px solid var(--line);border-radius:11px;color:var(--ink);font-size:.73rem;cursor:pointer}
+.quickImportModes input{accent-color:var(--forest)}
+.quickImportRows{display:grid;gap:6px;max-height:320px;overflow:auto}
+.quickImportRow,.quickImportRowSkipped{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper-strong)}
+.quickImportRow>div,.quickImportRowSkipped>div{display:grid;gap:4px;min-width:0}
+.quickImportRow strong,.quickImportRowSkipped strong{font-size:.73rem;color:var(--ink)}
+.quickImportRow span,.quickImportRowSkipped span{font-size:.69rem;line-height:1.4;color:var(--muted);overflow-wrap:anywhere}
+.quickImportRow>small,.quickImportRowSkipped>small{flex:0 0 auto;font-size:.64rem;font-weight:750;color:var(--forest)}
+.quickImportRowSkipped{opacity:.55}
+.quickImportWarnings{display:grid;gap:5px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,#c89b40 9%,var(--paper))}
+.quickImportWarnings strong{font-size:.73rem;color:var(--ink)}
+.quickImportWarnings p{margin:0;font-size:.7rem;color:var(--ink);line-height:1.4}
+.quickImportError{padding:10px 12px;border:1px solid #b34848;border-radius:10px;color:#b34848;font-size:.73rem}
+.quickImportSuccess{margin:0;padding:10px clamp(18px,4vw,42px);color:var(--forest);font-size:.73rem;font-weight:730;line-height:1.45;background:color-mix(in srgb,var(--forest) 6%,var(--paper))}
+.quickImportApply{min-height:47px;padding:10px 15px;border:1px solid var(--forest);border-radius:11px;background:var(--forest);color:var(--paper);font-size:.76rem;font-weight:780;cursor:pointer}
+.quickImportApply:disabled{opacity:.5;cursor:not-allowed}
+.quickImportPanel button:focus-visible,.quickImportPanel textarea:focus-visible,.quickImportEntry button:focus-visible{outline:2px solid var(--forest);outline-offset:3px}
+@media(max-width:650px){
+ .quickImportEntry{padding:12px 13px}.quickImportEntry small{font-size:.65rem}.quickImportEntry>button{padding:8px 9px;font-size:.67rem}
+ .quickImportPanel{padding:13px}.quickImportRow,.quickImportRowSkipped{align-items:flex-start;flex-direction:column;gap:6px}
+ .quickImportRows{max-height:280px}
+}
