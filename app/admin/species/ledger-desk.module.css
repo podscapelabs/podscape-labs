@@ -157,3 +157,22 @@
  .quickImportPanel{padding:13px}.quickImportRow,.quickImportRowSkipped{align-items:flex-start;flex-direction:column;gap:6px}
  .quickImportRows{max-height:280px}
 }
+
+
+/* Optional reference fields stay collapsed; normal seven-step editor remains compact. */
+.researchEditor{display:grid;gap:9px;margin-top:14px}
+.researchEditorIntro{padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+.researchEditorIntro strong{color:var(--ink);font-size:.8rem}
+.researchEditorIntro p{margin:6px 0 0;color:var(--muted);font-size:.72rem;line-height:1.5}
+.researchGroup{border:1px solid var(--line);border-radius:12px;background:var(--paper);overflow:hidden}
+.researchGroup>summary{cursor:pointer;display:flex;justify-content:space-between;gap:10px;align-items:center;padding:13px;color:var(--ink);font-size:.82rem;font-weight:740;list-style:none}
+.researchGroup>summary::-webkit-details-marker{display:none}
+.researchGroup>summary span{font-weight:500;color:var(--muted);font-size:.69rem}
+.researchGroup[open]>summary{border-bottom:1px solid var(--line)}
+.researchGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:13px}
+.researchGrid>label{display:grid;align-content:start;min-width:0;gap:6px}
+.researchGrid>label span{font-size:.71rem;color:var(--ink);font-weight:700}
+.researchGrid input,.researchGrid select,.researchGrid textarea{box-sizing:border-box;min-width:0;width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:9px;background:var(--paper-strong);color:var(--ink);font-size:.76rem;line-height:1.4}
+.researchGrid textarea{resize:vertical}
+.researchGrid>label:has(textarea){grid-column:1/-1}
+@media(max-width:650px){.researchGrid{grid-template-columns:1fr;padding:11px}.researchGrid>label:has(textarea){grid-column:auto}}
