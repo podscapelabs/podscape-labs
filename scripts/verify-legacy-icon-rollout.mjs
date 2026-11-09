@@ -2,6 +2,25 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 
 const read = path => readFileSync(new URL("../" + path, import.meta.url), "utf8");
+import { readdirSync } from "node:fs";
+import { join, resolve } from "node:path";
+const root = new URL("../", import.meta.url).pathname;
+function walk(directory) {
+  return readdirSync(resolve(root,directory), { withFileTypes:true }).flatMap(entry => {
+    const path = join(directory,entry.name);
+    return entry.isDirectory() ? walk(path) : [path.replaceAll("\\\\","/")];
+  });
+}
+const allUIFiles = [...walk("app"),...walk("components")];
+const allComponents = allUIFiles.filter(p=>p.endsWith(".tsx"));
+const allStyles = allUIFiles.filter(p=>p.endsWith(".css"));
+assert.ok(allComponents.length>=150, "Audit unexpectedly skipped TSX screens");
+assert.ok(allStyles.length>=55, "Audit unexpectedly skipped stylesheets");
+const prohibited = /[❧❦✿❀✦✧✺♧☘◇◆◉◌◈☷▥▤⟡🍃🌿🍂🌱⌕⠿]/u;
+for (const path of [...allComponents,...allStyles]) {
+  assert.ok(!prohibited.test(read(path)), "Legacy decorative or substitute icon survived in "+path);
+}
+
 
 // Audit public-facing portal entry points and shared widget surfaces. This is a
 // conservative allowlist, not a claim that every route has been browser-tested.
