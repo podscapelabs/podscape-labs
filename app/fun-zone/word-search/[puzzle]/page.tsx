@@ -1,5 +1,7 @@
 import type {Metadata} from "next";
-import {notFound} from "next/navigation";
+import {notFound,redirect} from "next/navigation";
+import {getFunZoneProgress,canPlayPuzzle} from "@/lib/fun-zone-progress";
+export const dynamic="force-dynamic";
 import {PlatformShell} from "@/components/PlatformShell";
 import {getPuzzle,getPuzzles,type SearchPuzzle} from "@/lib/fun-zone-puzzles";
 import GenusWordSearch from "../GenusWordSearch";
@@ -13,5 +15,7 @@ export async function generateMetadata({params}:{params:Promise<{puzzle:string}>
 export default async function Page({params}:{params:Promise<{puzzle:string}>}){
  const entry=getPuzzle("word-search",(await params).puzzle);
  if(!entry||entry.mode!=="search")notFound();
+ const progress=await getFunZoneProgress("word-search");
+ if(!progress.available||!canPlayPuzzle("word-search",entry.puzzle.id,progress.ids))redirect("/fun-zone/word-search");
  return <PlatformShell><GenusWordSearch puzzleData={entry.puzzle as SearchPuzzle}/></PlatformShell>;
 }
