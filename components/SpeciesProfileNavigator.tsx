@@ -57,7 +57,7 @@ export function SpeciesProfileNavigator({currentSlug,catalogue,children}:{
   navigate(dx<0?next:prev);
  };
  return <div className={styles.profileBrowse}>
-  <div className={styles.profileSwipeRegion} onTouchStart={start} onTouchEnd={end} onTouchCancel={()=>{gesture.current=null}}>
+  <div data-swipe-navigation="local" className={styles.profileSwipeRegion} onTouchStart={start} onTouchEnd={end} onTouchCancel={()=>{gesture.current=null}}>
    {children}
   </div>
   {catalogue.length>1?<nav className={styles.profileBrowseBar} aria-label="Browse Leaf Ledger species">
