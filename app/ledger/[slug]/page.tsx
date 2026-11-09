@@ -86,8 +86,8 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
 
   // Specialist cards do not appear in the library until their data exists for this species.
   const hasResearch=(keys:(keyof typeof record)[])=>keys.some(key=>typeof record[key]==="string"&&Boolean((record[key] as string).trim()));
-  const environmentAvailable=hasResearch(["humidityMin","humidityMax","moistZoneCoverage","moistRefugeCondition","moistureGradientGuidance"]);
-  const breedingAvailable=hasResearch(["broodAverage","broodMin","broodMax","incubationPeriod","maturityAge","breedingSeason"]);
+  const environmentAvailable=(Boolean(record.humidityMin?.trim())&&Boolean(record.humidityMax?.trim()))||hasResearch(["moistZoneCoverage","moistRefugeCondition","moistureGradientGuidance"]);
+  const breedingAvailable=hasResearch(["broodAverage","reproduction","incubationPeriod","maturityAge","breedingSeason"])||(Boolean(record.broodMin?.trim())&&Boolean(record.broodMax?.trim()));
   const taxonomyAvailable=hasResearch(["taxonomicStatus","taxonomicSynonyms","nativeDistribution","naturalMicrohabitat","morphOrigin","identificationNotes","adultSizeMm","lifespan"]);
   const nutritionAvailable=hasResearch(["stapleDiet","proteinGuidance","calciumGuidance","dietaryCautions","defensiveBehaviour","visibilityNotes","bioactiveSuitability"]);
   const habitatAdvancedAvailable=hasResearch(["naturalMicrohabitat","substrateDepth","enclosureGuidance","moistureGradientGuidance"]);
