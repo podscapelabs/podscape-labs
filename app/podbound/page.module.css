@@ -8,3 +8,6 @@
  .heading{margin-bottom:12px}
  .story,.studio{margin-top:22px}
 }
+
+/* PodBound identity stays with the game cards; remove decorative glyph layers. */
+.heroDecoration{display:none!important}
