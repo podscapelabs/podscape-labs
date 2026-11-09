@@ -69,12 +69,12 @@ export default function ProgressDashboard({
       </div>
       {error ? <p className={styles.notice} role="status">Achievement history is temporarily unavailable. Please check again later.</p> : null}
       <div className={styles.achievementGrid}>
-        {shown.map(a => <button type="button" key={a.key} className={styles.achievementTile} data-earned={Boolean(a.unlockedAt)} onClick={()=>setSelected(a.key)} aria-label={(a.hidden&&!a.unlockedAt?"Secret achievement":a.title) + (a.unlockedAt ? ", unlocked" : a.status === "planned" ? ", coming later" : ", not yet unlocked") + ". View details."}>
+        {shown.map(a => <button type="button" key={a.key} className={styles.achievementTile} data-earned={Boolean(a.unlockedAt)} onClick={()=>setSelected(a.key)} aria-label={(a.hidden&&!a.unlockedAt?"Secret achievement":a.title) + (a.unlockedAt ? a.hidden?", previously hidden, unlocked":", unlocked" : a.status === "planned" ? ", coming later" : ", not yet unlocked") + ". View details."}>
           <span className={styles.medallion} data-earned={Boolean(a.unlockedAt)} aria-hidden="true">
             <span className={styles.medallionRing}>{a.hidden&&!a.unlockedAt?"?":a.icon}</span>
             {!a.unlockedAt ? <span className={styles.lockMark}>◇</span> : null}
           </span>
-          <span className={styles.tileCopy}><span className={styles.tileStatus}>{a.unlockedAt ? "✓ Unlocked" : a.status === "planned" ? "Coming later" : "Locked"}</span>
+          <span className={styles.tileCopy}><span className={styles.tileStatus}>{a.unlockedAt ? "✓ Unlocked" : a.status === "planned" ? "Coming later" : "Locked"}</span>{a.hidden&&a.unlockedAt?<span className={styles.previouslyHidden}>✦ Previously Hidden</span>:null}
             <strong>{a.hidden&&!a.unlockedAt?"Secret Achievement":a.title}</strong><span className={styles.tileDescription}>{a.hidden&&!a.unlockedAt?"A little surprise for curious keepers.":a.description}</span>
             {(a.status==="available"&&(!a.hidden||Boolean(a.unlockedAt))) ? <span className={styles.tileReward}>+{a.exp} EXP{a.coins ? ` · +${a.coins} Pod Coins (legacy)` : ""}</span> : <span className={styles.tileRewardMuted}>{a.hidden&&!a.unlockedAt?"Secret reward": "Rewards not finalized"}</span>}</span>
         </button>)}
@@ -94,7 +94,7 @@ export default function ProgressDashboard({
   {selectedAchievement ? <div className={styles.modalBackdrop} role="presentation" onClick={()=>setSelected(null)}><div className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="achievement-detail-title" onClick={e=>e.stopPropagation()}>
     <button type="button" className={styles.closeModal} aria-label="Close achievement details" onClick={()=>setSelected(null)}>×</button>
     <div className={styles.modalEmblem} aria-hidden="true">{selectedAchievement.unlockedAt ? "✦" : "❧"}</div>
-    <span className={styles.tileStatus}>{selectedAchievement.unlockedAt?"✓ Unlocked":selectedAchievement.status==="planned"?"Coming later":"Not yet unlocked"}</span>
+    <span className={styles.tileStatus}>{selectedAchievement.unlockedAt?"✓ Unlocked":selectedAchievement.status==="planned"?"Coming later":"Not yet unlocked"}</span>{selectedAchievement.hidden&&selectedAchievement.unlockedAt?<span className={styles.previouslyHidden}>✦ Previously Hidden</span>:null}
     <h2 id="achievement-detail-title">{selectedAchievement.hidden&&!selectedAchievement.unlockedAt?"Secret Achievement":selectedAchievement.title}</h2><p>{selectedAchievement.hidden&&!selectedAchievement.unlockedAt?"A secret milestone is waiting to be discovered.":selectedAchievement.description}</p>
     {selectedAchievement.status==="available"&&(!selectedAchievement.hidden||selectedAchievement.unlockedAt) ? <strong className={styles.modalReward}>+{selectedAchievement.exp} EXP{selectedAchievement.coins ? ` · +${selectedAchievement.coins} Pod Coins (legacy reward)` : ""}</strong> : <p>{selectedAchievement.hidden&&!selectedAchievement.unlockedAt?"Reward revealed when unlocked.":"Milestone and rewards are still being designed."}</p>}
     {selectedAchievement.unlockedAt ? <p>Earned {new Date(selectedAchievement.unlockedAt).toLocaleDateString("en-CA",{year:"numeric",month:"long",day:"numeric"})}</p> : null}
