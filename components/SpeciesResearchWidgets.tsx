@@ -123,7 +123,7 @@ export function MoistureAndHumidityWidget({record}:{record:SpeciesRecord}){
 }
 export function BreedingDevelopmentWidget({record}:{record:SpeciesRecord}){
  const avg=record.broodAverage?.trim(),min=record.broodMin?.trim(),max=record.broodMax?.trim();
- return <Details title="Breeding & Development" rows={[
+ return <Details title="Breeding & Growth" rows={[
   {label:"Average brood",value:avg?avg+" young":undefined},
   {label:"Observed brood range",value:min&&max?min+"–"+max+" young":undefined},
   {label:"Incubation / brooding",value:record.incubationPeriod},{label:"Age at maturity",value:record.maturityAge},
@@ -131,11 +131,12 @@ export function BreedingDevelopmentWidget({record}:{record:SpeciesRecord}){
  ]} note={has(record,["broodAverage","broodMin","broodMax"])?"Brood measurements depend on the studied population and conditions. Check Research & Sources for evidence scope.":undefined}/>;
 }
 export function TaxonomyOriginWidget({record}:{record:SpeciesRecord}){
- return <Details title="Taxonomy & Origin" rows={[
- {label:"Taxonomic status",value:record.taxonomicStatus},{label:"Synonyms",value:record.taxonomicSynonyms},
+ return <Details title="Origins & Identity" rows={[
  {label:"Native distribution",value:record.nativeDistribution},
- {label:"Morph origin",value:record.morphOrigin},{label:"Adult size",value:record.adultSizeMm?.trim()?record.adultSizeMm+" mm":undefined},
- {label:"Lifespan",value:record.lifespan},{label:"Identification & lookalikes",value:record.identificationNotes}
+ {label:"Morph origin",value:record.morphOrigin},
+ {label:"Taxonomic status",value:record.taxonomicStatus},
+ {label:"Synonyms",value:record.taxonomicSynonyms},
+ {label:"Identification & lookalikes",value:record.identificationNotes}
  ]}/>;
 }
 export function FeedingEcologyWidget({record}:{record:SpeciesRecord}){
@@ -144,12 +145,13 @@ export function FeedingEcologyWidget({record}:{record:SpeciesRecord}){
  {label:"Dietary cautions",value:record.dietaryCautions}
  ]}/>;
 }
-/** Behavioural ecology is distinct from nutrition and can be compared separately. */
+/** Individual morphology and behaviour belong together, not inside the taxonomy card. */
 export function BehaviourEcologyWidget({record}:{record:SpeciesRecord}){
- return <Details title="Behaviour & Ecology" rows={[
-  {label:"Defensive behaviour",value:record.defensiveBehaviour},
-  {label:"Activity & visibility",value:record.visibilityNotes||record.activityNote},
-  {label:"Bioactive suitability",value:record.bioactiveSuitability}
+ return <Details title="Species Characteristics" rows={[
+ {label:"Adult size",value:record.adultSizeMm?.trim()?record.adultSizeMm+" mm":undefined},
+ {label:"Lifespan",value:record.lifespan},
+ {label:"Defensive behaviour",value:record.defensiveBehaviour},
+ {label:"Activity & visibility",value:record.visibilityNotes||record.activityNote}
  ]}/>;
 }
 export function ResearchSourcesWidget({record}:{record:SpeciesRecord}){
@@ -177,8 +179,11 @@ export function ResearchSourcesWidget({record}:{record:SpeciesRecord}){
 }
 export function HabitatSetupWidget({record}:{record:SpeciesRecord}){
  return <Details title="Habitat & Setup" rows={[
+ {label:"Ventilation",value:record.ventilation},
+ {label:"Substrate",value:record.substrate},
+ {label:"Substrate depth",value:record.substrateDepth},
+ {label:"Enclosure guidance",value:record.enclosureGuidance},
  {label:"Natural microhabitat",value:record.naturalMicrohabitat},
- {label:"Substrate composition",value:record.substrate},{label:"Substrate depth",value:record.substrateDepth},
- {label:"Enclosure guidance",value:record.enclosureGuidance}
+ {label:"Bioactive suitability",value:record.bioactiveSuitability}
  ]} note="Enclosure advice varies with colony size, ventilation and local conditions."/>;
 }
