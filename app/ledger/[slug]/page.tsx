@@ -154,8 +154,8 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
                 ? "Relative substrate dampness, not the percentage of the enclosure to wet. Drier does not mean bone-dry; keep an appropriate moist refuge."
                 : "Relative dampness only, not whole-enclosure moisture or air humidity. Detailed conditions await review."}</p>
             </div> : legacyMoisturePending ? <p className={styles.moisturePending}>Substrate moisture information awaiting review.</p> : null,
-            feeding: feeding ? <section className={styles.speciesInfoCard}><h2>Feeding overview</h2><p>{feeding}</p></section> : null,
-            habitat: record.substrate?.trim() ? <section className={styles.speciesInfoCard}><h2>Habitat &amp; substrate</h2><p>{introText(record.substrate)}</p></section> : null,
+            feeding: feeding && !nutritionAvailable ? <section className={styles.speciesInfoCard}><h2>Feeding overview</h2><p>{feeding}</p></section> : null,
+            habitat: record.substrate?.trim() && !habitatAdvancedAvailable ? <section className={styles.speciesInfoCard}><h2>Habitat &amp; substrate</h2><p>{introText(record.substrate)}</p></section> : null,
             traits: notableTraits.length ? <section className={styles.speciesInfoCard}><h2>Notable traits</h2><ul className={styles.compactTraits}>{notableTraits.map(trait=><li key={trait} data-trait-id={getSpeciesTraitId(trait)||undefined}>{trait}</li>)}</ul></section> : null,
             guides: relatedGuides.length ? <section className={styles.speciesInfoCard}><h2>Related Field Guides</h2><div className={styles.relatedGuides}>{relatedGuides.map(guide=><Link href={`/field-guide/${guide.slug}`} key={guide.slug}><span><strong>{guide.title}</strong>{guide.summary?<small>{guide.summary}</small>:null}</span><b aria-hidden="true">→</b></Link>)}</div></section> : null,
             environment: environmentAvailable ? <MoistureAndHumidityWidget record={record}/> : null,
