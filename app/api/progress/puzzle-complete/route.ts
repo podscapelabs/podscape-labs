@@ -84,7 +84,7 @@ export async function POST(request:Request){
  const awarded=Array.isArray(data)?data:[];
  const unlocked=awarded.flatMap(row=>{
   const entry=achievementCatalog.find(item=>item.key===row.achievement_key&&item.status==="available");
-  return entry?[{id:entry.key,title:entry.title,description:entry.description,exp:entry.exp,coins:0}]:[];
+  return entry?[{id:entry.key,title:entry.title,description:entry.description,exp:entry.exp,coins:0,hidden:entry.hidden===true}]:[];
  });
  return NextResponse.json({saved:true,unlocked});
 }
