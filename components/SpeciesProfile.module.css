@@ -394,3 +394,14 @@
  .moistureMeterHead b{font-size:.73rem}
  .moistureMeterEnds{font-size:.62rem}
 }
+
+
+/* Care dashboard: a single scannable value; editorial context remains available on tap. */
+.dashboardFacts>.careFact{position:relative;align-content:center}
+.careFact dd{padding-right:16px}
+.careFactDetails{font-size:.72rem;line-height:1.45}
+.careFactDetails>summary{position:absolute;top:9px;right:9px;display:grid;place-items:center;width:23px;height:23px;border:1px solid var(--border);border-radius:50%;background:var(--surface-secondary);color:var(--accent);font-size:.72rem;font-family:var(--display);font-weight:700;cursor:pointer;list-style:none;user-select:none}
+.careFactDetails>summary::-webkit-details-marker{display:none}
+.careFactDetails[open]>summary{background:var(--accent);color:var(--surface)}
+.careFactDetails>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.careFactDetails>p{white-space:pre-line;overflow-wrap:anywhere;margin:7px 0 0;padding:9px 0 0;border-top:1px solid var(--border);color:var(--text-secondary);font-size:.71rem;line-height:1.47}
