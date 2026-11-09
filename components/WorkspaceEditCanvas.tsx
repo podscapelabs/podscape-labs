@@ -1,6 +1,7 @@
 "use client";
 import {useEffect,useRef,useState,type PointerEvent,type MouseEvent,type ReactNode} from "react";
 import styles from "./PodscapeHome.module.css";
+import {PodscapeLineIcon} from "./PodscapeLineIcon";
 
 /** Animate layout changes without moving or replacing the real interactive widgets. */
 function workspaceNodes(scope:string){
@@ -129,9 +130,9 @@ export function useWorkspaceDrag<T extends string>(
 export function WorkspaceEditToolbar({title,description,onAdd,onReset,onDone}:{title:string;description:string;onAdd:()=>void;onReset:()=>void;onDone:()=>void}){
  return <div className={styles.homeCanvasToolbar} role="toolbar" aria-label={title}>
   <div><strong>{title}</strong><small>{description}</small></div>
-  <button type="button" onClick={onAdd}>+ Widgets</button>
+  <button type="button" onClick={onAdd}><PodscapeLineIcon name="grid"/> Add Widgets</button>
   <button type="button" onClick={onReset}>Reset to Default</button>
-  <button type="button" onClick={onDone}>Done</button>
+  <button type="button" onClick={onDone}><PodscapeLineIcon name="check"/> Done</button>
  </div>;
 }
 export function WorkspaceEditBlock<T extends string>({id,scope,label,index,count,editing,dragging,required,onMove,onRemove,begin,move,stop,onLongPress,interactiveChildren=false,children}:{
@@ -200,10 +201,10 @@ export function WorkspaceEditBlock<T extends string>({id,scope,label,index,count
   }}
   onDragStartCapture={event=>{if(onLongPress)event.preventDefault()}}>
   {editing?<div className={styles.homeCanvasBlockBar}>
-    <button type="button" data-drag-handle="true" className={styles.homeCanvasHandle} aria-label={`Drag ${label} to reorder`}><span aria-hidden="true">⠿</span> {label}</button>
-    <div><button type="button" aria-label={`Move ${label} up`} disabled={index===0} onClick={()=>animatedReorder(scope,()=>onMove(id,-1))}>↑</button>
-    <button type="button" aria-label={`Move ${label} down`} disabled={index===count-1} onClick={()=>animatedReorder(scope,()=>onMove(id,1))}>↓</button>
-    {!required&&onRemove?<button type="button" aria-label={`Remove ${label}`} onClick={()=>onRemove(id)}>×</button>:null}</div>
+    <button type="button" data-drag-handle="true" className={styles.homeCanvasHandle} aria-label={`Drag ${label} to reorder`}><PodscapeLineIcon name="grip"/> {label}</button>
+    <div><button type="button" aria-label={`Move ${label} up`} disabled={index===0} onClick={()=>animatedReorder(scope,()=>onMove(id,-1))}><PodscapeLineIcon name="arrow-up"/></button>
+    <button type="button" aria-label={`Move ${label} down`} disabled={index===count-1} onClick={()=>animatedReorder(scope,()=>onMove(id,1))}><PodscapeLineIcon name="arrow-down"/></button>
+    {!required&&onRemove?<button type="button" aria-label={`Remove ${label}`} onClick={()=>onRemove(id)}><PodscapeLineIcon name="close"/></button>:null}</div>
   </div>:null}
   <div className={editing&&!interactiveChildren?styles.homeCanvasContentLocked:undefined}>{children}</div>
  </div>;
