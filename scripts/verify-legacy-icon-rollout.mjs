@@ -6,6 +6,7 @@ const read = path => readFileSync(new URL("../" + path, import.meta.url), "utf8"
 // Audit public-facing portal entry points and shared widget surfaces. This is a
 // conservative allowlist, not a claim that every route has been browser-tested.
 const audited = [
+  "app/app/loading.tsx",
   "app/account/page.tsx",
   "app/account/owner-tools/page.tsx",
   "app/account/progress/ProgressDashboard.tsx",
@@ -40,6 +41,10 @@ for (const path of [
 ]) {
   assert.match(read(path), /PodscapeLineIcon/, "Expected the canonical icon component in " + path);
 }
+const loading=read("app/app/loading.tsx");
+assert.match(loading,/podscape-wordmark\.svg/, "Keep recognizable branded loading identity");
+assert.match(loading,/styles\.progress/, "Preserve the actual loading progress animation");
+assert.ok(!loading.includes("styles.symbol"), "No decorative glyph in loading screen");
 const funCss=read("app/fun-zone/fun-zone.module.css");
 assert.match(funCss, /\.carousel::before,\.puzzleArt::before,\.puzzleArt::after\{content:none!important/, "Fun Zone ornamental layers must be disabled");
 assert.match(funCss, /\.puzzleArt\{background:var\(--surface-secondary\);background-image:none!important/, "Fun Zone cards must have plain icon backgrounds");
