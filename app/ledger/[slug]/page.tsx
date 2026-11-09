@@ -53,7 +53,10 @@ function displayTemperature(value:string){
 }
 
 export default async function SpeciesPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ ownerPreview?: string }> }) {
-  const record = await getSpeciesRecord((await params).slug);
+  const awaitedSlug = (await params).slug;
+  // Load the catalogue once: the active profile and adjacent navigation use the same snapshot.
+  const allRecords = await getSpeciesRecords();
+  const record = allRecords.find(item => item.slug === (awaitedSlug) && isSpeciesRecordActive(item));
   if (!record) notFound();
   const previewRequested = (await searchParams).ownerPreview === "1";
   const unpublished = record.status !== "published" || record.kind !== "species";
@@ -62,7 +65,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
 
   const [member, db] = await Promise.all([getMemberCollectionState(), customerSupabase()]);
   const { data: { user } } = db ? await db.auth.getUser() : { data: { user: null } };
-  const catalogue = (await getSpeciesRecords())
+  const catalogue = allRecords
     .filter(item => isSpeciesRecordActive(item) && item.kind === "species")
     .sort((a,b)=>a.catalogueNumber.localeCompare(b.catalogueNumber,"en",{numeric:true,sensitivity:"base"}))
     .map(item=>({slug:item.slug,name:speciesDisplayName(item)}));
