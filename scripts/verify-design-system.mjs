@@ -55,6 +55,9 @@ for(const path of ["app/fun-zone/fun-zone.module.css","components/PuzzleLibrary.
  assert.ok(!css.includes("❧"),"Decorative glyph CSS survived in "+path);
  assert.ok(!/\.artLeaf\s*\{/.test(css),"Legacy leaf overlay survived in "+path);
 }
+const funZoneCss=read("app/fun-zone/fun-zone.module.css");
+assert.match(funZoneCss,/\.carousel::before,\.puzzleArt::before,\.puzzleArt::after\{content:none!important/, "Fun Zone decoration layers must remain disabled");
+assert.match(funZoneCss,/\.puzzleArt\{background:var\(--surface-secondary\);background-image:none!important/, "Game tile surfaces must be clean, not botanical patterns");
 const editor=read("components/WorkspaceEditCanvas.tsx");
 for(const key of ["grid","check","grip","arrow-up","arrow-down","close"])
  assert.ok(editor.includes('name="'+key+'"'),"Shared editor must use semantic "+key+" icon");
