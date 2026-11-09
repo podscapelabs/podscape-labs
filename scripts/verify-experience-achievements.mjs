@@ -24,6 +24,13 @@ for(const [key,exp] of Object.entries(expected)){
  assert.ok(item.description.length>=25);
 }
 assert.equal(catalog.find(a=>a.key==="customize_all").hidden,true);
+for(const key of ["secret_two_paths","secret_first_steps"]){
+ const achievement=catalog.find(a=>a.key===key);
+ assert.ok(achievement,"Missing hidden achievement");
+ assert.equal(achievement.hidden,true);
+ assert.equal(achievement.coins,0);
+ assert.equal(achievement.status,"available");
+}
 
 const sql=read("supabase/migrations/20261109201500_member_experience_achievements.sql");
 assert.match(sql,/primary key \(user_id,action_key\)/i);
@@ -31,6 +38,10 @@ assert.match(sql,/enable row level security/i);
 assert.match(sql,/auth\.uid\(\)\)=user_id/i);
 assert.match(sql,/on conflict do nothing/);
 assert.match(sql,/pg_advisory_xact_lock/);
+assert.match(sql,/secret_two_paths/);
+assert.match(sql,/secret_first_steps/);
+assert.match(sql,/customized>=2/);
+assert.match(sql,/action_key='onboarding_complete'/);
 assert.match(sql,/grant execute on function public\.record_member_experience_action\(uuid,text\) to service_role/);
 assert.match(sql,/coin_delta\)\s*values\([^;]+,0\)/);
 const route=read("app/api/progress/experience-action/route.ts");
@@ -41,6 +52,13 @@ assert.match(route,/validProof\(action as Action,proof\)/);
 assert.match(route,/admin\.rpc\("record_member_experience_action"/);
 const client=read("components/experience-achievements.ts");
 assert.match(client,/announceAchievement\(notice\)/);
+assert.match(route,/hidden:definition.hidden===true/);
+const toast=read("components/AchievementToast.tsx");
+assert.match(toast,/Hidden Achievement Discovered!/);
+assert.match(toast,/current.hidden/);
+const preview=read("components/TestAchievementButton.tsx");
+assert.match(preview,/hidden:true/);
+assert.ok(!preview.includes("fetch("),"Visual-only banner preview must not grant rewards");
 const tour=read("components/ShortcutWelcomeTip.tsx");
 assert.match(tour,/if\(!skipped\)void recordExperienceAction\("onboarding_complete"/);
 assert.match(tour,/setSkipped\(true\)/);
