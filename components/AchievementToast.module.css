@@ -42,3 +42,6 @@
 }
 @keyframes achievement-enter-mobile{from{opacity:0;transform:translate(-50%,-9px)}to{opacity:1;transform:translate(-50%,0)}}
 @media(prefers-reduced-motion:reduce){.toast{animation:none}}
+
+/* The achievement glyph is a reusable SVG, not Unicode. */
+.icon svg{width:24px;height:24px}
