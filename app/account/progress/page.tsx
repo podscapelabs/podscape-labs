@@ -22,11 +22,12 @@ export default async function ProgressPage() {
     syncError = true;
   }
 
-  const [{data:progress},{data:achievements,error:achievementsError},{count:speciesViews},{count:collectionSpecies}] = await Promise.all([
+  const [{data:progress},{data:achievements,error:achievementsError},{count:speciesViews},{count:collectionSpecies},{count:puzzleCount,error:puzzleCountError}] = await Promise.all([
     db.from("member_progress").select("total_exp,pod_coins").eq("user_id",user.id).maybeSingle(),
     db.from("member_achievements").select("achievement_key,unlocked_at").eq("user_id",user.id),
     db.from("member_species_views").select("species_id", {count:"exact",head:true}).eq("user_id",user.id),
     db.from("member_species_collection").select("species_id", {count:"exact",head:true}).eq("user_id",user.id),
+    db.from("member_puzzle_completions").select("puzzle_id", {count:"exact",head:true}).eq("user_id",user.id),
   ]);
   const exp = Math.max(0,Number(progress?.total_exp||0));
   const coins = Math.max(0,Number(progress?.pod_coins||0));
@@ -38,7 +39,7 @@ export default async function ProgressPage() {
   return <ProgressDashboard exp={exp} coins={coins} level={level}
     levelStart={100*(level-1)**2} levelEnd={100*level**2}
     error={Boolean(achievementsError)||syncError}
-    discoveries={speciesViews??0} collectionSpecies={collectionSpecies??0}
+    discoveries={speciesViews??0} collectionSpecies={collectionSpecies??0} puzzleCompletions={puzzleCountError?null:puzzleCount??0}
     achievements={achievementCatalog.map(entry=>({
       ...entry, unlockedAt:earned.get(entry.key)||null,
     }))}/>;
