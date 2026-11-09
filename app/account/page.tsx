@@ -10,6 +10,7 @@ import {ownerDesks,ownerOperations} from "@/data/owner-desks";
 import styles from "./account-dashboard.module.css";
 import hub from "./my-podscape.module.css";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
+import { AccountPanelLink } from "./AccountPanelLink";
 
 export const dynamic="force-dynamic";
 
@@ -46,13 +47,13 @@ export default async function CustomerAccountPage({searchParams}:{searchParams:P
    </div>
    <div className={styles.accountProgressLabels}><span>{(exp-levelStart).toLocaleString("en-CA")} / {(levelEnd-levelStart).toLocaleString("en-CA")} EXP to next level</span><Link href="/account/progress">My Progress →</Link></div>
    <div className={hub.track} role="progressbar" aria-label="Progress to next level" aria-valuemin={levelStart} aria-valuemax={levelEnd} aria-valuenow={exp}><span style={{width:pct+"%"}}/></div>
-   <div className={styles.accountBalances}><span>✧ {exp.toLocaleString("en-CA")} EXP</span><span>◉ {coins.toLocaleString("en-CA")} Pod Coins</span></div>
+   <div className={styles.accountBalances}><span><PodscapeLineIcon name="achievement" /> {exp.toLocaleString("en-CA")} EXP</span><span><PodscapeLineIcon name="shop" /> {coins.toLocaleString("en-CA")} Pod Coins</span></div>
   </section>
   <section className={styles.accountActions} aria-label="Account sections">
-   <a href="#account-preferences"><span aria-hidden="true"><PodscapeLineIcon name="menu" /></span><strong>Preferences</strong><small>Appearance & app</small><b aria-hidden="true">↘</b></a>
-   <a href="#account-personal"><span aria-hidden="true"><PodscapeLineIcon name="community" /></span><strong>Personal Info</strong><small>Profile & security</small><b aria-hidden="true">↘</b></a>
+   <AccountPanelLink href="#account-preferences"><span aria-hidden="true"><PodscapeLineIcon name="menu" /></span><strong>Preferences</strong><small>Appearance & app</small><b aria-hidden="true">↘</b></AccountPanelLink>
+   <AccountPanelLink href="#account-personal"><span aria-hidden="true"><PodscapeLineIcon name="community" /></span><strong>Personal Info</strong><small>Profile & security</small><b aria-hidden="true">↘</b></AccountPanelLink>
    <Link href="/account/progress"><span aria-hidden="true"><PodscapeLineIcon name="creative" /></span><strong>My Progress</strong><small>Levels & achievements</small><b aria-hidden="true">↗</b></Link>
-   <a href="#account-rewards"><span aria-hidden="true"><PodscapeLineIcon name="shop" /></span><strong>Rewards</strong><small>Benefits & perks</small><b aria-hidden="true">↘</b></a>
+   <AccountPanelLink href="#account-rewards"><span aria-hidden="true"><PodscapeLineIcon name="shop" /></span><strong>Rewards</strong><small>Benefits & perks</small><b aria-hidden="true">↘</b></AccountPanelLink>
   </section>
   {isOwner?<section className={styles.accountOwner} aria-label="Owner administration">
    <details id="owner-tools">
