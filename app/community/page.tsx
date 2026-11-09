@@ -45,7 +45,7 @@ export default function CommunityPage(){
           <span className={styles.orbitOne}><PodscapeLineIcon name="leaf"/></span>
           <span className={styles.orbitTwo}><PodscapeLineIcon name="community"/></span>
           <span className={styles.orbitThree}><PodscapeLineIcon name="creative"/></span>
-          <span className={styles.heroSpark}>✧</span>
+          
         </div>
       </header>
       <section className={styles.intro} aria-labelledby="community-intro">
@@ -75,7 +75,7 @@ export default function CommunityPage(){
           <div><small>{item.label}</small><h3>{item.title}</h3><p>{item.copy}</p></div>
         </article>)}</div>
       </section>
-      <section className={styles.close}><span aria-hidden="true">❧</span><div><p className={styles.eyebrow}>THE LITTLE WORLD WE SHARE</p><h2>Every keeper starts somewhere.</h2><p>There&apos;s always something new to learn, create or discover. We&apos;re building a place where all of it belongs.</p></div><Link href="/app">Back to Podscape <span aria-hidden="true">→</span></Link></section>
+      <section className={styles.close}><span aria-hidden="true"><PodscapeLineIcon name="community" /></span><div><p className={styles.eyebrow}>THE LITTLE WORLD WE SHARE</p><h2>Every keeper starts somewhere.</h2><p>There&apos;s always something new to learn, create or discover. We&apos;re building a place where all of it belongs.</p></div><Link href="/app">Back to Podscape <span aria-hidden="true">→</span></Link></section>
     </main>
   </div></PlatformShell>;
 }
