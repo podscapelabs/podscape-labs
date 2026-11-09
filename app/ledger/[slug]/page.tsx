@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CollectionButton } from "@/components/CollectionButton";
 import { SpeciesDashboardWorkspace } from "@/components/SpeciesDashboardWorkspace";
+import {getSpeciesTraitId} from "@/lib/species-traits";
 import {MoistureAndHumidityWidget,BreedingDevelopmentWidget,TaxonomyOriginWidget,FeedingEcologyWidget,HabitatSetupWidget,ResearchSourcesWidget} from "@/components/SpeciesResearchWidgets";
 import { PinToHome } from "@/components/PinToHome";
 import { customerSupabase } from "@/lib/customer-auth/server";
@@ -125,10 +126,10 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
             <h1>{displayName}</h1>
             <p className={styles.scientific}><em>{scientificName}</em></p>
             <p className={styles.identityLine}>{speciesGenus(record)} <span aria-hidden="true">·</span> {speciesRecordLabel(record)}</p>
-            {heroTraits.length ? <ul className={styles.heroTraits} aria-label="Distinctive traits">{heroTraits.map(trait=><li key={trait}>{trait}</li>)}</ul> : null}
+            {heroTraits.length ? <ul className={styles.heroTraits} aria-label="Distinctive traits">{heroTraits.map(trait=><li key={trait} data-trait-id={getSpeciesTraitId(trait)||undefined}>{trait}</li>)}</ul> : null}
           </div>
           <div className={styles.compactPhoto}>
-            {record.image ? <Image src={record.image} alt={record.imageAlt || scientificName} fill sizes="(max-width:600px) 104px, 144px" style={{objectFit:"cover",objectPosition:`${record.imagePositionX}% ${record.imagePositionY}%`,transform:`scale(${record.imageZoom})`}} /> : <span aria-label="Species photograph pending">Photo pending</span>}
+            {record.image ? <Image src={record.image} alt={record.imageAlt || scientificName} fill sizes="(max-width:600px) 100vw, (max-width:1000px) 44vw, 400px" style={{objectFit:"contain",objectPosition:`${record.imagePositionX}% ${record.imagePositionY}%`,transform:`scale(${record.imageZoom})`}} /> : <span aria-label="Species photograph pending">Photo pending</span>}
           </div>
         </header>
 
@@ -161,40 +162,28 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
             </section> : null,
             feeding: feeding ? <section className={styles.speciesInfoCard}><h2>Feeding overview</h2><p>{feeding}</p></section> : null,
             habitat: record.substrate?.trim() ? <section className={styles.speciesInfoCard}><h2>Habitat &amp; substrate</h2><p>{introText(record.substrate)}</p></section> : null,
-            traits: notableTraits.length ? <section className={styles.speciesInfoCard}><h2>Notable traits</h2><ul className={styles.compactTraits}>{notableTraits.map(trait=><li key={trait}>{trait}</li>)}</ul></section> : null,
+            traits: notableTraits.length ? <section className={styles.speciesInfoCard}><h2>Notable traits</h2><ul className={styles.compactTraits}>{notableTraits.map(trait=><li key={trait} data-trait-id={getSpeciesTraitId(trait)||undefined}>{trait}</li>)}</ul></section> : null,
             guides: relatedGuides.length ? <section className={styles.speciesInfoCard}><h2>Related Field Guides</h2><div className={styles.relatedGuides}>{relatedGuides.map(guide=><Link href={`/field-guide/${guide.slug}`} key={guide.slug}><span><strong>{guide.title}</strong>{guide.summary?<small>{guide.summary}</small>:null}</span><b aria-hidden="true">→</b></Link>)}</div></section> : null,
             environment: environmentAvailable ? <MoistureAndHumidityWidget record={record}/> : null,
             breeding: breedingAvailable ? <BreedingDevelopmentWidget record={record}/> : null,
             taxonomy: taxonomyAvailable ? <TaxonomyOriginWidget record={record}/> : null,
             nutrition: nutritionAvailable ? <FeedingEcologyWidget record={record}/> : null,
             habitatAdvanced: habitatAdvancedAvailable ? <HabitatSetupWidget record={record}/> : null,
-            sources: sourcesAvailable ? <ResearchSourcesWidget record={record}/> : null
-          }} />
-
-          <details className={styles.dashboardExplore}>
-            <summary><span className={styles.exploreMark} aria-hidden="true">✧</span><span className={styles.exploreCopy}><strong>Explore more</strong><small>Full reference, habitat &amp; detailed guides</small></span><span className={styles.exploreArrow} aria-hidden="true">⌄</span></summary>
-            <div className={styles.detailContents}>
-              {feeding ? <div className={styles.detailItem}><strong>Feeding overview</strong><p>{feeding}</p></div> : null}
-              {record.substrate?.trim() ? <div className={styles.detailItem}><strong>Substrate overview</strong><p>{introText(record.substrate)}</p></div> : null}
-              {notableTraits.length ? <div className={styles.detailItem}><strong>Notable traits</strong><ul className={styles.compactTraits}>{notableTraits.map(trait=><li key={trait}>{trait}</li>)}</ul></div> : null}
-              {relatedGuides.length ? <div className={styles.relatedGuides}>{relatedGuides.map(guide=><Link href={`/field-guide/${guide.slug}`} key={guide.slug}><span><strong>{guide.title}</strong>{guide.summary?<small>{guide.summary}</small>:null}</span><b aria-hidden="true">→</b></Link>)}</div> : null}
-              <p className={styles.detailDisclaimer}>This snapshot describes general tendencies, not precise care requirements. Research individual species and consult reliable guides for specific husbandry.</p>
-              <Link className={styles.exploreGuideLink} href="/field-guide?topic=Species#all-guides">Browse Field Guides →</Link>
-            </div>
-          </details>
-
-          {!previewRequested && record.kind === "species" ? <section className={styles.dashboardPersonal} aria-label="Your PodScape">
+            sources: sourcesAvailable ? <ResearchSourcesWidget record={record}/> : null,
+            personal: {!previewRequested && record.kind === "species" ? <section className={styles.dashboardPersonal} aria-label="Your PodScape">
             <div className={styles.dashboardPersonalTitle}>Your PodScape</div>
             <div className={styles.dashboardPersonalActions}>
               {record.status === "published" ? <PinToHome pin={{ kind: "species", id: record.slug }} userId={user?.id || null} /> : null}
               {collectionEntry ? <Link href="/keeper/collection" className={styles.collectionDestination}>✓ In collection · View colonies →</Link>
                 : <CollectionButton speciesId={record.id} speciesName={displayName} initialCollected={false} signedIn={member.signedIn} detail />}
             </div>
-          </section> : null}
-          <nav className={styles.compactFooter} aria-label="Explore more">
+          </section> : null},
+            navigation: <nav className={styles.compactFooter} aria-label="Explore more">
             <Link href="/field-guide?topic=Species#all-guides">Explore species guides →</Link>
             <Link href="/ledger">← All species</Link>
           </nav>
+          }} />
+
         </div>
       </div>
     </main>
