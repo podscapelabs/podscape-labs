@@ -2,13 +2,12 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 
 const read = path => readFileSync(new URL("../" + path, import.meta.url), "utf8");
-import { readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 const root = new URL("../", import.meta.url).pathname;
 function walk(directory) {
   return readdirSync(resolve(root,directory), { withFileTypes:true }).flatMap(entry => {
     const path = join(directory,entry.name);
-    return entry.isDirectory() ? walk(path) : [path.replaceAll("\\\\","/")];
+    return entry.isDirectory() ? walk(path) : [path.split("\\").join("/")];
   });
 }
 const allUIFiles = [...walk("app"),...walk("components")];
