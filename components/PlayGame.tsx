@@ -77,7 +77,7 @@ function Burrow({puzzle,onComplete}:{puzzle:BurrowPuzzle;onComplete:Completion})
  return <div className={styles.playArea}>
   <div className={styles.stage}><small>FIVE LETTERS · SIX GUESSES</small><h2>Unearth the hidden term</h2><p><strong>Clue:</strong> {clue}</p></div>
   <div className={styles.guessGrid} aria-label="Word guesses">{Array.from({length:6},(_,r)=>{
-   const guess=guesses[r]||"",results=guess?scoreGuess(guess,target):[];
+   const guess=guesses[r]||"",results=guess?scoreWordGuess(guess,target):[];
    return <div className={styles.guessRow} key={r}>{Array.from({length:5},(_,c)=><span key={c} data-result={results[c]||""} aria-label={guess?(`Guess ${r+1}, ${guess[c]}, ${results[c]}`):`Guess ${r+1}, empty tile ${c+1}`}>{guess[c]||""}</span>)}</div>;
   })}</div>
   {won||lost?<div className={styles.result} role="status"><h2>{won?"You found it! ✦":`The word was ${target}`}</h2><p>{note}</p><div className={styles.actions} style={{justifyContent:"center"}}><button type="button" onClick={restart}>Retry word ↻</button><Link className={styles.nextPuzzle} href="/fun-zone/word-burrow">More words →</Link></div></div>
