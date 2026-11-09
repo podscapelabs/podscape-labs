@@ -2,9 +2,15 @@ import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Discovery portals are public. Member data and actions have separate guards.
-// Never gate the public Ledger, Shop, Fun Zone, Guides, Search or app homepage.
-const PRIVATE_AREAS = ["/keeper/", "/api/progress"];
+// Prelaunch: the platform is invitation-only, including all discovery portals.
+// Public guest browsing is a later launch feature; do not remove this allowlist
+// while the maintenance page is the public entry point.
+const PRIVATE_AREAS = [
+  "/app", "/menu", "/explore", "/ledger", "/poddex", "/keeper",
+  "/fun-zone", "/shop", "/field-guide", "/from-the-lab", "/search",
+  "/community", "/podbound", "/api/progress", "/api/search",
+  "/account/progress", "/account/owner-tools",
+];
 
 function isPrivateArea(pathname: string): boolean {
   return PRIVATE_AREAS.some((area) => area.endsWith("/") ? pathname.startsWith(area) : pathname === area || pathname.startsWith(area + "/"));
@@ -34,7 +40,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
   const protectedPage = isPrivateArea(pathname);
-  // Public portal routes are never redirected, but still refresh Supabase cookies.
+  // Refresh authenticated sessions, then enforce the tester allowlist on platform routes.
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
     || process.env.SUPABASE_PUBLISHABLE_KEY
