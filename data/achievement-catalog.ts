@@ -25,5 +25,9 @@ export const achievementCatalog: AchievementDefinition[] = [
   { key:"collection_twenty_species", title:"Colony Curator", description:"Add 20 different species to My Collection.", exp:125, coins:0, icon:"✺", href:"/ledger", status:"available" },
   { key:"collection_fifty_species", title:"Grand Collector", description:"Add 50 different species to My Collection.", exp:250, coins:0, icon:"✺", href:"/ledger", status:"available" },
   { key:"care_journal", title:"Care Journal", description:"A future milestone for consistent colony care logs.", exp:0, coins:0, icon:"▤", href:"/keeper", status:"planned" },
-  { key:"puzzle_pathfinder", title:"Puzzle Pathfinder", description:"Future recognition for exploring the Fun Zone.", exp:0, coins:0, icon:"◇", href:"/fun-zone", status:"planned" },
+  { key:"puzzle_pathfinder", title:"Puzzle Pathfinder", description:"Finish your first unique Fun Zone puzzle.", exp:10, coins:0, icon:"◇", href:"/fun-zone", status:"available" },
+  { key:"puzzle_five", title:"Little Problem Solver", description:"Complete 5 different Fun Zone puzzles.", exp:30, coins:0, icon:"✧", href:"/fun-zone", status:"available" },
+  { key:"puzzle_sixteen", title:"Puzzle Explorer", description:"Complete 16 different Fun Zone puzzles.", exp:80, coins:0, icon:"▦", href:"/fun-zone", status:"available" },
+  { key:"puzzle_all_eight_games", title:"Eight Ways to Play", description:"Finish at least one puzzle in each of the eight game categories.", exp:125, coins:0, icon:"✺", href:"/fun-zone", status:"available" },
+  { key:"puzzle_all_thirty_two", title:"Fun Zone Master", description:"Complete all 32 unique Fun Zone puzzles.", exp:200, coins:0, icon:"✦", href:"/fun-zone", status:"available" },
 ];
