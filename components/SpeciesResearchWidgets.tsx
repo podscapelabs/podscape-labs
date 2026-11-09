@@ -1,11 +1,59 @@
+"use client";
+
+import {useEffect,useId,useRef,useState,type ReactNode} from "react";
 import type {SpeciesRecord} from "@/data/species";
 import styles from "@/components/SpeciesProfile.module.css";
 
 function has(record:SpeciesRecord,keys:(keyof SpeciesRecord)[]){return keys.some(k=>typeof record[k]==="string"&&Boolean((record[k] as string).trim()));}
+/** Native dialog keeps full editorial records one tap away from the compact dashboard. */
+function ResearchDialog({title,children}:{title:string;children:ReactNode}){
+ const dialogRef=useRef<HTMLDialogElement>(null);
+ const titleId=useId();
+ const [open,setOpen]=useState(false);
+ useEffect(()=>{
+  const dialog=dialogRef.current;
+  if(!dialog)return;
+  if(open&&!dialog.open)dialog.showModal();
+  else if(!open&&dialog.open)dialog.close();
+ },[open]);
+ return <>
+  <button className={styles.researchOpenButton} type="button" onClick={()=>setOpen(true)}>
+   <span>Explore details</span><span aria-hidden="true">↗</span>
+  </button>
+  <dialog ref={dialogRef} aria-labelledby={titleId} className={styles.researchDialog}
+   onClose={()=>setOpen(false)}
+   onClick={event=>{if(event.target===event.currentTarget)dialogRef.current?.close()}}>
+   <div className={styles.researchDialogPanel}>
+    <div className={styles.researchDialogHeader}>
+     <div><small>LEAF LEDGER · SPECIES RESEARCH</small><h2 id={titleId}>{title}</h2></div>
+     <button type="button" className={styles.researchDialogClose} onClick={()=>dialogRef.current?.close()} aria-label={"Close "+title}>×</button>
+    </div>
+    <div className={styles.researchDialogBody}>{children}</div>
+   </div>
+  </dialog>
+ </>;
+}
+function previewFact(label:string,value:string){
+ const clean=value.replace(/\s+/g," ").trim();
+ if(label==="Staple diet")return clean.split(/[;,]/)[0].slice(0,82);
+ if(label==="Identification & lookalikes"||label==="Taxonomic status")return clean.length>90?clean.slice(0,87).trimEnd()+"…":clean;
+ return clean.length>87?clean.slice(0,84).trimEnd()+"…":clean;
+}
 function Details({title,rows,note}:{title:string;rows:{label:string;value:string|undefined}[];note?:string}){
- const active=rows.filter(r=>r.value?.trim());
+ const active=rows.filter((r):r is {label:string;value:string}=>Boolean(r.value?.trim()));
  if(!active.length)return null;
- return <section className={styles.speciesInfoCard}><h2>{title}</h2><dl className={styles.researchFacts}>{active.map(r=><div key={r.label}><dt>{r.label}</dt><dd>{r.value}</dd></div>)}</dl>{note?<details className={styles.researchContext}><summary>Research context</summary><p className={styles.researchDisclaimer}>{note}</p></details>:null}</section>;
+ return <section className={styles.speciesInfoCard+" "+styles.researchOverview}>
+  <h2>{title}</h2>
+  <dl className={styles.researchSnapshot}>
+   {active.slice(0,4).map(row=><div key={row.label}>
+    <dt>{row.label}</dt><dd>{previewFact(row.label,row.value)}</dd>
+   </div>)}
+  </dl>
+  <ResearchDialog title={title}>
+   <dl className={styles.researchFullFacts}>{active.map(row=><div key={row.label}><dt>{row.label}</dt><dd>{row.value}</dd></div>)}</dl>
+   {note?<div className={styles.researchExpandedNote}><strong>Research context</strong><p>{note}</p></div>:null}
+  </ResearchDialog>
+ </section>;
 }
 function validPercent(v:string|undefined){
  if(!v||!/^(?:100|[1-9]?\d)$/.test(v.trim()))return null;
