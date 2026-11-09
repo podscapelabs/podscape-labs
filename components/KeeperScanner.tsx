@@ -59,6 +59,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careMode=f
  const [zoomRange,setZoomRange]=useState<{min:number;max:number}|null>(null);const [zoom,setZoom]=useState(1);
  const [selected,setSelected]=useState<Bin|null>(()=>bins.find(b=>b.id===initialBinId)||null);const [state,setState]=useState<"idle"|"scanning">(initialBinId||startManual?"idle":"scanning");const [error,setError]=useState("");const [pending,start]=useTransition();
  const [binSearch,setBinSearch]=useState("");
+ const [showAllBins,setShowAllBins]=useState(false);
  const [showBinPicker,setShowBinPicker]=useState(false);
  const [showHistory,setShowHistory]=useState(false);
  const [customNote,setCustomNote]=useState("");const [customDate,setCustomDate]=useState("");
@@ -72,7 +73,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careMode=f
  const [confirmAllCare,setConfirmAllCare]=useState<{kind:string;note:string;label:string}|null>(null);
  const [lastOperation,setLastOperation]=useState<LastOperation|null>(null);
  const stop=()=>{stream.current?.getTracks().forEach(t=>t.stop());stream.current=null;canvas.current=null;setTorchOn(false);};
- function match(value:string){const id=readId(value);const found=bins.find(b=>b.id.toLowerCase()===id?.toLowerCase());if(found){lock.current=true;stop();if(state==="scanning"&&!careMode){router.push("/keeper/"+found.id);return true;}setSelected(found);setShowBinPicker(false);setShowHistory(false);setState("idle");setCustomNote("");setCustomDate("");setError("");setNotice(lastOperation?"Previous care action available to undo.":"");setMultiCare(false);setChosenBins([found.id]);setConfirmAllCare(null);return true;}setError("That code does not match an active bin in your collection.");return false;}
+ function match(value:string){const id=readId(value);const found=bins.find(b=>b.id.toLowerCase()===id?.toLowerCase());if(found){lock.current=true;stop();if(state==="scanning"&&!careMode){router.push("/keeper/"+found.id);return true;}setSelected(found);setShowBinPicker(false);setShowHistory(false);setShowAllBins(false);setState("idle");setCustomNote("");setCustomDate("");setError("");setNotice(lastOperation?"Previous care action available to undo.":"");setMultiCare(false);setChosenBins([found.id]);setConfirmAllCare(null);return true;}setError("That code does not match an active bin in your collection.");return false;}
  useEffect(()=>()=>stop(),[]);
  useEffect(()=>{if(state!=="scanning")return;
  let live=true;let timer:ReturnType<typeof setInterval>|undefined;
@@ -212,6 +213,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careMode=f
  }
  const filteredBins=bins.filter(bin=>[bin.species,bin.name,bin.label].some(value=>value.toLocaleLowerCase().includes(binSearch.trim().toLocaleLowerCase())))
   .sort((a,b)=>a.species.localeCompare(b.species)||a.name.localeCompare(b.name));
+ const visibleChoices=showAllBins||binSearch.trim()?filteredBins:filteredBins.slice(0,8);
  const latest=lastOperation;
  const loggedForBin=selected?recent.filter(r=>r.binId===selected.id):[];
  const speciesBins=selected?bins.filter(b=>b.speciesId===selected.speciesId):[];
@@ -226,8 +228,8 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careMode=f
  {state==="scanning"?<div className={styles.scanBelow}><p>Hold your label steady inside the corners. Move back slightly if blurry.</p><button type="button" onClick={()=>setState("idle")}>Choose a bin manually →</button></div>:null}
  {state==="idle"&&!selected?<section className={styles.quickChoose} aria-label="Choose a bin to log care">
    <div className={styles.quickChooseHeader}><div><p className={styles.kicker}>YOUR ENCLOSURES</p><h2>Choose a bin</h2><p>Tap a colony to start logging care.</p></div><span>{bins.length} {bins.length===1?"bin":"bins"}</span></div>
-   {bins.length?<><div className={styles.quickChooseSearch}><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" aria-label="Find a bin to log care" placeholder="Search species or bin name…" value={binSearch} onChange={event=>setBinSearch(event.target.value)} autoComplete="off"/>{binSearch?<button type="button" aria-label="Clear bin search" onClick={()=>setBinSearch("")}>×</button>:null}</div>
-    <div className={styles.quickChooseList}>{filteredBins.length?filteredBins.map(bin=><button key={bin.id} type="button" className={styles.quickChooseBin} onClick={()=>match(bin.id)}><span className={styles.quickChoosePhoto}>{bin.image?<Image src={bin.image} alt="" fill sizes="46px"/>:<span aria-hidden="true">❧</span>}</span><span className={styles.quickChooseIdentity}><strong>{bin.species}</strong><small>{bin.name}{bin.label?" · "+bin.label:""}</small></span><span aria-hidden="true" className={styles.quickChooseArrow}>→</span></button>):<p className={styles.quickChooseEmpty}>No matching bins. Try another species or enclosure name.</p>}</div></>
+   {bins.length?<><div className={styles.quickChooseSearch}><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" aria-label="Find a bin to log care" placeholder="Search species or bin name…" value={binSearch} onChange={event=>{setBinSearch(event.target.value);setShowAllBins(false)}} autoComplete="off"/>{binSearch?<button type="button" aria-label="Clear bin search" onClick={()=>setBinSearch("")}>×</button>:null}</div>
+    <div className={styles.quickChooseList}>{filteredBins.length?visibleChoices.map(bin=><button key={bin.id} type="button" className={styles.quickChooseBin} onClick={()=>match(bin.id)}><span className={styles.quickChoosePhoto}>{bin.image?<Image src={bin.image} alt="" fill sizes="46px"/>:<span aria-hidden="true">❧</span>}</span><span className={styles.quickChooseIdentity}><strong>{bin.species}</strong><small>{bin.name}{bin.label?" · "+bin.label:""}</small></span><span aria-hidden="true" className={styles.quickChooseArrow}>→</span></button>):<p className={styles.quickChooseEmpty}>No matching bins. Try another species or enclosure name.</p>}</div>{!binSearch.trim()&&!showAllBins&&filteredBins.length>8?<button type="button" className={styles.showMoreBins} onClick={()=>setShowAllBins(true)}>Show all {filteredBins.length} bins ↓</button>:null}{showAllBins&&filteredBins.length>8&&!binSearch.trim()?<button type="button" className={styles.showMoreBins} onClick={()=>setShowAllBins(false)}>Show fewer bins ↑</button>:null}</>
     :<div className={styles.quickChooseEmpty}>You do not have any active bins yet. <Link href="/keeper/new">Add your first bin →</Link></div>}
    <div className={styles.quickChooseFooter}><button type="button" onClick={beginScan}>▣ Scan a QR label instead</button><Link href="/keeper/new">+ Add bin</Link></div>
   </section>:null}
