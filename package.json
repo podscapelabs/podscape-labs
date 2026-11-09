@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "db:migrate": "node scripts/apply-supabase-schema.mjs",
     "db:seed": "node scripts/seed-supabase-species.mjs",
-    "db:setup": "pnpm db:migrate && pnpm db:seed"
+    "db:setup": "pnpm db:migrate && pnpm db:seed",
+    "check:portal-colors": "node scripts/check-portal-colors.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
