@@ -1,4 +1,4 @@
-export type PodscapeIconName = "search"|"leaf"|"jar"|"shop"|"book"|"community"|"vendor"|"creative"|"podbound"|"home"|"scan"|"manager"|"menu"|"qr"|"bin"|"droplet"|"calendar"|"note";
+export type PodscapeIconName = "search"|"leaf"|"jar"|"shop"|"book"|"community"|"vendor"|"creative"|"podbound"|"home"|"scan"|"manager"|"menu"|"qr"|"bin"|"droplet"|"calendar"|"note"|"crossword"|"connections"|"letters"|"challenge"|"quiz"|"word-search"|"achievement"|"check"|"lock"|"arrow-right"|"close"|"edit"|"grid"|"trophy";
 
 export function PodscapeLineIcon({name}:{name:PodscapeIconName}){
  const common={viewBox:"0 0 32 32",fill:"none",stroke:"currentColor",strokeWidth:1.65,strokeLinecap:"round" as const,strokeLinejoin:"round" as const,"aria-hidden":true};
@@ -18,6 +18,19 @@ export function PodscapeLineIcon({name}:{name:PodscapeIconName}){
  if(name==="droplet")return <svg {...common}><path d="M16 4C12 10 8 15 8 20a8 8 0 0 0 16 0c0-5-4-10-8-16Z"/><path d="M12 22c1 2 3 3 5 3"/></svg>;
  if(name==="calendar")return <svg {...common}><path d="M6 8h20v19H6zM6 13h20M11 5v6M21 5v6"/><path d="M11 18h3M18 18h3M11 22h3M18 22h3"/></svg>;
  if(name==="note")return <svg {...common}><path d="M7 4h18v24H7zM11 10h10M11 15h10M11 20h7"/></svg>;
+ if(name==="crossword")return <svg {...common}><rect x="5" y="5" width="22" height="22" rx="2"/><path d="M12.3 5v22M19.7 5v22M5 12.3h22M5 19.7h22"/><path d="M12.3 12.3h7.4v7.4h-7.4z" fill="currentColor" stroke="none" opacity=".16"/></svg>;
+ if(name==="connections")return <svg {...common}><circle cx="8" cy="8" r="3.3"/><circle cx="24" cy="8" r="3.3"/><circle cx="8" cy="24" r="3.3"/><circle cx="24" cy="24" r="3.3"/><path d="M11.3 8h9.4M8 11.3v9.4M24 11.3v9.4M11.3 24h9.4M10.4 10.4l11.2 11.2"/></svg>;
+ if(name==="letters")return <svg {...common}><rect x="3.5" y="7" width="25" height="18" rx="3"/><path d="M9 20l3.3-8 3.3 8M10 17h4.7M19 12v8M19 12h4a2 2 0 0 1 0 4h-4m0 0h4.2a2 2 0 0 1 0 4H19"/></svg>;
+ if(name==="challenge")return <svg {...common}><rect x="7" y="5" width="18" height="23" rx="2"/><path d="M12 5V3h8v2M11 12l2 2 3-4M18 13h4M11 21l2 2 3-4M18 22h4"/></svg>;
+ if(name==="quiz")return <svg {...common}><circle cx="16" cy="16" r="12"/><path d="M12 12a4 4 0 1 1 6.1 3.4C16.5 16.5 16 17 16 19M16 23h.01"/></svg>;
+ if(name==="word-search")return <svg {...common}><rect x="4" y="4" width="24" height="24" rx="3"/><path d="M12 4v24M20 4v24M4 12h24M4 20h24M6 26l20-20" strokeWidth="1.5"/><circle cx="8" cy="24" r="1.5" fill="currentColor" stroke="none"/></svg>;
+ if(name==="achievement"||name==="trophy")return <svg {...common}><path d="M10 5h12v9a6 6 0 0 1-12 0V5ZM10 8H5v3c0 4 3 6 6 6M22 8h5v3c0 4-3 6-6 6M16 20v5M11 27h10M12 25h8"/></svg>;
+ if(name==="check")return <svg {...common}><path d="m6 16 7 7L26 9"/></svg>;
+ if(name==="lock")return <svg {...common}><rect x="7" y="14" width="18" height="14" rx="3"/><path d="M11 14V9a5 5 0 0 1 10 0v5M16 20v3"/></svg>;
+ if(name==="arrow-right")return <svg {...common}><path d="M5 16h22m-9-9 9 9-9 9"/></svg>;
+ if(name==="close")return <svg {...common}><path d="m8 8 16 16M24 8 8 24"/></svg>;
+ if(name==="edit")return <svg {...common}><path d="M7 25h18M9 20l13-13 4 4-13 13-5 1 1-5ZM19 10l4 4"/></svg>;
+ if(name==="grid")return <svg {...common}><rect x="5" y="5" width="9" height="9" rx="1.5"/><rect x="18" y="5" width="9" height="9" rx="1.5"/><rect x="5" y="18" width="9" height="9" rx="1.5"/><rect x="18" y="18" width="9" height="9" rx="1.5"/></svg>;
  if(name==="menu")return <svg {...common}><path d="M7 9h18M7 16h18M7 23h18"/></svg>;
  return null;
 }
