@@ -38,7 +38,7 @@ export function ManagerCareOverview({bins}:{bins:ManagerBin[]}){
  const unconfigured=scheduled.filter(bin=>bin.intervalDays===null||bin.days===null);
  const configured=scheduled.length-unconfigured.length;
  return <section className={styles.managerModule} aria-label="Care overview">
-  <header><div><p className={styles.managerEyebrow}>YOUR ROUTINE</p><h2>Care attention</h2></div><Link href="/keeper/schedule">Care Centre →</Link></header>
+  <header><div><p className={styles.managerEyebrow}>CARE CENTRE</p><h2>Care schedule</h2></div><Link href="/keeper/schedule">Care Centre →</Link></header>
   {!bins.length?<div className={styles.managerAttentionEmpty}><p>Add a colony to start organizing care.</p><Link href="/keeper/new">Add first bin →</Link></div>
    :!loaded?<p className={styles.managerModuleEmpty}>Loading saved schedules…</p>
    :due.length?<div className={styles.managerAttention}>
@@ -54,7 +54,7 @@ export function ManagerCareOverview({bins}:{bins:ManagerBin[]}){
 
 export function ManagerActivityFeed({events,available=true}:{events:ManagerEvent[];available?:boolean}){
  return <section className={styles.managerModule} aria-label="Recent care history">
-  <header><div><p className={styles.managerEyebrow}>RECENTLY LOGGED</p><h2>Recent activity</h2></div><Link href="/keeper/activity">View activity →</Link></header>
+  <header><div><p className={styles.managerEyebrow}>CARE HISTORY</p><h2>Recent care</h2></div><Link href="/keeper/activity">View activity →</Link></header>
   {!available?<p className={styles.managerModuleEmpty}>Recent activity is not available right now. Your existing logs are unchanged.</p>
    :events.length?<div className={styles.managerModuleList}>{events.slice(0,5).map(event=><Link key={event.id} href={"/keeper/"+event.enclosureId+"/history"}><span><strong>{event.kind.replaceAll("-"," ")}</strong><small>{event.enclosureName}{event.note?" · "+event.note:""}</small></span><em>{displayDate(event.createdAt)}</em></Link>)}</div>
    :<p className={styles.managerModuleEmpty}>No care logs yet. Scan a bin or open an enclosure to record your first activity.</p>}
@@ -66,7 +66,7 @@ export function ManagerInsights({bins,events}:{bins:ManagerBin[];events:ManagerE
  const records=events.filter(event=>event.quantityChange!==null&&event.quantityChange!==0).length;
  const statusCounts=[...new Set(bins.map(bin=>bin.status).filter(Boolean))].length;
  return <section className={styles.managerModule} aria-label="Colony insights">
-  <header><div><p className={styles.managerEyebrow}>YOUR RECORDS</p><h2>Colony insights</h2></div><Link href="/keeper/collection">Explore bins →</Link></header>
+  <header><div><p className={styles.managerEyebrow}>COLONY RECORDS</p><h2>Colony insights</h2></div><Link href="/keeper/collection">Explore bins →</Link></header>
   <div className={styles.managerInsightGrid}>
    <div><strong>{breeding}</strong><span>Breeding statuses recorded</span></div>
    <div><strong>{records}</strong><span>Population changes in recent logs</span></div>
