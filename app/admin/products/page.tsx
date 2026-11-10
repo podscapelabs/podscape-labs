@@ -38,9 +38,9 @@ export default async function ProductDeskPage({ searchParams }: { searchParams: 
   return (
     <main className={`admin-shell ${styles.shell}`}>
       <header className={styles.header}>
-        <Link className={styles.back} href="/admin" aria-label="Return to Owner Studio">←</Link>
-        <div className={styles.heading}><p className="eyebrow">Owner studio · Shop</p><h1>Shop Manager</h1><p>Products, inventory and listings.</p></div>
-        <form className={styles.create} action={createProductRecord}><button type="submit"><span aria-hidden="true">＋</span> Create product</button></form>
+        <Link className={styles.back} href="/account/owner-tools" aria-label="Return to Owner Studio">←</Link>
+        <div className={styles.heading}><p className="eyebrow">OWNER STUDIO · SHOP</p><h1>Product Desk</h1><p>Manage your catalogue, pricing, and inventory.</p></div>
+        <form className={styles.create} action={createProductRecord}><button type="submit"><span aria-hidden="true">＋</span> New product</button></form>
       </header>
       {params.deleted === "1" ? <p className="admin-save-message is-success" role="status">Product deleted permanently. Your Leaf Ledger is unchanged.</p> : null}
       <section className={styles.stats} aria-label="Shop summary">
@@ -50,7 +50,7 @@ export default async function ProductDeskPage({ searchParams }: { searchParams: 
         <Link className={lowStockCount ? styles.attention : ""} href="/admin/products?status=low-stock"><strong>{lowStockCount}</strong><span>Low stock</span></Link>
       </section>
       <section className={styles.catalogue} aria-labelledby="catalogue-title">
-        <div className={styles.catalogueHead}><div><p className="admin-kicker">Catalogue</p><h2 id="catalogue-title">Products</h2></div><Link href="/shop" target="_blank">Shop preview ↗</Link></div>
+        <div className={styles.catalogueHead}><div><p className="admin-kicker">YOUR CATALOGUE</p><h2 id="catalogue-title">Product records</h2></div><Link href="/shop" target="_blank">Shop preview ↗</Link></div>
         <form className={styles.filters} action="/admin/products" method="get">
           <label className={styles.search}><span className="sr-only">Search products</span><span aria-hidden="true"><PodscapeLineIcon name="search"/></span><input type="search" name="q" defaultValue={params.q} placeholder="Search products, SKUs or tags…" /></label>
           <input type="hidden" name="category" value={category} />
