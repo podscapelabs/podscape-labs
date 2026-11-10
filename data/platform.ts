@@ -16,7 +16,7 @@ export const platformAreas: PlatformArea[] = [
     key: "podbound",
     title: "PodBound",
     description: "A tabletop game built around forecast, choice, and colony management.",
-    href: "https://www.podbound.net",
+    href: "/podbound",
   },
   {
     key: "guide",
@@ -40,7 +40,7 @@ export const platformAreas: PlatformArea[] = [
     key: "directory",
     title: "Vendor Directory",
     description: "Discover reputable vendors, breeders, and hobby suppliers.",
-    href: "/explore#vendor-directory",
+    href: "/shop/vendors",
   },
 ];
 
