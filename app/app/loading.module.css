@@ -23,6 +23,12 @@
   --splash-muted:#637464;
   --splash-accent:#496b48;
 }
+:global(html[data-theme="woodland"]) .page{
+  --splash-bg:#211a16;
+  --splash-ink:#f5e9d7;
+  --splash-muted:#ccb8a4;
+  --splash-accent:#d6ac76;
+}
 .ambient{
   position:absolute;
   inset:0;
