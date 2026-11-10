@@ -19,7 +19,7 @@ export default async function ApplyVendor(){
   <header className={styles.hero}><p>VENDOR DIRECTORY · APPLY</p><h1>Your business, your profile.</h1><span>Tell the PodScape community what you offer. All vendor listings are reviewed before they appear.</span></header>
   {!user?<section className={styles.panel}><h2>Sign in to apply</h2><p>A PodScape member account keeps your listing yours to edit.</p><Link href="/account/login">Sign in →</Link></section>
    :!user.email_confirmed_at?<section className={styles.panel}><h2>Confirm your email</h2><p>Confirm your email address before applying to the directory.</p></section>
-   :error?<section className={styles.panel}><h2>Applications unavailable</h2><p>The vendor database needs to be configured before submissions can open.</p></section>
+   :(!admin||error)?<section className={styles.panel}><h2>Applications unavailable</h2><p>The vendor database needs to be configured before submissions can open.</p></section>
    :<section className={styles.panel}><h2>{existing?"Manage your vendor profile":"Apply to the Vendor Directory"}</h2><p>Complete your public profile below. You can come back to edit it whenever you like.</p><VendorApplication draft={existing as VendorDraft|null}/></section>}
  </div></main></PlatformShell>;
 }
