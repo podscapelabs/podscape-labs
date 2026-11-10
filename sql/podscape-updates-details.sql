@@ -8,6 +8,6 @@ alter table public.podscape_updates
  add constraint podscape_updates_details_shape check (
    jsonb_typeof(details)='array'
    and jsonb_array_length(details)<=12
-   and jsonb_path_exists(details, '$[*] ? (@.type() != "string" || @.size() > 220)')=false
+   and jsonb_path_exists(details, '$[*] ? (@.type() != "string")')=false
  );
 grant select (details) on public.podscape_updates to anon,authenticated;
