@@ -8,7 +8,7 @@ import { NextResponse, type NextRequest } from "next/server";
 const PRIVATE_AREAS = [
   "/app", "/menu", "/explore", "/ledger", "/poddex", "/keeper",
   "/fun-zone", "/shop", "/field-guide", "/from-the-lab", "/search",
-  "/community", "/podbound", "/api/progress", "/api/search",
+  "/community", "/podbound", "/updates", "/api/progress", "/api/search",
   "/account",
 ];
 
