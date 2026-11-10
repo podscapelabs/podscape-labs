@@ -6,7 +6,7 @@ import { getGuideRecords } from "@/lib/guide-store";
 import styles from "./field-guide-home.module.css";
 import { PodscapeLineIcon, type PodscapeIconName } from "@/components/PodscapeLineIcon";
 
-export const metadata: Metadata = { title: "Field Guide | Podscape Labs", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Field Guide | PodScape Labs", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 const topicNotes: Record<string, string> = {
