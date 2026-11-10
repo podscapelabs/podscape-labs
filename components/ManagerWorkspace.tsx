@@ -21,7 +21,7 @@ type Section="hero"|"stats"|"care"|"tools"|"activity"|"enclosures"|"insights";
 type Tool={id:string;label:string;href:string;icon:PodscapeIconName};
 const defaults:Section[]=["hero","tools","enclosures","care","activity","stats","insights"];
 const required:Section[]=["hero","tools"];
-const labels:Record<Section,string>={hero:"Workspace & search",stats:"Colony totals",care:"Care schedule",tools:"Quick tools",activity:"Recent care",enclosures:"Your bins",insights:"Colony insights"};
+const labels:Record<Section,string>={hero:"Manager Overview",stats:"Colony Totals",care:"Care Schedule",tools:"Quick Tools",activity:"Recent Care",enclosures:"Recently Updated Bins",insights:"Colony Insights"};
 const library:Tool[]=[
  {id:"scan",label:"Scan bin",href:"/keeper/scan",icon:"scan"},
  {id:"qr",label:"Create QR",href:"/keeper/qr",icon:"qr"},
@@ -168,7 +168,7 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
   activity:<ManagerActivityFeed events={events} available={activityAvailable}/>,
   insights:<ManagerInsights bins={bins} events={events}/>,
   enclosures,
-  tools:<section className={styles.section} key="tools"><header><h2>Quick tools</h2></header>
+  tools:<section className={styles.section} key="tools"><header><h2>{labels.tools}</h2></header>
     <ManagerQuickShortcuts ids={layout.tools} change={ids=>update({...layout,tools:ids})} primaryHref={primaryHref} canvasEditing={canvasEditing}/>
   </section>
  };
