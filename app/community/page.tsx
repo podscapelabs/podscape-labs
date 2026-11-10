@@ -6,8 +6,8 @@ import { PodscapeLineIcon, type PodscapeIconName } from "@/components/PodscapeLi
 import styles from "./community.module.css";
 
 export const metadata:Metadata={
-  title:"Community | Podscape Labs",
-  description:"Explore the people, projects and shared discoveries that make up the Podscape community.",
+  title:"Community | PodScape Labs",
+  description:"Explore the people, projects and shared discoveries that make up the PodScape community.",
   robots:{index:false,follow:false}
 };
 
@@ -20,13 +20,13 @@ const explore:{icon:PodscapeIconName;title:string;copy:string;href:string;cta:st
   {icon:"leaf",title:"Explore the Leaf Ledger",copy:"Discover species and learn about the animals behind the hobby.",href:"/ledger",cta:"Browse species"},
   {icon:"book",title:"Learn something new",copy:"Care, setup and husbandry resources for curious keepers.",href:"/field-guide",cta:"Read guides"},
   {icon:"creative",title:"Play together, at your own pace",copy:"Puzzles, quizzes and little challenges in the Fun Zone.",href:"/fun-zone",cta:"Visit Fun Zone"},
-  {icon:"note",title:"Follow the studio",copy:"Behind-the-scenes updates and projects taking shape at Podscape Labs.",href:"/from-the-lab",cta:"From the Lab"}
+  {icon:"note",title:"Follow the studio",copy:"Behind-the-scenes updates and projects taking shape at PodScape Labs.",href:"/from-the-lab",cta:"From the Lab"}
 ];
 
 const socials:{name:string;copy:string;href:string}[]=[
   {name:"Facebook",copy:"Announcements, species spotlights and community news.",href:"https://www.facebook.com/share/1DpaNVvCJM/"},
   {name:"Instagram",copy:"Isopod photography, creative projects and behind-the-scenes moments.",href:"https://www.instagram.com/podscapelabs/"},
-  {name:"TikTok",copy:"Tiny creatures, quick videos and a little Podscape chaos.",href:"https://www.tiktok.com/@podscapelabs"},
+  {name:"TikTok",copy:"Tiny creatures, quick videos and a little PodScape chaos.",href:"https://www.tiktok.com/@podscapelabs"},
   {name:"Discord",copy:"Chat with fellow keepers, share ideas and join the conversation.",href:"https://discord.gg/MRa67kGxz5"}
 ];
 
@@ -50,7 +50,7 @@ export default function CommunityPage(){
       </header>
       <section className={styles.intro} aria-labelledby="community-intro">
         <div><p className={styles.eyebrow}>A COMMUNITY IN THE MAKING</p><h2 id="community-intro">More than a collection.</h2></div>
-        <p>Podscape began with a fascination for tiny creatures. The community is where that curiosity extends beyond our own enclosures—from first-time keepers to breeders, artists and people who just love discovering something new.</p>
+        <p>PodScape began with a fascination for tiny creatures. The community is where that curiosity extends beyond our own enclosures—from first-time keepers to breeders, artists and people who just love discovering something new.</p>
       </section>
       <section className={styles.section} id="explore" aria-label="Explore PodScape">
         <div className={styles.sectionHeading}><WorkspaceSectionHeader title="Find your corner of PodScape" description="Explore the experiences that are available now." meta="Open now"/></div>
@@ -75,7 +75,7 @@ export default function CommunityPage(){
           <div><small>{item.label}</small><h3>{item.title}</h3><p>{item.copy}</p></div>
         </article>)}</div>
       </section>
-      <section className={styles.close}><span aria-hidden="true"><PodscapeLineIcon name="community" /></span><div><p className={styles.eyebrow}>THE LITTLE WORLD WE SHARE</p><h2>Every keeper starts somewhere.</h2><p>There&apos;s always something new to learn, create or discover. We&apos;re building a place where all of it belongs.</p></div><Link href="/app">Back to Podscape <span aria-hidden="true">→</span></Link></section>
+      <section className={styles.close}><span aria-hidden="true"><PodscapeLineIcon name="community" /></span><div><p className={styles.eyebrow}>THE LITTLE WORLD WE SHARE</p><h2>Every keeper starts somewhere.</h2><p>There&apos;s always something new to learn, create or discover. We&apos;re building a place where all of it belongs.</p></div><Link href="/app">Back to PodScape <span aria-hidden="true">→</span></Link></section>
     </main>
   </div></PlatformShell>;
 }
