@@ -35,6 +35,7 @@ export default async function VendorReviewDesk(){
    <div className={styles.review}>
     {(["approved","rejected","pending"] as const).filter(status=>status!==v.status).map(status=><form key={status} action={reviewVendorProfile}>
      <input type="hidden" name="id" value={v.id}/><input type="hidden" name="status" value={status}/>
+     <input type="hidden" name="expectedUpdatedAt" value={v.updated_at}/><input type="hidden" name="expectedStatus" value={v.status}/>
      <button type="submit" className={status==="approved"?styles.submit:styles.outline}>{status==="approved"?"Approve listing":status==="rejected"?"Reject":"Return to pending"}</button>
     </form>)}
    </div>
