@@ -54,3 +54,17 @@ Home, Manager and Colony dashboards should share **the same interaction language
 - **Phase 4:** Cross-device sync (planned separately) without data loss.
 
 **Reject a change** if it uses arbitrary decorative Unicode for icons, mixes unrelated icon styles without documentation, duplicates an existing semantic icon, removes a needed accessible label, or makes editing behave differently from the shared workflow without a reason.
+
+
+## 6. Unified editing refinement (November 2026)
+
+The current Home, Manager, Species and navigation pass centralizes the practical rules while retaining the existing storage keys and data shape:
+
+- `components/workspace-edit-standards.ts`: one **500 ms** hold, **11 px** movement cancellation, **1100 ms** post-gesture click suppression, and scoped reset-confirmation copy (Home, Manager, Species, Home shortcuts, Manager shortcuts, bottom toolbar).
+- `components/WorkspaceEditCanvas.tsx`: the same drag handles, movement arrows, removal controls and semantic iconography, with nested form/button controls excluded from press-and-hold interception.
+- `components/useShortcutEditor.ts`: one long-press contract for Home quick links, Manager quick links and bottom navigation; safe pointer capture and pointer-ID checks for multitouch.
+- `components/useWorkspaceEditorDialog.ts`: Home, Manager and Species widget-library dialogs share background-scroll locking, Escape-to-close, Tab focus containment, first-control focus and opener focus restoration.
+- All three dashboard Edit controls now use the canonical semantic SVG edit icon. Reduced-motion disables editing jiggle and transition effects.
+- The regression script `scripts/verify-design-system.mjs` verifies these invariants on every CI run.
+
+**Not included:** cross-device synchronization, any clearing of existing layout preferences, changing species or colony data, or live deployment. Device/browser walkthroughs remain a separate acceptance gate before release.
