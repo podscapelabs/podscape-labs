@@ -5,6 +5,7 @@ import type { CSSProperties } from "react";
 import Link from "next/link";
 import styles from "./progress.module.css";
 import { PodscapeLineIcon, type PodscapeIconName } from "@/components/PodscapeLineIcon";
+import { FirstActionEmptyState } from "@/components/FirstActionEmptyState";
 
 type Achievement = {
   key: string; title: string; description: string; exp: number; coins: number; icon: string; href: string;
@@ -69,6 +70,7 @@ export default function ProgressDashboard({
         )}
       </div>
       {error ? <p className={styles.notice} role="status">Achievement history is temporarily unavailable. Please check again later.</p> : null}
+      {!error&&unlockedCount===0&&filter==="all"?<FirstActionEmptyState icon="achievement" eyebrow="YOUR FIRST MILESTONE" title="Your journey starts with one discovery." description="Explore the species catalogue, try a Fun Zone game, or finish the welcome tour. Eligible actions unlock achievements when completed—nothing is awarded just for opening this page." primary={{href:"/ledger",label:"Discover species"}} secondary={{href:"/app?onboarding=1",label:"Take the welcome tour"}} compact/>:null}
       <div className={styles.achievementGrid}>
         {shown.map(a => <button type="button" key={a.key} className={styles.achievementTile} data-earned={Boolean(a.unlockedAt)} onClick={()=>setSelected(a.key)} aria-label={(a.hidden&&!a.unlockedAt?"Secret achievement":a.title) + (a.unlockedAt ? a.hidden?", previously hidden, unlocked":", unlocked" : a.status === "planned" ? ", coming later" : ", not yet unlocked") + ". View details."}>
           <span className={styles.medallion} data-earned={Boolean(a.unlockedAt)} aria-hidden="true">
@@ -80,7 +82,7 @@ export default function ProgressDashboard({
             {(a.status==="available"&&(!a.hidden||Boolean(a.unlockedAt))) ? <span className={styles.tileReward}>+{a.exp} EXP{a.coins ? ` · +${a.coins} Pod Coins (legacy)` : ""}</span> : <span className={styles.tileRewardMuted}>{a.hidden&&!a.unlockedAt?"Secret reward": "Rewards not finalized"}</span>}</span>
         </button>)}
       </div>
-      {!shown.length ? <p className={styles.empty}>No achievements in this view yet.</p> : null}
+      {!shown.length&&!error ? <div className={styles.empty} role="status"><strong>No achievements in this view yet.</strong><p>{filter==="unlocked"?"You have not unlocked a milestone yet. Try exploring the Leaf Ledger or playing a Fun Zone game.":"Try another achievement filter to see more."}</p><button type="button" onClick={()=>setFilter("all")}>Show all achievements</button></div> : null}
       <p className={styles.caption}>Early-access achievements unlock automatically from verified species discoveries, collection entries, completed tutorials, customization milestones, and Fun Zone challenges. Each eligible milestone pays EXP once; puzzle milestones do not award Pod Coins.</p>
     </section> : null}
 
@@ -88,7 +90,7 @@ export default function ProgressDashboard({
 
     {view === "stats" ? <section className={styles.stats} aria-labelledby="stats-title"><div className={styles.sectionHeading}><h2 id="stats-title">Your Journey</h2><span>Member overview</span></div><div className={styles.statsGrid}><div><small>Current level</small><strong>{level}</strong></div><div><small>Lifetime EXP</small><strong>{exp.toLocaleString("en-CA")}</strong></div><div><small>Pod Coins</small><strong>{coins.toLocaleString("en-CA")}</strong></div><div><small>Recorded achievements</small><strong>{error ? "—" : unlockedCount}</strong></div><div><small>Species discovered</small><strong>{discoveries}</strong></div><div><small>Species collected</small><strong>{collectionSpecies}</strong></div><div><small>Fun Zone puzzles</small><strong>{puzzleCompletions===null?"—":`${puzzleCompletions} / 32`}</strong></div></div><p className={styles.caption}>EXP is permanent. Pod Coin redemption and additional reward milestones are still being developed.</p></section> : null}
 
-    {view === "achievements" ? <section className={styles.explore} aria-labelledby="explore-next"><div className={styles.sectionHeading}><h2 id="explore-next">Explore & Learn</h2><span>Ideas for your next visit</span></div><div className={styles.exploreGrid}>{activities.map(a=><Link href={a.href} className={styles.exploreTile} key={a.href}><span className={styles.exploreIcon} aria-hidden="true">{a.icon}</span><strong>{a.title}</strong><small>{a.description}</small><span className={styles.exploreArrow} aria-hidden="true">↗</span></Link>)}</div><p className={styles.caption}>Suggestions only: activities here do not automatically award EXP or Pod Coins yet.</p></section> : null}
+    {view === "achievements" ? <section className={styles.explore} aria-labelledby="explore-next"><div className={styles.sectionHeading}><h2 id="explore-next">Explore & Learn</h2><span>Ideas for your next visit</span></div><div className={styles.exploreGrid}>{activities.map(a=><Link href={a.href} className={styles.exploreTile} key={a.href}><span className={styles.exploreIcon} aria-hidden="true"><PodscapeLineIcon name={a.icon}/></span><strong>{a.title}</strong><small>{a.description}</small><span className={styles.exploreArrow} aria-hidden="true">↗</span></Link>)}</div><p className={styles.caption}>Suggestions only: activities here do not automatically award EXP or Pod Coins yet.</p></section> : null}
     <p className={styles.footerNote}>Your EXP stays with you. Future Pod Coin rewards and eligibility will be announced as the program develops.</p>
   </div>
 
