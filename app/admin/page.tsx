@@ -17,14 +17,14 @@ export default async function AdminPage() {
     <main className="admin-shell admin-sign-in">
       <section className="admin-auth-card" aria-labelledby="admin-title">
         <div className="admin-auth-head">
-          <Image src="/assets/logos/podscape-wordmark.svg" alt="Podscape Labs" width={232} height={38} priority />
+          <Image src="/assets/logos/podscape-wordmark.svg" alt="PodScape Labs" width={232} height={38} priority />
           <ThemeToggle />
         </div>
         <p className="eyebrow">Private owner access</p>
         <h1 id="admin-title">Owner Tools</h1>
-        <p className="admin-intro">Sign in to manage your Podscape content desks and tester access.</p>
+        <p className="admin-intro">Sign in to manage your PodScape content desks and tester access.</p>
         <AdminLoginForm configured={isAdminConfigured()} accountLogin={isAccountLoginConfigured()} />
-        <Link className="admin-back-link" href="/app">← Return to Podscape</Link>
+        <Link className="admin-back-link" href="/app">← Return to PodScape</Link>
       </section>
     </main>
   );
