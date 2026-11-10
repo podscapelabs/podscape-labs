@@ -140,3 +140,29 @@
 }
 :global(html[data-theme="lilac"]) .feature a{background:#fffaff;color:#4a2b5f}
 :global(html[data-theme="lilac"]) .searchSubmit{color:var(--accent-contrast)}
+
+
+/* Ember: warm Shop surfaces without the legacy green-cream hero. */
+:global(html[data-theme="ember"]) .hero{
+ background:
+  radial-gradient(ellipse at 92% 14%,rgba(237,153,75,.24),transparent 46%),
+  linear-gradient(125deg,#f9e7d2,#ebbc91);
+ color:#3e281d;
+}
+:global(html[data-theme="ember"]) .eyebrow{color:#a64c21}
+:global(html[data-theme="ember"]) .hero h1{color:#3e281d}
+:global(html[data-theme="ember"]) .hero p:last-child,
+:global(html[data-theme="ember"]) .heroCopy>p:not(.eyebrow){color:#654833}
+:global(html[data-theme="ember"]) .hero .previewTag{
+ border-color:#c7926d;background:#fffaf3a8;color:#64351f;
+}
+:global(html[data-theme="ember"]) .path:nth-child(2){background:color-mix(in srgb,#f0c8a0 30%,var(--surface))}
+:global(html[data-theme="ember"]) .path:nth-child(3){background:color-mix(in srgb,#e2a57c 23%,var(--surface))}
+:global(html[data-theme="ember"]) .path:nth-child(4){background:color-mix(in srgb,#dcb985 27%,var(--surface))}
+:global(html[data-theme="ember"]) .feature{
+ background:radial-gradient(circle at 90% 23%,#d88b50,transparent 53%),
+ linear-gradient(125deg,#703b23,#a8562b);
+ color:#fffaf3;
+}
+:global(html[data-theme="ember"]) .feature a{background:#fffaf3;color:#64351f}
+:global(html[data-theme="ember"]) .searchSubmit{color:var(--accent-contrast)}
