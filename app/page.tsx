@@ -6,8 +6,8 @@ import { MaintenanceMemberAccess } from "@/components/MaintenanceMemberAccess";
 import { siteContent } from "@/content/site";
 
 export const metadata: Metadata = {
-  title: "Podscape Labs | Site update in progress",
-  description: "Podscape Labs is preparing an updated home for its original projects.",
+  title: "PodScape Labs | Site update in progress",
+  description: "PodScape Labs is preparing an updated home for its original projects.",
 };
 
 export default function ConstructionPage() {
@@ -18,7 +18,7 @@ export default function ConstructionPage() {
           <Image
             className="construction-wordmark"
             src="/assets/logos/podscape-wordmark.svg"
-            alt="Podscape Labs"
+            alt="PodScape Labs"
             width={232}
             height={38}
             priority
@@ -37,7 +37,7 @@ export default function ConstructionPage() {
           <p className="eyebrow">Independent Canadian Studio</p>
           <h1 id="construction-title">A new site is taking shape.</h1>
           <p className="construction-intro">
-            Podscape Labs is preparing an updated home for its original projects. The studio is still active while this work is underway.
+            PodScape Labs is preparing an updated home for its original projects. The studio is still active while this work is underway.
           </p>
           <a
             className="button button-primary construction-action"
