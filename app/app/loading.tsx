@@ -1,19 +1,22 @@
-import Image from "next/image";
+import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
 import styles from "./loading.module.css";
 
 /**
- * Rendered immediately while the dynamic Podscape home is loading.
- * No artificial delay: the real home replaces this as soon as it is ready.
+ * Lightweight route loading state; disappears as soon as the actual page is ready.
+ * No artificial progress percentage, delay, or client-side timer.
  */
-export default function Loading() {
-  return (
-    <main className={styles.page} aria-busy="true" aria-label="Opening Podscape">
-      <div className={styles.content} role="status" aria-live="polite">
-        <Image src="/assets/logos/podscape-wordmark.svg" width={232} height={38} alt="Podscape Labs" priority className={styles.logo}/>
-        <p>A little world of discovery awaits.</p>
-        <div className={styles.progress} aria-hidden="true"><span/></div>
-        <small>Opening Podscape…</small>
-      </div>
-    </main>
-  );
+export default function Loading(){
+ return <main className={styles.page} aria-busy="true" aria-label="Opening PodScape">
+  <div className={styles.ambient} aria-hidden="true"/>
+  <div className={styles.content} role="status" aria-live="polite">
+   <span className={styles.appMark} aria-hidden="true"><PodscapeLineIcon name="leaf"/></span>
+   <div className={styles.brand}>
+    <h1>PodScape</h1>
+    <span>LABS</span>
+   </div>
+   <p>Your little world of discovery.</p>
+   <div className={styles.progress} aria-hidden="true"><span/></div>
+   <small>Preparing your space…</small>
+  </div>
+ </main>;
 }
