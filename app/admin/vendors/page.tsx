@@ -1,3 +1,4 @@
+import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
 import Link from "next/link";
 import {redirect} from "next/navigation";
 import {isAdminAuthenticated} from "@/lib/admin-auth";
@@ -19,7 +20,7 @@ export default async function VendorReviewDesk(){
   {!db||error?<p className={styles.error}>Vendor data is unavailable. The setup script may not have been applied.</p>:null}
   <div className={styles.cards}>{vendors.map(v=><article key={v.id} className={styles.card}>
    <div className={styles.cardHead}>
-    {v.logo_path&&db?<img src={db.storage.from("vendor-logos").getPublicUrl(v.logo_path).data.publicUrl} alt={v.business_name+" logo"}/>:<span className={styles.fallback}>✦</span>}
+    {v.logo_path&&db?<img src={db.storage.from("vendor-logos").getPublicUrl(v.logo_path).data.publicUrl} alt={v.business_name+" logo"}/>:<span className={styles.fallback} aria-hidden="true"><PodscapeLineIcon name="vendor"/></span>}
     <div><h2>{v.business_name}</h2><small>{v.location_label||"Location not provided"}</small></div>
    </div>
    <p className={styles.status}>Status: <strong>{v.status}</strong></p>
