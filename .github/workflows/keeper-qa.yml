@@ -49,5 +49,7 @@ jobs:
         run: node scripts/verify-release-readiness.mjs
       - name: Unified release: vendor, updates, widgets and splash
         run: node scripts/verify-unified-release.mjs
+      - name: Theme role, contrast and overflow audit
+        run: node scripts/verify-theme-system.mjs
       - name: Build Next.js application
         run: pnpm run build
