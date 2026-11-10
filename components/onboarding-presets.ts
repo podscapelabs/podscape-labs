@@ -1,4 +1,5 @@
 import type {PodscapeIconName} from "./PodscapeLineIcon";
+import {homeWidgetNames} from "./workspace-widget-labels";
 import {initialHome, initialBottom, cleanPreference} from "./navigation-customization";
 
 /**
@@ -15,19 +16,19 @@ export const homeWidgetOrder = ["greeting","hero","shortcuts","spotlight","recen
 export const starterChoices:StarterChoice[] = [
  {id:"balanced",title:"Balanced",description:"A little of everything, with fresh discoveries first.",icon:"home",
  visible:["recent"],homeShortcuts:[...initialHome],bottomShortcuts:[...initialBottom],
- preview:[{label:"Recently Updated",icon:"news"},{label:"Quick Shortcuts",icon:"grid"},{label:"Discovery Hero",icon:"leaf"}]},
+ preview:[{label:homeWidgetNames.recent,icon:"news"},{label:"Quick Shortcuts",icon:"grid"},{label:"Discovery Hero",icon:"leaf"}]},
  {id:"explorer",title:"Explorer",description:"Explore species, read care guides, and save favourites.",icon:"leaf",
  visible:["recent","guides","pins"],homeShortcuts:["ledger","guides","search","shop","community","podbound"],bottomShortcuts:["home","ledger","search","guides","menu"],
- preview:[{label:"Recently Updated",icon:"news"},{label:"Field Guide",icon:"book"},{label:"Favorites",icon:"bookmark"}]},
+ preview:[{label:homeWidgetNames.recent,icon:"news"},{label:homeWidgetNames.guides,icon:"book"},{label:homeWidgetNames.pins,icon:"bookmark"}]},
  {id:"keeper",title:"Keeper",description:"Put your colonies, care schedule and progress up front.",icon:"jar",
  visible:["colony","schedule","progress","recent"],homeShortcuts:["manager","collection","scan","qr","ledger","guides"],bottomShortcuts:["home","manager","scan","collection","menu"],
- preview:[{label:"My Colony",icon:"jar"},{label:"Care Schedule",icon:"calendar"},{label:"My Progress",icon:"achievement"}]},
+ preview:[{label:homeWidgetNames.colony,icon:"jar"},{label:homeWidgetNames.schedule,icon:"calendar"},{label:homeWidgetNames.progress,icon:"achievement"}]},
  {id:"collector",title:"Collector",description:"Keep favourite species and your own colonies close.",icon:"bookmark",
  visible:["pins","colony","recent"],homeShortcuts:["ledger","collection","manager","shop","search","guides"],bottomShortcuts:["home","ledger","collection","shop","menu"],
- preview:[{label:"Favorites",icon:"bookmark"},{label:"My Colony",icon:"jar"},{label:"Recently Updated",icon:"news"}]},
+ preview:[{label:homeWidgetNames.pins,icon:"bookmark"},{label:homeWidgetNames.colony,icon:"jar"},{label:homeWidgetNames.recent,icon:"news"}]},
  {id:"play",title:"Puzzle Lover",description:"Lead with Fun Zone games and achievement progress.",icon:"gamepad",
  visible:["games","progress","recent"],homeShortcuts:["fun-zone","progress","podbound","ledger","community","guides"],bottomShortcuts:["home","fun-zone","progress","podbound","menu"],
- preview:[{label:"Play a Little",icon:"gamepad"},{label:"My Progress",icon:"achievement"},{label:"Recently Updated",icon:"news"}]}
+ preview:[{label:homeWidgetNames.games,icon:"gamepad"},{label:homeWidgetNames.progress,icon:"achievement"},{label:homeWidgetNames.recent,icon:"news"}]}
 ];
 
 export const onboardingLayoutKey = "podscape-home-widgets-v2";
