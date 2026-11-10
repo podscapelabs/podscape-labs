@@ -66,6 +66,9 @@ export default async function OwnerToolsPage() {
           {[earlyAccess,security].filter((item):item is NonNullable<typeof item>=>Boolean(item)).map(item=><Link href={item.href} key={item.href}>
             <span className={styles.operationCopy}><strong><PodscapeLineIcon name={item.icon} /> {item.title}</strong><small>{item.description}</small></span><b aria-hidden="true">→</b>
           </Link>)}
+          <Link href="/app?onboarding=preview">
+            <span className={styles.operationCopy}><strong><PodscapeLineIcon name="grid" /> Onboarding Preview</strong><small>Replay the actual four-step welcome tour without changing your account.</small></span><b aria-hidden="true">→</b>
+          </Link>
           <details className={styles.qa}><summary><PodscapeLineIcon name="achievement" /> Achievement banner preview <span>Owner QA</span></summary><div><p>Preview the achievement banner without changing EXP or unlocking an achievement.</p><TestAchievementButton /></div></details>
         </div>
       </section>
