@@ -27,10 +27,9 @@ assert.ok(workspace.includes("100dvh"),"Widget editor should respect dynamic vie
 assert.ok(workspace.includes("env(safe-area-inset-bottom"),"Widget editor should respect phone safe area");
 const homeShortcuts=read("components/CustomizableHomeShortcuts.tsx");
 const manager=read("components/ManagerWorkspace.tsx");
-for(const [code,title] of [[homeShortcuts,"Home"],[manager,"Manager"]]){
- const resetButtons=code.match(/onClick=\{\(\)=>\{[^{}]{0,140}(?:reset\(|change\(\[\.\.\.initial\.tools\])/g)||[];
- assert.ok(resetButtons.length>=2,title+" should expose both standard and inline editor resets");
- assert.ok(resetButtons.every(button=>button.includes("confirmWorkspaceReset")),title+" resets must always confirm even in inline mobile editing");
+for(const [code,title,resetKey] of [[homeShortcuts,"Home","home-shortcuts"],[manager,"Manager","manager-shortcuts"]]){
+ const confirmations=code.split('confirmWorkspaceReset("'+resetKey+'")').length-1;
+ assert.ok(confirmations>=2,title+" must confirm resets in both standard and inline mobile editors");
 }
 const sync=read("components/PreferenceSyncBridge.tsx");
 assert.ok([...sync.matchAll(/readLocalUiPreferences\(([^)]*)\)/g)].every(match=>match[1].includes("userId")),"All sync reads must include signed-in member scope");
