@@ -558,3 +558,17 @@
 :global(html[data-theme="lilac"]) .managerHeroContent h1{color:#33223e}
 :global(html[data-theme="lilac"]) .managerHeroContent p{color:#554263}
 :global(html[data-theme="lilac"]) .managerHeroContent>a{color:#4a2b5f;border-color:#8f70a3}
+
+
+/* Ember: Manager uses a warm terracotta hero and dark espresso typography. */
+:global(html[data-theme="ember"]) .managerHero{
+ background:linear-gradient(125deg,#f5dfc6 0%,#edc098 58%,#dc985f 100%);
+ color:#3e281d;
+}
+:global(html[data-theme="ember"]) .managerHero::after{
+ background:linear-gradient(90deg,rgba(255,244,228,.94) 0%,rgba(249,225,199,.77) 47%,rgba(220,152,95,.09) 100%);
+}
+:global(html[data-theme="ember"]) .managerHeroContent>span{color:#a64c21}
+:global(html[data-theme="ember"]) .managerHeroContent h1{color:#3e281d}
+:global(html[data-theme="ember"]) .managerHeroContent p{color:#654833}
+:global(html[data-theme="ember"]) .managerHeroContent>a{color:#64351f;border-color:#ad744d}
