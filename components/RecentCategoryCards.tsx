@@ -2,6 +2,7 @@
 
 import {useEffect,useRef,useState} from "react";
 import Link from "next/link";
+import {createPortal} from "react-dom";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
 import {updateCategoryById,type UpdateCategory} from "@/data/update-categories";
 import styles from "./PodscapeHome.module.css";
@@ -97,6 +98,6 @@ export function RecentCategoryCards({groups}:{groups:RecentGroup[]}){
     </article>;
    })}
   </div>
-  {active?<UpdateDetailDialog item={active.item} category={active.category} onClose={close}/>:null}
+  {active?createPortal(<UpdateDetailDialog item={active.item} category={active.category} onClose={close}/>,document.body):null}
  </>;
 }
