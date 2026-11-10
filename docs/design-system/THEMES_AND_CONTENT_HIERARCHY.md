@@ -60,3 +60,13 @@ For each screen verify typography order, foreground/background contrast, selecte
 
 ## Adding a future theme
 Define semantic palette values for both light/dark variants and portal hero roles. Keep clear text-on-accent and muted-text contrast. Validate against this contract and the CI theme checks. Do not fork each page or add a collection of one-off hex overrides.
+
+## Woodland — first alternate PodScape palette (November 2026)
+
+Woodland is a warm dark appearance built around cocoa `#211A16`, chestnut `#30251F`, copper `#D6AC76`, and parchment `#F5E9D7`. It reuses the same semantic typography, cards, modals and navigation roles instead of introducing new layouts.
+
+The four choices in **Account → Preferences → Appearance** are Light, Dark, Woodland and System. The quick appearance control cycles the three explicit palettes; System remains available in Settings. The chosen preference is stored in the existing `podscape-theme` key and restored during the initial document bootstrap to avoid flashing the wrong palette. Woodland uses `color-scheme: dark` for native input controls.
+
+Important: `data-theme="woodland"` is its own explicit palette. Avoid CSS that assumes `not([data-theme="dark"])` necessarily means Light. The loading screen follows this rule and preserves the dark cocoa background. Future theme names should extend the shared semantic variables and bootstrap allowlist rather than adding one-off colors to every portal.
+
+The palette and switch logic are guarded in `scripts/verify-theme-system.mjs`. Browser checks in all three palettes remain required before release. In particular, test Owner Studio, species cards, mobile bottom navigation, QR scanning, release-detail sheets, form selects and disabled buttons in Woodland as well as Light and Dark.
