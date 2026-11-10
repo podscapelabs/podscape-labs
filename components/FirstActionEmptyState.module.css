@@ -1,0 +1,15 @@
+.card,.compact{display:flex;align-items:flex-start;gap:17px;min-width:0;padding:clamp(17px,3vw,26px);border:1px solid var(--line);border-radius:17px;background:var(--paper);color:var(--ink)}
+.compact{padding:17px;gap:12px}
+.mark{display:grid;place-items:center;width:49px;height:49px;border-radius:14px;flex:none;background:color-mix(in srgb,var(--forest) 10%,var(--paper));color:var(--forest)}
+.mark svg{width:27px;height:27px}
+.body{min-width:0;flex:1}
+.eyebrow{display:block;color:var(--forest);font-size:.61rem;font-weight:850;letter-spacing:.12em;margin-bottom:7px}
+.body h3{font:500 clamp(1.35rem,2.4vw,1.7rem)/1.15 var(--serif);letter-spacing:-.02em;margin:0 0 7px;overflow-wrap:anywhere}
+.body p{color:var(--muted);font-size:.78rem;line-height:1.55;margin:0;max-width:54ch}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.actions a{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;text-decoration:none;font-size:.73rem;font-weight:800;border-radius:11px;padding:10px 14px}
+.primary{background:var(--forest);color:var(--paper)}
+.primary svg{width:16px;height:16px}
+.secondary{border:1px solid var(--line);background:var(--paper-strong);color:var(--forest)}
+.card a:focus-visible,.compact a:focus-visible{outline:3px solid var(--forest);outline-offset:3px}
+@media(max-width:450px){.card,.compact{padding:15px;gap:11px}.mark{width:41px;height:41px;border-radius:12px}.mark svg{width:23px;height:23px}.actions{gap:7px}.actions a{width:100%}}
