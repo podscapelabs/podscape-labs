@@ -9,6 +9,7 @@ import {moveBlock,dropBlock,visibleBlocks,uniqueAllowed} from "./workspace-layou
 import {WorkspaceEditToolbar,WorkspaceEditBlock,useWorkspaceDrag} from "./WorkspaceEditCanvas";
 import {HomeCanvasEditContext} from "./HomeCanvasEditContext";
 import {recordExperienceAction} from "./experience-achievements";
+import {confirmWorkspaceReset} from "./workspace-edit-standards";
 
 type Tile={title:string;label:string;description:string;href:string;image?:string|null;alt?:string};
 export type HomeColony={id:string;name:string;quantity:number;speciesName:string}|null;
@@ -99,7 +100,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
   },[]);
   const close=()=>{setEditing(false);requestAnimationFrame(()=>returnFocus.current?.focus())};
   const finishCanvas=()=>{stopDrag();editAnchor.current=null;setCanvasEditing(false)};
-  const resetToDefault=()=>{if(!window.confirm("Reset your homepage to the default layout? This will remove optional widgets from Home and restore the original block order. Your account, colonies and favorites will not be deleted."))return false;stopDrag();update({order:[...defaultOrder],visible:[...defaultVisible]});return true};
+  const resetToDefault=()=>{if(!confirmWorkspaceReset("home"))return false;stopDrag();update({order:[...defaultOrder],visible:[...defaultVisible]});return true};
   useEffect(()=>{
     if(!editing)return;
     const previous=document.body.style.overflow;
