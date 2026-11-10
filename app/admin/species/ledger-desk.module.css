@@ -184,7 +184,7 @@
 .ownerHero>div:first-child{min-width:0}
 .ownerHero :global(.eyebrow){color:var(--portal-hero-soft);font-size:.62rem;letter-spacing:.13em;font-weight:800}
 .ownerHero h1{margin:9px 0;font:600 clamp(2rem,4.5vw,3rem)/1.06 var(--display);letter-spacing:-.035em;color:var(--portal-hero-text)}
-.ownerHero p:not(.eyebrow){max-width:55ch;margin:0;color:var(--portal-hero-muted);font-size:.79rem;line-height:1.5}
+.ownerHero p:not(:global(.eyebrow)){max-width:55ch;margin:0;color:var(--portal-hero-muted);font-size:.79rem;line-height:1.5}
 .ownerHero :global(.admin-dashboard-actions){display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;flex:none}
 .ownerHero :global(.admin-dashboard-actions a){min-height:42px;display:inline-flex;align-items:center;justify-content:center;border-radius:11px;padding:9px 12px;font-size:.73rem;font-weight:750}
 .ownerHero :global(.admin-dashboard-actions .button-outline){color:var(--portal-hero-text);border-color:color-mix(in srgb,var(--portal-hero-text) 28%,transparent);background:transparent}
