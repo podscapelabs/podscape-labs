@@ -49,6 +49,7 @@ const dialog=read("components/RecentCategoryCards.tsx");
 const dialogCss=read("components/UpdateDetailDialog.module.css");
 for(const token of ['role="dialog"','aria-modal="true"','Escape','onMouseDown','item.details','onClose']) assert.ok(dialog.includes(token),"Update dialog missing "+token);
 assert.match(dialog,/item\.details!==undefined/,"Automatic content must preserve direct destination links");
+assert.match(dialog,/createPortal\(/,"Detail dialog must escape widget overflow and stacking contexts");
 assert.match(dialogCss,/safe-area-inset-bottom/,"Update detail panel must respect iPhone safe area");
 assert.match(dialogCss,/prefers-reduced-motion/,"Update panel should honor reduced motion");
 assert.match(feed,/details:Array\.isArray\(a\.details\)/,"Curated details must reach the dashboard");
