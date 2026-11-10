@@ -14,6 +14,7 @@ import {WorkspaceEditToolbar,WorkspaceEditBlock,useWorkspaceDrag} from "./Worksp
 import {ManagerCareOverview,ManagerActivityFeed,ManagerInsights,type ManagerBin,type ManagerEvent} from "./ManagerCareWidgets";
 import {recordExperienceAction} from "./experience-achievements";
 import {confirmWorkspaceReset} from "./workspace-edit-standards";
+import {useWorkspaceEditorDialog} from "./useWorkspaceEditorDialog";
 
 type Section="hero"|"stats"|"care"|"tools"|"activity"|"enclosures"|"insights";
 type Tool={id:string;label:string;href:string;icon:PodscapeIconName};
@@ -108,6 +109,7 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
  const [editing,setEditing]=useState(false);
  const [canvasEditing,setCanvasEditing]=useState(false);
  const [slot,setSlot]=useState<number|null>(null);
+ const dialogRef=useWorkspaceEditorDialog(editing,()=>{setEditing(false);setSlot(null)});
  const [query,setQuery]=useState("");
  const [showDirectory,setShowDirectory]=useState(false);
  // Preserve the position of the section the user held while editor controls mount above it.
@@ -163,7 +165,7 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
 {!canvasEditing&&<button type="button" className={homeStyles.desktopDashboardEdit} onClick={()=>enterCanvas()} aria-label="Edit Manager dashboard">✎ Edit Manager</button>}
   {canvasEditing?<WorkspaceEditToolbar title="Arrange your Manager" description="Drag sections to arrange your workspace. Quick Tools stay grouped." onAdd={()=>{finishCanvas();setEditing(true);setSlot(null)}} onReset={resetToDefault} onDone={finishCanvas}/>:null}
   {editing?<div className={homeStyles.homeEditorOverlay} onPointerDown={e=>{if(e.target===e.currentTarget){setEditing(false);setSlot(null)}}}>
-   <div className={`${homeStyles.widgetEditor} ${homeStyles.widgetLibrary}`} role="dialog" aria-modal="true" aria-labelledby="manager-widget-title">
+   <div className={`${homeStyles.widgetEditor} ${homeStyles.widgetLibrary}`} ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="manager-widget-title">
     <div className={homeStyles.homeEditorHead}><div><small>YOUR WORKSPACE, YOUR WAY</small><h2 id="manager-widget-title">Widget Library</h2></div><button type="button" onClick={()=>{setEditing(false);setSlot(null)}}>Done</button></div>
     <p>Keep the dashboard simple or bring your entire collection overview onto one screen. Every keeper tool remains available either way.</p>
     <div className={styles.managerPresets} role="group" aria-label="Dashboard starting layouts"><button type="button" onClick={()=>applyPreset("compact")}>Compact dashboard <small>Shortcuts, colonies and care</small></button><button type="button" onClick={()=>applyPreset("detailed")}>Detailed dashboard <small>All collection widgets</small></button></div>
