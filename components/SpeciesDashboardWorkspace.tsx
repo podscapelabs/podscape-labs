@@ -5,6 +5,7 @@ import {WorkspaceEditBlock,WorkspaceEditToolbar,useWorkspaceDrag} from "./Worksp
 import {moveBlock,dropBlock,uniqueAllowed} from "./workspace-layout";
 import {recordExperienceAction} from "./experience-achievements";
 import {confirmWorkspaceReset} from "./workspace-edit-standards";
+import {useWorkspaceEditorDialog} from "./useWorkspaceEditorDialog";
 import homeStyles from "./PodscapeHome.module.css";
 import styles from "./SpeciesProfile.module.css";
 import { PodscapeLineIcon, type PodscapeIconName } from "./PodscapeLineIcon";
@@ -54,6 +55,7 @@ export function SpeciesDashboardWorkspace({widgets,scope,preview=false}:{widgets
  const [hydrated,setHydrated]=useState(false);
  const [canvasEditing,setCanvasEditing]=useState(false);
  const [libraryOpen,setLibraryOpen]=useState(false);
+ const dialogRef=useWorkspaceEditorDialog(libraryOpen,()=>setLibraryOpen(false));
  const editAnchor=useRef<{id:SpeciesWidgetId;top:number}|null>(null);
  useEffect(()=>{
   try{const raw=localStorage.getItem(storageKey);if(raw)setLayout(normalize(JSON.parse(raw)))}catch{}
@@ -91,7 +93,7 @@ export function SpeciesDashboardWorkspace({widgets,scope,preview=false}:{widgets
   {!preview&&hydrated&&!canvasEditing&&<div className={homeStyles.addWidgetFooter}><button type="button" className={homeStyles.addWidgetButton} onClick={()=>setLibraryOpen(true)}><span aria-hidden="true">＋</span> Add Widget</button></div>}
   {available.length===0&&<p className={styles.empty}>Species information is being prepared.</p>}
   {libraryOpen&&!preview&&<div className={homeStyles.homeEditorOverlay} onPointerDown={event=>{if(event.target===event.currentTarget)setLibraryOpen(false)}}>
-   <div className={homeStyles.widgetLibrary} role="dialog" aria-modal="true" aria-labelledby="species-widget-library">
+   <div className={homeStyles.widgetLibrary} ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="species-widget-library">
     <div className={homeStyles.homeEditorHead}><div><small>YOUR HOBBY, YOUR SPACE</small><h2 id="species-widget-library">Species Widget Library</h2></div><button type="button" onClick={()=>setLibraryOpen(false)}>Done</button></div>
     <p>Pick the information you care about. Hold any dashboard block to rearrange or remove it. Your layout carries across all species; missing facts remain hidden until researched.</p>
     <div className={homeStyles.widgetLibraryActions}><span>{visible.length} active widgets</span><button type="button" onClick={()=>{setLibraryOpen(false);enterCanvas()}}>Arrange Dashboard</button></div>
