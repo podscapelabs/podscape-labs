@@ -51,5 +51,7 @@ jobs:
         run: node scripts/verify-unified-release.mjs
       - name: Theme role, contrast and overflow audit
         run: node scripts/verify-theme-system.mjs
+      - name: Stabilization security and server-boundary checks
+        run: node scripts/verify-stabilization-boundaries.mjs
       - name: Build Next.js application
         run: pnpm run build
