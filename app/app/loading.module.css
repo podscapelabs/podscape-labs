@@ -29,6 +29,12 @@
   --splash-muted:#ccb8a4;
   --splash-accent:#d6ac76;
 }
+:global(html[data-theme="lilac"]) .page{
+  --splash-bg:#f4eff9;
+  --splash-ink:#33223e;
+  --splash-muted:#695a72;
+  --splash-accent:#70418b;
+}
 .ambient{
   position:absolute;
   inset:0;
