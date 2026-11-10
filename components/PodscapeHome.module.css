@@ -652,3 +652,10 @@
 /* One shared dashboard edit affordance on Home, Manager and Species. */
 .desktopDashboardEdit svg{width:19px;height:19px;flex:none}
 @media(prefers-reduced-motion:reduce){.homeCanvasBlockActive,.jiggling,.shortcutEditing .shortcut{animation:none!important;transition:none!important}}
+
+/* Release mobile/PWA audit: respect dynamic viewport and iPhone home indicator. */
+@media(max-width:720px){
+ .homeEditorOverlay{padding:10px 10px max(12px,env(safe-area-inset-bottom,0px));align-items:flex-end}
+ .homeEditorOverlay>.widgetEditor{max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 28px);overscroll-behavior:contain}
+ .widgetLibraryGroups,.widgetArrange{-webkit-overflow-scrolling:touch}
+}
