@@ -71,7 +71,7 @@ const bulkQr=read("components/KeeperBulkQrCreator.tsx");
 const bulkQrCss=read("components/KeeperBulkQrCreator.module.css");
 const qrPage=read("app/keeper/qr/page.tsx");
 const manager=read("components/ManagerWorkspace.tsx");
-assert.match(singleQr,/origin\+"\\/keeper\/"\+encodeURIComponent\(selected\.id\)/,"Single QR links must use permanent keeper bin IDs");
+assert.ok(singleQr.includes('origin+"/keeper/"+encodeURIComponent(selected.id)'),"Single QR links must use permanent keeper bin IDs");
 assert.match(bulkQr,/encodeURIComponent\(bin\.id\)/,"Bulk QR links must use permanent keeper bin IDs");
 assert.match(bulkQr,/errorCorrectionLevel:"H"/,"Bulk QR should retain a reliable error-correction level");
 assert.match(bulkQr,/Select all visible/,"Bulk creator must allow selecting filtered bins");
