@@ -64,3 +64,21 @@ assert.match(drag,/lastClientX/,"Widget drag needs horizontal input");
 assert.match(drag,/next\.left/,"Widget reorder animation must account for columns");
 assert.match(css,/\.presetPicker/,"Colony presets require distinct controls");
 console.log("Manager refinement checks passed: archived safety, focus, per-colony isolation, compact picker and two-axis drag.");
+
+// QR Label Studio: single and bulk labels must preserve the same member-scoped bin URL.
+const singleQr=read("components/KeeperQrCreator.tsx");
+const bulkQr=read("components/KeeperBulkQrCreator.tsx");
+const bulkQrCss=read("components/KeeperBulkQrCreator.module.css");
+const qrPage=read("app/keeper/qr/page.tsx");
+const manager=read("components/ManagerWorkspace.tsx");
+assert.match(singleQr,/origin\+"\\/keeper\/"\+encodeURIComponent\(selected\.id\)/,"Single QR links must use permanent keeper bin IDs");
+assert.match(bulkQr,/encodeURIComponent\(bin\.id\)/,"Bulk QR links must use permanent keeper bin IDs");
+assert.match(bulkQr,/errorCorrectionLevel:"H"/,"Bulk QR should retain a reliable error-correction level");
+assert.match(bulkQr,/Select all visible/,"Bulk creator must allow selecting filtered bins");
+assert.match(bulkQr,/window\.print\(\)/,"Bulk creator must use native printing");
+assert.match(bulkQrCss,/@media print/,"Bulk sheet needs print styling");
+assert.match(bulkQrCss,/break-inside:avoid/,"Individual labels must not split between pages");
+assert.match(qrPage,/query\.mode === "bulk"/,"Manager QR route must deep-link to bulk mode");
+assert.match(manager,/Bulk QR labels/,"Bulk printing must be discoverable in Manager shortcuts");
+assert.match(read("components/KeeperQrCreator.module.css"),/\.root:has\(> \.printOnly\)/,"Single QR print rules must not hide the bulk sheet");
+console.log("Bulk QR regression checks passed: stable links, filtered selection, print sheet, and Manager entry point.");
