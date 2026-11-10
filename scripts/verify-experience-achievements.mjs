@@ -62,7 +62,18 @@ assert.ok(!preview.includes("fetch("),"Visual-only banner preview must not grant
 const tour=read("components/ShortcutWelcomeTip.tsx");
 assert.match(tour,/if\(!skipped\)void recordExperienceAction\("onboarding_complete"/);
 assert.match(tour,/setSkipped\(true\)/);
-assert.match(tour,/podscape-home-widgets-changed/);
+const presets=read("components/onboarding-presets.ts");
+assert.match(presets,/podscape-home-widgets-changed/);
+assert.match(presets,/podscape-nav-updated/);
+assert.match(presets,/const saved=JSON.parse\\(localStorage.getItem\\(onboardingLayoutKey\\)/,"Starter presets must inspect the existing layout");
+assert.match(presets,/if\\(options.shortcuts\\)/,"Shortcut presets must be optional");
+assert.match(tour,/focus===null/,"Keep current layout must be the initial selection");
+assert.match(tour,/if\\(focus\\)/,"Never replace a saved Home layout unless a preset was explicitly selected");
+assert.match(tour,/Not now/,"Onboarding must allow dismissal without personalizing");
+assert.match(tour,/Skip tutorial/,"Onboarding must support skipping directly to setup");
+assert.match(tour,/podscape-open-onboarding/,"The tutorial must be replayable");
+assert.match(read("app/account/page.tsx"),/onboarding=1/,"Account must link back to onboarding");
+assert.match(tour,/Appearance/,"Welcome setup should expose theme preferences");
 for(const [source,event] of [
  ["components/HomeWidgets.tsx","home_personalized"],
  ["components/ManagerWorkspace.tsx","manager_personalized"],
