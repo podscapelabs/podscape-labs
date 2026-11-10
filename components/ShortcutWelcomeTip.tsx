@@ -128,7 +128,7 @@ export function ShortcutWelcomeTip({userId}:{userId:string|null}){
      </label>)}
     </fieldset>
     {selected?<div className={styles.presetPreview} aria-label={selected.title+" dashboard preview"}>
-     <div className={styles.previewHeading}><strong>{selected.title} starter dashboard</strong><small>Widgets you'll see first</small></div>
+     <div className={styles.previewHeading}><strong>{selected.title} starter dashboard</strong><small>Widgets you&apos;ll see first</small></div>
      <div className={styles.previewWidgets}>{selected.preview.map(item=><span key={item.label}><PodscapeLineIcon name={item.icon}/><small>{item.label}</small></span>)}</div>
      <label className={styles.presetCheckbox}><input type="checkbox" checked={applyShortcuts} onChange={e=>setApplyShortcuts(e.target.checked)}/> Also set recommended Home and bottom-nav shortcuts</label>
      <p>Applying this preset replaces only your visible Home widgets and, if selected, navigation shortcuts. Your colony data and saved favorites remain untouched.</p>
