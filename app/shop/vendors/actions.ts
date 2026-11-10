@@ -36,7 +36,7 @@ export async function submitVendorProfile(form:FormData):Promise<Outcome>{
  const rawDestinations=clean(form.get("shippingCountries"),1000);
  const shippingCountries=[...new Set(rawDestinations.split(",").map(s=>s.trim().toUpperCase()).filter(Boolean))];
  const validShippingModes=new Set<string>(vendorShippingModes.map(option=>option.value));
- if((countryCode&&!validVendorCountry(countryCode))||!validShippingModes.has(shippingMode)||
+ if(!validVendorCountry(countryCode)||!validShippingModes.has(shippingMode)||
   (shippingMode==="domestic"&&!countryCode)||
   !["yes","no","ask"].includes(liveAnimalShipping)||
   shippingNotes.length>400||shippingCountries.length>249||shippingCountries.some(code=>!validVendorCountry(code))||
