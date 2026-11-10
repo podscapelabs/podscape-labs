@@ -46,3 +46,25 @@ Execute `READ_ONLY_DATABASE_CHECKS.sql` before and after each approved staging m
 
 ## Exit criteria
 All denial cases produce 401/403 or no affected rows (as expected by each API), all legitimate owner/member flows succeed, and no unreviewed vendor profile becomes public. Record actual test outcomes with environment ID, SHA and migration version. **None of these HTTP integration cases have been executed yet.**
+
+
+## Executable read-only isolation harness
+The repository now includes `scripts/test-account-isolation-staging.mjs`, invoked using `pnpm test:account-isolation:staging`. It runs **GET-only** HTTP tests against a Supabase staging instance and explicitly refuses the known production project URL. It never logs tokens or private returned rows.
+
+Create an *approved* isolated Supabase development branch/staging project and populate **disposable** Member A and Member B fixture records. Pass the values as environment variables, not command-line arguments or committed files:
+
+| Environment variable | Meaning |
+| --- | --- |
+| `PODSCAPE_STAGING_URL` | Supabase staging API origin |
+| `PODSCAPE_STAGING_PUBLISHABLE_KEY` | Staging publishable key (not a secret/admin key) |
+| `PODSCAPE_STAGING_MEMBER_A_TOKEN` | Short-lived Member A test access token |
+| `PODSCAPE_STAGING_MEMBER_B_TOKEN` | Short-lived Member B test access token |
+| `PODSCAPE_STAGING_MEMBER_A_ID` | Member A test user UUID |
+| `PODSCAPE_STAGING_MEMBER_B_ID` | Member B test user UUID |
+| `PODSCAPE_STAGING_PENDING_VENDOR_ID` | Optional pending-vendor test UUID |
+
+Before running, A and B must each have an enclosure. B must have at least one member-species collection entry and a saved preferences row. The harness fails if fixtures are absent, which prevents a false-success result caused by empty test tables. The runner also checks no cross-account member views, progress events and pending vendor records are visible.
+
+This does **not** cover mutations or object-storage PUT/PATCH/DELETE. Those remain mandatory isolated API tests in the matrix above. Staging fixtures must not use production user IDs, production cookies or live uploads.
+
+Current result: **not executed** (no staging project or test credentials available). Do not mark account isolation as fully verified merely because the script exists.
