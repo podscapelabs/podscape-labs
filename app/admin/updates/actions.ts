@@ -7,7 +7,7 @@ import {updateCategories,validDestination,type UpdateCategory} from "@/lib/podsc
 
 const allowed=new Set<string>(updateCategories.map(x=>x.id));
 function value(form:FormData,key:string){const raw=form.get(key);return typeof raw==="string"?raw.trim():"";}
-function refresh(){revalidatePath("/app");revalidatePath("/");revalidatePath("/admin/updates");}
+function refresh(){revalidatePath("/app");revalidatePath("/");revalidatePath("/updates");revalidatePath("/admin/updates");}
 
 export async function savePlatformUpdate(form:FormData){
  if(!(await isAdminAuthenticated()))redirect("/admin");
