@@ -2,6 +2,7 @@
 
 import {useEffect,useState} from "react";
 import {MoonIcon,SunIcon} from "./Icons";
+import {PodscapeLineIcon} from "./PodscapeLineIcon";
 
 type Theme="light"|"dark"|"woodland";
 type ThemePreference=Theme|"system";
@@ -41,5 +42,6 @@ export function ThemeToggle(){
   title={`Current: ${names[theme||"light"]} · Switch to ${names[next]}`}>
    <span className="theme-icon theme-icon-sun"><SunIcon/></span>
    <span className="theme-icon theme-icon-moon"><MoonIcon/></span>
+   <span className="theme-icon theme-icon-woodland"><PodscapeLineIcon name="leaf"/></span>
  </button>;
 }
