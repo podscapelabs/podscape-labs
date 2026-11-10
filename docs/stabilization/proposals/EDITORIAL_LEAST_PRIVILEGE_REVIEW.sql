@@ -1,0 +1,31 @@
+-- REVIEW ONLY — no production migration has been applied.
+-- 2026-11-10: editorial tables use service-side access plus RLS enabled/no policies.
+-- However catalog grants currently include TRUNCATE, TRIGGER, REFERENCES and
+-- broad DML privileges for anon and authenticated on legacy editorial tables.
+-- TRUNCATE is not protected by row-level security (PostgreSQL).
+--
+-- Before approving this plan:
+-- (1) Confirm all editorial catalog reads/writes use server-only credentials.
+-- (2) Identify whether any client intentionally uses the PostgREST API directly.
+-- (3) Test add/edit/archive/quick import, guide authoring and product editing in staging.
+-- (4) Confirm current service-role access remains intact.
+--
+-- Example reviewed migration, intentionally commented out:
+--
+-- BEGIN;
+-- REVOKE ALL PRIVILEGES ON
+--   public.content_revisions,
+--   public.guide_records,
+--   public.lab_records,
+--   public.product_records,
+--   public.species_records
+-- FROM anon, authenticated;
+-- COMMIT;
+--
+-- Do NOT revoke permissions from service_role or postgres.
+-- Then verify:
+-- SELECT c.relname,has_table_privilege('anon',c.oid,'TRUNCATE') AS anon_can_truncate,
+--        has_table_privilege('authenticated',c.oid,'TRUNCATE') AS member_can_truncate
+-- FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
+-- WHERE n.nspname='public' AND c.relname IN
+-- ('content_revisions','guide_records','lab_records','product_records','species_records');
