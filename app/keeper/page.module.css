@@ -527,3 +527,20 @@
 .managerAttentionEmpty p{margin:0;color:var(--text-secondary);font-size:.75rem;line-height:1.45}
 .managerAttentionEmpty a{justify-self:start;color:var(--accent);font-size:.75rem;font-weight:800}
 .managerAttentionEmpty a:focus-visible,.managerAttentionAction:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+
+/* Woodland: retain Manager's photographic gradient, but make it chestnut. */
+:global(html[data-theme="woodland"]) .managerHero{
+ background:linear-gradient(125deg,#30231c 0%,#573b2b 55%,#85674f 100%);
+ color:var(--portal-hero-text);
+}
+:global(html[data-theme="woodland"]) .managerHero::after{
+ background:linear-gradient(90deg,rgba(33,22,17,.88) 0%,rgba(43,29,22,.63) 46%,rgba(50,31,21,.08) 100%);
+}
+:global(html[data-theme="woodland"]) .managerHeroContent>span{color:var(--portal-hero-soft)}
+:global(html[data-theme="woodland"]) .managerHeroContent h1{color:var(--portal-hero-text)}
+:global(html[data-theme="woodland"]) .managerHeroContent p{color:var(--portal-hero-muted)}
+:global(html[data-theme="woodland"]) .managerHeroContent>a{
+ color:var(--portal-hero-text);
+ border-color:color-mix(in srgb,var(--portal-hero-text) 60%,transparent);
+}
