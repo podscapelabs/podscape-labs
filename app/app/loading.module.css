@@ -35,6 +35,12 @@
   --splash-muted:#695a72;
   --splash-accent:#70418b;
 }
+:global(html[data-theme="ember"]) .page{
+  --splash-bg:#fff3e5;
+  --splash-ink:#3e281d;
+  --splash-muted:#705a4e;
+  --splash-accent:#a64c21;
+}
 .ambient{
   position:absolute;
   inset:0;
