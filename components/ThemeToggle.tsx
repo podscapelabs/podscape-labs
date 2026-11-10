@@ -16,7 +16,7 @@ export function ThemeToggle(){
  useEffect(()=>{
   const sync=()=>{
    const saved=localStorage.getItem("podscape-theme");
-   setPreference(saved==="light"||saved==="dark"||saved==="woodland"?saved:"system":"system");
+   setPreference(saved==="light"||saved==="dark"||saved==="woodland"?saved:"system");
    const current=document.documentElement.dataset.theme;
    setTheme(current==="dark"||current==="woodland"?current:"light");
   };
