@@ -6,7 +6,7 @@ import { getMemberCollectionState } from "@/lib/member-collection";
 import { getSpeciesRecords } from "@/lib/species-store";
 import styles from "./discover.module.css";
 
-export const metadata: Metadata = { title: "Leaf Ledger | Podscape Labs", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Leaf Ledger | PodScape Labs", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 export default async function LedgerPage() {
