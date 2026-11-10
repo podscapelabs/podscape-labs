@@ -19,9 +19,9 @@ function getBrowser():Browser{
  return "desktop";
 }
 function Guidance({browser}:{browser:Browser}){
- if(browser==="ios-safari")return <ol><li>Tap the <strong>Share</strong> button in Safari (the square with an upward arrow).</li><li>Scroll down and tap <strong>Add to Home Screen</strong>. If it is hidden, find it under <strong>Edit Actions</strong>.</li><li>Tap <strong>Add</strong>. Launch Podscape from its new icon.</li></ol>;
- if(browser==="ios-other")return <ol><li>Open <strong>podscapelabs.com/app</strong> in Safari for the most consistent experience.</li><li>Tap <strong>Share</strong>, then <strong>Add to Home Screen</strong>.</li><li>Tap <strong>Add</strong> to place Podscape on your Home Screen.</li></ol>;
- if(browser==="android")return <ol><li>Open Podscape in Chrome.</li><li>Tap the browser menu <strong>⋮</strong>.</li><li>Choose <strong>Install app</strong> or <strong>Add to Home screen</strong>, then confirm.</li></ol>;
+ if(browser==="ios-safari")return <ol><li>Tap the <strong>Share</strong> button in Safari (the square with an upward arrow).</li><li>Scroll down and tap <strong>Add to Home Screen</strong>. If it is hidden, find it under <strong>Edit Actions</strong>.</li><li>Tap <strong>Add</strong>. Launch PodScape from its new icon.</li></ol>;
+ if(browser==="ios-other")return <ol><li>Open <strong>podscapelabs.com/app</strong> in Safari for the most consistent experience.</li><li>Tap <strong>Share</strong>, then <strong>Add to Home Screen</strong>.</li><li>Tap <strong>Add</strong> to place PodScape on your Home Screen.</li></ol>;
+ if(browser==="android")return <ol><li>Open PodScape in Chrome.</li><li>Tap the browser menu <strong>⋮</strong>.</li><li>Choose <strong>Install app</strong> or <strong>Add to Home screen</strong>, then confirm.</li></ol>;
  return <p className={styles.help}>In a supported desktop browser, look for an <strong>Install</strong> option in the address bar or browser menu.</p>;
 }
 export function InstallPodscape({variant="banner"}:{variant?:"banner"|"settings"}){
@@ -49,14 +49,14 @@ export function InstallPodscape({variant="banner"}:{variant?:"banner"|"settings"
   if(!installPrompt){setExpanded(true);return}
   try{await installPrompt.prompt();const result=await installPrompt.userChoice;if(result.outcome==="accepted")setInstallPrompt(null);else setExpanded(true)}catch{setExpanded(true)}
  };
- return <section className={variant==="banner"?styles.banner:styles.settings} aria-label="Install Podscape">
+ return <section className={variant==="banner"?styles.banner:styles.settings} aria-label="Install PodScape">
   <span className={styles.mark} aria-hidden="true"><PodscapeLineIcon name="home"/></span>
   <div className={styles.body}>
-   <strong>{variant==="banner"?"Make Podscape an app":"Add Podscape to your Home Screen"}</strong>
-   <p>{variant==="banner"?"One tap from your Home Screen, without opening the browser first.":"Keep Podscape a tap away on your phone or supported computer."}</p>
+   <strong>{variant==="banner"?"Make PodScape an app":"Add PodScape to your Home Screen"}</strong>
+   <p>{variant==="banner"?"One tap from your Home Screen, without opening the browser first.":"Keep PodScape a tap away on your phone or supported computer."}</p>
    {expanded&&<div className={styles.instructions}><Guidance browser={browser}/></div>}
    <div className={styles.actions}>
-    {installPrompt?<button type="button" className={styles.primary} onClick={install}>Install Podscape</button>:
+    {installPrompt?<button type="button" className={styles.primary} onClick={install}>Install PodScape</button>:
      <button type="button" className={styles.primary} onClick={()=>setExpanded(!expanded)} aria-expanded={expanded}>{expanded?"Hide steps":"How to add it"}</button>}
     {variant==="banner"&&<button type="button" className={styles.quiet} onClick={dismiss}>Not now</button>}
    </div>
