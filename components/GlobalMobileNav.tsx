@@ -4,6 +4,7 @@ import {PodscapeLineIcon} from "./PodscapeLineIcon";
 import {choiceById,availableNavigationChoices,navigationGroups,moveNavigationSlot,swapNavigationSlot} from "./navigation-customization";
 import {useNavigationPreferences} from "./useNavigationPreferences";
 import {useShortcutEditor} from "./useShortcutEditor";
+import {confirmWorkspaceReset} from "./workspace-edit-standards";
 import styles from "./KeeperMobileNav.module.css";
 
 export function GlobalMobileNav({isOwner=false}:{isOwner?:boolean}){
@@ -32,7 +33,7 @@ export function GlobalMobileNav({isOwner=false}:{isOwner?:boolean}){
         <button type="button" disabled={selected<=0} aria-label={`Move ${selectedItem?.label||"shortcut"} left`} onClick={()=>{change(moveNavigationSlot(ids,selected,selected-1));setSelected(selected-1)}}>← Move left</button>
         <button type="button" disabled={selected>=items.length-1} aria-label={`Move ${selectedItem?.label||"shortcut"} right`} onClick={()=>{change(moveNavigationSlot(ids,selected,selected+1));setSelected(selected+1)}}>Move right →</button>
       </div>
-      <button type="button" className={styles.resetLink} onClick={()=>{reset();setSelected(0)}}>Reset toolbar</button>
+      <button type="button" className={styles.resetLink} onClick={()=>{if(confirmWorkspaceReset("bottom-navigation")){reset();setSelected(0)}}}>Reset toolbar</button>
     </div>}
     <nav className={`${styles.nav} ${editing?styles.editing:""}`} aria-label="PodScape mobile navigation">
       {items.map((item,index)=><button type="button" data-shortcut-index={index} key={item.id} style={editing?{animationDelay:`${index*-70}ms`}:undefined}
