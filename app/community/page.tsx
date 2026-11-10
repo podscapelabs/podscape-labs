@@ -4,6 +4,7 @@ import {PlatformShell} from "@/components/PlatformShell";
 import {WorkspaceSectionHeader} from "@/components/PodscapeWorkspaceUI";
 import { PodscapeLineIcon, type PodscapeIconName } from "@/components/PodscapeLineIcon";
 import styles from "./community.module.css";
+import { OnlineNow } from "@/components/OnlineNow";
 
 export const metadata:Metadata={
   title:"Community | Podscape Labs",
@@ -48,6 +49,7 @@ export default function CommunityPage(){
           
         </div>
       </header>
+      <div className={styles.onlineNow}><OnlineNow/></div>
       <section className={styles.intro} aria-labelledby="community-intro">
         <div><p className={styles.eyebrow}>A COMMUNITY IN THE MAKING</p><h2 id="community-intro">More than a collection.</h2></div>
         <p>Podscape began with a fascination for tiny creatures. The community is where that curiosity extends beyond our own enclosures—from first-time keepers to breeders, artists and people who just love discovering something new.</p>
