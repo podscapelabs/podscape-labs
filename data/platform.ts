@@ -59,5 +59,5 @@ export const navigation = [
   { label: "Field Guide", href: "/field-guide" },
   { label: "Fun Zone", href: "/fun-zone" },
   { label: "Creative Network", href: "/explore#creative-network" },
-  { label: "From the Lab", href: "/from-the-lab" },
+  { label: "Updates & Improvements", href: "/updates" },
 ] as const;
