@@ -23,6 +23,19 @@ assert.match(globals,/:root\[data-theme="woodland"\] \.v2-site/,"Woodland must c
 for(const role of ["--canvas","#211a16","--paper","#30251f","--ink","#f5e9d7","--accent-contrast","#261a13"])assert.ok(globals.includes(role),"Missing Woodland palette detail "+role);
 assert.match(appearance,/id:"woodland"/,"Woodland choice must be available in settings");
 assert.match(appearance,/id:"lilac"/,"Lilac choice must be available in settings");
+assert.match(appearance,/id:"ember"/,"Ember choice must be available in settings");
+assert.match(appearance,/value==="ember"/,"Ember must be an accepted saved appearance");
+assert.match(appearance,/theme==="light"\|\|theme==="lilac"\|\|theme==="ember"/,"Ember uses light native controls");
+assert.match(themeToggle,/ember:"Ember"/,"Quick theme toggle must name Ember");
+assert.match(themeToggle,/\["light","dark","woodland","lilac","ember"\]/,"Explicit themes are frozen at five");
+assert.match(themeToggle,/theme-icon-ember/,"Ember needs a unique icon glyph");
+assert.match(layout,/saved === "ember"/,"First paint must restore Ember");
+assert.match(globals,/:root\[data-theme="ember"\]\s*\{/,"Ember must have its own palette");
+assert.match(globals,/:root\[data-theme="ember"\] \.v2-site/,"Ember must cover portal themes");
+assert.match(globals,/--portal-hero-button-text:#fffaf3/,"Ember hero CTA needs legible contrast");
+assert.match(splashCss,/:global\(html\[data-theme="ember"\]\) \.page\s*\{[\s\S]*?--splash-bg:#fff3e5;[\s\S]*?--splash-ink:#3e281d;[\s\S]*?--splash-accent:#a64c21;/,
+ "Ember loading must be apricot, not dark forest green");
+
 assert.match(appearance,/value==="lilac"/,"Lilac must be accepted as a saved appearance");
 assert.match(appearance,/theme==="light"\|\|theme==="lilac"/,"Lilac should use native light controls");
 assert.match(themeToggle,/lilac:"Lilac"/,"Quick toggle must name Lilac");
@@ -103,6 +116,17 @@ for(const [path,source,checks] of [
 assert.match(shopHome,/--portal-hero-button-text/,"Shop CTA must use role-based contrast");
 assert.match(keeperHome,/--portal-hero-muted/,"Manager hero description must use Woodland contrast roles");
 assert.match(homeSurface,/--portal-hero-button-bg/,"Home hero CTA must use semantic role");
+for(const [name,source,selectors] of [
+ ["Shop",shopHome,[".hero{",".hero h1{",".hero .previewTag{",".path:nth-child(2){",".path:nth-child(3){",".path:nth-child(4){",".feature{"]],
+ ["Manager",keeperHome,[".managerHero{",".managerHero::after{",".managerHeroContent h1{"]],
+ ["Home",homeSurface,[".hero{",".hero:after{",".heroButton{",".spotlightRail .tileVisual:has(.tilePlaceholder){"]]
+]){
+ for(const selector of selectors){
+  assert.ok(source.includes(':global(html[data-theme="ember"]) '+selector),
+   "Missing Ember portal override in "+name+": "+selector);
+ }
+}
+
 for(const [name,source,selectors] of [
  ["Shop",shopHome,[".hero{",".hero h1{",".hero .previewTag{",".path:nth-child(2){",".path:nth-child(3){",".path:nth-child(4){",".feature{"]],
  ["Manager",keeperHome,[".managerHero{",".managerHero::after{",".managerHeroContent h1{"]],
