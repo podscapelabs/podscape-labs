@@ -15,13 +15,13 @@ import {ManagerCareOverview,ManagerActivityFeed,ManagerInsights,type ManagerBin,
 import {recordExperienceAction} from "./experience-achievements";
 import {confirmWorkspaceReset} from "./workspace-edit-standards";
 import {useWorkspaceEditorDialog} from "./useWorkspaceEditorDialog";
+import {managerStorageKey} from "@/lib/ui-preferences";
 
 type Section="hero"|"stats"|"care"|"tools"|"activity"|"enclosures"|"insights";
 type Tool={id:string;label:string;href:string;icon:PodscapeIconName};
 const defaults:Section[]=["hero","tools","enclosures","care","activity","stats","insights"];
 const required:Section[]=["hero","tools"];
 const labels:Record<Section,string>={hero:"Manager Hero",stats:"Colony Statistics",care:"Care Overview",tools:"Quick Tools",activity:"Recent Activity",enclosures:"Your Enclosures",insights:"Colony Insights"};
-const key="podscape-manager-layout-v1";
 const library:Tool[]=[
  {id:"scan",label:"Scan bin",href:"/keeper/scan",icon:"scan"},
  {id:"qr",label:"Create QR",href:"/keeper/qr",icon:"qr"},
@@ -103,7 +103,7 @@ function swapManagerSlot(ids:string[],slot:number,id:string){
 
 export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvailable,scope,primaryHref}:{hero:ReactNode;stats:ReactNode;enclosures:ReactNode;bins:ManagerBin[];events:ManagerEvent[];activityAvailable:boolean;scope:string;primaryHref:string}){
  const router=useRouter();
- const storageKey=key+":"+scope;
+ const storageKey=managerStorageKey(scope);
  const [layout,setLayout]=useState<Layout>(initial);
  const [ready,setReady]=useState(false);
  const [editing,setEditing]=useState(false);
