@@ -16,7 +16,7 @@ const paths: {label:string;icon:PodscapeIconName;href:string}[]=[
  {label:"Browse products",icon:"shop",href:"#products"},
  {label:"Categories",icon:"menu",href:"#categories"},
  {label:"Featured",icon:"creative",href:"#featured"},
- {label:"Our community",icon:"community",href:"#community"}
+ {label:"Vendor Directory",icon:"community",href:"/shop/vendors"}
 ];
 
 function ShopProductCard({product}:{product:ProductRecord}){
@@ -52,6 +52,6 @@ export default async function ShopPage({searchParams}:{searchParams:Promise<{cat
    <WorkspaceSectionHeader title={query?`Results for “${query}”`:selectedCategory||"All products"} description={query?`${visible.length} matching product${visible.length===1?"":"s"}${selectedCategory?` in ${selectedCategory}`:""}`:selectedCategory?`${visible.length} currently published in this collection`:`${products.length} currently published in our catalogue`} action={selectedCategory||query?<Link className={styles.clearFilter} href="/shop#products">Clear filters ×</Link>:undefined}/>
    {visible.length?<div className={styles.products}>{visible.map(p=><ShopProductCard product={p} key={p.id}/>)}</div>:<div className={styles.empty}><strong>{query?"No matching products.":selectedCategory?"Nothing published here yet.":"The catalogue is taking shape."}</strong><p>{selectedCategory?"We're preparing this collection. Explore other categories in the meantime.":"Product listings will appear here as soon as they're published."}</p>{selectedCategory||query?<Link href="/shop#products">View all products →</Link>:null}</div>}
   </section>
-  <section className={styles.section} id="community"><div className={styles.community}><small>More than a storefront</small><h2>Made by the community.</h2><p>PodScape is building a home for independent breeders, artists and makers. Vendor shopping and fulfillment are planned for a future phase.</p></div></section>
+  <section className={styles.section} id="community"><div className={styles.community}><small>More than a storefront</small><h2>Made by the community.</h2><p>Discover independent breeders, artists and makers through the PodScape Vendor Directory. Vendor purchases happen on their own websites.</p><Link href="/shop/vendors">Explore Vendor Directory →</Link></div></section>
  </div></main></PlatformShell>;
 }
