@@ -1441,3 +1441,8 @@ h1, h2, h3 { text-wrap: balance; }
 }
 :root[data-theme="woodland"] .theme-icon-sun{opacity:0;transform:rotate(25deg)}
 :root[data-theme="woodland"] .theme-icon-moon{opacity:1;transform:rotate(0)}
+
+/* Distinct Woodland leaf glyph in the existing quick theme toggle. */
+.theme-icon-woodland{opacity:0;transform:rotate(-25deg)}
+:root[data-theme="woodland"] .theme-icon-moon{opacity:0;transform:rotate(25deg)}
+:root[data-theme="woodland"] .theme-icon-woodland{opacity:1;transform:rotate(0)}
