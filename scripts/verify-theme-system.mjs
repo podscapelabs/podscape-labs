@@ -189,16 +189,7 @@ function themePalette(theme){
  return globals.slice(opening+1,globals.indexOf("}",opening));
 }
 function hexToken(palette,role){
- const match=palette.match(new RegExp(role.replace(/[.*+?^$\{\}()|[\]\\]/g,"\\for(const [theme,background,foreground] of [
- ["light","#173d2b","#f8f4e8"],
- ["dark","#b8c88f","#091a13"],
- ["woodland","#d6ac76","#261a13"],
- ["lilac","#70418b","#fffaff"],
- ["ember","#a64c21","#fffaf3"]
-]){
- assert.ok(contrastRatio(background,foreground)>=4.5,
-  theme+" controls must meet WCAG AA text contrast (4.5:1)");
-}")+"\\s*:\\s*(#[0-9a-fA-F]{6})\\s*;"));
+ const match=palette.match(new RegExp(role+"\\s*:\\s*(#[0-9a-fA-F]{6})\\s*;"));
  assert.ok(match,"Palette colour role missing: "+role);
  return match[1];
 }
