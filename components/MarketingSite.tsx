@@ -82,8 +82,13 @@ export async function MarketingSite(){
     const key=item.href;
     if(seen.has(key))return false;
     seen.add(key);return true;
-   }).slice(0,6);
-  return items.length?[{label,newestAt:items[0].updatedAt,items:items.map(({title,description,href})=>({title,description,href}))}]:[];
+   });
+  if(!items.length)return [];
+  // Summarize updates made together, rather than calling old catalogue entries part of one batch.
+  // A 48-hour window captures common multi-day publishing sessions.
+  const latest=Date.parse(items[0].updatedAt);
+  const batch=items.filter(item=>latest-Date.parse(item.updatedAt)<=48*60*60*1000).slice(0,12);
+  return [{label,newestAt:items[0].updatedAt,items:batch.map(({title,description,href})=>({title,description,href}))}];
  }).sort((a,b)=>Date.parse(b.newestAt)-Date.parse(a.newestAt));
  return <div className={styles.site}><a className="skip-link" href="#platform-main">Skip to content</a><Header/><main id="platform-main" className={styles.main}>
  <HomeWidgets recentGroups={recentGroups} colony={colony} progress={progress} pinOptions={pinOptions} userId={user?.id||null}
