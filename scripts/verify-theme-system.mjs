@@ -28,12 +28,17 @@ const audited=[
  "app/admin/updates/updates.module.css",
  "app/podbound/cards/gallery.module.css",
  "app/shop/vendors/vendors.module.css",
- "components/UpdateDetailDialog.module.css"
+ "components/UpdateDetailDialog.module.css",
+ "app/admin/products/products.module.css",
+ "app/field-guide/field-guide-home.module.css",
+ "components/ProductEditor.module.css",
+ "app/keeper/collection/page.module.css",
+ "app/ledger/discover.module.css"
 ];
 for(const path of audited){
  const css=read(path);
  assert.match(css,/var\(--ps-accent-text\)/,"Button contrast must derive from theme roles: "+path);
- assert.ok(!/background:var\(--forest\);color:(?:#fff[a-f\d]*|white)\b/i.test(css),"Hardcoded light text on dynamic forest accent: "+path);
+ assert.ok(!/(?:background(?:-color)?\s*:\s*var\(--(?:forest|accent)\)[^}]*color\s*:\s*(?:#[0-9a-f]{3,8}|white)\s*(?:;|})|color\s*:\s*(?:#[0-9a-f]{3,8}|white)\s*;[^}]*background(?:-color)?\s*:\s*var\(--(?:forest|accent)\))/i.test(css),"Hardcoded foreground on dynamic accent: "+path);
 }
 const home=read("components/PodscapeHome.module.css");
 for(const contract of [
