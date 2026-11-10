@@ -33,6 +33,6 @@ export default async function SpotlightDesk({searchParams}:{searchParams:Promise
       </label>)}
       <div className={styles.actions}><button type="submit" disabled={selected===null}>Save Spotlight</button><Link href="/app">View homepage →</Link></div>
     </form>
-    <details className={styles.help}><summary>How Spotlight works</summary><p>Only published, active content is eligible. Unpublished items are skipped rather than replaced. Leave all slots empty and save to hide Spotlight; Recent &amp; Noteworthy remains independent and automatic. New content does not automatically replace your chosen highlights.</p></details>
+    <details className={styles.help}><summary>How Spotlight works</summary><p>Only published, active content is eligible. Unpublished items are skipped rather than replaced. Leave all slots empty and save to hide Spotlight; Recently Updated remains independent, with automatic content updates and owner-published announcements. New content does not automatically replace your chosen highlights.</p></details>
   </div></main>;
 }
