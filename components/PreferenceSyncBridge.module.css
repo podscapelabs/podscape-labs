@@ -1,0 +1,12 @@
+.banner{position:fixed;z-index:120;bottom:max(100px,calc(env(safe-area-inset-bottom) + 85px));right:clamp(10px,3vw,34px);width:min(425px,calc(100vw - 20px));border:1px solid var(--line);border-radius:18px;background:var(--paper);color:var(--ink);box-shadow:0 15px 50px color-mix(in srgb,#000 20%,transparent);padding:16px}
+.header{display:flex;gap:12px;align-items:flex-start}
+.icon{display:grid;place-items:center;flex:none;width:38px;height:38px;border-radius:11px;background:color-mix(in srgb,var(--forest) 10%,var(--paper));color:var(--forest)}
+.icon svg{width:22px;height:22px}
+.header strong{font:500 1.1rem/1.2 var(--serif)}
+.header p{margin:7px 0 0;color:var(--muted);font-size:.74rem;line-height:1.5}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0 50px}
+.actions button{min-height:42px;padding:10px 13px;border-radius:10px;border:1px solid var(--line);background:var(--paper-strong);color:var(--forest);font:inherit;font-size:.72rem;font-weight:800;cursor:pointer}
+.actions .primary{background:var(--forest);border-color:var(--forest);color:var(--paper)}
+.actions button:disabled{opacity:.6;cursor:wait}
+.actions button:focus-visible{outline:3px solid var(--forest);outline-offset:3px}
+@media(max-width:520px){.banner{bottom:max(90px,calc(env(safe-area-inset-bottom) + 78px));right:10px}.actions{margin-left:0}.actions button{flex:1}}
