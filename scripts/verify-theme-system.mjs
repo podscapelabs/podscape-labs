@@ -181,7 +181,15 @@ function contrastRatio(a,b){
  const low=Math.min(luminance(a),luminance(b));
  return (high+.05)/(low+.05);
 }
-for(const [theme,background,foreground] of [
+function themePalette(theme){
+ const selector=theme==="light"?":root":':root[data-theme="'+theme+'"]';
+ const start=globals.indexOf(selector+"{")>=0?globals.indexOf(selector+"{"):globals.indexOf(selector+" {");
+ assert.ok(start>=0,"Missing theme palette "+theme);
+ const opening=globals.indexOf("{",start);
+ return globals.slice(opening+1,globals.indexOf("}",opening));
+}
+function hexToken(palette,role){
+ const match=palette.match(new RegExp(role.replace(/[.*+?^$\{\}()|[\]\\]/g,"\\for(const [theme,background,foreground] of [
  ["light","#173d2b","#f8f4e8"],
  ["dark","#b8c88f","#091a13"],
  ["woodland","#d6ac76","#261a13"],
@@ -190,6 +198,17 @@ for(const [theme,background,foreground] of [
 ]){
  assert.ok(contrastRatio(background,foreground)>=4.5,
   theme+" controls must meet WCAG AA text contrast (4.5:1)");
+}")+"\\s*:\\s*(#[0-9a-fA-F]{6})\\s*;"));
+ assert.ok(match,"Palette colour role missing: "+role);
+ return match[1];
+}
+for(const theme of ["light","dark","woodland","lilac","ember"]){
+ const palette=themePalette(theme);
+ const background=hexToken(palette,"--forest");
+ const foreground=theme==="light"?hexToken(palette,"--paper-strong")
+  :theme==="dark"?hexToken(palette,"--forest-deep"):hexToken(palette,"--ps-accent-text");
+ const ratio=contrastRatio(background,foreground);
+ assert.ok(ratio>=4.5,theme+" controls fail WCAG AA text contrast: "+ratio.toFixed(2)+":1");
 }
 assert.match(fieldGuide,/\.featured a\{background:var\(--portal-hero-button-bg/,"Field Guide CTA must follow theme");
 assert.match(singleQr,/\.printLabel\{[^}]*background:white;color:black/,"QR print must retain black-on-white label");
