@@ -139,6 +139,36 @@ for(const [name,source,selectors] of [
 }
 
 
+// Legacy portal closure: no green-only guide, QR actions or stale Lab front door.
+const fieldGuide=read("app/field-guide/field-guide-home.module.css");
+const podbound=read("app/podbound/page.module.css");
+const singleQr=read("components/KeeperQrCreator.module.css");
+const bulkQr=read("components/KeeperBulkQrCreator.module.css");
+const labLanding=read("app/from-the-lab/page.tsx");
+const labArticle=read("app/from-the-lab/[slug]/page.tsx");
+const nav=read("components/navigation-customization.ts");
+const platform=read("data/platform.ts");
+for(const selector of [".hero{",".featured{",".topicArt{"]){
+ assert.ok(fieldGuide.includes(selector),"Guide layout surface missing: "+selector);
+}
+assert.match(fieldGuide,/--portal-hero-start/,"Field Guide hero and feature need shared portal roles");
+assert.match(fieldGuide,/--portal-hero-button-text/,"Featured guide CTA needs contrasting text");
+assert.match(fieldGuide,/\.topic:nth-child\(3n\) \.topicArt\{background:linear-gradient\([^;]*var\(--surface/,"Guide topics must follow theme surfaces");
+for(const theme of ["woodland","lilac","ember"]){
+ assert.ok(podbound.includes(':global(html[data-theme="'+theme+'"]) .hero'),"PodBound hero missing "+theme);
+}
+assert.match(podbound,/var\(--paper-strong\)/,"PodBound outside v2-site must use global palette tokens");
+assert.match(singleQr,/\.step b\{background:var\(--ps-accent/,"QR steps must use the selected theme");
+assert.match(singleQr,/\.primary\{background:var\(--ps-accent/,"QR primary action must use the selected theme");
+assert.match(bulkQr,/\.printButton\{background:var\(--ps-accent/,"Bulk print button must use theme");
+assert.match(singleQr,/@media print/,"QR print rules must remain intact");
+assert.match(bulkQr,/@media print/,"Bulk QR print rules must remain intact");
+assert.match(labLanding,/redirect\("\/updates"\)/,"Old Lab landing must forward to Updates");
+assert.match(labArticle,/getLabRecord/,"Individual Lab articles must remain accessible");
+assert.match(nav,/id:"lab",label:"Updates & Improvements",href:"\/updates"/,"Preserve saved navigation slot ID and repoint to archive");
+assert.match(platform,/label: "Updates & Improvements", href: "\/updates"/,"Platform directory must use archive");
+assert.ok(!platform.includes("https://www.podbound.net"),"PodBound is a single in-app destination");
+
 // Inventory only: backgrounds and gradients used for photos, flags, chart series and
 // illustrated heroes can legitimately be fixed. Review rather than blindly rewrite.
 const hardcoded=sheets.map(path=>({
