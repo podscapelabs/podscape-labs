@@ -70,3 +70,14 @@ The four choices in **Account → Preferences → Appearance** are Light, Dark, 
 Important: `data-theme="woodland"` is its own explicit palette. Avoid CSS that assumes `not([data-theme="dark"])` necessarily means Light. The loading screen follows this rule and preserves the dark cocoa background. Future theme names should extend the shared semantic variables and bootstrap allowlist rather than adding one-off colors to every portal.
 
 The palette and switch logic are guarded in `scripts/verify-theme-system.mjs`. Browser checks in all three palettes remain required before release. In particular, test Owner Studio, species cards, mobile bottom navigation, QR scanning, release-detail sheets, form selects and disabled buttons in Woodland as well as Light and Dark.
+
+
+## Lilac — soft alternate palette (November 2026)
+
+Lilac is a **light-mode** alternate, not a pastel overlay on Dark. The primary palette uses lavender canvas `#F4EFF9`, creamy orchid cards `#FFFAFF`, deep plum text `#33223E`, and purple action accents `#70418B`. Complementary orchid, mauve and dusty rose tones distinguish shortcuts and media placeholders without abandoning accessible primary text.
+
+There are now five choices in Account Appearance: **Light, Dark, Woodland, Lilac, System**. The quick theme toggle cycles the four explicit palettes; System remains available in Account. The same `podscape-theme` key and bootstrap apply Lilac before first paint, using `color-scheme: light` for native form controls. The loading screen uses lavender/plum, not the Dark forest fallback.
+
+Both legacy `canvas/paper/forest` and modern `background/surface/accent` tokens are defined. Theme-specific Home, Manager and Shop gradient exceptions use Lilac shades while retaining the card hierarchy. Owner Studio, member dashboards, bottom navigation, and dialogs inherit semantic roles.
+
+As with Woodland, **browser validation in mobile/desktop, with real authenticated routes and adequate foreground contrast, remains required**. Automated checks cover the theme option, theme cycle, first-paint bootstrap, splash and major portal overrides.
