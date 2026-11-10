@@ -46,6 +46,28 @@ Policy: **Feature freeze**. No new major features. No production permission, sch
 - BLOCKED: test an exact-SHA preview and record mobile/desktop acceptance; production promotion only after review.
 - REVIEW: document rollback of Vercel code separately from roll-forward recovery of incompatible database migrations.
 
+
+## Verified read-only integrity snapshot (2026-11-10)
+
+All numbers are live aggregate checks, **not** a simulated restore or multi-user access test:
+- Enclosures: **36**, missing member-species references **0**.
+- Care events: **8**, orphaned enclosure links **0**, events assigned to a different enclosure owner **0**.
+- Shop variants: **3**, missing product references **0**; product images: **2**, orphaned references **0**; inventory adjustments: **1**, orphaned references **0**.
+- Member species collection entries: **35**, missing user accounts **0**; saved UI preference rows: **2**, missing user accounts **0**.
+- Vendor profiles: **1**, missing user account **0**, with **1** existing listing lacking the newly mandatory origin-country field (it predates the new application validation).
+- Storage: public buckets `product-photos`, `species-photos`, `vendor-logos`; private `podbound-art`. Public buckets deliberately make stored media publicly retrievable—avoid sensitive uploads.
+
+### P0 storage policy misconfiguration — confirmed from database catalog
+The `storage.objects` authenticated **UPDATE** policy called `Owner updates product photographs` has **NULL USING and NULL WITH CHECK** (no conditions). The authenticated database role has UPDATE privileges on storage.objects. There is a public SELECT policy for `product-photos`. A non-owner's ability to mutate a product photo through the Storage API remains **unproven** until tested with an ordinary JWT in staging, but the policy is missing an owner check and is too broad for owner-managed photos.
+
+**Fix proposal only (not applied)**: `docs/stabilization/proposals/PRODUCT_PHOTO_STORAGE_POLICY_REVIEW.sql`. Restrict UPDATE both before and after to `bucket_id='product-photos'` and a trusted `public.is_podscape_owner()` check. This function uses the owner role from `app_metadata`, not user-editable user metadata. Confirm no other permissive policies widen the effective rule and run isolated owner/non-owner tests.
+
+### P1 vendor-review race prevention — branch code change
+Vendor owner-review forms now submit the exact `updated_at` and `status` that the owner reviewed. The server's update uses both in its WHERE clause, rejecting a stale approval if a vendor edited the profile or another owner changed its status. The regression check is included in `scripts/verify-stabilization-boundaries.mjs`. This prevents silent approval of newly edited details *after deployment*; a full concurrent integration test is still pending.
+
+### Staging availability
+Supabase development database branches: **none** at audit time. No staging project created; creating one could incur a charge. Confirm staging cost and access before rehearsing permissions, account isolation, or backup restoration.
+
 ## Release gates (must all pass)
 1. A clean GitHub Actions run for the exact SHA (lint, typecheck, regression scripts, production build).
 2. Database and permission fixes, if approved, applied as versioned migrations and verified by Supabase catalog/advisor and account-isolation tests.
@@ -54,7 +76,7 @@ Policy: **Feature freeze**. No new major features. No production permission, sch
 5. Owner approval for production deployment/promotion.
 
 ## Priority order
-P0 — privilege and cross-user access review; P1 — migration/integrity and recovery; P2 — architecture and full theme UX; P3 — performance profiling and planned pagination. This order is about risk, not a claim that each P0 finding is an exploit.
+P0 — restrict the unbounded product-photo storage UPDATE policy in staging, then review privileged functions and cross-user access; P1 — migration/integrity and recovery; P2 — architecture and full theme UX; P3 — performance profiling and planned pagination. This order is about risk, not a claim that each P0 finding is an exploit.
 
 ## External references
 - Supabase RLS: https://supabase.com/docs/guides/database/postgres/row-level-security
