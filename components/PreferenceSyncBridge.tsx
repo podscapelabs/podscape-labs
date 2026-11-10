@@ -59,7 +59,7 @@ export function PreferenceSyncBridge({userId,isOwner}:{userId:string|null;isOwne
  const applyRemote=(target:Cloud)=>{
   if(!target.preferences||!userId)return;
   suppressEvents.current=true;
-  const success=writeLocalUiPreferences(target.preferences,ownerRef.current);
+  const success=writeLocalUiPreferences(target.preferences,ownerRef.current,userId);
   suppressEvents.current=false;
   if(!success){modeChange("offline");return}
   markSaved(userId,target);
@@ -72,7 +72,7 @@ export function PreferenceSyncBridge({userId,isOwner}:{userId:string|null;isOwne
   if(modeRef.current==="conflict"||modeRef.current==="import"||modeRef.current==="offline")return;
   inFlight.current=true;
   setBusy(true);
-  const current=readLocalUiPreferences(ownerRef.current);
+  const current=readLocalUiPreferences(ownerRef.current,userId);
   const expected=revisionRef.current;
   try{
    const response=await fetch(endpoint,{method:"POST",credentials:"same-origin",
@@ -110,11 +110,12 @@ export function PreferenceSyncBridge({userId,isOwner}:{userId:string|null;isOwne
   let active=true;
   booting.current=true;
   modeRef.current="checking";
-  const localAtStart=readLocalUiPreferences(isOwner);
+  const localAtStart=readLocalUiPreferences(isOwner,userId);
   let changedDuringLoad=false;
   const touched=()=>{if(booting.current&&!suppressEvents.current)changedDuringLoad=true};
   window.addEventListener("podscape-home-widgets-changed",touched);
   window.addEventListener("podscape-nav-updated",touched);
+  window.addEventListener("podscape-workspace-layout-changed",touched);
   loadCloud(isOwner).then(remote=>{
    if(!active)return;
    const local=readLocalUiPreferences(isOwner);
@@ -138,6 +139,7 @@ export function PreferenceSyncBridge({userId,isOwner}:{userId:string|null;isOwne
    active=false;
    window.removeEventListener("podscape-home-widgets-changed",touched);
    window.removeEventListener("podscape-nav-updated",touched);
+   window.removeEventListener("podscape-workspace-layout-changed",touched);
   };
  },[userId,isOwner]);
 
@@ -178,14 +180,16 @@ export function PreferenceSyncBridge({userId,isOwner}:{userId:string|null;isOwne
    timer.current=setTimeout(()=>void saveRef.current(),650);
   };
   const onStorage=(event:StorageEvent)=>{
-   if(event.key===null||event.key.startsWith("podscape-home-widgets-")||event.key.startsWith("podscape-nav-v1-"))onChange();
+   if(event.key===null||event.key.startsWith("podscape-home-widgets-")||event.key.startsWith("podscape-nav-v1-")||event.key==="podscape-manager-layout-v1:"+userId||event.key==="podscape-species-dashboard-v1:"+userId)onChange();
   };
   window.addEventListener("podscape-home-widgets-changed",onChange);
   window.addEventListener("podscape-nav-updated",onChange);
+  window.addEventListener("podscape-workspace-layout-changed",onChange);
   window.addEventListener("storage",onStorage);
   return ()=>{
    window.removeEventListener("podscape-home-widgets-changed",onChange);
    window.removeEventListener("podscape-nav-updated",onChange);
+   window.removeEventListener("podscape-workspace-layout-changed",onChange);
    window.removeEventListener("storage",onStorage);
    if(timer.current!==null)clearTimeout(timer.current);
   };
@@ -231,7 +235,7 @@ export function PreferenceSyncBridge({userId,isOwner}:{userId:string|null;isOwne
   <div className={styles.header}>
    <span className={styles.icon}><PodscapeLineIcon name="grid"/></span>
    <div><strong>{mode==="import"?"Save your PodScape setup?":mode==="conflict"?"Two dashboard layouts found":"Preferences are stored on this device"}</strong>
-    <p>{mode==="import"?"Your customized Home and shortcuts are currently saved on this device. Save them to your account to use them elsewhere.":mode==="conflict"?"Your device and account have different layouts. Choose which to use; neither will be replaced automatically.":"Cloud sync is unavailable. Your existing local setup is safe."}</p>
+    <p>{mode==="import"?"Your customized Home, Manager, species dashboards and shortcuts are stored on this device. Save them to your account to use them elsewhere.":mode==="conflict"?"Your device and account have different dashboard or navigation layouts. Choose which to use; neither will be replaced automatically.":"Cloud sync is unavailable. Your existing local setup is safe."}</p>
    </div>
   </div>
   <div className={styles.actions}>
