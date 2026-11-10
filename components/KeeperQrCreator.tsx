@@ -4,11 +4,13 @@ import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import QRCode from "qrcode";
 import styles from "./KeeperQrCreator.module.css";
+import { KeeperBulkQrCreator } from "./KeeperBulkQrCreator";
 
 type Bin = {id:string;name:string;label:string;species:string};
 const sizes = [2,3,4];
 const origin = "https://podscapelabs.com";
-export function KeeperQrCreator({bins,initialBinId}:{bins:Bin[];initialBinId:string}) {
+export function KeeperQrCreator({bins,initialBinId,initialMode="single"}:{bins:Bin[];initialBinId:string;initialMode?:"single"|"bulk"}) {
+ const [mode,setMode]=useState<"single"|"bulk">(initialMode);
  const [binId,setBinId] = useState(bins.some(b=>b.id===initialBinId)?initialBinId:bins[0]?.id||"");
  const [size,setSize] = useState(3);
  const [custom,setCustom] = useState("");
@@ -22,8 +24,9 @@ export function KeeperQrCreator({bins,initialBinId}:{bins:Bin[];initialBinId:str
  const dataUri = useMemo(()=>svg?"data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg):"",[svg]);
  function download(){if(!selected||!svg||!valid)return;const blob=new Blob([svg],{type:"image/svg+xml;charset=utf-8"});const link=document.createElement("a");const objectUrl=URL.createObjectURL(blob);link.href=objectUrl;link.download="podscape-"+selected.name.toLowerCase().replace(/[^a-z0-9]+/g,"-")+"-qr.svg";link.click();setTimeout(()=>URL.revokeObjectURL(objectUrl),1000);}
  return <div className={styles.root} style={{"--label-size":valid?dimension+"cm":"3cm"} as CSSProperties}>
-  <header className={styles.heading}><p>MANAGER / BIN LABELS</p><h1>Create QR Code</h1><span>Print a scannable label for a bin you already manage.</span></header>
-  {bins.length===0?<div className={styles.empty}><p>You don&apos;t have any active bins yet.</p><Link href="/keeper/new">Create your first bin →</Link></div>:<>
+  <header className={styles.heading}><p>MANAGER / BIN LABELS</p><h1>QR Label Studio</h1><span>Design printable labels for one bin or your entire collection.</span></header>
+  <div className={styles.modeTabs} role="group" aria-label="QR label creation mode"><button type="button" aria-pressed={mode==="single"} className={mode==="single"?styles.activeMode:""} onClick={()=>setMode("single")}>Single label</button><button type="button" aria-pressed={mode==="bulk"} className={mode==="bulk"?styles.activeMode:""} onClick={()=>setMode("bulk")}>Bulk sheet · {bins.length} bins</button></div>
+  {mode==="bulk"?<KeeperBulkQrCreator bins={bins}/>:bins.length===0?<div className={styles.empty}><p>You don&apos;t have any active bins yet.</p><Link href="/keeper/new">Create your first bin →</Link></div>:<>
    <section className={styles.card}><div className={styles.step}><b>01</b><h2>Select a bin</h2></div>
     <label htmlFor="qr-bin">Your existing bins</label>
     <select id="qr-bin" value={binId} onChange={event=>setBinId(event.target.value)}>{bins.map(bin=><option key={bin.id} value={bin.id}>{bin.species} — {bin.name}{bin.label?" · "+bin.label:""}</option>)}</select>
@@ -45,6 +48,6 @@ export function KeeperQrCreator({bins,initialBinId}:{bins:Bin[];initialBinId:str
     {error?<p className={styles.error} role="alert">{error}</p>:null}
    </section>
   </>}
-  <div className={styles.printOnly}><div className={styles.printLabel}>{dataUri?<img src={dataUri} alt="QR code"/>:null}<strong>{selected?.name}</strong><span>{selected?.species}</span></div></div>
+  {mode==="single"?<div className={styles.printOnly}><div className={styles.printLabel}>{dataUri?<img src={dataUri} alt="QR code"/>:null}<strong>{selected?.name}</strong><span>{selected?.species}</span></div></div>:null}
  </div>;
 }
