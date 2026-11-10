@@ -13,14 +13,14 @@
 
 /* QR Studio UI follows the theme; actual generated SVG and print sheets stay
    dark-on-white for scanning. Never tint printed QR modules with UI accents. */
-.root{padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
+.root{padding-bottom:0}
 .step b{background:var(--ps-accent,var(--accent));color:var(--ps-accent-text,var(--accent-contrast))}
 .primary{background:var(--ps-accent,var(--accent));color:var(--ps-accent-text,var(--accent-contrast))}
 .modeTabs .activeMode{background:var(--ps-surface-muted,var(--paper-strong));color:var(--ps-text,var(--ink));border-color:var(--ps-accent,var(--accent))}
 .sizes .chosen{border-color:var(--ps-accent,var(--accent));color:var(--ps-accent,var(--accent))}
 .root :is(button,input,select):focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:3px}
 @media(max-width:720px){
- .root{padding-bottom:calc(132px + env(safe-area-inset-bottom,0px))}
+ .root{padding-bottom:0}
  .card{margin:10px 0;padding:16px;border-radius:var(--radius-medium,16px)}
  .step{margin-bottom:12px}
  .preview{min-height:0;padding:14px}
