@@ -16,7 +16,7 @@
 .filters button{cursor:pointer;color:var(--forest);font-weight:700}
 .chips{display:flex;overflow-x:auto;gap:7px;padding:0 18px 13px}
 .chips a{flex:none;border:1px solid var(--line);border-radius:50px;padding:7px 12px;font-size:.7rem;color:var(--muted)}
-.chips .selected{color:#fff;background:var(--forest);border-color:var(--forest)}
+.chips .selected{color:var(--ps-accent-text);background:var(--ps-accent);border-color:var(--ps-accent)}
 .count{font-size:.68rem;color:var(--muted);padding:0 20px;margin:0 0 12px}
 .item{display:flex;align-items:center;gap:14px;padding:13px 20px;border-top:1px solid var(--line);min-height:85px}
 .item:hover{background:color-mix(in srgb,var(--forest) 5%,var(--paper))}
