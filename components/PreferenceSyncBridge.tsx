@@ -110,15 +110,14 @@ export function PreferenceSyncBridge({userId,isOwner}:{userId:string|null;isOwne
   let active=true;
   booting.current=true;
   modeRef.current="checking";
-  const localAtStart=readLocalUiPreferences(isOwner,userId);
-  let changedDuringLoad=false;
+   let changedDuringLoad=false;
   const touched=()=>{if(booting.current&&!suppressEvents.current)changedDuringLoad=true};
   window.addEventListener("podscape-home-widgets-changed",touched);
   window.addEventListener("podscape-nav-updated",touched);
   window.addEventListener("podscape-workspace-layout-changed",touched);
   loadCloud(isOwner).then(remote=>{
    if(!active)return;
-   const local=readLocalUiPreferences(isOwner);
+   const local=readLocalUiPreferences(isOwner,userId);
    revisionRef.current=remote.revision;
    setCloud(remote);
    if(!remote.preferences){
@@ -153,7 +152,7 @@ export function PreferenceSyncBridge({userId,isOwner}:{userId:string|null;isOwne
    try{
     const latest=await loadCloud(ownerRef.current);
     if(!active||latest.revision<=revisionRef.current)return;
-    const local=readLocalUiPreferences(ownerRef.current);
+    const local=readLocalUiPreferences(ownerRef.current,userId);
     const previous=lastSaved(userId,ownerRef.current);
     setCloud(latest);
     revisionRef.current=latest.revision;
