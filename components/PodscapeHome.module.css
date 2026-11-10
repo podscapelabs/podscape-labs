@@ -837,3 +837,22 @@
 :global(html[data-theme="lilac"]) .spotlightRail .tileVisual:has(.tilePlaceholder)::after{
  border-color:rgba(112,65,139,.25);
 }
+
+
+/* Ember: discovery and Spotlight follow the apricot/terracotta system. */
+:global(html[data-theme="ember"]) .hero{
+ background:linear-gradient(125deg,#f6dfc5,#dc995f);
+ color:#3e281d;
+}
+:global(html[data-theme="ember"]) .hero:after{
+ background:linear-gradient(90deg,rgba(255,241,221,.96) 0%,rgba(246,211,173,.85) 42%,rgba(208,137,83,.08) 100%);
+}
+:global(html[data-theme="ember"]) .heroButton{background:#a64c21;color:#fffaf3}
+:global(html[data-theme="ember"]) .spotlightRail .tileVisual:has(.tilePlaceholder){
+ background:radial-gradient(circle at 79% 17%,#eab680,transparent 45%),
+ linear-gradient(130deg,#fff1df,#f2d0ad);
+}
+:global(html[data-theme="ember"]) .spotlightRail .tileVisual:has(.tilePlaceholder)::before,
+:global(html[data-theme="ember"]) .spotlightRail .tileVisual:has(.tilePlaceholder)::after{
+ border-color:rgba(166,76,33,.26);
+}
