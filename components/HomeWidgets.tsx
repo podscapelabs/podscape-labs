@@ -10,6 +10,7 @@ import {WorkspaceEditToolbar,WorkspaceEditBlock,useWorkspaceDrag} from "./Worksp
 import {HomeCanvasEditContext} from "./HomeCanvasEditContext";
 import {recordExperienceAction} from "./experience-achievements";
 import {confirmWorkspaceReset} from "./workspace-edit-standards";
+import {useWorkspaceEditorDialog} from "./useWorkspaceEditorDialog";
 
 type Tile={title:string;label:string;description:string;href:string;image?:string|null;alt?:string};
 export type HomeColony={id:string;name:string;quantity:number;speciesName:string}|null;
@@ -58,7 +59,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
   const [canvasEditing,setCanvasEditing]=useState(false);
   const [pins,setPins]=useState<HomePin[]>([]);
   const [hydrated,setHydrated]=useState(false);
-  const dialogRef=useRef<HTMLDivElement>(null);
+  const dialogRef=useWorkspaceEditorDialog(editing,()=>setEditing(false));
   const returnFocus=useRef<HTMLElement|null>(null);
   // The editor inserts a toolbar and block handles above the held block.
   // Keep that exact block at its original viewport position when the layout expands.
@@ -98,29 +99,9 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
     window.addEventListener("podscape-edit-home",open);
     return ()=>window.removeEventListener("podscape-edit-home",open);
   },[]);
-  const close=()=>{setEditing(false);requestAnimationFrame(()=>returnFocus.current?.focus())};
+  const close=()=>setEditing(false);
   const finishCanvas=()=>{stopDrag();editAnchor.current=null;setCanvasEditing(false)};
   const resetToDefault=()=>{if(!confirmWorkspaceReset("home"))return false;stopDrag();update({order:[...defaultOrder],visible:[...defaultVisible]});return true};
-  useEffect(()=>{
-    if(!editing)return;
-    const previous=document.body.style.overflow;
-    document.body.style.overflow="hidden";
-    const dialog=dialogRef.current;
-    const focusable=dialog?.querySelector<HTMLElement>("button");
-    focusable?.focus();
-    const onKey=(event:KeyboardEvent)=>{
-      if(event.key==="Escape"){event.preventDefault();close()}
-      if(event.key==="Tab"&&dialog){
-        const nodes=Array.from(dialog.querySelectorAll<HTMLElement>("button:not([disabled]),a[href],input:not([disabled])"));
-        if(!nodes.length)return;
-        const first=nodes[0],last=nodes[nodes.length-1];
-        if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}
-        else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
-      }
-    };
-    window.addEventListener("keydown",onKey);
-    return ()=>{document.body.style.overflow=previous;window.removeEventListener("keydown",onKey)};
-  },[editing]);
   const update=(next:Layout)=>{
     setLayout(next);
     try{localStorage.setItem(storageKey,JSON.stringify(next))}catch{}
