@@ -12,7 +12,7 @@ export default async function ApplyVendor(){
  const {data:{user}}=db?await db.auth.getUser():{data:{user:null}};
  const admin=getSupabaseAdmin();
  const {data:existing,error}=user&&admin?await admin.from("vendor_profiles")
-  .select("business_name,tagline,description,location_label,website_url,instagram_url,facebook_url,logo_path,status")
+  .select("business_name,tagline,description,location_label,website_url,instagram_url,facebook_url,logo_path,status,country_code,shipping_mode,shipping_countries,shipping_notes,live_animal_shipping")
   .eq("user_id",user.id).maybeSingle():{data:null,error:null};
  return <PlatformShell><main className={styles.page}><div className={styles.wrap}>
   <Link href="/shop/vendors" className={styles.back}>← Vendor Directory</Link>
