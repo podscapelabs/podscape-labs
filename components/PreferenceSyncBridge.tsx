@@ -143,6 +143,32 @@ export function PreferenceSyncBridge({userId,isOwner}:{userId:string|null;isOwne
 
  useEffect(()=>{
   if(!userId)return;
+  let checking=false;
+  let active=true;
+  const refresh=async()=>{
+   if(!active||checking||booting.current||inFlight.current||modeRef.current!=="synced")return;
+   checking=true;
+   try{
+    const latest=await loadCloud(ownerRef.current);
+    if(!active||latest.revision<=revisionRef.current)return;
+    const local=readLocalUiPreferences(ownerRef.current);
+    const previous=lastSaved(userId,ownerRef.current);
+    setCloud(latest);
+    revisionRef.current=latest.revision;
+    if(latest.preferences&&previous&&sameUiPreferences(previous.preferences,local))applyRemote(latest);
+    else modeChange("conflict");
+   }catch{
+    // Never replace local preferences or interrupt editing for an intermittent network error.
+   }finally{checking=false}
+  };
+  const onVisible=()=>{if(document.visibilityState==="visible")void refresh()};
+  window.addEventListener("focus",refresh);
+  document.addEventListener("visibilitychange",onVisible);
+  return ()=>{active=false;window.removeEventListener("focus",refresh);document.removeEventListener("visibilitychange",onVisible)};
+ },[userId]);
+
+ useEffect(()=>{
+  if(!userId)return;
   const onChange=()=>{
    if(suppressEvents.current||booting.current)return;
    if(modeRef.current==="waiting"){modeChange("synced")}
