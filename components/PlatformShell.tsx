@@ -6,7 +6,7 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
 }
 
 export function PlatformPageHeader({ eyebrow, title, intro, index }: { eyebrow: string; title: string; intro: string; index?: string }) {
-  return <header className="v2-page-header"><div className="v2-container v2-page-header-grid"><div><p className="v2-label">{eyebrow}</p><h1>{title}</h1><p>{intro}</p></div>{index ? <aside><span>Archive Plate</span><strong>{index}</strong><small>Podscape Labs · Ontario</small></aside> : null}</div></header>;
+  return <header className="v2-page-header"><div className="v2-container v2-page-header-grid"><div><p className="v2-label">{eyebrow}</p><h1>{title}</h1><p>{intro}</p></div>{index ? <aside><span>Archive Plate</span><strong>{index}</strong><small>PodScape Labs · Ontario</small></aside> : null}</div></header>;
 }
 
 export function Breadcrumbs({ items }: { items: { label: string; href?: string }[] }) {
