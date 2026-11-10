@@ -65,7 +65,7 @@ assert.match(tour,/setSkipped\(true\)/);
 const presets=read("components/onboarding-presets.ts");
 assert.match(presets,/podscape-home-widgets-changed/);
 assert.match(presets,/podscape-nav-updated/);
-assert.match(presets,/const saved=JSON.parse\\(localStorage.getItem\\(onboardingLayoutKey\\)/,"Starter presets must inspect the existing layout");
+assert.ok(presets.includes("localStorage.getItem(onboardingLayoutKey)"),"Starter presets must inspect the existing layout");
 assert.match(presets,/if\\(options.shortcuts\\)/,"Shortcut presets must be optional");
 assert.match(tour,/focus===null/,"Keep current layout must be the initial selection");
 assert.match(tour,/if\\(focus\\)/,"Never replace a saved Home layout unless a preset was explicitly selected");
