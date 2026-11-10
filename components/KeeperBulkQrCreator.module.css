@@ -55,3 +55,7 @@
  .printLabel img{max-width:none}
 }
 @media(prefers-reduced-motion:reduce){.root *{scroll-behavior:auto!important}}
+
+/* Keep print preview horizontally scrollable, without shrinking QR codes on phones. */
+.previewScroll{-webkit-overflow-scrolling:touch}
+@media print{.previewSection,.selector,.settings{display:none!important}.printGrid{break-inside:auto}.printLabel{page-break-inside:avoid;break-inside:avoid}}
