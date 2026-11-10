@@ -47,5 +47,7 @@ jobs:
         run: node scripts/verify-legacy-icon-rollout.mjs
       - name: Mobile, PWA and release readiness checks
         run: node scripts/verify-release-readiness.mjs
+      - name: Unified release: vendor, updates, widgets and splash
+        run: node scripts/verify-unified-release.mjs
       - name: Build Next.js application
         run: pnpm run build
