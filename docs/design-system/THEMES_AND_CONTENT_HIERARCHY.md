@@ -81,3 +81,14 @@ There are now five choices in Account Appearance: **Light, Dark, Woodland, Lilac
 Both legacy `canvas/paper/forest` and modern `background/surface/accent` tokens are defined. Theme-specific Home, Manager and Shop gradient exceptions use Lilac shades while retaining the card hierarchy. Owner Studio, member dashboards, bottom navigation, and dialogs inherit semantic roles.
 
 As with Woodland, **browser validation in mobile/desktop, with real authenticated routes and adequate foreground contrast, remains required**. Automated checks cover the theme option, theme cycle, first-paint bootstrap, splash and major portal overrides.
+
+
+## Ember — final alternate theme (November 2026)
+
+Ember is a warm **light** theme: apricot `#FFF3E5`, creamy surfaces `#FFFAF3`, burnt-orange accent `#A64C21`, terracotta accents and espresso text `#3E281D`. It uses semantic role mappings for both legacy modules and v2 portals, with theme-specific overrides only where existing artwork and hero gradients need adapting.
+
+The appearance lineup is now **FINAL / FEATURE-FROZEN**: Light, Dark, Woodland, Lilac, Ember, plus System (which follows device appearance). Do not introduce further themes or add ad hoc theme-specific colours to unrelated components. The selection persists in the existing `podscape-theme` setting, uses the same quick toggle, and is applied before first paint. Ember's native controls and splash screen use a light colour scheme.
+
+The five explicit themes and System are a complete, maintained design system. Future effort goes to **accessibility, cohesion and consistency** across those existing palettes, not additional options.
+
+As with Woodland and Lilac, real browser screenshots in authenticated mobile/desktop portals and focus/contrast checks are still needed. `scripts/verify-theme-system.mjs` now guards the final theme set and page-specific hero/loading coverage.
