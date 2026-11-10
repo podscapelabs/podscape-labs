@@ -1446,3 +1446,74 @@ h1, h2, h3 { text-wrap: balance; }
 .theme-icon-woodland{opacity:0;transform:rotate(-25deg)}
 :root[data-theme="woodland"] .theme-icon-moon{opacity:0;transform:rotate(25deg)}
 :root[data-theme="woodland"] .theme-icon-woodland{opacity:1;transform:rotate(0)}
+
+
+/* Lilac: soft lavender, orchid, mauve and deep plum. A light alternate theme
+   with accessible dark text and explicit text-on-accent contrast. */
+:root[data-theme="lilac"]{
+ color-scheme:light;
+ --canvas:#f4eff9;
+ --paper:#fffaff;
+ --paper-strong:#eee2f4;
+ --forest:#70418b;
+ --forest-deep:#4a2b5f;
+ --moss:#9b75ae;
+ --moss-light:#cfb4d9;
+ --clay:#a55f96;
+ --amber:#9365af;
+ --bark:#7d5b85;
+ --ink:#33223e;
+ --muted:#695a72;
+ --line:#d8c7df;
+ --line-dark:rgba(51,34,62,.16);
+ --white:#fffaff;
+ --header:rgba(249,243,252,.94);
+ --shadow:0 24px 70px rgba(67,42,84,.12);
+ --shadow-soft:0 10px 32px rgba(67,42,84,.09);
+ --ps-accent-text:#fffaff;
+ --ps-surface-muted:#eadcf0;
+}
+:root[data-theme="lilac"] .v2-site{
+ --background:#f4eff9;
+ --background-secondary:#eee5f3;
+ --surface:#fffaff;
+ --surface-secondary:#efe4f4;
+ --surface-raised:#e8d9ed;
+ --text-primary:#33223e;
+ --text-secondary:#685970;
+ --text-muted:#81718b;
+ --border:#d8c7df;
+ --border-strong:#b99bc8;
+ --accent:#70418b;
+ --accent-hover:#593174;
+ --accent-contrast:#fffaff;
+ --focus:#8f55aa;
+ --ledger:#8266a2;
+ --podbound:#945b9c;
+ --guide:#93719b;
+ --shop:#8a5293;
+ --creative:#ae6293;
+ --directory:#8163a6;
+ --lab:#a36c97;
+ --portal-hero-start:#eadbf3;
+ --portal-hero-end:#c6a7d9;
+ --portal-hero-glow:#ddc1e9;
+ --portal-hero-text:#33223e;
+ --portal-hero-muted:#5e4a6b;
+ --portal-hero-soft:#70418b;
+ --portal-hero-button-bg:#70418b;
+ --portal-hero-button-text:#fffaff;
+ --status-neutral-bg:#ede3f3;
+ --status-positive-bg:#e0e9de;
+ --status-warning-bg:#f5e5dd;
+ --shadow-soft:0 10px 32px rgba(67,42,84,.1);
+}
+:root[data-theme="lilac"] .v2-button-primary{color:var(--ps-accent-text)}
+:root[data-theme="lilac"] .button-primary,
+:root[data-theme="lilac"] .podbound-link{color:var(--ps-accent-text)}
+/* Existing dark/woodland icon glyphs must not leak into the lilac switch. */
+.theme-icon-lilac{opacity:0;transform:rotate(-25deg)}
+:root[data-theme="lilac"] .theme-icon-sun,
+:root[data-theme="lilac"] .theme-icon-moon,
+:root[data-theme="lilac"] .theme-icon-woodland{opacity:0;transform:rotate(25deg)}
+:root[data-theme="lilac"] .theme-icon-lilac{opacity:1;transform:rotate(0)}
