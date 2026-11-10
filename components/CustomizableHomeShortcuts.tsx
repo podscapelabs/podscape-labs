@@ -42,7 +42,7 @@ export function CustomizableHomeShortcuts({isOwner=false}:{isOwner?:boolean}){
         <button type="button" disabled={selected<=0} onClick={()=>{change(moveNavigationSlot(ids,selected,selected-1));setSelected(selected-1)}} aria-label={`Move ${current?.label||"shortcut"} left`}>← Left</button>
         <button type="button" disabled={selected>=ids.length-1} onClick={()=>{change(moveNavigationSlot(ids,selected,selected+1));setSelected(selected+1)}} aria-label={`Move ${current?.label||"shortcut"} right`}>Right →</button>
       </div>
-      <button type="button" onClick={()=>{reset();setSelected(0)}}>Reset shortcuts</button>
+      <button type="button" onClick={()=>{if(confirmWorkspaceReset("home-shortcuts")){reset();setSelected(0)}}}>Reset shortcuts</button>
     </div>}
     <nav className={`${styles.shortcuts} ${editing?styles.shortcutEditing:""}`} aria-label="Explore Podscape">
       {choices.map((item,index)=><button type="button" data-shortcut-index={index}
