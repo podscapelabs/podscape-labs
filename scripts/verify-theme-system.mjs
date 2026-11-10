@@ -154,15 +154,47 @@ for(const selector of [".hero{",".featured{",".topicArt{"]){
 assert.match(fieldGuide,/--portal-hero-start/,"Field Guide hero and feature need shared portal roles");
 assert.match(fieldGuide,/--portal-hero-button-text/,"Featured guide CTA needs contrasting text");
 assert.match(fieldGuide,/\.topic:nth-child\(3n\) \.topicArt\{background:linear-gradient\([^;]*var\(--surface/,"Guide topics must follow theme surfaces");
-for(const theme of ["woodland","lilac","ember"]){
- assert.ok(podbound.includes(':global(html[data-theme="'+theme+'"]) .hero'),"PodBound hero missing "+theme);
+// PodBound must not keep separate fixed-green Light or Dark heroes.
+for(const selector of [".hero{",".hero:after{",".kicker{",".heroCopy>p:not(.kicker){",".heroButton{"]){
+ assert.ok(podbound.includes(selector),"PodBound semantic hero missing "+selector);
 }
-assert.match(podbound,/var\(--paper-strong\)/,"PodBound outside v2-site must use global palette tokens");
+for(const role of ["--paper-strong","--paper","--ink","--muted","--forest","--ps-accent-text"]){
+ assert.ok(podbound.includes("var("+role+")"),"PodBound must use theme role "+role);
+}
+assert.ok(!podbound.includes(':global(html[data-theme="woodland"]) .hero'),"PodBound must share one theme contract across all five");
+assert.match(podbound,/\.cardFront\{[^}]*background:radial-gradient/,"PodBound game card art must retain its branding");
 assert.match(singleQr,/\.step b\{background:var\(--ps-accent/,"QR steps must use the selected theme");
 assert.match(singleQr,/\.primary\{background:var\(--ps-accent/,"QR primary action must use the selected theme");
 assert.match(bulkQr,/\.printButton\{background:var\(--ps-accent/,"Bulk print button must use theme");
 assert.match(singleQr,/@media print/,"QR print rules must remain intact");
 assert.match(bulkQr,/@media print/,"Bulk QR print rules must remain intact");
+
+/* Validate the foreground/background palette choices that power the
+   Field Guide and QR Studio buttons in all five explicit themes. */
+function luminance(hex){
+ const values=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255)
+  .map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4);
+ return values[0]*.2126+values[1]*.7152+values[2]*.0722;
+}
+function contrastRatio(a,b){
+ const high=Math.max(luminance(a),luminance(b));
+ const low=Math.min(luminance(a),luminance(b));
+ return (high+.05)/(low+.05);
+}
+for(const [theme,background,foreground] of [
+ ["light","#173d2b","#f8f4e8"],
+ ["dark","#b8c88f","#091a13"],
+ ["woodland","#d6ac76","#261a13"],
+ ["lilac","#70418b","#fffaff"],
+ ["ember","#a64c21","#fffaf3"]
+]){
+ assert.ok(contrastRatio(background,foreground)>=4.5,
+  theme+" controls must meet WCAG AA text contrast (4.5:1)");
+}
+assert.match(fieldGuide,/\.featured a\{background:var\(--portal-hero-button-bg/,"Field Guide CTA must follow theme");
+assert.match(singleQr,/\.printLabel\{[^}]*background:white;color:black/,"QR print must retain black-on-white label");
+assert.match(bulkQr,/\.previewLabel,\.printLabel\{[^}]*background:white;color:#142c20/,"Bulk print must retain dark-on-white labels");
+
 assert.match(labLanding,/redirect\("\/updates"\)/,"Old Lab landing must forward to Updates");
 assert.match(labArticle,/getLabRecord/,"Individual Lab articles must remain accessible");
 assert.match(nav,/id:"lab",label:"Updates & Improvements",href:"\/updates"/,"Preserve saved navigation slot ID and repoint to archive");
