@@ -7,6 +7,8 @@ import { PodscapeLineIcon } from "./PodscapeLineIcon";
 import { CustomizableHomeShortcuts } from "./CustomizableHomeShortcuts";
 import { HomeWidgets, type HomeColony, type HomeProgress } from "./HomeWidgets";
 import type { RecentGroup } from "./RecentCategoryCards";
+import {getPublishedUpdates} from "@/lib/podscape-updates";
+import {getSupabaseAdmin} from "@/lib/supabase-admin";
 import type { PinOption } from "./home-pins";
 import { games as funZoneGames } from "@/lib/fun-zone-games";
 import { InstallPodscape } from "./InstallPodscape";
@@ -61,34 +63,41 @@ export async function MarketingSite(){
   {kind:"game",id:"word-search",title:"Word Search",description:"Find hidden isopod terms",href:"/fun-zone/word-search"}
  ];
  const featured:Tile[]=spotlights.map(item=>({title:item.title,label:item.label,description:item.description,href:item.href,image:item.image,alt:item.alt}));
- // Automatically surface recently edited or added published content, not static destinations.
- // Existing records expose updatedAt (no dedicated publishedAt), so both edits and additions count.
- const recentEntries=[
+ // Automatic catalogue activity stays separate from manually curated platform announcements.
+ // All updates must be published before they are eligible for the Home feed.
+ const admin=getSupabaseAdmin();
+ const [announcements,vendorResult]=await Promise.all([
+  getPublishedUpdates(),
+  admin?admin.from("vendor_profiles").select("id,business_name,tagline,reviewed_at").eq("status","approved").order("reviewed_at",{ascending:false}).limit(20):Promise.resolve({data:null,error:null})
+ ]);
+ type Entry={category:RecentGroup["category"];title:string;description:string;href:string;updatedAt:string};
+ const recentEntries:Entry[]=[
   ...records.filter(r=>r.kind==="species"&&r.status==="published"&&isSpeciesRecordActive(r))
-   .map(r=>({title:speciesDisplayName(r),label:"SPECIES",description:r.summary||"Explore this species in the Leaf Ledger.",href:"/ledger/"+r.slug,image:r.image,alt:r.imageAlt,updatedAt:r.updatedAt})),
+   .map(r=>({category:"leaf_ledger" as const,title:speciesDisplayName(r),description:r.summary||"Explore this species in Leaf Ledger.",href:"/ledger/"+r.slug,updatedAt:r.updatedAt})),
   ...guides.filter(g=>!g.archivedAt&&g.status==="published")
-   .map(g=>({title:g.title,label:"FIELD GUIDE",description:g.summary||"Read this PodScape field guide.",href:"/field-guide/"+g.slug,image:null,alt:"",updatedAt:g.updatedAt})),
+   .map(g=>({category:"field_guide" as const,title:g.title,description:g.summary||"Read this PodScape Field Guide article.",href:"/field-guide/"+g.slug,updatedAt:g.updatedAt})),
   ...products.filter(p=>!p.archivedAt&&p.status==="published")
-   .map(p=>({title:p.title,label:"SHOP",description:p.summary||"See what's new in the PodScape Shop.",href:"/shop/"+p.slug,image:p.image,alt:p.imageAlt,updatedAt:p.updatedAt}))
+   .map(p=>({category:"shop_vendors" as const,title:p.title,description:p.summary||"See this product in the Shop.",href:"/shop/"+p.slug,updatedAt:p.updatedAt})),
+  ...(vendorResult.data||[]).filter(v=>v.reviewed_at).map(v=>({
+   category:"shop_vendors" as const,title:v.business_name+" joined the directory",
+   description:v.tagline||"Meet this independent vendor in the PodScape directory.",
+   href:"/shop/vendors",updatedAt:v.reviewed_at as string
+  })),
+  ...announcements.filter(a=>a.published_at).map(a=>({
+   category:a.category,title:a.title,description:a.summary,href:a.href,updatedAt:a.published_at!
+  }))
  ];
- // Reserve one slot per category, so a large batch of species edits never hides guides or Shop.
- // Keep the newest entry visible, with a small optional list of related updates behind it.
- const labels:RecentGroup["label"][]=["SPECIES","FIELD GUIDE","SHOP"];
- const recentGroups:RecentGroup[]=labels.flatMap(label=>{
+ const categories:RecentGroup["category"][]=["leaf_ledger","whats_improved","new_features","field_guide","shop_vendors","fun_podbound"];
+ const recentGroups:RecentGroup[]=categories.flatMap(category=>{
   const seen=new Set<string>();
-  const items=recentEntries.filter(item=>item.label===label&&Number.isFinite(Date.parse(item.updatedAt||"")))
-   .sort((a,b)=>Date.parse(b.updatedAt)-Date.parse(a.updatedAt)||a.href.localeCompare(b.href))
-   .filter(item=>{
-    const key=item.href;
-    if(seen.has(key))return false;
-    seen.add(key);return true;
-   });
+  const items=recentEntries.filter(item=>item.category===category&&Number.isFinite(Date.parse(item.updatedAt)))
+   .sort((a,b)=>Date.parse(b.updatedAt)-Date.parse(a.updatedAt)||a.title.localeCompare(b.title))
+   .filter(item=>{const key=item.title+"|"+item.href;if(seen.has(key))return false;seen.add(key);return true;});
   if(!items.length)return [];
-  // Summarize updates made together, rather than calling old catalogue entries part of one batch.
-  // A 48-hour window captures common multi-day publishing sessions.
-  const latest=Date.parse(items[0].updatedAt);
-  const batch=items.filter(item=>latest-Date.parse(item.updatedAt)<=48*60*60*1000).slice(0,12);
-  return [{label,newestAt:items[0].updatedAt,items:batch.map(({title,description,href})=>({title,description,href}))}];
+  const newestAt=items[0].updatedAt;
+  // Batch related edits within 48 hours without letting any category take more than one card.
+  const batch=items.filter(item=>Date.parse(newestAt)-Date.parse(item.updatedAt)<=48*60*60*1000).slice(0,12);
+  return [{category,newestAt,items:batch.map(({title,description,href})=>({title,description,href}))}];
  }).sort((a,b)=>Date.parse(b.newestAt)-Date.parse(a.newestAt));
  return <div className={styles.site}><a className="skip-link" href="#platform-main">Skip to content</a><Header/><main id="platform-main" className={styles.main}>
  <HomeWidgets recentGroups={recentGroups} colony={colony} progress={progress} pinOptions={pinOptions} userId={user?.id||null}
