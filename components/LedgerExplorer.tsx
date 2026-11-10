@@ -8,6 +8,7 @@ import styles from "./LedgerLayout.module.css";
 import spotlight from "@/app/ledger/discover.module.css";
 import Link from "next/link";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
+import {FirstActionEmptyState} from "./FirstActionEmptyState";
 import {LEDGER_BROWSE_ORDER_KEY,LEDGER_EXPLORER_STATE_KEY,type LedgerExplorerSnapshot} from "@/lib/ledger-navigation";
 import type { ColonyStatus } from "@/data/collection";
 import { speciesDisplayName, speciesScientificName, type SpeciesRecord } from "@/data/species";
@@ -203,6 +204,6 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
         {featured.image ? <img className={spotlight.featurePhoto} src={featured.image} alt="" loading="lazy" decoding="async" /> : null}
         <div className={spotlight.featureCopy}><small>Featured species</small><h2>{featured.name}</h2><p>{featured.summary || "Explore this species in the Leaf Ledger."}</p><Link href={`/ledger/${featured.slug}`}>View species →</Link></div>
       </aside> : null}</div>
-    ) : <div className="v2-empty-state"><span className="v2-empty-leaf" aria-hidden="true" /><h2>No species match these filters.</h2><p>Try a different name, genus, or care level.</p><button type="button" onClick={clear}>Reset filters</button></div>}
+    ) : (mode==="collection"&&!filtersActive&&records.length===0?<FirstActionEmptyState icon="leaf" eyebrow="LEAF LEDGER" title="Start your species collection." description="Discover a species and add it to your collection to see it here. Your saved species will stay connected to their care profiles." primary={{href:"/ledger",label:"Explore the Leaf Ledger"}} secondary={{href:"/keeper/collection",label:"My colonies"}}/>:<div className="v2-empty-state"><PodscapeLineIcon name="search"/><h2>No species match these filters.</h2><p>Try a different name, genus, or care level.</p><button type="button" onClick={clear}>Reset filters</button></div>)}
   </section></div></div></>;
 }
