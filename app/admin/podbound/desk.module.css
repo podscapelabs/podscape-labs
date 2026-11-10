@@ -37,3 +37,59 @@
 .thumbnail svg{width:30px;height:30px}
 .empty>svg{width:38px;height:38px;color:var(--forest)}
 .artPreview>span svg{width:44px;height:44px;margin:0 auto}
+
+
+/* PodBound owner desk — same compact portal hierarchy as the rest of Owner Studio. */
+.shell{max-width:none;padding:clamp(12px,2.8vw,30px) max(12px,calc((100vw - 1100px)/2)) 130px}
+.top{position:relative;isolation:isolate;overflow:hidden;min-height:158px;grid-template-columns:44px minmax(0,1fr) auto;padding:clamp(20px,3vw,30px);margin-bottom:12px;border:1px solid color-mix(in srgb,var(--portal-hero-text) 12%,transparent);border-radius:19px;background:radial-gradient(circle at 85% 16%,var(--portal-hero-glow),transparent 44%),linear-gradient(110deg,var(--portal-hero-start),var(--portal-hero-end));color:var(--portal-hero-text)}
+.top .eyebrow{color:var(--portal-hero-soft)}
+.top h1{margin:8px 0;font:600 clamp(2rem,4.4vw,3rem)/1.06 var(--display);letter-spacing:-.035em}
+.top p:last-child{color:var(--portal-hero-muted);font-size:.79rem;line-height:1.5}
+.top .back{border-color:color-mix(in srgb,var(--portal-hero-text) 25%,transparent);background:color-mix(in srgb,var(--portal-hero-text) 6%,transparent);color:var(--portal-hero-text)}
+.top .primary{background:var(--portal-hero-button-bg);color:var(--portal-hero-button-text);font-size:.73rem}
+.stats{gap:9px;border:0;background:transparent;overflow:visible;margin-bottom:12px}
+.stats a{min-width:0;min-height:77px;display:grid;align-content:center;gap:5px;padding:13px 15px;border:1px solid var(--line)!important;border-radius:13px;background:var(--paper)}
+.stats strong{font:750 1.7rem/1 var(--sans,inherit);font-variant-numeric:tabular-nums;color:var(--ink)}
+.stats span{font-size:.66rem}
+.panel,.editPanel{border-radius:16px;box-shadow:none}
+.panelHead{padding:16px 18px}
+.panelHead h2,.editPanel h2{font:750 1.15rem/1.22 var(--sans,inherit);letter-spacing:-.02em}
+.panelHead small{font-size:.71rem}
+.filters{padding:0 15px 12px}
+.filters :is(input,select){font-size:16px;min-height:44px}
+.filters button{min-height:44px}
+.chips a{font-size:.69rem}
+.item{min-height:78px;padding:10px 17px;gap:12px}
+.identity strong{font:750 .89rem/1.25 var(--sans,inherit)}
+.identity small{line-height:1.4}
+.thumbnail{width:52px;height:52px}
+.pill{font-size:.63rem}
+.editPanel{padding:19px}
+.editPanel h2{margin:6px 0 13px}
+.fieldGrid{gap:12px}
+.fieldGrid :is(input,select,textarea),.artBox :is(input,select,textarea){font-size:16px}
+.artGrid{gap:12px}
+.artPreview{height:220px}
+.saveRow{flex-wrap:wrap}
+.archive{padding:15px}
+.shell :is(a,button,input,select,textarea):focus-visible{outline:2px solid var(--forest);outline-offset:2px}
+@media(max-width:700px){
+ .shell{padding:12px 12px 130px}
+ .top{grid-template-columns:38px minmax(0,1fr);min-height:0;padding:18px;gap:10px}
+ .top h1{font-size:2.15rem}
+ .top form,.top>button{grid-column:1/-1}
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .stats a{min-height:68px;padding:11px}
+ .stats strong{font-size:1.55rem}
+ .stats span{font-size:.66rem}
+ .panelHead{padding:14px}
+ .filters{padding:0 12px 12px}
+ .filters button{grid-column:1/-1}
+ .item{padding:11px;gap:9px}
+ .thumbnail{width:48px;height:48px}
+ .identity strong{font-size:.82rem}
+ .identity small{overflow-wrap:anywhere}
+ .editPanel{padding:15px}
+ .artPreview{height:235px}
+}
+@media(max-width:420px){.top{padding:15px}.pill{padding:5px 7px;font-size:.59rem}.item{gap:7px}}
