@@ -70,7 +70,7 @@ export async function MarketingSite(){
   getPublishedUpdates(),
   admin?admin.from("vendor_profiles").select("id,business_name,tagline,reviewed_at").eq("status","approved").order("reviewed_at",{ascending:false}).limit(20):Promise.resolve({data:null,error:null})
  ]);
- type Entry={category:RecentGroup["category"];title:string;description:string;href:string;updatedAt:string};
+ type Entry={category:RecentGroup["category"];title:string;description:string;href:string;updatedAt:string;details?:string[]};
  const recentEntries:Entry[]=[
   ...records.filter(r=>r.kind==="species"&&r.status==="published"&&isSpeciesRecordActive(r))
    .map(r=>({category:"leaf_ledger" as const,title:speciesDisplayName(r),description:r.summary||"Explore this species in Leaf Ledger.",href:"/ledger/"+r.slug,updatedAt:r.updatedAt})),
@@ -84,7 +84,7 @@ export async function MarketingSite(){
    href:"/shop/vendors",updatedAt:v.reviewed_at as string
   })),
   ...announcements.filter(a=>a.published_at).map(a=>({
-   category:a.category,title:a.title,description:a.summary,href:a.href,updatedAt:a.published_at!
+   category:a.category,title:a.title,description:a.summary,details:Array.isArray(a.details)?a.details:[],href:a.href,updatedAt:a.published_at!
   }))
  ];
  const categories:RecentGroup["category"][]=["leaf_ledger","whats_improved","new_features","field_guide","shop_vendors","fun_podbound"];
@@ -97,7 +97,7 @@ export async function MarketingSite(){
   const newestAt=items[0].updatedAt;
   // Batch related edits within 48 hours without letting any category take more than one card.
   const batch=items.filter(item=>Date.parse(newestAt)-Date.parse(item.updatedAt)<=48*60*60*1000).slice(0,12);
-  return [{category,newestAt,items:batch.map(({title,description,href})=>({title,description,href}))}];
+  return [{category,newestAt,items:batch.map(({title,description,href,details})=>({title,description,href,...(details!==undefined?{details}:{})}))}];
  }).sort((a,b)=>Date.parse(b.newestAt)-Date.parse(a.newestAt));
  return <div className={styles.site}><a className="skip-link" href="#platform-main">Skip to content</a><Header/><main id="platform-main" className={styles.main}>
  <HomeWidgets recentGroups={recentGroups} colony={colony} progress={progress} pinOptions={pinOptions} userId={user?.id||null}
