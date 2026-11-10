@@ -659,3 +659,25 @@
  .homeEditorOverlay>.widgetEditor{max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 28px);overscroll-behavior:contain}
  .widgetLibraryGroups,.widgetArrange{-webkit-overflow-scrolling:touch}
 }
+
+/* Balanced Recent & Noteworthy: one stable, compact card per content category.
+   An expanded batch lives inside its category rather than adding feed cards. */
+.recentCategoryCard{flex:0 0 calc((100% - 22px)/3);min-width:0;align-self:flex-start;border:1px solid var(--line);border-radius:17px;background:var(--paper);overflow:hidden;scroll-snap-align:start}
+.recentCategoryHead{display:flex;align-items:center;gap:10px;min-height:58px;padding:12px;background:color-mix(in srgb,var(--moss) 10%,var(--paper));color:var(--forest)}
+.recentCategoryGlyph{display:grid;place-items:center;width:32px;height:32px;flex:none;border-radius:10px;background:var(--paper)}
+.recentCategoryGlyph svg{width:19px;height:19px}
+.recentCategoryName{font-size:.67rem;font-weight:850;letter-spacing:.045em;text-transform:uppercase}
+.recentCategoryPrimary{display:flex;min-height:105px;flex-direction:column;gap:5px;padding:14px 14px 11px;color:var(--ink);text-decoration:none}
+.recentCategoryPrimary strong{font:500 1.18rem/1.15 var(--serif);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
+.recentCategoryPrimary>span{font-size:.74rem;line-height:1.4;color:var(--muted);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
+.recentCategoryPrimary small{margin-top:auto;font-size:.69rem;font-weight:750;color:var(--forest)}
+.recentCategoryFooter{border-top:1px solid var(--line);padding:0 12px;min-height:43px}
+.recentCategoryFooter>button{display:flex;width:100%;min-height:43px;align-items:center;justify-content:space-between;gap:7px;padding:8px 0;border:0;background:transparent;color:var(--forest);font:inherit;font-size:.73rem;font-weight:800;text-align:left;cursor:pointer}
+.recentCategoryFooter>button svg{width:16px;height:16px;flex:none}
+.recentCategoryFooter>button:focus-visible,.recentCategoryPrimary:focus-visible{outline:2px solid var(--forest);outline-offset:-2px;border-radius:6px}
+.recentCategoryOnly{display:flex;align-items:center;min-height:43px;color:var(--muted);font-size:.69rem}
+.recentCategoryMore{display:grid;gap:0;padding-bottom:7px}
+.recentCategoryMore a{display:flex;justify-content:space-between;gap:8px;padding:10px 3px;border-top:1px solid var(--line);color:var(--ink);font-size:.73rem;font-weight:650;text-decoration:none;line-height:1.35}
+.recentCategoryMore a span{color:var(--forest)}
+@media(max-width:720px){.recentRail>.recentCategoryCard{flex:0 0 min(76vw,270px)}.recentCategoryPrimary{min-height:110px}.recentCategoryPrimary strong{font-size:1.12rem}}
+@media(max-width:450px){.recentRail>.recentCategoryCard{flex:0 0 min(82vw,284px)}}
