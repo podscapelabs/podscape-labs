@@ -5,6 +5,7 @@ import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { requireCustomerPreviewAccess } from "@/lib/customer-auth/access";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
+import {validVendorCountry,vendorShippingModes} from "@/lib/vendor-regions";
 
 type Outcome={success:boolean;message:string};
 function clean(value:FormDataEntryValue|null,limit:number){return typeof value==="string"?value.trim().slice(0,limit+1):"";}
@@ -28,6 +29,20 @@ export async function submitVendorProfile(form:FormData):Promise<Outcome>{
  description=clean(form.get("description"),1000),location=clean(form.get("location"),100);
  const website=clean(form.get("website"),500),instagram=clean(form.get("instagram"),500),
  facebook=clean(form.get("facebook"),500);
+ const countryCode=clean(form.get("countryCode"),2).toUpperCase();
+ const shippingMode=clean(form.get("shippingMode"),30);
+ const shippingNotes=clean(form.get("shippingNotes"),400);
+ const liveAnimalShipping=clean(form.get("liveAnimalShipping"),10);
+ const rawDestinations=clean(form.get("shippingCountries"),1000);
+ const shippingCountries=[...new Set(rawDestinations.split(",").map(s=>s.trim().toUpperCase()).filter(Boolean))];
+ const validShippingModes=new Set<string>(vendorShippingModes.map(option=>option.value));
+ if((countryCode&&!validVendorCountry(countryCode))||!validShippingModes.has(shippingMode)||
+  (shippingMode==="domestic"&&!countryCode)||
+  !["yes","no","ask"].includes(liveAnimalShipping)||
+  shippingNotes.length>400||shippingCountries.length>249||shippingCountries.some(code=>!validVendorCountry(code))||
+  (shippingMode==="selected"&&shippingCountries.length===0)||
+  (shippingMode!=="selected"&&shippingCountries.length>0))
+  return {success:false,message:"Check your country, shipping destinations, and live-animal delivery settings."};
  if(name.length<2||name.length>80||tagline.length>140||description.length>1000||location.length>100
   ||![website,instagram,facebook].every(safeUrl))
   return{success:false,message:"Review your business name, text lengths, and HTTPS links."};
@@ -51,6 +66,8 @@ export async function submitVendorProfile(form:FormData):Promise<Outcome>{
  }
  const payload={user_id:user.id,business_name:name,tagline,description,location_label:location,
   website_url:website,instagram_url:instagram,facebook_url:facebook,logo_path:logoPath,
+  country_code:countryCode,shipping_mode:shippingMode,shipping_countries:shippingCountries,
+  shipping_notes:shippingNotes,live_animal_shipping:liveAnimalShipping,
   status:"pending",reviewed_at:null,updated_at:new Date().toISOString()};
  const result=existing
   ? await admin.from("vendor_profiles").update(payload).eq("id",existing.id).eq("user_id",user.id).select("id").single()
