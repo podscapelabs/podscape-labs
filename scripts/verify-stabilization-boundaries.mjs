@@ -8,6 +8,7 @@ const prefs=read("app/api/preferences/sync/route.ts");
 const model=read("lib/podscape-updates.ts");
 const directory=read("app/shop/vendors/page.tsx");
 const application=read("app/shop/vendors/apply/page.tsx");
+const vendorOwnerDesk=read("app/admin/vendors/page.tsx");
 const workflow=read(".github/workflows/keeper-qa.yml");
 
 assert.match(admin,/import "server-only"/,"Admin Supabase client must stay server-only");
@@ -18,6 +19,12 @@ assert.match(vendor,/!user\.email_confirmed_at/,"Vendor submissions must require
 assert.match(vendor,/\.eq\("user_id",user\.id\)/,"Vendor edits must scope to verified member ownership");
 assert.match(vendor,/status:"pending"/,"Vendor modifications must revoke prior approval");
 assert.match(vendor,/isAdminAuthenticated\(\)/,"Vendor approval actions must authorize the owner");
+assert.match(vendorOwnerDesk,/name="expectedUpdatedAt"/,"Owner review must submit the displayed application revision");
+assert.match(vendorOwnerDesk,/name="expectedStatus"/,"Owner review must submit the displayed status");
+assert.match(vendor,/\.eq\("updated_at",expectedUpdatedAt\)/,"Reject approvals based on stale applications");
+assert.match(vendor,/\.eq\("status",expectedStatus\)/,"Reject approvals based on stale statuses");
+assert.match(vendor,/if\(!data\)throw new Error\("This vendor application changed/,"Stale updates must fail closed");
+
 assert.match(updates,/isAdminAuthenticated\(\)/,"Platform update publishing must authorize the owner");
 assert.match(updates,/validDestination\(href\)/,"Release links must remain internal and validated");
 assert.match(model,/\.eq\("status","published"\)/,"Public updates cannot include private drafts");
