@@ -37,9 +37,9 @@ export function RecentCategoryCards({groups}:{groups:RecentGroup[]}){
       {isExpanded?"Hide updates":`+ ${count} more ${updateCategoryById[group.category].plural}`}
       <PodscapeLineIcon name={isExpanded?"arrow-up":"arrow-down"}/>
      </button>
-     {isExpanded?<div className={styles.recentCategoryMore} id={id}>
-      {group.items.slice(1).map(item=><Link href={item.href} key={item.href}>{item.title}<span aria-hidden="true">→</span></Link>)}
-     </div>:null}
+     <div className={styles.recentCategoryMore} id={id} hidden={!isExpanded}>
+      {isExpanded?group.items.slice(1).map((item,index)=><Link href={item.href} key={item.href+"|"+item.title+"|"+index}>{item.title}<span aria-hidden="true">→</span></Link>):null}
+     </div>
     </div>:<div className={styles.recentCategoryFooter}><span className={styles.recentCategoryOnly}>Latest in {updateCategoryById[group.category].label}</span></div>}
    </article>;
   })}
