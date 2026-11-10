@@ -1,0 +1,24 @@
+-- PROPOSAL ONLY. DO NOT APPLY TO PRODUCTION WITHOUT OWNER APPROVAL.
+-- Source: Supabase performance advisor, 2026-11-10.
+-- These supporting foreign-key indexes improve referential delete/update lookups
+-- when parent rows are modified and may help selected app queries.
+--
+-- On an approved staging copy, check EXPLAIN plans and write costs first.
+-- For a large production table, CREATE INDEX CONCURRENTLY must be run outside
+-- a transaction; the appropriate deployment/migration runner must support that.
+--
+-- CREATE INDEX CONCURRENTLY IF NOT EXISTS member_species_views_species_idx
+--   ON public.member_species_views (species_id);
+--
+-- CREATE INDEX CONCURRENTLY IF NOT EXISTS shop_inventory_adjustments_actor_user_idx
+--   ON public.shop_inventory_adjustments (actor_user_id);
+--
+-- Verify:
+-- SELECT tablename,indexname,indexdef FROM pg_indexes
+-- WHERE schemaname='public'
+--   AND indexname IN ('member_species_views_species_idx',
+--                     'shop_inventory_adjustments_actor_user_idx');
+--
+-- Not urgent on current data volume (roughly 61 species-view rows and one
+-- inventory adjustment per pg_stat estimates). Do not delete existing "unused"
+-- indexes from advisor suggestions without workload evidence.
