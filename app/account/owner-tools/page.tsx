@@ -66,6 +66,9 @@ export default async function OwnerToolsPage() {
           {[earlyAccess,security].filter((item):item is NonNullable<typeof item>=>Boolean(item)).map(item=><Link href={item.href} key={item.href}>
             <span className={styles.operationCopy}><strong><PodscapeLineIcon name={item.icon} /> {item.title}</strong><small>{item.description}</small></span><b aria-hidden="true">→</b>
           </Link>)}
+          <Link href="/admin/vendors">
+            <span className={styles.operationCopy}><strong><PodscapeLineIcon name="shop" /> Vendor Applications</strong><small>Review, approve, or decline community vendor directory listings.</small></span><b aria-hidden="true">→</b>
+          </Link>
           <Link href="/app?onboarding=preview">
             <span className={styles.operationCopy}><strong><PodscapeLineIcon name="grid" /> Onboarding Preview</strong><small>Replay the actual four-step welcome tour without changing your account.</small></span><b aria-hidden="true">→</b>
           </Link>
