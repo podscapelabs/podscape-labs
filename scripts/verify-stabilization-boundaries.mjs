@@ -10,6 +10,11 @@ const directory=read("app/shop/vendors/page.tsx");
 const application=read("app/shop/vendors/apply/page.tsx");
 const vendorOwnerDesk=read("app/admin/vendors/page.tsx");
 const workflow=read(".github/workflows/keeper-qa.yml");
+const updatesArchive=read("app/updates/page.tsx");
+const homeUpdates=read("components/RecentCategoryCards.tsx");
+const middleware=read("middleware.ts");
+const updatesDesk=read("app/admin/updates/page.tsx");
+
 
 assert.match(admin,/import "server-only"/,"Admin Supabase client must stay server-only");
 assert.ok(!/NEXT_PUBLIC_/.test(admin),"Never use public environment keys for privileged client");
@@ -28,6 +33,15 @@ assert.match(vendor,/if\(!data\)throw new Error\("This vendor application change
 assert.match(updates,/isAdminAuthenticated\(\)/,"Platform update publishing must authorize the owner");
 assert.match(updates,/validDestination\(href\)/,"Release links must remain internal and validated");
 assert.match(model,/\.eq\("status","published"\)/,"Public updates cannot include private drafts");
+assert.match(updatesArchive,/getPublishedUpdates\(\)/,"Updates archive must query published entries");
+assert.match(updatesArchive,/entry\.details/,"Updates archive must show full notes");
+assert.match(updatesArchive,/validCategory\(params\.category\)/,"Updates archive category parameter must be validated");
+assert.match(homeUpdates,/href={`\/updates\?category=\$\{group\.category\}`}/,"Home update cards must open a real category archive");
+assert.match(homeUpdates,/href={`\/updates\?category=\$\{category\}`}/,"Update detail dialogs must link to a full archive");
+assert.match(middleware,/"\/updates"/,"Release notes must remain invitation-only during early access");
+assert.match(updatesDesk,/defaultValue={entry\?\.href\|\|"\/updates\?category=whats_improved"}/,"Owner update default must target the archive");
+assert.match(updates,/revalidatePath\("\/updates"\)/,"Publishing must refresh the updates archive");
+
 assert.match(directory,/\.eq\("status","approved"\)/,"Public vendors cannot include pending applications");
 assert.match(application,/\.eq\("user_id",user\.id\)/,"Vendor edit form must load only the current user's draft");
 assert.match(prefs,/db\.auth\.getUser\(\)/,"Preference sync must verify the session");
