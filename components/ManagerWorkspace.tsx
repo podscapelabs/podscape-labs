@@ -12,6 +12,7 @@ import homeStyles from "./PodscapeHome.module.css";
 import {moveBlock,dropBlock,uniqueAllowed} from "./workspace-layout";
 import {WorkspaceEditToolbar,WorkspaceEditBlock,useWorkspaceDrag} from "./WorkspaceEditCanvas";
 import {ManagerCareOverview,ManagerActivityFeed,ManagerInsights,type ManagerBin,type ManagerEvent} from "./ManagerCareWidgets";
+import {managerWidgetNames} from "./workspace-widget-labels";
 import {recordExperienceAction} from "./experience-achievements";
 import {confirmWorkspaceReset} from "./workspace-edit-standards";
 import {useWorkspaceEditorDialog} from "./useWorkspaceEditorDialog";
@@ -21,7 +22,7 @@ type Section="hero"|"stats"|"care"|"tools"|"activity"|"enclosures"|"insights";
 type Tool={id:string;label:string;href:string;icon:PodscapeIconName};
 const defaults:Section[]=["hero","tools","enclosures","care","activity","stats","insights"];
 const required:Section[]=["hero","tools"];
-const labels:Record<Section,string>={hero:"Manager Overview",stats:"Colony Totals",care:"Care Schedule",tools:"Quick Tools",activity:"Recent Care",enclosures:"Recently Updated Bins",insights:"Colony Insights"};
+const labels:Record<Section,string>=managerWidgetNames;
 const library:Tool[]=[
  {id:"scan",label:"Scan bin",href:"/keeper/scan",icon:"scan"},
  {id:"qr",label:"Create QR",href:"/keeper/qr",icon:"qr"},
