@@ -25,8 +25,11 @@ drop policy if exists "Members can read their own application" on public.vendor_
 create policy "Members can read their own application" on public.vendor_profiles for select to authenticated
  using ((select auth.uid()) = user_id);
 -- No direct user INSERT/UPDATE/DELETE policies. Reviewed server actions use service key and verified identity.
-grant select on public.vendor_profiles to anon, authenticated;
-revoke insert, update, delete on public.vendor_profiles from anon, authenticated;
+-- Expose only public listing fields, never the member's user_id or review metadata.
+revoke all on public.vendor_profiles from anon, authenticated;
+grant select (id,business_name,tagline,description,location_label,website_url,
+  instagram_url,facebook_url,logo_path,status,created_at,updated_at)
+  on public.vendor_profiles to anon, authenticated;
 insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
 values ('vendor-logos','vendor-logos',true,2097152,array['image/png','image/jpeg','image/webp'])
 on conflict (id) do update set public=true,file_size_limit=2097152,
