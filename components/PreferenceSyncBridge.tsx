@@ -92,7 +92,7 @@ export function PreferenceSyncBridge({userId,isOwner}:{userId:string|null;isOwne
     revisionRef.current=latest.revision;
     markSaved(userId,latest);
     modeChange("synced");
-    if(!sameUiPreferences(current,readLocalUiPreferences(ownerRef.current)))dirty.current=true;
+    if(!sameUiPreferences(current,readLocalUiPreferences(ownerRef.current,userId)))dirty.current=true;
    }
   }catch{modeChange("offline")}
   finally{
@@ -221,7 +221,7 @@ export function PreferenceSyncBridge({userId,isOwner}:{userId:string|null;isOwne
   try{
    const latest=await loadCloud(ownerRef.current);
    revisionRef.current=latest.revision;setCloud(latest);
-   const local=readLocalUiPreferences(ownerRef.current);
+   const local=readLocalUiPreferences(ownerRef.current,userId);
    if(!latest.preferences)modeChange(isDefaultUiPreferences(local)?"waiting":"import");
    else if(sameUiPreferences(latest.preferences,local)){markSaved(userId,latest);modeChange("synced")}
    else modeChange("conflict");
