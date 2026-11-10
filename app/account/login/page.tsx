@@ -9,7 +9,7 @@ export default async function CustomerLoginPage({ searchParams }: { searchParams
   const db = await customerSupabase();
   const { status } = await searchParams;
   return (
-    <CustomerAuthShell index="AC / 001" eyebrow="Podscape Labs · Member access" title="Welcome back." intro="Your place to manage the colonies, references, and resources that matter to you.">
+    <CustomerAuthShell index="AC / 001" eyebrow="PodScape Labs · Member access" title="Welcome back." intro="Your place to manage the colonies, references, and resources that matter to you.">
       <p className={styles.panelLabel}>Member sign in</p>
       {status === "password-changed" ? <p className={styles.success} role="status">Password updated. Sign in with your new password.</p> : null}
       {status === "invalid-link" ? <p className={styles.error} role="alert">That email link has expired or cannot be used. Please try again.</p> : null}
