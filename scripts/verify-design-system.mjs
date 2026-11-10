@@ -95,4 +95,20 @@ for(const [path,area] of [
  assert.ok(read(path).includes('confirmWorkspaceReset("'+area+'")'),"Shortcut reset needs confirmation: "+path);
 }
 
+
+const emptyComponent=read("components/FirstActionEmptyState.tsx");
+assert.match(emptyComponent,/PodscapeLineIcon/,"First-action empty states must use canonical line icons");
+assert.match(emptyComponent,/primary\.href/,"First-action empty states must offer a genuine destination");
+for(const [path,phrase] of [
+ ["app/keeper/page.tsx","Add Your First Colony"],
+ ["components/KeeperCollectionHub.tsx","Add your first bin"],
+ ["components/HomeWidgets.tsx","Make Home your own."],
+ ["components/LedgerExplorer.tsx","Start your species collection."],
+ ["app/account/progress/ProgressDashboard.tsx","YOUR FIRST MILESTONE"]
+]){
+ assert.ok(read(path).includes(phrase),"First-action empty-state missing from "+path);
+}
+assert.ok(read("components/KeeperCollectionHub.tsx").includes("Clear search"),"Filtered colony list must offer a recovery action");
+assert.ok(read("components/LedgerExplorer.tsx").includes("Reset filters"),"Filtered Ledger list must offer a recovery action");
+
 console.log("Design-system checks passed: 8/8 semantic game icons, no Fun Zone leaf fillers, shared editor controls and documented global standard.");
