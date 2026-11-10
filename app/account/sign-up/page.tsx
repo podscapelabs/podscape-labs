@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function CustomerRegistrationPage() {
   const db = await customerSupabase();
   return (
-    <CustomerAuthShell index="AC / 002" eyebrow="Podscape Labs · Member access" title="Make a little space." intro="Create a keeper account. Your personal collection and future journal tools will connect here as the platform grows.">
+    <CustomerAuthShell index="AC / 002" eyebrow="PodScape Labs · Member access" title="Make a little space." intro="Create a keeper account. Your personal collection and future journal tools will connect here as the platform grows.">
       <p className={styles.panelLabel}>New member registration</p>
       {!db || !customerAuthSiteUrl()
         ? <p className={styles.error}>Member registration is not configured yet.</p>
