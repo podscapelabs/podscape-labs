@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import {managerWidgetNames} from "@/components/workspace-widget-labels";
 import Image from "next/image";
 import Link from "next/link";
 import { PlatformShell } from "@/components/PlatformShell";
@@ -64,7 +65,7 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
             <Link href="/keeper/collection"><PodscapeLineIcon name="bin" /><strong>{active.length}</strong><span>Bins</span><b>›</b></Link>
             <Link href="/keeper/collection"><PodscapeLineIcon name="community" /><strong>{totalPopulation}</strong><span>Recorded population</span><b>›</b></Link>
           </section>} enclosures={<section className={styles.section}>
-            <header><h2>Recently Updated Bins</h2><Link href="/keeper/collection">View all <span>→</span></Link></header>
+            <header><h2>{managerWidgetNames.enclosures}</h2><Link href="/keeper/collection">View all <span>→</span></Link></header>
             {recent.length ? <div className={styles.attentionList}>{recent.map(enclosure => {
               const record = speciesById.get(enclosure.speciesId);
               return <Link href={`/keeper/${enclosure.id}`} key={enclosure.id}>
