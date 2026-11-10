@@ -28,12 +28,12 @@ export function ShortcutWelcomeTip({userId,ownerPreview=false}:{userId:string|nu
  const opener=useRef<HTMLElement|null>(null);
  const storageKey=userId?"podscape-onboarding-v2:"+userId:"";
  useEffect(()=>{
-  if(!storageKey)return;
+  if(!storageKey&&!ownerPreview)return;
   try{
    const mode=new URLSearchParams(window.location.search).get("onboarding");
    const preview=ownerPreview&&mode==="preview";
    setPreviewMode(preview);
-   setVisible(preview||mode==="1"||localStorage.getItem(storageKey)!=="seen");
+   setVisible(preview||(Boolean(storageKey)&&(mode==="1"||localStorage.getItem(storageKey)!=="seen")));
   }catch{}
  },[storageKey,ownerPreview]);
  useEffect(()=>{
