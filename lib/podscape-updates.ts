@@ -1,15 +1,9 @@
 import "server-only";
 import {getSupabaseAdmin} from "@/lib/supabase-admin";
 
-export const updateCategories=[
- {id:"leaf_ledger",label:"Leaf Ledger",icon:"leaf",kind:"species"},
- {id:"whats_improved",label:"What's Improved",icon:"creative",kind:"updates"},
- {id:"new_features",label:"New Features",icon:"grid",kind:"features"},
- {id:"field_guide",label:"Field Guide",icon:"book",kind:"guides"},
- {id:"shop_vendors",label:"Shop & Vendors",icon:"shop",kind:"listings"},
- {id:"fun_podbound",label:"Fun Zone & PodBound",icon:"gamepad",kind:"releases"}
-] as const;
-export type UpdateCategory=(typeof updateCategories)[number]["id"];
+import {updateCategories,type UpdateCategory} from "@/data/update-categories";
+export {updateCategories};
+export type {UpdateCategory};
 export type UpdateRecord={id:string;category:UpdateCategory;title:string;summary:string;href:string;status:"draft"|"published";published_at:string|null;updated_at:string;created_at:string};
 export function validDestination(href:string):boolean{
  if(!href.startsWith("/")||href.startsWith("//")||href.length>300||/[\\\s<>]/.test(href))return false;
