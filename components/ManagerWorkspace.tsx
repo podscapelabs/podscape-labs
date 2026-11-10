@@ -132,8 +132,19 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
   const difference=block.getBoundingClientRect().top-top;
   if(Math.abs(difference)>1)window.scrollBy({top:difference,behavior:"instant"});
  },[canvasEditing]);
- useEffect(()=>{try{const saved=localStorage.getItem(storageKey);if(saved)setLayout(normalize(JSON.parse(saved)))}catch{}setReady(true)},[storageKey]);
- const update=(next:Layout)=>{setLayout(next);try{localStorage.setItem(storageKey,JSON.stringify(next))}catch{}if(ready&&JSON.stringify(next)!==JSON.stringify(layout)&&JSON.stringify(next)!==JSON.stringify(initial))void recordExperienceAction("manager_personalized",{order:next.order,visible:next.visible,tools:next.tools,changed:true,changedOrder:next.order.join("|")!==initial.order.join("|")});};
+ useEffect(()=>{
+  const load=()=>{try{const saved=localStorage.getItem(storageKey);if(saved)setLayout(normalize(JSON.parse(saved)))}catch{}};
+  load();setReady(true);
+  const onWorkspace=(event:Event)=>{
+   const detail=(event as CustomEvent<{area:string;userId:string}>).detail;
+   if(detail?.area==="manager"&&detail.userId===scope)load();
+  };
+  const onStorage=(event:StorageEvent)=>{if(event.key===storageKey)load()};
+  window.addEventListener("podscape-workspace-layout-changed",onWorkspace);
+  window.addEventListener("storage",onStorage);
+  return ()=>{window.removeEventListener("podscape-workspace-layout-changed",onWorkspace);window.removeEventListener("storage",onStorage)};
+ },[storageKey,scope]);
+ const update=(next:Layout)=>{setLayout(next);try{localStorage.setItem(storageKey,JSON.stringify(next));if(scope!=="guest")window.dispatchEvent(new CustomEvent("podscape-workspace-layout-changed",{detail:{area:"manager",userId:scope}}))}catch{}if(ready&&JSON.stringify(next)!==JSON.stringify(layout)&&JSON.stringify(next)!==JSON.stringify(initial))void recordExperienceAction("manager_personalized",{order:next.order,visible:next.visible,tools:next.tools,changed:true,changedOrder:next.order.join("|")!==initial.order.join("|")});};
  const swap=(id:string)=>{if(slot===null)return;const next=[...layout.tools];const prior=next.indexOf(id);if(prior>=0){[next[slot],next[prior]]=[next[prior],next[slot]]}else next[slot]=id;update({...layout,tools:next});setSlot(null)};
  const move=(id:Section,dir:number)=>update({...layout,order:moveBlock(layout.order,layout.visible,id,dir)});
  const reorder=(from:Section,to:Section)=>update({...layout,order:dropBlock(layout.order,from,to)});
