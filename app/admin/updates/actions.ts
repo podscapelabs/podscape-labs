@@ -16,7 +16,7 @@ export async function savePlatformUpdate(form:FormData){
  const detailText=value(form,"details");
  const details=detailText.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
  if(!allowed.has(category)||title.length<3||title.length>100||summary.length<5||summary.length>240
-  ||details.length>12||details.some(line=>line.length>220)||detailText.length>3000
+  ||details.length>12||(intent==="publish"&&details.length===0)||details.some(line=>line.length>220)||detailText.length>3000
   ||!validDestination(href)||!["draft","publish"].includes(intent)||Boolean(id&&!/^[\da-f-]{36}$/i.test(id)))
   redirect("/admin/updates?error=validation");
  const db=getWritableSupabaseAdmin();
@@ -43,8 +43,9 @@ export async function changePlatformUpdateStatus(form:FormData){
  if(!/^[\da-f-]{36}$/i.test(id)||!["draft","published"].includes(status))redirect("/admin/updates?error=validation");
  const db=getWritableSupabaseAdmin();
  if(!db)redirect("/admin/updates?error=storage");
- const current=await db.from("podscape_updates").select("status,published_at").eq("id",id).maybeSingle();
+ const current=await db.from("podscape_updates").select("status,published_at,details").eq("id",id).maybeSingle();
  if(current.error||!current.data)redirect("/admin/updates?error=missing");
+ if(status==="published"&&(!Array.isArray(current.data.details)||current.data.details.length===0))redirect("/admin/updates?error=details");
  const publishedAt=status==="published"?(current.data.status==="published"?current.data.published_at:new Date().toISOString()):null;
  const {error}=await db.from("podscape_updates").update({status,published_at:publishedAt,updated_at:new Date().toISOString()}).eq("id",id);
  if(error)redirect("/admin/updates?error=storage");
