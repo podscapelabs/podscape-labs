@@ -1,10 +1,116 @@
-.page{display:grid;place-items:center;min-height:100svh;background:var(--background,var(--canvas,#eee8d8));color:var(--text-primary,var(--ink,#16241c));padding:30px 24px calc(100px + env(safe-area-inset-bottom,0px));text-align:center}
-.content{width:min(100%,310px);display:flex;flex-direction:column;align-items:center}
-.logo{display:block;width:min(232px,85%);height:auto}
-:global(html[data-theme="dark"]) .logo{filter:invert(91%) sepia(13%) saturate(478%) hue-rotate(354deg) brightness(101%)}
-.content p{margin:20px 0 19px;color:var(--text-secondary,var(--muted,#657066));font:400 1rem/1.4 Georgia,serif}
-.progress{height:3px;width:142px;overflow:hidden;border-radius:4px;background:var(--border,var(--line,#c9c2ae))}
-.progress span{display:block;width:40%;height:100%;border-radius:4px;background:var(--accent,var(--forest,#173d2b));animation:travel 1.5s ease-in-out infinite}
-.content small{margin-top:14px;color:var(--text-muted,var(--muted,#657066));font-size:.68rem;letter-spacing:.07em}
-@keyframes travel{0%{transform:translateX(-110%)}50%{transform:translateX(130%)}100%{transform:translateX(300%)}}
-@media(prefers-reduced-motion:reduce){.progress span{width:100%;animation:none}}
+.page{
+  --splash-bg:#12231a;
+  --splash-ink:#f2f2e8;
+  --splash-muted:#aebdae;
+  --splash-accent:#b8c88f;
+  position:relative;
+  isolation:isolate;
+  display:grid;
+  place-items:center;
+  width:100%;
+  min-height:100svh;
+  min-height:100dvh;
+  padding:calc(24px + env(safe-area-inset-top,0px)) 24px calc(144px + env(safe-area-inset-bottom,0px));
+  overflow:hidden;
+  background:var(--splash-bg);
+  color:var(--splash-ink);
+  text-align:center;
+  font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+:global(html:not([data-theme="dark"])) .page{
+  --splash-bg:#eee8d8;
+  --splash-ink:#193126;
+  --splash-muted:#637464;
+  --splash-accent:#496b48;
+}
+.ambient{
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background:radial-gradient(ellipse 45% 29% at 50% 44%,color-mix(in srgb,var(--splash-accent) 9%,transparent),transparent 92%);
+}
+.content{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  width:min(100%,360px);
+  margin-inline:auto;
+  transform:translateY(-4vh);
+}
+.appMark{
+  display:grid;
+  place-items:center;
+  width:82px;
+  height:82px;
+  margin-bottom:22px;
+  border:1px solid color-mix(in srgb,var(--splash-accent) 28%,transparent);
+  border-radius:24px;
+  background:color-mix(in srgb,var(--splash-accent) 14%,transparent);
+  box-shadow:0 14px 45px #00000012;
+  color:var(--splash-accent);
+}
+.appMark svg{width:37px;height:37px;stroke-width:1.65}
+.brand{display:flex;flex-direction:column;align-items:center;gap:7px}
+.brand h1{
+  margin:0;
+  color:var(--splash-ink);
+  font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:clamp(2rem,9vw,2.55rem);
+  font-weight:680;
+  line-height:1.08;
+  letter-spacing:-.055em;
+}
+.brand span{
+  color:var(--splash-accent);
+  font-size:.69rem;
+  font-weight:760;
+  letter-spacing:.34em;
+  padding-left:.34em;
+}
+.content p{
+  margin:24px 0 32px;
+  color:var(--splash-muted);
+  font-size:.92rem;
+  font-weight:420;
+  line-height:1.5;
+  letter-spacing:-.01em;
+}
+.progress{
+  width:118px;
+  height:4px;
+  overflow:hidden;
+  border-radius:999px;
+  background:color-mix(in srgb,var(--splash-accent) 18%,transparent);
+}
+.progress span{
+  display:block;
+  width:38%;
+  height:100%;
+  border-radius:inherit;
+  background:var(--splash-accent);
+  animation:splashTravel 1.55s ease-in-out infinite;
+}
+.content small{
+  margin-top:16px;
+  color:var(--splash-muted);
+  font-size:.74rem;
+  font-weight:500;
+  letter-spacing:.045em;
+}
+@keyframes splashTravel{
+  0%{transform:translateX(-100%)}
+  50%{transform:translateX(115%)}
+  100%{transform:translateX(285%)}
+}
+@media(max-height:700px){
+ .page{padding-bottom:calc(106px + env(safe-area-inset-bottom,0px))}
+ .content{transform:none}
+ .appMark{width:66px;height:66px;margin-bottom:15px;border-radius:20px}
+ .appMark svg{width:30px;height:30px}
+ .content p{margin:16px 0 22px}
+}
+@media(prefers-reduced-motion:reduce){
+ .progress span{width:100%;animation:none}
+}
