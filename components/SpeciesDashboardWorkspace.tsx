@@ -4,6 +4,7 @@ import {useEffect,useLayoutEffect,useRef,useState,type ReactNode} from "react";
 import {WorkspaceEditBlock,WorkspaceEditToolbar,useWorkspaceDrag} from "./WorkspaceEditCanvas";
 import {moveBlock,dropBlock,uniqueAllowed} from "./workspace-layout";
 import {recordExperienceAction} from "./experience-achievements";
+import {confirmWorkspaceReset} from "./workspace-edit-standards";
 import homeStyles from "./PodscapeHome.module.css";
 import styles from "./SpeciesProfile.module.css";
 import { PodscapeLineIcon, type PodscapeIconName } from "./PodscapeLineIcon";
@@ -79,7 +80,7 @@ export function SpeciesDashboardWorkspace({widgets,scope,preview=false}:{widgets
  const {dragging,begin,move:dragMove,stop}=useWorkspaceDrag<SpeciesWidgetId>("species",visible,reorder);
  const done=()=>{stop();setCanvasEditing(false);editAnchor.current=null};
  const reset=()=>{
-  if(!window.confirm("Reset your Species Dashboard across all species? No species information or collection records will be changed."))return;
+  if(!confirmWorkspaceReset("species"))return;
   stop();update(defaultLayout());
  };
  const toggle=(id:SpeciesWidgetId)=>update({...layout,visible:layout.visible.includes(id)?layout.visible.filter(v=>v!==id):[...layout.visible,id]});
