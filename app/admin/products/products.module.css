@@ -152,3 +152,14 @@
  .editorHeader{padding:12px 0}
 }
 @media(max-width:420px){.header{padding:15px}.catalogueHead{padding:14px 12px}.stats{gap:7px}}
+
+
+/* Product detail uses the same owner hero, without changing its save form. */
+.editorHeader{position:relative;overflow:hidden;isolation:isolate;min-height:144px;grid-template-columns:44px minmax(0,1fr) auto;gap:14px;padding:clamp(17px,3vw,26px);margin:0 auto 16px;border:1px solid color-mix(in srgb,var(--portal-hero-text) 12%,transparent);border-radius:18px;background:radial-gradient(circle at 85% 16%,var(--portal-hero-glow),transparent 44%),linear-gradient(110deg,var(--portal-hero-start),var(--portal-hero-end));color:var(--portal-hero-text)}
+.editorHeader .back{background:color-mix(in srgb,var(--portal-hero-text) 6%,transparent);color:var(--portal-hero-text);border-color:color-mix(in srgb,var(--portal-hero-text) 25%,transparent)}
+.editorHeader :global(.eyebrow){color:var(--portal-hero-soft)}
+.editorHeader h1{color:var(--portal-hero-text);font:600 clamp(1.5rem,3.3vw,2.2rem)/1.13 var(--display)}
+.editorHeader div>p:last-child{color:var(--portal-hero-muted)}
+.editorActions a{color:var(--portal-hero-text);display:inline-flex;align-items:center;min-height:43px;padding:8px 12px;border:1px solid color-mix(in srgb,var(--portal-hero-text) 25%,transparent);border-radius:11px}
+.editorActions button{min-height:43px;background:var(--portal-hero-button-bg);border-color:transparent;color:var(--portal-hero-button-text)}
+@media(max-width:700px){.editorHeader{grid-template-columns:38px minmax(0,1fr);min-height:0;padding:17px}.editorActions{grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr))}.editorActions a{justify-content:center}}
