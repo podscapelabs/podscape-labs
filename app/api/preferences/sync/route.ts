@@ -15,11 +15,11 @@ async function authorize() {
  if(!owner&&(await testerAccessStatus(user.email))!=="approved")return null;
  return {db,userId:user.id,owner};
 }
-const columns="revision,home_layout,home_nav,bottom_nav,updated_at";
-function response(data:{revision:number;home_layout:unknown;home_nav:unknown;bottom_nav:unknown;updated_at:string}|null){
+const columns="revision,home_layout,home_nav,bottom_nav,manager_layout,species_layout,updated_at";
+function response(data:{revision:number;home_layout:unknown;home_nav:unknown;bottom_nav:unknown;manager_layout:unknown;species_layout:unknown;updated_at:string}|null){
  return NextResponse.json({
   revision:data?.revision??0,
-  preferences:data?{home:data.home_layout,navHome:data.home_nav,navBottom:data.bottom_nav}:null,
+  preferences:data?{home:data.home_layout,navHome:data.home_nav,navBottom:data.bottom_nav,manager:data.manager_layout,species:data.species_layout}:null,
   updatedAt:data?.updated_at??null
  },{headers:{"Cache-Control":"no-store"}});
 }
@@ -45,6 +45,7 @@ export async function POST(request:Request){
  if(!parsed)return NextResponse.json({error:"Invalid preference values"},{status:400});
  const fields={
   home_layout:parsed.home,home_nav:parsed.navHome,bottom_nav:parsed.navBottom,
+  manager_layout:parsed.manager,species_layout:parsed.species,
   updated_at:new Date().toISOString()
  };
  const query=session.db.from("member_ui_preferences");
