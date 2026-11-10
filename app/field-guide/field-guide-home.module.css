@@ -23,3 +23,44 @@
 .topicArt svg{width:32px;height:32px;max-width:45%;max-height:45%}
 .guideArt svg{width:25px;height:25px}
 .hero:after,.featured:after{content:none}
+
+
+/* Portal consistency: semantic theme surfaces for all five appearances.
+   Editorial illustrations are neutral theme treatments, never fixed sage green. */
+.hero{
+ background:
+  radial-gradient(circle at 93% 12%,color-mix(in srgb,var(--portal-hero-glow,var(--accent)) 36%,transparent),transparent 42%),
+  linear-gradient(120deg,var(--portal-hero-start,var(--surface)),var(--portal-hero-end,var(--surface-raised)));
+ color:var(--portal-hero-text,var(--text-primary));
+}
+.hero p{color:var(--portal-hero-muted,var(--text-secondary))}
+.hero small{color:var(--portal-hero-soft,var(--accent))}
+.featured{
+ background:radial-gradient(circle at 92% 85%,color-mix(in srgb,var(--portal-hero-glow,var(--accent)) 28%,transparent),transparent 50%),
+ linear-gradient(115deg,var(--portal-hero-start,var(--surface)),var(--portal-hero-end,var(--surface-raised)));
+ color:var(--portal-hero-text,var(--text-primary));
+ border:1px solid var(--border);
+}
+.featured p{color:var(--portal-hero-muted,var(--text-secondary))}
+.featured a{background:var(--portal-hero-button-bg,var(--accent));color:var(--portal-hero-button-text,var(--accent-contrast))}
+.topicArt{
+ background:linear-gradient(125deg,color-mix(in srgb,var(--accent) 8%,var(--surface-raised)),color-mix(in srgb,var(--accent) 18%,var(--surface)));
+ color:var(--accent);
+}
+.topic:nth-child(3n) .topicArt{background:linear-gradient(125deg,color-mix(in srgb,var(--lab,var(--accent)) 14%,var(--surface)),var(--surface-raised))}
+.topic:nth-child(4n) .topicArt{background:linear-gradient(125deg,color-mix(in srgb,var(--guide,var(--accent)) 13%,var(--surface-raised)),var(--surface))}
+.topicBody{background:var(--surface);color:var(--text-primary)}
+.search{box-shadow:var(--shadow-soft);border-radius:var(--radius-small)}
+.search input::placeholder{color:var(--text-secondary);opacity:1}
+.filter,.selected{border-radius:var(--radius-small)}
+.topic,.guide,.featured{border-radius:var(--radius-medium)}
+.page :is(a,button,input):focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+@media(max-width:720px){
+ .page{padding-bottom:calc(130px + env(safe-area-inset-bottom,0px))}
+ .hero{min-height:0;padding:22px 20px 24px}
+ .hero h1{font-size:clamp(2.35rem,9vw,3.15rem)}
+ .hero p{max-width:34ch}
+ .search{margin:10px 0 14px;border-radius:var(--radius-small)}
+ .featured{min-height:0;padding:23px 20px}
+ .topicArt{min-height:80px}
+}
