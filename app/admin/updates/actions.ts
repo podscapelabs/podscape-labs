@@ -13,13 +13,16 @@ export async function savePlatformUpdate(form:FormData){
  if(!(await isAdminAuthenticated()))redirect("/admin");
  const id=value(form,"id"),category=value(form,"category"),title=value(form,"title"),
   summary=value(form,"summary"),href=value(form,"href"),intent=value(form,"intent");
+ const detailText=value(form,"details");
+ const details=detailText.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
  if(!allowed.has(category)||title.length<3||title.length>100||summary.length<5||summary.length>240
+  ||details.length>12||details.some(line=>line.length>220)||detailText.length>3000
   ||!validDestination(href)||!["draft","publish"].includes(intent)||Boolean(id&&!/^[\da-f-]{36}$/i.test(id)))
   redirect("/admin/updates?error=validation");
  const db=getWritableSupabaseAdmin();
  if(!db)redirect("/admin/updates?error=storage");
  const now=new Date().toISOString();
- const payload={category:category as UpdateCategory,title,summary,href,updated_at:now};
+ const payload={category:category as UpdateCategory,title,summary,details,href,updated_at:now};
  let error:unknown=null;
  if(id){
   const existing=await db.from("podscape_updates").select("id,status,published_at").eq("id",id).maybeSingle();
