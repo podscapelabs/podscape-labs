@@ -648,3 +648,7 @@
 /* Shared editing system icons have one stable size throughout portals. */
 .jiggleHint>svg{width:20px;height:20px;color:var(--forest)}
 .widgetPreview>span svg{width:25px;height:25px}
+
+/* One shared dashboard edit affordance on Home, Manager and Species. */
+.desktopDashboardEdit svg{width:19px;height:19px;flex:none}
+@media(prefers-reduced-motion:reduce){.homeCanvasBlockActive,.jiggling,.shortcutEditing .shortcut{animation:none!important;transition:none!important}}
