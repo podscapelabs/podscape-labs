@@ -40,7 +40,7 @@ export function RecentCategoryCards({groups}:{groups:RecentGroup[]}){
      <button type="button" aria-expanded={isExpanded} aria-controls={id}
       onClick={()=>setExpanded(current=>({...current,[group.label]:!current[group.label]}))}>
       {isExpanded?"Hide updates":`+ ${count} more ${group.label==="SPECIES"?"species":group.label==="FIELD GUIDE"?"guides":"products"}`}
-      <PodscapeLineIcon name={isExpanded?"chevron-up":"chevron-down"}/>
+      <PodscapeLineIcon name={isExpanded?"arrow-up":"arrow-down"}/>
      </button>
      {isExpanded?<div className={styles.recentCategoryMore} id={id}>
       {group.items.slice(1).map(item=><Link href={item.href} key={item.href}>{item.title}<span aria-hidden="true">→</span></Link>)}
