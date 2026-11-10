@@ -55,6 +55,6 @@ export default async function UpdatesDesk({searchParams}:{searchParams:Promise<{
      </form>}
    </details>)}</div>
   </section>
-  <p className={styles.hint}>Editorial guideline: What's Improved is for meaningful user-facing refinements; New Features is for entirely new capabilities. Internal fixes and unreleased changes should remain drafts or stay out of the feed.</p>
+  <p className={styles.hint}>Editorial guideline: What&apos;s Improved is for meaningful user-facing refinements; New Features is for entirely new capabilities. Internal fixes and unreleased changes should remain drafts or stay out of the feed.</p>
  </div></main>;
 }
