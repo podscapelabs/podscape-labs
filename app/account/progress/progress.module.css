@@ -31,3 +31,10 @@
 .lockMark svg{width:15px;height:15px}
 .previouslyHidden svg{width:13px;height:13px;flex:none}
 .modalEmblem svg{width:36px;height:36px}
+
+/* The first milestone remains informational, never an automatic reward. */
+.achievements>div[role=group]{margin-bottom:16px}
+.empty strong{display:block;color:var(--ink);font:500 1.2rem var(--serif)}
+.empty p{margin:7px 0;color:var(--muted);line-height:1.5}
+.empty button{min-height:43px;padding:8px 14px;border:1px solid var(--forest);border-radius:10px;background:var(--paper);color:var(--forest);font:inherit;font-weight:800;cursor:pointer}
+.exploreIcon svg{height:28px;width:28px}
