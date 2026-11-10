@@ -58,10 +58,19 @@ export function SpeciesDashboardWorkspace({widgets,scope,preview=false}:{widgets
  const dialogRef=useWorkspaceEditorDialog(libraryOpen,()=>setLibraryOpen(false));
  const editAnchor=useRef<{id:SpeciesWidgetId;top:number}|null>(null);
  useEffect(()=>{
-  try{const raw=localStorage.getItem(storageKey);if(raw)setLayout(normalize(JSON.parse(raw)))}catch{}
-  setHydrated(true);
- },[storageKey]);
- const update=(value:Layout)=>{setLayout(value);try{localStorage.setItem(storageKey,JSON.stringify(value))}catch{}const base=defaultLayout();if(!preview&&hydrated&&JSON.stringify(value)!==JSON.stringify(layout)&&JSON.stringify(value)!==JSON.stringify(base))void recordExperienceAction("species_personalized",{order:value.order,visible:value.visible,changedOrder:value.order.join("|")!==base.order.join("|")});};
+  const load=()=>{try{const raw=localStorage.getItem(storageKey);if(raw)setLayout(normalize(JSON.parse(raw)))}catch{}};
+  load();setHydrated(true);
+  if(preview)return;
+  const onWorkspace=(event:Event)=>{
+   const detail=(event as CustomEvent<{area:string;userId:string}>).detail;
+   if(detail?.area==="species"&&detail.userId===scope)load();
+  };
+  const onStorage=(event:StorageEvent)=>{if(event.key===storageKey)load()};
+  window.addEventListener("podscape-workspace-layout-changed",onWorkspace);
+  window.addEventListener("storage",onStorage);
+  return ()=>{window.removeEventListener("podscape-workspace-layout-changed",onWorkspace);window.removeEventListener("storage",onStorage)};
+ },[storageKey,scope,preview]);
+ const update=(value:Layout)=>{setLayout(value);try{localStorage.setItem(storageKey,JSON.stringify(value));if(!preview&&scope!=="guest")window.dispatchEvent(new CustomEvent("podscape-workspace-layout-changed",{detail:{area:"species",userId:scope}}))}catch{}const base=defaultLayout();if(!preview&&hydrated&&JSON.stringify(value)!==JSON.stringify(layout)&&JSON.stringify(value)!==JSON.stringify(base))void recordExperienceAction("species_personalized",{order:value.order,visible:value.visible,changedOrder:value.order.join("|")!==base.order.join("|")});};
  const enterCanvas=(id?:SpeciesWidgetId)=>{
   if(id){
    const node=Array.from(document.querySelectorAll<HTMLElement>('[data-workspace-scope="species"]')).find(el=>el.dataset.workspaceBlock===id);
