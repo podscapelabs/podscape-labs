@@ -13,6 +13,7 @@ import {confirmWorkspaceReset} from "./workspace-edit-standards";
 import {useWorkspaceEditorDialog} from "./useWorkspaceEditorDialog";
 import {FirstActionEmptyState} from "./FirstActionEmptyState";
 import {RecentCategoryCards,type RecentGroup} from "./RecentCategoryCards";
+import {homeWidgetNames} from "./workspace-widget-labels";
 
 export type HomeColony={id:string;name:string;quantity:number;speciesName:string}|null;
 export type HomeProgress={level:number;exp:number}|null;
@@ -25,14 +26,14 @@ type WidgetId="recent"|"colony"|"games"|"progress"|"schedule"|"guides"|"communit
 type WidgetGroup="Discovery"|"My Keeper Tools"|"Play & Community";
 type WidgetDef={name:string;description:string;icon:PodscapeIconName;group:WidgetGroup;preview:string;size:"wide"|"compact"};
 const definitions:Record<WidgetId,WidgetDef>={
-  recent:{name:"Recently Updated",description:"Recent updates from Leaf Ledger, Field Guide and Shop, grouped by category.",icon:"news",group:"Discovery",preview:"Leaf Ledger · Field Guide · Shop",size:"wide"},
-  guides:{name:"Field Guide",description:"Jump into a recent care guide.",icon:"book",group:"Discovery",preview:"Continue discovering husbandry",size:"compact"},
-  colony:{name:"My Colony",description:"Quick access to your most recently updated enclosure.",icon:"jar",group:"My Keeper Tools",preview:"Colony · Species · Recorded count",size:"compact"},
-  progress:{name:"My Progress",description:"View your level and earned EXP at a glance.",icon:"achievement",group:"My Keeper Tools",preview:"Keeper level · Earned EXP",size:"compact"},
-  schedule:{name:"Care Schedule",description:"One-tap access to the existing Manager care schedule.",icon:"calendar",group:"My Keeper Tools",preview:"Open your care schedule",size:"compact"},
-  games:{name:"Play a Little",description:"Get straight into your Fun Zone activities.",icon:"gamepad",group:"Play & Community",preview:"Puzzles · Quizzes · Word games",size:"compact"},
-  community:{name:"Community",description:"Find your way back to the keeper community.",icon:"community",group:"Play & Community",preview:"Keepers · Creators · Updates",size:"compact"},
-  pins:{name:"Favorites",description:"Your saved species, games and colonies in one place.",icon:"bookmark",group:"Discovery",preview:"Pinned species · Games · Colonies",size:"wide"}
+  recent:{name:homeWidgetNames.recent,description:"Recent updates from Leaf Ledger, Field Guide and Shop, grouped by category.",icon:"news",group:"Discovery",preview:"Leaf Ledger · Field Guide · Shop",size:"wide"},
+  guides:{name:homeWidgetNames.guides,description:"Jump into a recent care guide.",icon:"book",group:"Discovery",preview:"Continue discovering husbandry",size:"compact"},
+  colony:{name:homeWidgetNames.colony,description:"Quick access to your most recently updated enclosure.",icon:"jar",group:"My Keeper Tools",preview:"Colony · Species · Recorded count",size:"compact"},
+  progress:{name:homeWidgetNames.progress,description:"View your level and earned EXP at a glance.",icon:"achievement",group:"My Keeper Tools",preview:"Keeper level · Earned EXP",size:"compact"},
+  schedule:{name:homeWidgetNames.schedule,description:"One-tap access to the existing Manager care schedule.",icon:"calendar",group:"My Keeper Tools",preview:"Open your care schedule",size:"compact"},
+  games:{name:homeWidgetNames.games,description:"Get straight into your Fun Zone activities.",icon:"gamepad",group:"Play & Community",preview:"Puzzles · Quizzes · Word games",size:"compact"},
+  community:{name:homeWidgetNames.community,description:"Find your way back to the keeper community.",icon:"community",group:"Play & Community",preview:"Keepers · Creators · Updates",size:"compact"},
+  pins:{name:homeWidgetNames.pins,description:"Your saved species, games and colonies in one place.",icon:"bookmark",group:"Discovery",preview:"Pinned species · Games · Colonies",size:"wide"}
 };
 const available=Object.keys(definitions) as WidgetId[];
 const groups:WidgetGroup[]=["Discovery","My Keeper Tools","Play & Community"];
