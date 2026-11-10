@@ -12,7 +12,7 @@ export function GlobalMobileNav({isOwner=false}:{isOwner?:boolean}){
   const router=useRouter();
   const {ids,change,reset}=useNavigationPreferences("bottom",isOwner);
   const {editing,selected,setSelected,handlers,done}=useShortcutEditor(ids,change);
-  const excluded=pathname==="/"||pathname==="/admin"||pathname.startsWith("/admin/")&&pathname!=="/admin/preview"||pathname.startsWith("/account/login")||pathname.startsWith("/account/register")||pathname.startsWith("/account/reset")||pathname.startsWith("/auth/");
+  const excluded=pathname==="/"||pathname==="/admin"||pathname.startsWith("/account/login")||pathname.startsWith("/account/register")||pathname.startsWith("/account/reset")||pathname.startsWith("/auth/");
   if(excluded)return null;
   const accessibleChoices=availableNavigationChoices(isOwner);
   const items=ids.map(id=>choiceById.get(id)).filter((x):x is NonNullable<typeof x>=>Boolean(x));
