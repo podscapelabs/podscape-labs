@@ -81,7 +81,7 @@ function ManagerQuickShortcuts({ids,change,primaryHref,canvasEditing}:{ids:strin
       <button type="button" disabled={selected<=0} onClick={()=>{change(moveNavigationSlot(ids,selected,selected-1));setSelected(selected-1)}} aria-label={`Move ${current.label} left`}>← Left</button>
       <button type="button" disabled={selected>=ids.length-1} onClick={()=>{change(moveNavigationSlot(ids,selected,selected+1));setSelected(selected+1)}} aria-label={`Move ${current.label} right`}>Right →</button>
     </div>
-    <button type="button" onClick={()=>{change([...initial.tools]);setSelected(0)}}>Reset shortcuts</button>
+    <button type="button" onClick={()=>{if(confirmWorkspaceReset("manager-shortcuts")){change([...initial.tools]);setSelected(0)}}}>Reset shortcuts</button>
    </div>:null}
    <nav className={`${homeStyles.shortcuts} ${styles.managerHomeShortcuts} ${editing?homeStyles.shortcutEditing:""}`} aria-label="Manager shortcuts">
     {ids.map((id,index)=>{const tool=library.find(item=>item.id===id);if(!tool)return null;const dragHandlers=handlers(index);
