@@ -37,7 +37,7 @@
 .previewLabel small,.printLabel small{display:block;max-width:100%;font:6pt/1.15 Arial,sans-serif;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;margin-top:1mm}
 .pending{width:var(--bulk-qr-size);height:var(--bulk-qr-size);display:grid;place-items:center;font-size:.7rem;color:#555}
 .emptyPreview{padding:45px 18px;border:1px dashed var(--line);border-radius:12px;text-align:center;color:var(--muted);font-size:.82rem}
-.printButton{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:48px;margin-top:14px;border:0;border-radius:12px;background:var(--forest);color:var(--paper);font:inherit;font-size:.8rem;font-weight:800;cursor:pointer}
+.printButton{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:48px;margin-top:14px;border:0;border-radius:12px;background:var(--ps-accent,var(--forest));color:var(--ps-accent-text,var(--paper));font:inherit;font-size:.8rem;font-weight:800;cursor:pointer}
 .printButton svg{width:20px;height:20px}
 .printButton:disabled{opacity:.5;cursor:not-allowed}
 .error{color:#a33728;font-size:.75rem}
@@ -59,3 +59,13 @@
 /* Keep print preview horizontally scrollable, without shrinking QR codes on phones. */
 .previewScroll{-webkit-overflow-scrolling:touch}
 @media print{.previewSection,.selector,.settings{display:none!important}.printGrid{break-inside:auto}.printLabel{page-break-inside:avoid;break-inside:avoid}}
+
+
+/* Bulk QR controls share Single QR's semantic accents; printed sheets retain
+   their fixed dark-on-white matrix, borders and physical dimensions. */
+.printButton{background:var(--ps-accent,var(--forest));color:var(--ps-accent-text,var(--paper))}
+.root :is(button,input):focus-visible{outline:3px solid var(--ps-focus,var(--amber));outline-offset:3px}
+.selector,.settings,.previewSection{background:var(--ps-surface,var(--paper));border-color:var(--ps-border,var(--line))}
+.activePreset,.binSelected{border-color:var(--ps-accent,var(--forest))}
+@media(max-width:720px){.root{padding-bottom:18px}.previewScroll{max-height:420px}}
+@media print{.root{padding:0!important}.previewLabel,.printLabel{background:#fff!important;color:#142c20!important}}
