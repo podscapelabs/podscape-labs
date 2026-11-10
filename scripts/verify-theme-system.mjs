@@ -28,6 +28,9 @@ assert.match(themeToggle,/woodland/,"Quick theme toggle must support Woodland");
 assert.match(layout,/saved === "woodland"/,"Early bootstrap must support Woodland");
 assert.match(layout,/style\.colorScheme = theme === "light"/,"Woodland should use dark native control scheme");
 assert.ok(!splashCss.includes(':global(html:not([data-theme="dark"]))'),"Woodland splash must not be treated as Light");
+assert.match(splashCss,/:global\(html\[data-theme="woodland"\]\) \.page\s*\{[\s\S]*?--splash-bg:#211a16;[\s\S]*?--splash-ink:#f5e9d7;[\s\S]*?--splash-muted:#ccb8a4;[\s\S]*?--splash-accent:#d6ac76;/,
+ "Woodland loading splash must use cocoa, parchment, and copper roles");
+
 
 for(const token of ["--ps-bg","--ps-surface","--ps-surface-raised","--ps-surface-muted","--ps-text","--ps-text-secondary","--ps-border","--ps-accent","--ps-accent-text","--ps-focus","--ps-font-ui","--ps-font-display","--ps-radius-card","--ps-min-control"]){
  assert.ok(globals.includes(token+":"),"Missing theme role: "+token);
