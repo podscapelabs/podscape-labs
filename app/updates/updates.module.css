@@ -1,0 +1,45 @@
+.page{min-height:100vh;padding:16px 0 125px;background:var(--background);color:var(--text-primary)}
+.wrap{width:min(1060px,calc(100% - 32px));margin:auto}
+.hero{position:relative;overflow:hidden;padding:clamp(25px,5vw,46px);border:1px solid var(--border);border-radius:24px;
+ background:radial-gradient(ellipse at 94% 7%,color-mix(in srgb,var(--accent) 18%,transparent),transparent 51%),
+ linear-gradient(120deg,var(--surface),var(--surface-raised))}
+.eyebrow{color:var(--accent);font-size:.7rem;font-weight:800;letter-spacing:.15em}
+.hero h1{max-width:650px;margin:12px 0 11px;font:500 clamp(2.5rem,8vw,4.6rem)/1 var(--display);letter-spacing:-.035em}
+.hero p{max-width:610px;margin:0;color:var(--text-secondary);line-height:1.5;font-size:.9rem}
+.homeLink{display:inline-flex;align-items:center;gap:9px;margin-top:20px;padding:10px 14px;border:1px solid var(--border-strong);
+ border-radius:999px;color:var(--accent);font-size:.76rem;font-weight:750;text-decoration:none}
+.homeLink svg,.destination svg,.empty a svg{width:16px;height:16px}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 28px}
+.filter,.active{display:inline-flex;align-items:center;gap:7px;min-height:42px;padding:9px 13px;border:1px solid var(--border);
+ border-radius:13px;background:var(--surface);color:var(--text-secondary);font-size:.73rem;font-weight:750;text-decoration:none}
+.filter svg,.active svg{width:17px;height:17px;flex:none}
+.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 13%,var(--surface));color:var(--text-primary)}
+.filter:hover{border-color:var(--accent);color:var(--text-primary)}
+.heading{margin:0 0 14px}.heading h2{margin:0;font:500 1.8rem/1.2 var(--display)}
+.heading p{margin:5px 0 0;color:var(--text-secondary);font-size:.73rem}
+.list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.entry{min-width:0;padding:23px 22px;border:1px solid var(--border);border-radius:20px;background:var(--surface)}
+.entryTop{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.entryTop time{font-size:.68rem;color:var(--text-secondary)}
+.category{display:inline-flex;align-items:center;gap:7px;color:var(--accent);font-size:.65rem;font-weight:850;letter-spacing:.02em}
+.category svg{width:19px;height:19px}
+.entry h3{margin:18px 0 7px;font:500 clamp(1.5rem,3.5vw,1.95rem)/1.12 var(--display);overflow-wrap:anywhere}
+.summary{margin:0;color:var(--text-secondary);font-size:.84rem;line-height:1.5;overflow-wrap:anywhere}
+.details{display:grid;gap:10px;list-style:none;margin:19px 0 0;padding:16px 0 0;border-top:1px solid var(--border)}
+.details li{display:flex;align-items:flex-start;gap:9px;font-size:.77rem;line-height:1.45;overflow-wrap:anywhere}
+.details li svg{width:17px;height:17px;flex:none;color:var(--accent);margin-top:1px}
+.destination{display:inline-flex;gap:8px;align-items:center;margin-top:20px;color:var(--accent);text-decoration:none;font-size:.75rem;font-weight:800}
+.empty{display:grid;justify-items:start;gap:10px;padding:35px;border:1px dashed var(--border-strong);border-radius:19px;background:var(--surface)}
+.empty>svg{width:30px;height:30px;color:var(--accent)}
+.empty h3{margin:0;font:500 1.65rem/1.15 var(--display)}
+.empty p{margin:0;color:var(--text-secondary);font-size:.81rem;line-height:1.5}
+.empty a{display:inline-flex;align-items:center;gap:7px;margin-top:10px;color:var(--accent);font-size:.74rem;font-weight:800;text-decoration:none}
+.footer{margin-top:24px;padding:14px 0;border-top:1px solid var(--border);color:var(--text-secondary);font-size:.72rem}
+.page a:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+@media(max-width:720px){
+ .page{padding-top:12px}.hero{padding:25px 21px;border-radius:20px}.hero h1{font-size:clamp(2.2rem,10vw,3rem)}
+ .filters{flex-wrap:nowrap;overflow-x:auto;padding:0 0 8px;margin:16px 0 20px;scrollbar-width:thin}
+ .filter,.active{white-space:nowrap;flex:none}
+ .list{grid-template-columns:1fr;gap:11px}.entry{padding:20px 17px;border-radius:17px}
+}
+@media(prefers-reduced-motion:reduce){.page *{scroll-behavior:auto}}
