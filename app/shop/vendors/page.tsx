@@ -1,3 +1,4 @@
+import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
 import type {Metadata} from "next";
 import Link from "next/link";
 import {PlatformShell} from "@/components/PlatformShell";
@@ -19,7 +20,7 @@ export default async function VendorsPage(){
   {error?<p className={styles.error}>Vendor listings are temporarily unavailable.</p>:null}
   <div className={styles.cards}>{vendors.map(v=><article key={v.id} className={styles.card}>
    <div className={styles.cardHead}>
-    {v.logo_path&&db?<img src={db.storage.from("vendor-logos").getPublicUrl(v.logo_path).data.publicUrl} alt={v.business_name+" logo"} loading="lazy"/>:<span className={styles.fallback} aria-hidden="true">✦</span>}
+    {v.logo_path&&db?<img src={db.storage.from("vendor-logos").getPublicUrl(v.logo_path).data.publicUrl} alt={v.business_name+" logo"} loading="lazy"/>:<span className={styles.fallback} aria-hidden="true"><PodscapeLineIcon name="vendor"/></span>}
     <div><h2>{v.business_name}</h2><small>{v.location_label||"Independent vendor"}</small></div>
    </div>
    {v.tagline?<p className={styles.tagline}>{v.tagline}</p>:null}
