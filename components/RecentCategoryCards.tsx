@@ -48,7 +48,10 @@ function UpdateDetailDialog({item,category,onClose}:{item:RecentItem;category:Re
       <h3>What&apos;s changed</h3>
       <ul>{details.map((detail,index)=><li key={index}><span aria-hidden="true"><PodscapeLineIcon name="check"/></span><span>{detail}</span></li>)}</ul>
      </section>:null}
-    {item.href?<div className={detailStyles.actions}><Link href={item.href} onClick={onClose}>Explore this area <PodscapeLineIcon name="arrow-right"/></Link></div>:null}
+    <div className={detailStyles.actions}>
+     {item.href&&item.href!=="/app"?<Link href={item.href} onClick={onClose}>Explore this area <PodscapeLineIcon name="arrow-right"/></Link>:null}
+     <Link href={`/updates?category=${category}`} onClick={onClose}>View all {updateCategoryById[category].label.toLowerCase()} <PodscapeLineIcon name="arrow-right"/></Link>
+    </div>
    </div>
   </div>;
 }
@@ -76,7 +79,7 @@ export function RecentCategoryCards({groups}:{groups:RecentGroup[]}){
     return <article className={styles.recentCategoryCard} key={group.category}>
      <div className={styles.recentCategoryHead}>
       <span className={styles.recentCategoryGlyph}><PodscapeLineIcon name={updateCategoryById[group.category].icon}/></span>
-      <span className={styles.recentCategoryName}>{updateCategoryById[group.category].label}</span>
+      <Link className={styles.recentCategoryName} href={`/updates?category=${group.category}`} aria-label={`View all ${updateCategoryById[group.category].label} updates`}>{updateCategoryById[group.category].label}</Link>
      </div>
      {newest.details!==undefined?<button className={styles.recentCategoryPrimary} type="button" onClick={event=>open(newest,group.category,event.currentTarget)}>
        <strong>{newest.title}</strong><span>{newest.description}</span><small>View update <span aria-hidden="true">→</span></small>
