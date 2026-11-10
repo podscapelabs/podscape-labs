@@ -5,16 +5,19 @@ import Link from "next/link";
 import {PodscapeLineIcon,type PodscapeIconName} from "./PodscapeLineIcon";
 import styles from "./PodscapeHome.module.css";
 
+export type RecentCategory="leaf_ledger"|"whats_improved"|"new_features"|"field_guide"|"shop_vendors"|"fun_podbound";
 export type RecentGroup={
- label:"SPECIES"|"FIELD GUIDE"|"SHOP";
+ category:RecentCategory;
  newestAt:string;
  items:{title:string;description:string;href:string}[];
 };
-const icons:Record<RecentGroup["label"],PodscapeIconName>={
- "SPECIES":"leaf","FIELD GUIDE":"book","SHOP":"shop"
-};
-const descriptions:Record<RecentGroup["label"],string>={
- "SPECIES":"Leaf Ledger","FIELD GUIDE":"Field Guide","SHOP":"PodScape Shop"
+const definitions:Record<RecentCategory,{label:string;icon:PodscapeIconName;plural:string}>={
+ leaf_ledger:{label:"Leaf Ledger",icon:"leaf",plural:"species"},
+ whats_improved:{label:"What's Improved",icon:"creative",plural:"improvements"},
+ new_features:{label:"New Features",icon:"grid",plural:"features"},
+ field_guide:{label:"Field Guide",icon:"book",plural:"guides"},
+ shop_vendors:{label:"Shop & Vendors",icon:"shop",plural:"updates"},
+ fun_podbound:{label:"Fun Zone & PodBound",icon:"gamepad",plural:"updates"}
 };
 
 /** One category card is always visible, regardless of the number of related edits. */
@@ -24,12 +27,12 @@ export function RecentCategoryCards({groups}:{groups:RecentGroup[]}){
   {groups.map(group=>{
    const newest=group.items[0];if(!newest)return null;
    const count=group.items.length-1;
-   const isExpanded=Boolean(expanded[group.label]);
-   const id="recent-category-"+group.label.toLowerCase().replaceAll(" ","-");
-   return <article className={styles.recentCategoryCard} key={group.label}>
+   const isExpanded=Boolean(expanded[group.category]);
+   const id="recent-category-"+group.category;
+   return <article className={styles.recentCategoryCard} key={group.category}>
     <div className={styles.recentCategoryHead}>
-     <span className={styles.recentCategoryGlyph}><PodscapeLineIcon name={icons[group.label]}/></span>
-     <span className={styles.recentCategoryName}>{descriptions[group.label]}</span>
+     <span className={styles.recentCategoryGlyph}><PodscapeLineIcon name={definitions[group.category].icon}/></span>
+     <span className={styles.recentCategoryName}>{definitions[group.category].label}</span>
     </div>
     <Link className={styles.recentCategoryPrimary} href={newest.href}>
      <strong>{newest.title}</strong>
@@ -38,14 +41,14 @@ export function RecentCategoryCards({groups}:{groups:RecentGroup[]}){
     </Link>
     {count>0?<div className={styles.recentCategoryFooter}>
      <button type="button" aria-expanded={isExpanded} aria-controls={id}
-      onClick={()=>setExpanded(current=>({...current,[group.label]:!current[group.label]}))}>
-      {isExpanded?"Hide updates":`+ ${count} more ${group.label==="SPECIES"?"species":group.label==="FIELD GUIDE"?"guides":"products"}`}
+      onClick={()=>setExpanded(current=>({...current,[group.category]:!current[group.category]}))}>
+      {isExpanded?"Hide updates":`+ ${count} more ${definitions[group.category].plural}`}
       <PodscapeLineIcon name={isExpanded?"arrow-up":"arrow-down"}/>
      </button>
      {isExpanded?<div className={styles.recentCategoryMore} id={id}>
       {group.items.slice(1).map(item=><Link href={item.href} key={item.href}>{item.title}<span aria-hidden="true">→</span></Link>)}
      </div>:null}
-    </div>:<div className={styles.recentCategoryFooter}><span className={styles.recentCategoryOnly}>Latest in {descriptions[group.label]}</span></div>}
+    </div>:<div className={styles.recentCategoryFooter}><span className={styles.recentCategoryOnly}>Latest in {definitions[group.category].label}</span></div>}
    </article>;
   })}
  </div>;
