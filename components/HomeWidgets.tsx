@@ -26,7 +26,7 @@ type WidgetId="recent"|"colony"|"games"|"progress"|"schedule"|"guides"|"communit
 type WidgetGroup="Discovery"|"My Keeper Tools"|"Play & Community";
 type WidgetDef={name:string;description:string;icon:PodscapeIconName;group:WidgetGroup;preview:string;size:"wide"|"compact"};
 const definitions:Record<WidgetId,WidgetDef>={
-  recent:{name:homeWidgetNames.recent,description:"Recent updates from Leaf Ledger, Field Guide and Shop, grouped by category.",icon:"news",group:"Discovery",preview:"Leaf Ledger · Field Guide · Shop",size:"wide"},
+  recent:{name:homeWidgetNames.recent,description:"The latest content, features and improvements, grouped into six categories.",icon:"news",group:"Discovery",preview:"Species · Improvements · Features · More",size:"wide"},
   guides:{name:homeWidgetNames.guides,description:"Jump into a recent care guide.",icon:"book",group:"Discovery",preview:"Continue discovering husbandry",size:"compact"},
   colony:{name:homeWidgetNames.colony,description:"Quick access to your most recently updated enclosure.",icon:"jar",group:"My Keeper Tools",preview:"Colony · Species · Recorded count",size:"compact"},
   progress:{name:homeWidgetNames.progress,description:"View your level and earned EXP at a glance.",icon:"achievement",group:"My Keeper Tools",preview:"Keeper level · Earned EXP",size:"compact"},
