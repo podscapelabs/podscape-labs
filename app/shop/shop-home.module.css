@@ -114,3 +114,29 @@
 :global(html[data-theme="woodland"]) .searchSubmit{
  color:var(--accent-contrast);
 }
+
+
+/* Lilac: lavender Shop portal, no leftovers from the green-only light palette. */
+:global(html[data-theme="lilac"]) .hero{
+ background:
+  radial-gradient(ellipse at 90% 12%,color-mix(in srgb,var(--moss) 25%,transparent),transparent 45%),
+  linear-gradient(125deg,#f1e5f5,#d7bde5);
+ color:#33223e;
+}
+:global(html[data-theme="lilac"]) .eyebrow{color:#70418b}
+:global(html[data-theme="lilac"]) .hero h1{color:#33223e}
+:global(html[data-theme="lilac"]) .hero p:last-child,
+:global(html[data-theme="lilac"]) .heroCopy>p:not(.eyebrow){color:#554263}
+:global(html[data-theme="lilac"]) .hero .previewTag{
+ border-color:#b99bc8;background:#fffaffad;color:#4a2b5f;
+}
+:global(html[data-theme="lilac"]) .path:nth-child(2){background:color-mix(in srgb,#cebbdf 23%,var(--surface))}
+:global(html[data-theme="lilac"]) .path:nth-child(3){background:color-mix(in srgb,#e2b9d7 25%,var(--surface))}
+:global(html[data-theme="lilac"]) .path:nth-child(4){background:color-mix(in srgb,#bea6d7 23%,var(--surface))}
+:global(html[data-theme="lilac"]) .feature{
+ background:radial-gradient(circle at 90% 23%,#e7d3f3,transparent 52%),
+ linear-gradient(125deg,#70418b,#9b75ae);
+ color:#fffaff;
+}
+:global(html[data-theme="lilac"]) .feature a{background:#fffaff;color:#4a2b5f}
+:global(html[data-theme="lilac"]) .searchSubmit{color:var(--accent-contrast)}
