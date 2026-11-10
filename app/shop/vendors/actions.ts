@@ -86,12 +86,21 @@ export async function submitVendorProfile(form:FormData):Promise<Outcome>{
 export async function reviewVendorProfile(form:FormData):Promise<void>{
  if(!(await isAdminAuthenticated()))throw new Error("Owner access required.");
  const id=clean(form.get("id"),50),status=clean(form.get("status"),20);
- if(!/^[a-f0-9-]{36}$/i.test(id)||!["approved","rejected","pending"].includes(status))
+ const expectedUpdatedAt=clean(form.get("expectedUpdatedAt"),60);
+ const expectedStatus=clean(form.get("expectedStatus"),20);
+ if(!/^[a-f0-9-]{36}$/i.test(id)||!["approved","rejected","pending"].includes(status)||
+  !["approved","rejected","pending"].includes(expectedStatus)||
+  !expectedUpdatedAt||!Number.isFinite(Date.parse(expectedUpdatedAt)))
   throw new Error("Invalid vendor review.");
  const admin=getSupabaseAdmin();
  if(!admin)throw new Error("Vendor database unavailable.");
- const {error}=await admin.from("vendor_profiles").update({status,reviewed_at:new Date().toISOString(),
-  updated_at:new Date().toISOString()}).eq("id",id);
+ // Guard the version displayed to the owner. A concurrent vendor edit must
+ // never become approved merely because an older owner screen was submitted.
+ const {data,error}=await admin.from("vendor_profiles").update({
+  status,reviewed_at:new Date().toISOString(),updated_at:new Date().toISOString()
+ }).eq("id",id).eq("status",expectedStatus).eq("updated_at",expectedUpdatedAt)
+  .select("id").maybeSingle();
  if(error)throw new Error("Could not update vendor approval.");
+ if(!data)throw new Error("This vendor application changed while you were reviewing it. Refresh the Owner Desk and review the latest version.");
  revalidatePath("/admin/vendors");revalidatePath("/shop/vendors");revalidatePath("/shop");
 }
