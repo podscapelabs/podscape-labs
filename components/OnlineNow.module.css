@@ -1,0 +1,15 @@
+.panel,.compact{display:flex;align-items:center;gap:15px;min-width:0;position:relative;overflow:hidden;border:1px solid var(--line);border-radius:18px;padding:20px;background:var(--paper);color:var(--ink)}
+.compact{padding:17px;min-height:146px}
+.icon{display:grid;place-items:center;flex:none;width:51px;height:51px;border-radius:15px;background:color-mix(in srgb,var(--forest) 10%,var(--paper));color:var(--forest)}
+.icon svg{width:28px;height:28px}
+.copy{min-width:0;flex:1}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;color:var(--forest);font-size:.62rem;letter-spacing:.09em;font-weight:850}
+.dot,.dotMuted{display:inline-block;flex:none;width:8px;height:8px;border-radius:50%;background:#41a76e;box-shadow:0 0 0 3px color-mix(in srgb,#41a76e 14%,transparent)}
+.dotMuted{background:var(--muted);box-shadow:none;opacity:.5}
+.copy strong{display:block;margin:8px 0 4px;font:500 clamp(1.4rem,3vw,2rem)/1.05 var(--serif);letter-spacing:-.035em;color:var(--ink)}
+.copy strong span{font-size:.64em;color:var(--forest)}
+.copy p{margin:0;font-size:.72rem;line-height:1.45;color:var(--muted)}
+.open{display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:none;color:var(--forest);font-size:.73rem;font-weight:800;text-decoration:none;min-height:40px}
+.open svg{width:17px;height:17px}
+.panel:focus-within,.compact:focus-within{outline-offset:3px}
+@media(max-width:530px){.panel,.compact{align-items:flex-start;gap:10px;padding:16px}.icon{width:43px;height:43px;border-radius:12px}.icon svg{width:23px;height:23px}.compact{flex-wrap:wrap}.compact .open{margin-left:53px}.copy strong{font-size:1.65rem}}
