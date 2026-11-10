@@ -5,17 +5,44 @@ import ts from "typescript";
 const read=(p)=>readFileSync(new URL("../"+p,import.meta.url),"utf8");
 const navSource=read("components/navigation-customization.ts");
 const modelSource=read("lib/ui-preferences.ts");
-function execute(source,dependencies={}){
+function execute(source,dependencies={},globals={}){
  const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
  const compiledModule={exports:{}};
- runInNewContext(code,{module:compiledModule,exports:compiledModule.exports,require:(id)=>{
+ runInNewContext(code,{...globals,module:compiledModule,exports:compiledModule.exports,require:(id)=>{
   if(id==="./navigation-customization"||id==="@/components/navigation-customization")return dependencies.nav;
   throw new Error("Unexpected module "+id);
  }});
  return compiledModule.exports;
 }
 const nav=execute(navSource);
-const model=execute(modelSource,{nav});
+const memory=new Map();
+const storage={getItem(key){return memory.get(key)??null},setItem(key,val){memory.set(key,String(val))},removeItem(key){memory.delete(key)}};
+const model=execute(modelSource,{nav},{localStorage:storage});
+const userId="member-x";
+const managerKey=model.managerStorageKey(userId),speciesKey=model.speciesStorageKey(userId);
+const oldManager={
+ order:["stats","care","tools","activity","enclosures","insights"],
+ visible:["stats","care","tools","activity","enclosures"],
+ tools:["scan","qr","add","care","schedule","notes"]
+};
+const oldSpecies={
+ order:["environment","feeding","habitat","about","guides"],
+ visible:["environment","feeding","habitat","about"]
+};
+storage.setItem(managerKey,JSON.stringify(oldManager));
+storage.setItem(speciesKey,JSON.stringify(oldSpecies));
+const upgraded=model.readLocalUiPreferences(false,userId);
+assert.equal(upgraded.manager.order.length,7,"Legacy manager must gain the complete canonical widget order");
+assert.equal(upgraded.manager.tools.length,6,"Legacy manager shortcut positions must remain valid");
+assert.ok(upgraded.species.order.includes("moisture"),"Legacy environment widget should migrate to moisture");
+assert.ok(upgraded.species.visible.includes("nutrition"),"Legacy feeding widget should migrate to nutrition");
+assert.ok(upgraded.species.visible.includes("habitatAdvanced"),"Legacy habitat widget should migrate to canonical habitat");
+assert.ok(model.parseUiPreferences(upgraded),"Legacy layouts must normalize into a safe, syncable payload");
+assert.equal(storage.getItem(managerKey),JSON.stringify(oldManager),"Reading legacy Manager layout must never mutate original device storage");
+assert.equal(storage.getItem(speciesKey),JSON.stringify(oldSpecies),"Reading legacy Species layout must never mutate original device storage");
+assert.equal(model.readLocalUiPreferences(false,"another-account").manager.visible.join(","),model.defaultManagerLayout().visible.join(","),"Manager preferences must be scoped to the signed-in user");
+storage.removeItem(managerKey);
+storage.removeItem(speciesKey);
 const standard=model.defaultUiPreferences();
 assert.equal(standard.home.order.length,12);
 assert.equal(standard.home.visible.join(","),"recent");
