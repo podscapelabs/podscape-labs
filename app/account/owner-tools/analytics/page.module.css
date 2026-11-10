@@ -1,4 +1,4 @@
-.page{min-height:100svh;padding:clamp(14px,3vw,34px) clamp(12px,3vw,32px) 100px;background:var(--canvas);color:var(--ink)}
+.page{min-height:100svh;padding:clamp(14px,3vw,34px) clamp(12px,3vw,32px) calc(125px + env(safe-area-inset-bottom, 0px));background:var(--canvas);color:var(--ink)}
 .wrap{max-width:1200px;margin:0 auto}
 .hero{display:flex;justify-content:space-between;align-items:center;min-height:212px;position:relative;overflow:hidden;border-radius:22px;background:radial-gradient(circle at 83% 10%,var(--portal-hero-glow),transparent 45%),linear-gradient(110deg,var(--portal-hero-start),var(--portal-hero-end));color:var(--portal-hero-text);margin-bottom:26px}
 .heroCopy{position:relative;z-index:1;padding:clamp(22px,4vw,43px);max-width:780px}
