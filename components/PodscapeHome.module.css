@@ -790,3 +790,26 @@
 :root[data-theme="woodland"] .homeEditorHead button{
  color:var(--ps-accent-text);
 }
+
+
+/* Woodland: Home's large visual hero follows the same chestnut portal atmosphere. */
+:global(html[data-theme="woodland"]) .hero{
+ background:linear-gradient(125deg,#33231c,#64432f);
+ color:var(--portal-hero-text);
+}
+:global(html[data-theme="woodland"]) .hero:after{
+ background:linear-gradient(90deg,rgba(35,22,16,.91) 0%,rgba(44,29,21,.72) 40%,rgba(57,35,24,.09) 100%);
+}
+:global(html[data-theme="woodland"]) .heroButton{
+ background:var(--portal-hero-button-bg);
+ color:var(--portal-hero-button-text);
+}
+:global(html[data-theme="woodland"]) .spotlightRail .tileVisual:has(.tilePlaceholder){
+ background:
+  radial-gradient(circle at 79% 17%,color-mix(in srgb,var(--amber) 16%,transparent),transparent 43%),
+  linear-gradient(130deg,var(--surface-raised),color-mix(in srgb,var(--moss) 14%,var(--surface)));
+}
+:global(html[data-theme="woodland"]) .spotlightRail .tileVisual:has(.tilePlaceholder)::before,
+:global(html[data-theme="woodland"]) .spotlightRail .tileVisual:has(.tilePlaceholder)::after{
+ border-color:color-mix(in srgb,var(--accent) 28%,transparent);
+}
