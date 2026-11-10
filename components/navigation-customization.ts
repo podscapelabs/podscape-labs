@@ -33,7 +33,7 @@ export const navigationChoices:NavChoice[]=[
   {id:"podbound-cards",label:"Card Catalogue",href:"/podbound/cards",icon:"podbound",tone:"sand",group:"Play & projects",description:"Browse published PodBound game cards"},
   {id:"progress",label:"My Progress",href:"/account/progress",icon:"leaf",tone:"sage",group:"Play & projects",description:"Achievements, levels and EXP"},
   {id:"community",label:"Community",href:"/community",icon:"community",tone:"sage",group:"Community & studio",description:"The PodScape keeper community"},
-  {id:"lab",label:"From the Lab",href:"/from-the-lab",icon:"note",tone:"rose",group:"Community & studio",description:"Projects and studio updates"},
+  {id:"lab",label:"Updates & Improvements",href:"/updates",icon:"news",tone:"rose",group:"Community & studio",description:"Published platform improvements and change notes"},
   {id:"explore",label:"Explore PodScape",href:"/explore",icon:"leaf",tone:"sage",group:"Community & studio",description:"A map of the PodScape ecosystem"},
   {id:"vendor-directory",label:"Vendor Directory",href:"/explore#vendor-directory",icon:"vendor",tone:"sand",group:"Coming later",description:"Future directory for hobby breeders and businesses",planned:true},
   {id:"creative-network",label:"Creative Network",href:"/explore#creative-network",icon:"creative",tone:"rose",group:"Coming later",description:"Future network for artists and makers",planned:true},
