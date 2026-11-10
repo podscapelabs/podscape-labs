@@ -39,10 +39,10 @@ export default async function CustomerAccountPage({searchParams}:{searchParams:P
    <div><p className={styles.eyebrow}>PODSCAPE LABS / YOUR ACCOUNT</p><h1>My Account</h1><p>Your profile, progress and preferences.</p></div>
    <span className={styles.accountMark} aria-hidden="true"><PodscapeLineIcon name="community" /></span>
   </header>
-  {verified==="1"?<p role="status" className={styles.notice}>Email confirmed. Welcome to Podscape.</p>:null}
+  {verified==="1"?<p role="status" className={styles.notice}>Email confirmed. Welcome to PodScape.</p>:null}
   <section className={styles.accountSummary} aria-label="Your membership">
    <div className={styles.accountSummaryTop}>
-    <div><small>WELCOME BACK</small><h2>Hello, {displayName.trim().split(/\s+/)[0]}!</h2><p>Podscape member since {joined}</p></div>
+    <div><small>WELCOME BACK</small><h2>Hello, {displayName.trim().split(/\s+/)[0]}!</h2><p>PodScape member since {joined}</p></div>
     <Link href="/account/progress" className={styles.accountLevel}>Level <strong>{level}</strong></Link>
    </div>
    <div className={styles.accountProgressLabels}><span>{(exp-levelStart).toLocaleString("en-CA")} / {(levelEnd-levelStart).toLocaleString("en-CA")} EXP to next level</span><Link href="/account/progress">My Progress →</Link></div>
@@ -58,7 +58,7 @@ export default async function CustomerAccountPage({searchParams}:{searchParams:P
   </section>
   {isOwner?<section className={styles.accountOwner} aria-label="Owner administration">
    <details id="owner-tools">
-    <summary><span className={styles.accountOwnerMark} aria-hidden="true"><PodscapeLineIcon name="manager" /></span><span><strong>Owner Tools</strong><small>Your private Podscape workspace</small></span><span className={styles.chevron} aria-hidden="true">⌄</span></summary>
+    <summary><span className={styles.accountOwnerMark} aria-hidden="true"><PodscapeLineIcon name="manager" /></span><span><strong>Owner Tools</strong><small>Your private PodScape workspace</small></span><span className={styles.chevron} aria-hidden="true">⌄</span></summary>
     <div className={styles.accountOwnerBody}>
      <p className={styles.accountGroupLabel}>Content desks</p>
      <nav className={styles.accountOwnerGrid} aria-label="Owner desks">
