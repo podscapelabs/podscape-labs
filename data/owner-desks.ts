@@ -11,6 +11,7 @@ export const ownerDesks = [
 ] as const;
 
 export const ownerOperations = [
+  { title: "Platform Analytics", description: "Accounts, registrations, online sessions and keeper activity.", href: "/account/owner-tools/analytics", icon: "community" as PodscapeIconName, symbol: "" },
   { title: "Early Access", description: "Approve testers and manage invitations.", href: "/admin/early-access", icon: "community" as PodscapeIconName, symbol: "♧" },
   { title: "Manager", description: "Open your colony management dashboard.", href: "/keeper", icon: "manager" as PodscapeIconName, symbol: "▤" },
   { title: "Owner Security", description: "Update your owner password.", href: "/admin/reset-password", icon: "note" as PodscapeIconName, symbol: "◇" },
