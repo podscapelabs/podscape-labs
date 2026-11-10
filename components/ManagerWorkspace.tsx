@@ -13,6 +13,7 @@ import {moveBlock,dropBlock,uniqueAllowed} from "./workspace-layout";
 import {WorkspaceEditToolbar,WorkspaceEditBlock,useWorkspaceDrag} from "./WorkspaceEditCanvas";
 import {ManagerCareOverview,ManagerActivityFeed,ManagerInsights,type ManagerBin,type ManagerEvent} from "./ManagerCareWidgets";
 import {recordExperienceAction} from "./experience-achievements";
+import {confirmWorkspaceReset} from "./workspace-edit-standards";
 
 type Section="hero"|"stats"|"care"|"tools"|"activity"|"enclosures"|"insights";
 type Tool={id:string;label:string;href:string;icon:PodscapeIconName};
@@ -71,7 +72,7 @@ function ManagerQuickShortcuts({ids,change,primaryHref,canvasEditing}:{ids:strin
       <button type="button" disabled={selected<=0} onClick={()=>{change(moveNavigationSlot(ids,selected,selected-1));setSelected(selected-1)}} aria-label={`Move ${current.label} left`}>← Left</button>
       <button type="button" disabled={selected>=ids.length-1} onClick={()=>{change(moveNavigationSlot(ids,selected,selected+1));setSelected(selected+1)}} aria-label={`Move ${current.label} right`}>Right →</button>
     </div>
-    <button type="button" className={homeStyles.jiggleReset} onClick={()=>{change([...initial.tools]);setSelected(0)}}>Reset shortcuts</button>
+    <button type="button" className={homeStyles.jiggleReset} onClick={()=>{if(confirmWorkspaceReset("manager-shortcuts")){change([...initial.tools]);setSelected(0)}}}>Reset shortcuts</button>
    </div>:null}
    {canvasEditing?<div className={homeStyles.inlineShortcutPicker}><span>Drag shortcuts to reorder · Tap one to replace</span>
     <label>Replace {current.label}<select value={current.id} onChange={event=>change(swapManagerSlot(ids,selected,event.target.value))}>{library.map(tool=><option key={tool.id} value={tool.id}>{tool.label}</option>)}</select></label>
@@ -140,7 +141,7 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
  const searchResults=matchingBins.slice(0,8);
  const {dragging,begin,move:dragMove,stop}=useWorkspaceDrag<Section>("manager",visible,reorder);
  const finishCanvas=()=>{stop();editAnchor.current=null;setCanvasEditing(false)};
- const resetToDefault=()=>{if(!window.confirm("Restore the default Manager dashboard? Your colony records will not be affected."))return;stop();update({...initial,order:[...defaults],visible:[...initial.visible],tools:[...initial.tools]});setSlot(null)};
+ const resetToDefault=()=>{if(!confirmWorkspaceReset("manager"))return;stop();update({...initial,order:[...defaults],visible:[...initial.visible],tools:[...initial.tools]});setSlot(null)};
  const applyPreset=(preset:"compact"|"detailed")=>{const base=preset==="compact"?initial:detailed;update({...layout,order:[...base.order],visible:[...base.visible]});setSlot(null)};
  const sections:Record<Section,ReactNode>={
   hero:<>{hero}
