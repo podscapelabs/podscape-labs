@@ -132,7 +132,7 @@ export function ColonyCsvImporter({species}:{species:Species[]}){
    <p className={styles.helper}>Species must match a Leaf Ledger entry; names can fall back to the bin label. Blank populations default to zero.</p>
   </section>
   <section className={styles.panel}>
-   <div className={styles.panelHead}><span className={styles.step}>03</span><div><h2>Review every bin</h2><p>Choose a Ledger species for any unmatched row. Uncheck entries you don't want to import.</p></div></div>
+   <div className={styles.panelHead}><span className={styles.step}>03</span><div><h2>Review every bin</h2><p>Choose a Ledger species for any unmatched row. Uncheck entries you do not want to import.</p></div></div>
    <div className={styles.tally}>{active.length} selected · {active.filter(r=>r.valid).length} ready · {active.filter(r=>!r.valid).length} need attention</div>
    <div className={styles.rows}>{analyzed.map(({i,speciesText,row,valid,ambiguous})=><div className={styles.row} key={i}>
     <label className={styles.rowToggle}><input type="checkbox" checked={!excluded.includes(i)} onChange={e=>setExcluded(prev=>e.target.checked?prev.filter(x=>x!==i):[...prev,i])}/><strong>Row {i+2}</strong></label>
