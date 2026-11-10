@@ -7,65 +7,72 @@ import { OnlineNow } from "@/components/OnlineNow";
 import styles from "./page.module.css";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title:"Owner Analytics | PodScape Labs", robots:{ index:false, follow:false } };
+export const metadata = { title: "Owner Analytics | PodScape Labs", robots: { index: false, follow: false } };
 
-function Value({count}:{count:number|null}) {
-  return <strong>{count === null ? "—" : count.toLocaleString("en-CA")}</strong>;
-}
+const format = (value:number|null) => value === null ? "—" : value.toLocaleString("en-CA");
 
 export default async function OwnerAnalyticsPage() {
   if (!(await isAdminAuthenticated())) redirect("/admin");
   const stats = await getOwnerAnalyticsStats();
   const peak = Math.max(1,...stats.registrationsByDay.map(item=>item.count));
+  const metrics = [
+    {label:"Registered",value:stats.accounts,icon:"community" as const,description:"All created accounts"},
+    {label:"Confirmed",value:stats.confirmed,icon:"check" as const,description:"Verified email"},
+    {label:"New this week",value:stats.last7d,icon:"calendar" as const,description:"Last 7 rolling days"},
+    {label:"Active bins",value:stats.activeBins,icon:"jar" as const,description:"Includes owner/test bins"},
+  ];
   return <main className={styles.page}><div className={styles.wrap}>
     <header className={styles.hero}>
       <div className={styles.heroCopy}>
-        <p className={styles.kicker}>PODSCAPE LABS / OWNER STUDIO</p>
-        <h1>Platform Analytics</h1>
-        <p>A private glance at how your little world is growing. Live numbers come from PodScape, not estimates or placeholders.</p>
-        <Link href="/account/owner-tools" className={styles.back}><PodscapeLineIcon name="arrow-right"/> Owner Tools</Link>
+        <p className={styles.kicker}>OWNER STUDIO · PRIVATE ANALYTICS</p>
+        <h1>Platform pulse</h1>
+        <p>A clear view of your community and the activity behind PodScape.</p>
+        <Link href="/account/owner-tools" className={styles.back}>← Owner Studio</Link>
       </div>
       <div className={styles.heroIcon} aria-hidden="true"><PodscapeLineIcon name="community"/></div>
     </header>
 
     <section className={styles.section} aria-labelledby="overview-title">
-      <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>ACCOUNT GROWTH</p><h2 id="overview-title">Your members at a glance</h2></div><span className={styles.detail}>Supabase Auth · live database snapshot</span></div>
+      <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>OVERVIEW</p><h2 id="overview-title">At a glance</h2></div><span className={styles.detail}>Live database snapshot</span></div>
       <div className={styles.statsGrid}>
-        <article className={styles.metric}><div className={styles.metricIcon}><PodscapeLineIcon name="community"/></div><span>Registered accounts</span><Value count={stats.accounts}/><small>All accounts created in PodScape Auth</small></article>
-        <article className={styles.metric}><div className={styles.metricIcon}><PodscapeLineIcon name="check"/></div><span>Confirmed accounts</span><Value count={stats.confirmed}/><small>Users who confirmed their email</small></article>
-        <article className={styles.metric}><div className={styles.metricIcon}><PodscapeLineIcon name="calendar"/></div><span>New · last 7 days</span><Value count={stats.last7d}/><small>Account registrations within 7 days</small></article>
-        <article className={styles.metric}><div className={styles.metricIcon}><PodscapeLineIcon name="calendar"/></div><span>New · last 30 days</span><Value count={stats.last30d}/><small>Account registrations within 30 days</small></article>
+        {metrics.map(item=><article className={styles.metric} key={item.label}>
+          <div className={styles.metricTop}><span>{item.label}</span><PodscapeLineIcon name={item.icon}/></div>
+          <strong>{format(item.value)}</strong>
+          <small>{item.description}</small>
+        </article>)}
       </div>
-      {stats.accountError ? <p role="status" className={styles.notice}>Some account statistics are unavailable. A dash means data could not be confirmed—not zero accounts.</p> : null}
+      {stats.accountError ? <p role="status" className={styles.notice}>Some account statistics are temporarily unavailable; “—” means unverified, not zero.</p> : null}
     </section>
 
-    <section className={styles.bottomGrid} aria-label="Live community and registration trend">
+    <section className={styles.bottomGrid} aria-label="Activity and registration trend">
       <div className={styles.panel}>
-        <div className={styles.panelHead}><div><p className={styles.eyebrow}>REALTIME</p><h2>Online Now</h2></div></div>
+        <div className={styles.panelHead}><div><p className={styles.eyebrow}>PRESENCE</p><h2>Online now</h2></div><span className={styles.panelSymbol}><PodscapeLineIcon name="community"/></span></div>
         <OnlineNow />
-        <p className={styles.explanation}>This is the approximate number of active, connected browser sessions. Hidden or idle tabs stop contributing; one person using multiple tabs may count more than once. It is not a unique member count.</p>
+        <details className={styles.info}><summary>How is this counted?</summary><p>Approximate connected browser sessions, not unique members. Idle or hidden tabs may stop contributing, and multiple tabs may count more than once.</p></details>
       </div>
       <div className={styles.panel}>
-        <div className={styles.panelHead}><div><p className={styles.eyebrow}>GROWTH</p><h2>Registrations · 7 days</h2></div><strong className={styles.total}>{stats.last7d === null ? "—" : stats.last7d.toLocaleString("en-CA")}</strong></div>
+        <div className={styles.panelHead}><div><p className={styles.eyebrow}>GROWTH</p><h2>Registrations</h2></div><div className={styles.panelTotal}><strong>{format(stats.last7d)}</strong><small>7 days</small></div></div>
         <div className={styles.chart} role="img" aria-label={stats.accountError ? "Recent registration trend unavailable" : stats.registrationsByDay.map(day=>day.day+": "+day.count+" registrations").join(", ")}>
           {stats.registrationsByDay.map(day=><div className={styles.chartColumn} key={day.day}>
             <div className={styles.barTrack}><span className={styles.bar} style={{height:stats.accountError?"0%":(day.count?Math.max(5,(day.count/peak)*100):0)+"%"}} /></div>
             <small>{new Date(day.day+"T12:00:00Z").toLocaleDateString("en-CA",{weekday:"short",timeZone:"UTC"})}</small>
           </div>)}
         </div>
-        <p className={styles.explanation}>Based on account creation timestamps, grouped by UTC day. The chart shows registrations, not visits.</p>
+        <details className={styles.info}><summary>About this chart</summary><p>Account creations grouped by UTC day. This is not a visitor or session count.</p></details>
       </div>
     </section>
 
     <section className={styles.section} aria-labelledby="activity-title">
-      <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>PLATFORM OPERATIONS</p><h2 id="activity-title">Your platform at a glance</h2></div></div>
+      <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>OPERATIONS</p><h2 id="activity-title">Community and access</h2></div></div>
       <div className={styles.secondaryGrid}>
-        <article className={styles.smallMetric}><PodscapeLineIcon name="community"/><span><strong>{stats.memberProfiles?.toLocaleString("en-CA") ?? "—"}</strong><small>Member profiles</small></span></article>
-        <article className={styles.smallMetric}><PodscapeLineIcon name="jar"/><span><strong>{stats.activeBins?.toLocaleString("en-CA") ?? "—"}</strong><small>Active colony bins across members</small></span></article>
-        <article className={styles.smallMetric}><PodscapeLineIcon name="check"/><span><strong>{stats.approvedTesters?.toLocaleString("en-CA") ?? "—"}</strong><small>Approved early-access invitations</small></span></article>
-        <article className={styles.smallMetric}><PodscapeLineIcon name="calendar"/><span><strong>{stats.last24h?.toLocaleString("en-CA") ?? "—"}</strong><small>Accounts created in 24 hours</small></span></article>
+        {[
+          {label:"Member profiles",value:stats.memberProfiles,icon:"community" as const},
+          {label:"Approved testers",value:stats.approvedTesters,icon:"check" as const},
+          {label:"Registrations · 24h",value:stats.last24h,icon:"calendar" as const},
+          {label:"Registrations · 30d",value:stats.last30d,icon:"calendar" as const},
+        ].map(item=><article className={styles.smallMetric} key={item.label}><PodscapeLineIcon name={item.icon}/><span><strong>{format(item.value)}</strong><small>{item.label}</small></span></article>)}
       </div>
-      <p className={styles.explanation}>This is an owner-only, aggregate dashboard. It does not publish or display members&apos; emails, identities, or browsing histories. New metrics can be added later as the platform develops.</p>
+      <p className={styles.privacy}><PodscapeLineIcon name="lock"/> Private owner summary. No member email addresses or individual browsing histories are shown. Bin totals currently include your own colonies; owner/community separation is planned for a dedicated adoption breakdown.</p>
     </section>
   </div></main>;
 }
