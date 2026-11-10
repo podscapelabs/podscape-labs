@@ -75,6 +75,6 @@ export function ManagerColonies({ records, bins, collectedIds, intent }: {
     })}
     {((tab==="species" && !visibleSpecies.length)||(tab==="bins"&&!visibleBins.length))&&<div className={styles.empty}><p>{entries.length||bins.length?"No matching records.":"Your collection is ready for its first species."}</p>{entries.length||bins.length?<button onClick={reset} type="button">Clear filters</button>:<Link href="/ledger">Browse Leaf Ledger →</Link>}</div>}
     </div>
-    <div className={styles.actions}><Link href="/keeper/new">＋ Add bin</Link><Link href="/ledger">＋ Add species →</Link></div>
+    <div className={styles.actions}><Link href="/keeper/new">＋ Add bin</Link><Link href="/keeper/import">Import spreadsheet</Link><Link href="/ledger">＋ Add species →</Link></div>
   </section>;
 }
