@@ -21,9 +21,8 @@ alter table public.vendor_profiles enable row level security;
 drop policy if exists "Published vendors are visible" on public.vendor_profiles;
 create policy "Published vendors are visible" on public.vendor_profiles for select to anon, authenticated
  using (status = 'approved');
+-- Member application reads use an identity-checked server action; no direct personal-profile policy.
 drop policy if exists "Members can read their own application" on public.vendor_profiles;
-create policy "Members can read their own application" on public.vendor_profiles for select to authenticated
- using ((select auth.uid()) = user_id);
 -- No direct user INSERT/UPDATE/DELETE policies. Reviewed server actions use service key and verified identity.
 -- Expose only public listing fields, never the member's user_id or review metadata.
 revoke all on public.vendor_profiles from anon, authenticated;
