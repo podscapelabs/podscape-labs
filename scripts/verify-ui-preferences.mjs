@@ -107,6 +107,9 @@ assert.ok(route.includes("manager_layout:parsed.manager")&&route.includes("speci
 assert.ok(read("components/ManagerWorkspace.tsx").includes("podscape-workspace-layout-changed"),"Manager widget changes must trigger sync");
 assert.ok(read("components/SpeciesDashboardWorkspace.tsx").includes("podscape-workspace-layout-changed"),"Species widget changes must trigger sync");
 assert.ok(bridge.includes("podscape-workspace-layout-changed"),"Sync bridge must listen to workspace changes");
+const unsafelyUnscopedReads=[...bridge.matchAll(/readLocalUiPreferences\(([^)]*)\)/g)].filter(match=>!match[1].includes("userId"));
+assert.equal(unsafelyUnscopedReads.length,0,"Cloud sync must never omit account scope in Manager/Species comparison reads");
+
 assert.ok(read("components/HomeWidgets.tsx").includes("podscape-home-widgets-changed"),"Home edits must trigger sync");
 assert.ok(read("components/navigation-customization.ts").includes("podscape-nav-updated"),"Nav changes must trigger sync");
 assert.ok(read("components/OwnerAwareMobileNav.tsx").includes("PreferenceSyncBridge"),"Authenticated sync bridge must mount across the app");
