@@ -118,7 +118,7 @@ export function HomeWidgets({recentGroups,colony,progress,pinOptions,userId,gree
   const optionsByKey=new Map(pinOptions.map(item=>[pinKey(item),item]));
   const activePins=pins.flatMap(p=>{const option=optionsByKey.get(pinKey(p));return option?[option]:[]});
   const removePin=(pin:HomePin)=>{const next=pins.filter(p=>pinKey(p)!==pinKey(pin));writeHomePins(userId,next);setPins(next)};
-  const guide=recentGroups.find(group=>group.label==="FIELD GUIDE")?.items[0];
+  const guide=recentGroups.find(group=>group.category==="field_guide")?.items[0];
   const compact=(id:WidgetId,icon:PodscapeIconName,eyebrow:string,title:string,description:string,href:string,cta:string)=>(
     <section className={styles.widgetCard} key={id} aria-label={definitions[id].name}>
       <span className={styles.widgetSymbol}><PodscapeLineIcon name={icon}/></span>
