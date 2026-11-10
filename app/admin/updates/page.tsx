@@ -15,7 +15,8 @@ function UpdateForm({entry}:{entry?:UpdateRecord}){
    <label>Category<select name="category" required defaultValue={entry?.category||"whats_improved"}>{updateCategories.map(c=><option key={c.id} value={c.id}>{c.label}</option>)}</select></label>
    <label>Destination within PodScape<input name="href" type="text" maxLength={300} required pattern="/(?!/).*" placeholder="/keeper" defaultValue={entry?.href||"/app"}/></label>
    <label className={styles.full}>Headline<input name="title" required minLength={3} maxLength={100} placeholder="Smoother dashboard customization" defaultValue={entry?.title||""}/></label>
-   <label className={styles.full}>What changed? <small>One user-facing benefit, up to 240 characters.</small><textarea name="summary" rows={3} required minLength={5} maxLength={240} placeholder="Finding and arranging your favorite widgets is now easier…" defaultValue={entry?.summary||""}/></label>
+   <label className={styles.full}>Brief description <small>A quick preview for the Home dashboard, up to 240 characters.</small><textarea name="summary" rows={2} required minLength={5} maxLength={240} placeholder="A smoother and more polished PodScape experience." defaultValue={entry?.summary||""}/></label>
+   <label className={styles.full}>Fixes and improvements <small>One improvement per line, up to 12 lines. These appear when users tap View update.</small><textarea name="details" rows={6} maxLength={3000} placeholder={"Dashboard widgets are easier to rearrange\nImproved QR care logging\nRefined mobile navigation"} defaultValue={(entry?.details||[]).join("\n")}/></label>
   </div>
   <div className={styles.actions}>
    <button name="intent" value="draft" className={styles.secondary} type="submit">Save draft</button>
