@@ -6,7 +6,7 @@ import { saveSpotlightSelection } from "./actions";
 import styles from "./spotlight.module.css";
 
 export const dynamic="force-dynamic";
-export const metadata={title:"Podscape Spotlight | Owner Tools",robots:{index:false,follow:false}};
+export const metadata={title:"PodScape Spotlight | Owner Tools",robots:{index:false,follow:false}};
 
 export default async function SpotlightDesk({searchParams}:{searchParams:Promise<{saved?:string;error?:string}>}){
   if(!(await isAdminAuthenticated()))redirect("/admin");
