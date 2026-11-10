@@ -32,8 +32,39 @@ function validSpecies(value:unknown):value is SpeciesLayout{
  const v=value as Record<string,unknown>;
  return hasExactIds(v.order,speciesOrder)&&uniqueStrings(v.visible)&&v.visible.every(id=>speciesOrder.includes(id as SpeciesLayout["order"][number]));
 }
-function readLocalWorkspace<T>(storageKey:string,valid:(v:unknown)=>v is T,fallback:()=>T):T{
- try{const raw=localStorage.getItem(storageKey);if(raw){const saved=JSON.parse(raw) as unknown;if(valid(saved))return saved}}catch{}
+function normalizeManagerLegacy(raw:unknown):ManagerLayout{
+ if(!raw||typeof raw!=="object")return defaultManagerLayout();
+ const v=raw as Record<string,unknown>;
+ const order=uniqueStrings(v.order)?v.order.filter(id=>(managerOrder as readonly string[]).includes(id)):[];
+ const previousDefault=["stats","care","tools","activity","enclosures","insights"];
+ const oldUntouched=order.join("|")===previousDefault.join("|");
+ const stableOrder=(oldUntouched?[...managerOrder]:order);
+ const ordered=["hero","tools",...new Set([...stableOrder,...managerOrder])].filter((id,i,all)=>all.indexOf(id)===i) as ManagerLayout["order"];
+ const oldVisible=uniqueStrings(v.visible)?v.visible:[...defaultManagerLayout().visible];
+ const previousLaunch=["stats","care","tools","activity","enclosures"];
+ const previousCompact=["tools","enclosures","care","activity","stats"];
+ const untouched=oldUntouched&&[previousLaunch,previousCompact].some(ids=>ids.length===oldVisible.length&&ids.every(id=>oldVisible.includes(id)));
+ const legacy=order.length>0&&!order.some(id=>["care","activity","insights"].includes(id));
+ const visible=(untouched?defaultManagerLayout().visible:managerOrder.filter(id=>["hero","tools"].includes(id)||oldVisible.includes(id)||(legacy&&["care","activity"].includes(id)))) as ManagerLayout["visible"];
+ const rawTools=uniqueStrings(v.tools)?v.tools.filter(id=>(managerTools as readonly string[]).includes(id)):[];
+ const oldTools=oldUntouched&&rawTools.join("|")==="scan|qr|add|care|schedule|notes"?[]:rawTools;
+ const tools=[...new Set([...oldTools,...defaultManagerLayout().tools])].slice(0,6);
+ return {order:ordered,visible,tools};
+}
+function normalizeSpeciesLegacy(raw:unknown):SpeciesLayout{
+ if(!raw||typeof raw!=="object")return defaultSpeciesLayout();
+ const v=raw as Record<string,unknown>;
+ const migrate=(id:string)=>id==="environment"?"moisture":id==="feeding"?"nutrition":id==="habitat"?"habitatAdvanced":id;
+ const orderIds=uniqueStrings(v.order)?v.order.map(migrate):[];
+ const order=[...new Set([...orderIds.filter(id=>(speciesOrder as readonly string[]).includes(id)),...speciesOrder])] as SpeciesLayout["order"];
+ const oldVisible=uniqueStrings(v.visible)?v.visible.map(migrate):defaultSpeciesLayout().visible;
+ const withCare=oldVisible.includes("behaviour")&&!oldVisible.includes("care")?[...oldVisible,"care"]:oldVisible;
+ const withFooter=orderIds.includes("personal")||orderIds.includes("navigation")?withCare:[...withCare,"personal","navigation"];
+ const visible=[...new Set(withFooter.filter(id=>(speciesOrder as readonly string[]).includes(id)))] as SpeciesLayout["visible"];
+ return {order,visible};
+}
+function readLocalWorkspace<T>(storageKey:string,valid:(v:unknown)=>v is T,fallback:()=>T,migrate:(v:unknown)=>T):T{
+ try{const raw=localStorage.getItem(storageKey);if(raw){const saved=JSON.parse(raw) as unknown;if(valid(saved))return saved;return migrate(saved)}}catch{}
  return fallback();
 }
 export type UiPreferences = {
@@ -94,8 +125,8 @@ export function readLocalUiPreferences(isOwner=false,userId?:string|null):UiPref
   catch{return cleanPreference(null,area,isOwner)}
  };
  return {home:readLocalHome(),navHome:parseNav("home"),navBottom:parseNav("bottom"),
-  manager:userId?readLocalWorkspace(managerStorageKey(userId),validManager,defaultManagerLayout):defaultManagerLayout(),
-  species:userId?readLocalWorkspace(speciesStorageKey(userId),validSpecies,defaultSpeciesLayout):defaultSpeciesLayout()};
+  manager:userId?readLocalWorkspace(managerStorageKey(userId),validManager,defaultManagerLayout,normalizeManagerLegacy):defaultManagerLayout(),
+  species:userId?readLocalWorkspace(speciesStorageKey(userId),validSpecies,defaultSpeciesLayout,normalizeSpeciesLegacy):defaultSpeciesLayout()};
 }
 export function isDefaultUiPreferences(pref:UiPreferences){
  return JSON.stringify(pref)===JSON.stringify(defaultUiPreferences());
