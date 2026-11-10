@@ -23,9 +23,10 @@ export function toggleHomePin(userId:string|null,pin:HomePin):boolean{
  if(!present){
   // Pinning something automatically exposes the Favorites widget on Home.
   try{
-   const key="podscape-home-widgets-v1";
-   const data=JSON.parse(localStorage.getItem(key)||"null") as {order?:string[];visible?:string[]}|null;
-   const order=Array.isArray(data?.order)?data.order:[];
+   const key="podscape-home-widgets-v2";
+   const legacy="podscape-home-widgets-v1";
+   const data=JSON.parse(localStorage.getItem(key)||localStorage.getItem(legacy)||"null") as {order?:string[];visible?:string[]}|null;
+   const order=Array.isArray(data?.order)?data.order:["greeting","hero","shortcuts","spotlight","recent"];
    const visible=Array.isArray(data?.visible)?data.visible:["recent"];
    localStorage.setItem(key,JSON.stringify({order:order.includes("pins")?order:[...order,"pins"],visible:visible.includes("pins")?visible:[...visible,"pins"]}));
    window.dispatchEvent(new Event("podscape-home-widgets-changed"));
