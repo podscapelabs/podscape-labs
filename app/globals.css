@@ -1302,3 +1302,72 @@ h1, h2, h3 { text-wrap: balance; }
 @media(min-width:1200px){.admin-ledger-desk .admin-ledger-layout{grid-template-columns:minmax(255px,.28fr) minmax(0,1fr)}}
 @media(max-width:700px){.admin-ledger-desk{padding-inline:12px}.admin-ledger-desk .admin-ledger-layout{grid-template-columns:minmax(0,1fr)}.admin-ledger-desk .admin-record-list,.admin-ledger-desk .admin-record-editor{border-radius:14px}.admin-ledger-desk .admin-dashboard-head h1{font-size:clamp(2rem,9vw,3rem)}}
 @media(prefers-reduced-motion:reduce){.admin-ledger-desk *{scroll-behavior:auto}}
+
+
+/* PodScape semantic theme contract v1.
+   Themes set role values; components consume roles rather than named colors.
+   Legacy and v2 palettes map to these same semantic roles for gradual migration. */
+:root{
+ --ps-bg:var(--canvas);
+ --ps-surface:var(--paper);
+ --ps-surface-raised:var(--paper-strong);
+ --ps-surface-muted:color-mix(in srgb,var(--forest) 8%,var(--paper));
+ --ps-text:var(--ink);
+ --ps-text-secondary:var(--muted);
+ --ps-border:var(--line);
+ --ps-accent:var(--forest);
+ --ps-accent-text:var(--paper-strong);
+ --ps-focus:var(--amber);
+ --ps-font-ui:var(--sans);
+ --ps-font-display:var(--serif);
+ --ps-radius-card:var(--radius-medium);
+ --ps-radius-control:var(--radius-small);
+ --ps-min-control:44px;
+ --ps-card-shadow:var(--shadow-soft);
+ --ps-label-size:.69rem;
+ --ps-body-size:.83rem;
+ --ps-section-size:clamp(1.6rem,3vw,2.15rem);
+}
+:root[data-theme="dark"]{
+ --ps-accent-text:var(--forest-deep);
+}
+.v2-site{
+ --ps-bg:var(--background);
+ --ps-surface:var(--surface);
+ --ps-surface-raised:var(--surface-raised);
+ --ps-surface-muted:var(--surface-secondary);
+ --ps-text:var(--text-primary);
+ --ps-text-secondary:var(--text-secondary);
+ --ps-border:var(--border);
+ --ps-accent:var(--accent);
+ --ps-accent-text:var(--accent-contrast);
+ --ps-focus:var(--focus);
+ --ps-font-ui:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+ --ps-font-display:var(--display);
+}
+:root :where(.ps-safe-text){
+ min-width:0;max-width:100%;
+ overflow-wrap:anywhere;
+ word-break:normal;
+}
+:root :where(.ps-clamp-2,.ps-clamp-3){
+ display:-webkit-box;
+ -webkit-box-orient:vertical;
+ overflow:hidden;
+ overflow-wrap:anywhere;
+}
+:root .ps-clamp-2{-webkit-line-clamp:2;line-clamp:2}
+:root .ps-clamp-3{-webkit-line-clamp:3;line-clamp:3}
+:root :where(.ps-card){
+ min-width:0;
+ border:1px solid var(--ps-border);
+ border-radius:var(--ps-radius-card);
+ background:var(--ps-surface);
+ color:var(--ps-text);
+}
+:root :where(.ps-meta){font-size:var(--ps-label-size);color:var(--ps-text-secondary)}
+:root :where(.ps-section-title){font:500 var(--ps-section-size)/1.18 var(--ps-font-display);color:var(--ps-text)}
+:root :where(.ps-control){min-height:var(--ps-min-control);border-radius:var(--ps-radius-control)}
+@media(forced-colors:active){
+ :root :where(.ps-card){border-color:CanvasText}
+}
