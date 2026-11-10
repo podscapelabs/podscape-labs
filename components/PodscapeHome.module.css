@@ -783,3 +783,10 @@
 @media(min-width:721px){
  .recentRail>.recentCategoryCard{min-height:215px}
 }
+
+/* Woodland accent foreground follows the same legibility rule as Dark. */
+:root[data-theme="woodland"] .homeCanvasToolbar>button:last-child,
+:root[data-theme="woodland"] .homeCanvasEditing .homeCanvasDragging .homeCanvasHandle,
+:root[data-theme="woodland"] .homeEditorHead button{
+ color:var(--ps-accent-text);
+}
