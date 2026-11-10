@@ -31,7 +31,7 @@ export function AppearancePreference(){
   setMode(initial);apply(initial);
   const media=window.matchMedia("(prefers-color-scheme: dark)");
   const sync=()=>{if(!localStorage.getItem(KEY)||localStorage.getItem(KEY)==="system")apply("system");};
-  const onChange=()=>{const saved=localStorage.getItem(KEY);if(isAppearance(saved)){setMode(saved);apply(saved)}else{setMode("system");apply("system")}};
+  const onChange=()=>{const saved=localStorage.getItem(KEY);setMode(isAppearance(saved)?saved:"system");};
   media.addEventListener("change",sync);
   window.addEventListener("podscape-theme-change",onChange);
   return ()=>{media.removeEventListener("change",sync);window.removeEventListener("podscape-theme-change",onChange);};
