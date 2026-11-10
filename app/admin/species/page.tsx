@@ -41,10 +41,10 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
   const selected = params.record ? visibleRecords.find((record) => record.id === params.record) : visibleRecords[0];
   const readiness = selected ? speciesReadiness(selected) : null;
 
-  return <main className="admin-shell admin-ledger-desk">
-    <header className="admin-dashboard-head admin-ledger-head">
-      <div><p className="eyebrow">Leaf Ledger · Owner studio</p><h1>Ledger desk</h1><p>Prepare species records without publishing unverified identities or husbandry details.</p></div>
-      <div className="admin-dashboard-actions"><Link className="button button-outline" href="/admin">Owner studio</Link><Link className="button button-primary" href="/ledger" target="_blank">Open Leaf Ledger</Link></div>
+  return <main className={`admin-shell admin-ledger-desk ${styles.ownerSpeciesPage}`}>
+    <header className={`admin-dashboard-head admin-ledger-head ${styles.ownerHero}`}>
+      <div><p className="eyebrow">OWNER STUDIO · LEAF LEDGER</p><h1>Species Desk</h1><p>Build and maintain your curated species catalogue.</p></div>
+      <div className="admin-dashboard-actions"><Link className="button button-outline" href="/account/owner-tools">Owner Studio</Link><Link className="button button-primary" href="/ledger" target="_blank">Open Leaf Ledger</Link></div>
     </header>
 
     <div className="admin-ledger-layout">
