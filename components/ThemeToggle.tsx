@@ -44,6 +44,6 @@ export function ThemeToggle(){
    <span className="theme-icon theme-icon-moon"><MoonIcon/></span>
    <span className="theme-icon theme-icon-woodland"><PodscapeLineIcon name="leaf"/></span>
    <span className="theme-icon theme-icon-lilac"><PodscapeLineIcon name="creative"/></span>
-   <span className="theme-icon theme-icon-ember"><PodscapeLineIcon name="sun"/></span>
+   <span className="theme-icon theme-icon-ember"><SunIcon/></span>
  </button>;
 }
