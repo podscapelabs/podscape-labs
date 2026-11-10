@@ -37,3 +37,44 @@
 
 /* Welcome illustration uses a meaningful shared icon, never text ornaments. */
 .icon svg{width:35px;height:35px}
+
+/* First-visit starter dashboards: compact, accessible cards in the core PodScape design system. */
+.dialog{width:min(100%,540px);text-align:left;max-height:min(92dvh,860px);overflow-y:auto}
+.dialog .icon{margin:2px 0 16px}
+.dialog h2{max-width:24ch}
+.dialog #customize-welcome-description{max-width:54ch}
+.layoutChoices{margin-top:0}
+.layoutChoice{min-height:57px;display:flex;align-items:center}
+.layoutChoice>span:last-child{flex:1;min-width:0}
+.choiceGlyph{width:28px;height:28px;display:grid;place-items:center;color:var(--forest);flex:none}
+.choiceGlyph svg{width:22px;height:22px}
+.tourPreview,.portalGrid,.editDemo{margin:18px 0;display:grid;gap:8px}
+.tourPreview{grid-template-columns:repeat(3,minmax(0,1fr))}
+.tourPreview span{display:flex;align-items:center;justify-content:center;gap:7px;min-height:65px;border:1px solid var(--line);border-radius:13px;background:var(--paper-strong);font-weight:750;font-size:.73rem}
+.tourPreview svg{width:21px;height:21px;color:var(--forest)}
+.portalGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.portalGrid div{display:grid;grid-template-columns:30px 1fr;align-items:center;column-gap:9px;padding:13px;border:1px solid var(--line);border-radius:12px;background:var(--paper-strong)}
+.portalGrid svg{grid-row:span 2;width:25px;height:25px;color:var(--forest)}
+.portalGrid strong{font-size:.81rem}
+.portalGrid small{font-size:.71rem;color:var(--muted)}
+.editDemo{grid-template-columns:repeat(3,minmax(0,1fr))}
+.editDemo span{display:grid;align-content:center;justify-items:center;gap:9px;min-height:85px;padding:10px 7px;border:1px solid var(--line);border-radius:12px;background:var(--paper-strong);font-size:.7rem;font-weight:750;text-align:center}
+.editDemo svg{width:25px;height:25px;color:var(--forest)}
+.dialog .editDemo p{grid-column:1/-1;margin:2px 0;font-size:.72rem!important}
+.setup{display:grid;gap:12px}
+.presetPreview{border:1px solid var(--line);border-radius:14px;padding:13px;background:color-mix(in srgb,var(--forest) 4%,var(--paper))}
+.previewHeading{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:11px}
+.previewHeading strong{font-size:.76rem}
+.previewHeading small{font-size:.68rem;color:var(--muted)}
+.previewWidgets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.previewWidgets span{display:grid;justify-items:center;align-content:center;gap:8px;min-height:80px;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:8px 4px}
+.previewWidgets svg{width:24px;height:24px;color:var(--forest)}
+.previewWidgets small{color:var(--ink);font-size:.67rem;text-align:center;line-height:1.25}
+.presetCheckbox{display:flex;align-items:flex-start;gap:10px;margin:13px 0 4px;font-size:.75rem;line-height:1.5;cursor:pointer}
+.presetCheckbox input{width:18px;height:18px;flex:none;accent-color:var(--forest);margin-top:1px}
+.dialog .presetPreview p{margin:5px 0 0;font-size:.68rem!important;line-height:1.5}
+.appearanceLabel{display:grid;gap:7px;color:var(--forest);font-size:.72rem;font-weight:800}
+.appearanceLabel select{width:100%;min-height:45px;border:1px solid var(--line);border-radius:11px;background:var(--paper-strong);color:var(--ink);font:inherit;font-size:16px;padding:9px 12px}
+.dialog button,.dialog select,.dialog input{touch-action:manipulation}
+.dialog input:focus-visible,.dialog select:focus-visible{outline:3px solid var(--forest);outline-offset:3px}
+@media(max-width:560px){.scrim{padding:10px}.dialog{width:100%;padding:18px;border-radius:18px;max-height:calc(100dvh - 20px)}.tourPreview span{flex-direction:column}.portalGrid div{padding:10px}.editDemo span{font-size:.65rem}.dialog h2{font-size:clamp(1.7rem,7vw,2.3rem)}.layoutChoice{padding:9px 10px}.previewWidgets span{min-height:69px}}
