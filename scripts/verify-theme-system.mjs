@@ -71,6 +71,24 @@ assert.match(home,/var\(--ps-surface\)/);
 assert.match(globals,/\.ps-clamp-2/);
 assert.match(globals,/\.ps-card/);
 
+// Woodland visual parity: legacy portal gradients must not remain fixed to Light/Forest.
+const shopHome=read("app/shop/shop-home.module.css");
+const keeperHome=read("app/keeper/page.module.css");
+const homeSurface=read("components/PodscapeHome.module.css");
+for(const [path,source,checks] of [
+ ["Shop",shopHome,[".hero{",".hero h1{",".hero .previewTag{",".path:nth-child(2){",".path:nth-child(3){",".path:nth-child(4){",".feature{",".feature a{"]],
+ ["Manager",keeperHome,[".managerHero{",".managerHero::after{",".managerHeroContent h1{",".managerHeroContent p{"]],
+ ["Home",homeSurface,[".hero{",".hero:after{",".heroButton{",".spotlightRail .tileVisual:has(.tilePlaceholder){"]]
+]){
+ for(const selector of checks){
+  assert.ok(source.includes(':global(html[data-theme="woodland"]) '+selector),
+   "Missing Woodland portal override in "+path+": "+selector);
+ }
+}
+assert.match(shopHome,/--portal-hero-button-text/,"Shop CTA must use role-based contrast");
+assert.match(keeperHome,/--portal-hero-muted/,"Manager hero description must use Woodland contrast roles");
+assert.match(homeSurface,/--portal-hero-button-bg/,"Home hero CTA must use semantic role");
+
 // Inventory only: backgrounds and gradients used for photos, flags, chart series and
 // illustrated heroes can legitimately be fixed. Review rather than blindly rewrite.
 const hardcoded=sheets.map(path=>({
