@@ -4,13 +4,14 @@ import {redirect} from "next/navigation";
 import {isAdminAuthenticated} from "@/lib/admin-auth";
 import {getSupabaseAdmin} from "@/lib/supabase-admin";
 import {reviewVendorProfile} from "@/app/shop/vendors/actions";
+import {vendorCountryName,vendorShippingLabel} from "@/lib/vendor-regions";
 import styles from "@/app/shop/vendors/vendors.module.css";
 export const dynamic="force-dynamic";
 export const metadata={title:"Vendor Applications | Owner Studio",robots:{index:false,follow:false}};
 export default async function VendorReviewDesk(){
  if(!(await isAdminAuthenticated()))redirect("/admin");
  const db=getSupabaseAdmin();
- const {data,error}=db?await db.from("vendor_profiles").select("id,user_id,business_name,tagline,description,location_label,website_url,instagram_url,facebook_url,logo_path,status,updated_at")
+ const {data,error}=db?await db.from("vendor_profiles").select("id,user_id,business_name,tagline,description,location_label,website_url,instagram_url,facebook_url,logo_path,status,updated_at,country_code,shipping_mode,shipping_countries,shipping_notes,live_animal_shipping")
   .order("updated_at",{ascending:false}).limit(200):{data:null,error:null};
  const vendors=data||[];
  return <main className={styles.page}><div className={styles.wrap}>
@@ -24,6 +25,10 @@ export default async function VendorReviewDesk(){
     <div><h2>{v.business_name}</h2><small>{v.location_label||"Location not provided"}</small></div>
    </div>
    <p className={styles.status}>Status: <strong>{v.status}</strong></p>
+   <p className={styles.status}><strong>Home country:</strong> {v.country_code?vendorCountryName(v.country_code):"Not provided"} · <strong>Shipping:</strong> {vendorShippingLabel(v.shipping_mode)}</p>
+   {v.shipping_mode==="selected"?<p className={styles.note}><strong>Approved destinations:</strong> {(v.shipping_countries||[]).map(vendorCountryName).join(", ")||"None"}</p>:null}
+   <p className={styles.note}><strong>Live-isopod shipping:</strong> {v.live_animal_shipping==="yes"?"Yes (where permitted)":v.live_animal_shipping==="no"?"No":"Ask vendor / varies"}</p>
+   {v.shipping_notes?<p className={styles.note}><strong>Shipping notes:</strong> {v.shipping_notes}</p>:null}
    {v.tagline?<p className={styles.tagline}>{v.tagline}</p>:null}
    {v.description?<p className={styles.description}>{v.description}</p>:null}
    <div className={styles.links}>{[v.website_url,v.instagram_url,v.facebook_url].filter(Boolean).map(url=>{let safe:URL|null=null;try{const parsed=new URL(url);if(parsed.protocol==="https:"&&!parsed.username&&!parsed.password)safe=parsed;}catch{}return safe?<a key={url} href={safe.href} target="_blank" rel="noopener noreferrer nofollow">{safe.hostname} ↗</a>:null;})}</div>
