@@ -17,7 +17,7 @@
   text-align:center;
   font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
-:global(html:not([data-theme="dark"])) .page{
+:global(html[data-theme="light"]) .page{
   --splash-bg:#eee8d8;
   --splash-ink:#193126;
   --splash-muted:#637464;
