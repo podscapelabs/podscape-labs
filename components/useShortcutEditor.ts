@@ -7,6 +7,7 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void,exter
   const [editing,setEditing]=useState(false);
   const [selected,setSelected]=useState(0);
   const timer=useRef<ReturnType<typeof setTimeout>|null>(null);
+  const clickTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
   const holding=useRef(false);
   const dragging=useRef<number|null>(null);
   const startPoint=useRef<{x:number;y:number}|null>(null);
@@ -23,7 +24,6 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void,exter
   const feedback=()=>{try{if("vibrate" in navigator)navigator.vibrate(10)}catch{}};
   const clearGesture=()=>{holding.current=false;dragging.current=null;startPoint.current=null;pointer.current=null;stopTimer()};
   useEffect(()=>()=>{stopTimer();if(clickTimer.current!==null)clearTimeout(clickTimer.current)},[]);
-  const clickTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
   const armClickSuppression=()=>{suppressClick.current=true;if(clickTimer.current!==null)clearTimeout(clickTimer.current);clickTimer.current=setTimeout(()=>{suppressClick.current=false;clickTimer.current=null},EDIT_CLICK_SUPPRESS_MS)};
   useEffect(()=>{
     if(!externalEditing)return;
@@ -56,7 +56,7 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void,exter
       }
     },
     onPointerMove:(event:React.PointerEvent<HTMLElement>)=>{
-      if(!startPoint.current)return;
+      if(!startPoint.current||pointer.current?.id!==event.pointerId)return;
       const dist=Math.hypot(event.clientX-startPoint.current.x,event.clientY-startPoint.current.y);
       if(!editingRef.current&&dist>EDIT_MOVE_CANCEL_PX){holding.current=false;stopTimer();return}
       if(!editingRef.current||dragging.current===null)return;
@@ -68,11 +68,11 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void,exter
         dragging.current=to;setSelected(to);
       }
     },
-    onPointerUp:()=>{
-      clearGesture();
+    onPointerUp:(event:React.PointerEvent<HTMLElement>)=>{
+      if(pointer.current?.id===event.pointerId)clearGesture();
     },
-    onPointerCancel:()=>{
-      clearGesture();
+    onPointerCancel:(event:React.PointerEvent<HTMLElement>)=>{
+      if(pointer.current?.id===event.pointerId)clearGesture();
     },
     onClick:(event:React.MouseEvent<HTMLElement>)=>{
       if(editingRef.current||suppressClick.current){
