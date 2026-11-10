@@ -15,10 +15,9 @@ type Focus=StarterFocus|null;
 const proofFocus:Record<StarterFocus,"default"|"discover"|"keep"|"collect"|"play">={
  balanced:"default",explorer:"discover",keeper:"keep",collector:"collect",play:"play"
 };
-export function ShortcutWelcomeTip({userId,ownerPreview=false}:{userId:string|null;ownerPreview?:boolean}){
+export function ShortcutWelcomeTip({userId}:{userId:string|null}){
  const [step,setStep]=useState(0);
  const [visible,setVisible]=useState(false);
- const [previewMode,setPreviewMode]=useState(false);
  const [skipped,setSkipped]=useState(false);
  const [focus,setFocus]=useState<Focus>(null);
  const [appearance,setAppearance]=useState<StarterAppearance>("keep");
@@ -28,14 +27,12 @@ export function ShortcutWelcomeTip({userId,ownerPreview=false}:{userId:string|nu
  const opener=useRef<HTMLElement|null>(null);
  const storageKey=userId?"podscape-onboarding-v2:"+userId:"";
  useEffect(()=>{
-  if(!storageKey&&!ownerPreview)return;
+  if(!storageKey)return;
   try{
    const mode=new URLSearchParams(window.location.search).get("onboarding");
-   const preview=ownerPreview&&mode==="preview";
-   setPreviewMode(preview);
-   setVisible(preview||(Boolean(storageKey)&&(mode==="1"||localStorage.getItem(storageKey)!=="seen")));
+   setVisible(mode==="1"||localStorage.getItem(storageKey)!=="seen");
   }catch{}
- },[storageKey,ownerPreview]);
+ },[storageKey]);
  useEffect(()=>{
   if(!storageKey)return;
   const replay=()=>{
@@ -46,14 +43,12 @@ export function ShortcutWelcomeTip({userId,ownerPreview=false}:{userId:string|nu
   return ()=>window.removeEventListener("podscape-open-onboarding",replay);
  },[storageKey]);
  const dismiss=()=>{
-  if(!previewMode&&storageKey)try{localStorage.setItem(storageKey,"seen")}catch{}
+  if(storageKey)try{localStorage.setItem(storageKey,"seen")}catch{}
   setVisible(false);
   opener.current?.focus();
  };
  const skip=()=>{setSkipped(true);setStep(steps.length-1);setNotice("");};
  const finish=()=>{
-  // Owner preview is read-only: never save a layout, theme, completion flag, or achievement.
-  if(previewMode){dismiss();return;}
   // Existing saved dashboards are never touched unless the user selects a preset.
   if(focus){
    if(!applyStarterPreferences({focus,appearance,shortcuts:applyShortcuts})){
@@ -101,8 +96,8 @@ export function ShortcutWelcomeTip({userId,ownerPreview=false}:{userId:string|nu
  return <div className={styles.scrim}>
   <section className={styles.dialog} ref={modalRef} data-onboarding-dialog role="dialog" aria-modal="true" aria-labelledby="customize-welcome-title" aria-describedby="customize-welcome-description">
    <div className={styles.tourTop}>
-    <span>{previewMode?"OWNER PREVIEW":"WELCOME"} / {String(step+1).padStart(2,"0")} OF {String(steps.length).padStart(2,"0")}</span>
-    <button type="button" onClick={previewMode?dismiss:skip} disabled={!previewMode&&skipped&&step===steps.length-1}>{previewMode?"Close preview":"Skip tutorial"}</button>
+    <span>WELCOME / {String(step+1).padStart(2,"0")} OF {String(steps.length).padStart(2,"0")}</span>
+    <button type="button" onClick={skip} disabled={skipped&&step===steps.length-1}>Skip tutorial</button>
    </div>
    <div className={styles.icon} aria-hidden="true"><PodscapeLineIcon name={current.icon}/></div>
    <p className={styles.eyebrow}>{current.eyebrow}</p>
@@ -146,7 +141,6 @@ export function ShortcutWelcomeTip({userId,ownerPreview=false}:{userId:string|nu
     </label>
     {skipped?<p className={styles.skipNote}>You can choose a layout without completing the tour. The tutorial achievement is awarded only after all four steps.</p>:null}
     {notice?<p className={styles.skipNote} role="alert">{notice}</p>:null}
-    {previewMode?<p className={styles.skipNote} role="status">Preview only — your current dashboard, shortcuts, appearance, and achievements will not change.</p>:null}
    </div>:null}
    <div className={styles.progress} aria-label={`Step ${step+1} of ${steps.length}`}>
     {steps.map((_,i)=><span key={i} className={i<=step?styles.progressActive:undefined}/>)}
@@ -155,7 +149,7 @@ export function ShortcutWelcomeTip({userId,ownerPreview=false}:{userId:string|nu
     {step>0&&!skipped?<button type="button" className={styles.back} onClick={()=>setStep(n=>n-1)}>Back</button>:null}
     {step===steps.length-1?<button type="button" className={styles.back} onClick={dismiss}>Not now</button>:null}
     <button className={styles.done} type="button" onClick={()=>step===steps.length-1?finish():setStep(n=>n+1)}>
-     {step===steps.length-1?(previewMode?"Close preview":focus?"Apply & explore":"Start exploring"):"Next"}
+     {step===steps.length-1?(focus?"Apply & explore":"Start exploring"):"Next"}
     </button>
    </div>
   </section>
