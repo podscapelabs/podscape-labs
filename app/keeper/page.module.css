@@ -544,3 +544,17 @@
  color:var(--portal-hero-text);
  border-color:color-mix(in srgb,var(--portal-hero-text) 60%,transparent);
 }
+
+
+/* Lilac: a lavender Manager hero with plum copy and deliberate contrast. */
+:global(html[data-theme="lilac"]) .managerHero{
+ background:linear-gradient(125deg,#eee1f4 0%,#dbc5e9 57%,#c09ed2 100%);
+ color:#33223e;
+}
+:global(html[data-theme="lilac"]) .managerHero::after{
+ background:linear-gradient(90deg,rgba(244,235,249,.92) 0%,rgba(229,211,239,.72) 48%,rgba(197,165,215,.08) 100%);
+}
+:global(html[data-theme="lilac"]) .managerHeroContent>span{color:#70418b}
+:global(html[data-theme="lilac"]) .managerHeroContent h1{color:#33223e}
+:global(html[data-theme="lilac"]) .managerHeroContent p{color:#554263}
+:global(html[data-theme="lilac"]) .managerHeroContent>a{color:#4a2b5f;border-color:#8f70a3}
