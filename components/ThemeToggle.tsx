@@ -4,10 +4,10 @@ import {useEffect,useState} from "react";
 import {MoonIcon,SunIcon} from "./Icons";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
 
-type Theme="light"|"dark"|"woodland"|"lilac";
+type Theme="light"|"dark"|"woodland"|"lilac"|"ember";
 type ThemePreference=Theme|"system";
-const order:Theme[]=["light","dark","woodland","lilac"];
-const names:Record<Theme,string>={light:"Light",dark:"Dark",woodland:"Woodland",lilac:"Lilac"};
+const order:Theme[]=["light","dark","woodland","lilac","ember"];
+const names:Record<Theme,string>={light:"Light",dark:"Dark",woodland:"Woodland",lilac:"Lilac",ember:"Ember"};
 
 export function ThemeToggle(){
  const [theme,setTheme]=useState<Theme|null>(null);
@@ -16,9 +16,9 @@ export function ThemeToggle(){
  useEffect(()=>{
   const sync=()=>{
    const saved=localStorage.getItem("podscape-theme");
-   setPreference(saved==="light"||saved==="dark"||saved==="woodland"||saved==="lilac"?saved:"system");
+   setPreference(saved==="light"||saved==="dark"||saved==="woodland"||saved==="lilac"||saved==="ember"?saved:"system");
    const current=document.documentElement.dataset.theme;
-   setTheme(current==="dark"||current==="woodland"||current==="lilac"?current:"light");
+   setTheme(current==="dark"||current==="woodland"||current==="lilac"||current==="ember"?current:"light");
   };
   sync();
   window.addEventListener("podscape-theme-change",sync);
@@ -30,7 +30,7 @@ export function ThemeToggle(){
   const next=order[(order.indexOf(current)+1)%order.length];
   document.documentElement.dataset.theme=next;
   document.documentElement.dataset.themePreference=next;
-  document.documentElement.style.colorScheme=next==="light"||next==="lilac"?"light":"dark";
+  document.documentElement.style.colorScheme=next==="light"||next==="lilac"||next==="ember"?"light":"dark";
   localStorage.setItem("podscape-theme",next);
   setTheme(next);
   setPreference(next);
@@ -44,5 +44,6 @@ export function ThemeToggle(){
    <span className="theme-icon theme-icon-moon"><MoonIcon/></span>
    <span className="theme-icon theme-icon-woodland"><PodscapeLineIcon name="leaf"/></span>
    <span className="theme-icon theme-icon-lilac"><PodscapeLineIcon name="creative"/></span>
+   <span className="theme-icon theme-icon-ember"><PodscapeLineIcon name="sun"/></span>
  </button>;
 }
