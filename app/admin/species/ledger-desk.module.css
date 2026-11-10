@@ -176,3 +176,40 @@
 .researchGrid textarea{resize:vertical}
 .researchGrid>label:has(textarea){grid-column:1/-1}
 @media(max-width:650px){.researchGrid{grid-template-columns:1fr;padding:11px}.researchGrid>label:has(textarea){grid-column:auto}}
+
+
+/* Owner Studio cohesion — isolate overrides to the Species Desk. */
+.ownerSpeciesPage{min-width:0;padding-bottom:120px}
+.ownerHero{position:relative;isolation:isolate;overflow:hidden;min-height:166px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:clamp(20px,3vw,32px);margin-bottom:14px;border:1px solid color-mix(in srgb,var(--portal-hero-text) 12%,transparent);border-radius:19px;background:radial-gradient(circle at 86% 16%,var(--portal-hero-glow),transparent 42%),linear-gradient(110deg,var(--portal-hero-start),var(--portal-hero-end));color:var(--portal-hero-text)}
+.ownerHero>div:first-child{min-width:0}
+.ownerHero :global(.eyebrow){color:var(--portal-hero-soft);font-size:.62rem;letter-spacing:.13em;font-weight:800}
+.ownerHero h1{margin:9px 0;font:600 clamp(2rem,4.5vw,3rem)/1.06 var(--display);letter-spacing:-.035em;color:var(--portal-hero-text)}
+.ownerHero p:not(.eyebrow){max-width:55ch;margin:0;color:var(--portal-hero-muted);font-size:.79rem;line-height:1.5}
+.ownerHero :global(.admin-dashboard-actions){display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;flex:none}
+.ownerHero :global(.admin-dashboard-actions a){min-height:42px;display:inline-flex;align-items:center;justify-content:center;border-radius:11px;padding:9px 12px;font-size:.73rem;font-weight:750}
+.ownerHero :global(.admin-dashboard-actions .button-outline){color:var(--portal-hero-text);border-color:color-mix(in srgb,var(--portal-hero-text) 28%,transparent);background:transparent}
+.ownerHero :global(.admin-dashboard-actions .button-primary){color:var(--portal-hero-button-text);background:var(--portal-hero-button-bg);border-color:transparent}
+.ownerSpeciesPage :global(.admin-ledger-layout){gap:12px}
+.ownerSpeciesPage :global(.admin-record-list),.editor{border-radius:16px}
+.ownerSpeciesPage :global(.admin-record-list)>div:first-child{font-size:.81rem;font-weight:750}
+.ownerSpeciesPage :global(.admin-record-editor-head){padding:clamp(14px,2.4vw,22px)}
+.ownerSpeciesPage :global(.admin-record-editor-head h2){font:750 clamp(1.2rem,2.5vw,1.7rem)/1.15 var(--sans,inherit);letter-spacing:-.025em}
+.ownerSpeciesPage :global(.admin-record-editor-head p){font-size:.7rem}
+.ownerSpeciesPage :global(.admin-record-list nav a){border-radius:9px}
+.editingNotice{padding-block:9px;font-size:.7rem}
+.deskQuickBar{padding-block:10px;box-shadow:0 3px 9px color-mix(in srgb,var(--ink) 5%,transparent)}
+.deskCompletion strong{font-size:.75rem}
+.workflowProgress{padding-top:14px}
+.workflowProgress strong{font:750 clamp(1.12rem,3vw,1.4rem)/1.2 var(--sans,inherit)}
+.workflowSectionHeading{font:750 1.02rem/1.25 var(--sans,inherit)}
+.workflowSectionHeading small{font-size:.7rem}
+.optionalSection>summary{font:750 .84rem/1.4 var(--sans,inherit)}
+@media(max-width:859px){
+ .ownerHero{align-items:flex-start;flex-direction:column;gap:13px;margin-bottom:11px}
+ .ownerHero :global(.admin-dashboard-actions){width:100%;justify-content:flex-start}
+ .ownerHero :global(.admin-dashboard-actions a){flex:1}
+ .ownerSpeciesPage :global(.admin-record-editor-head){padding:14px}
+ .deskQuickBar{top:0}
+ .ownerSpeciesPage :global(.admin-ledger-layout){gap:9px}
+}
+@media(max-width:420px){.ownerHero{padding:18px}.ownerHero h1{font-size:2.15rem}.ownerHero :global(.admin-dashboard-actions a){font-size:.69rem}}
