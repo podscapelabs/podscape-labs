@@ -75,6 +75,28 @@ assert.match(vendorPublic,/\.eq\("status","approved"\)/);
 assert.match(vendorOwner,/reviewVendorProfile/);
 assert.match(vendorSql,/enable row level security/i);
 assert.ok(!/[❧❦✿❀✦✧✺♧☘◇◆◉◌◈☷▥▤⟡🍃🌿🍂🌱⌕⠿]/u.test(vendorPublic+vendorOwner),"Vendor card must use semantic icons");
+const browser=read("app/shop/vendors/VendorDirectoryBrowser.tsx");
+const vendorApplication=read("app/shop/vendors/VendorApplication.tsx");
+const globalFields=read("sql/vendor-global-shipping.sql");
+const regions=read("lib/vendor-regions.ts");
+const vendorActions=read("app/shop/vendors/actions.ts");
+const socialIcons=read("components/VendorSocialIcon.tsx");
+for(const s of ['country_code','shipping_mode','shipping_countries','shipping_notes','live_animal_shipping'])
+ assert.ok(globalFields.includes(s),"Global vendor schema missing "+s);
+assert.match(browser,/vendorShipsTo/,"Destination search must use shipping classifications");
+assert.match(browser,/v\.country_code===origin/,"Origin search must use structured countries");
+assert.match(browser,/vendorDetails/,"Long vendor biography must be collapsed by default");
+assert.match(browser,/VendorSocialIcon/,"Social links must use recognizable iconography");
+assert.match(socialIcons,/instagram/);assert.match(socialIcons,/facebook/);
+assert.match(regions,/Intl\.DisplayNames/,"Country labels must be localized by country code");
+assert.match(vendorApplication,/name="countryCode"/);
+assert.match(vendorApplication,/name="shippingMode"/);
+assert.match(vendorApplication,/name="shippingCountries"/);
+assert.match(vendorApplication,/name="liveAnimalShipping"/);
+assert.match(vendorActions,/validVendorCountry/);
+assert.match(vendorOwner,/shipping_countries/,"Owner reviews must disclose shipping details");
+assert.match(vendorPublic,/VendorDirectoryBrowser/,"Public listing should be compact and filterable");
+
 
 const splash=read("app/app/loading.tsx");
 const splashCss=read("app/app/loading.module.css");
