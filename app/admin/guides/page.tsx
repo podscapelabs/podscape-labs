@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { GuideSectionsEditor } from "@/components/GuideSectionsEditor";
+import { GuideDeskNavigator } from "./GuideDeskNavigator";
+import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
+import styles from "./guide-desk.module.css";
 import { guideCategories } from "@/data/guides";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getGuideRecords } from "@/lib/guide-store";
@@ -18,14 +21,46 @@ export default async function GuideDeskPage({ searchParams }: { searchParams: Pr
   const visibleRecords = archivedView ? archivedRecords : activeRecords;
   const selected = visibleRecords.find((record) => record.id === params.record) || visibleRecords[0];
 
-  return <main className="admin-shell admin-ledger-desk">
-    <header className="admin-dashboard-head admin-ledger-head"><div><p className="eyebrow">Field Guide · Owner studio</p><h1>Editorial desk</h1><p>Write, review, and connect practical resources without publishing incomplete husbandry guidance.</p></div><div className="admin-dashboard-actions"><Link className="button button-outline" href="/admin">Owner studio</Link><Link className="button button-primary" href="/field-guide" target="_blank">Open Field Guide</Link></div></header>
-    <div className="admin-ledger-layout">
-      <aside className="admin-record-list"><div><span>{archivedView ? "Archived guides" : "Active guides"}</span><strong>{visibleRecords.length}</strong></div><div className="admin-record-views"><Link className={!archivedView ? "is-active" : ""} href="/admin/guides">Active · {activeRecords.length}</Link><Link className={archivedView ? "is-active" : ""} href="/admin/guides?view=archived">Archived · {archivedRecords.length}</Link></div><nav aria-label="Field Guide records">{visibleRecords.map((guide) => <Link className={guide.id === selected?.id ? "is-active" : ""} href={`/admin/guides?view=${archivedView ? "archived" : "active"}&record=${guide.id}`} key={guide.id}><small>{guide.category}</small><b>{guide.title}</b><em>{guide.summary || "Summary pending"}</em><span>{guide.archivedAt ? "Archived" : guide.status}</span></Link>)}</nav>{!archivedView ? <form action={createGuideRecord}><button className="button button-outline" type="submit">+ New blank guide</button></form> : null}</aside>
-      {selected ? <section className="admin-record-editor"><header className="admin-record-editor-head admin-guide-editor-head"><div><p className="admin-kicker">Permanent ID · {selected.id}</p><h2>{selected.title}</h2><p>{selected.category} · {selected.status} · Last saved {new Date(selected.updatedAt).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" })}</p></div><div className="admin-guide-monogram" aria-hidden="true">FG</div></header>{params.saved ? <p className="admin-save-message is-success">Guide saved. The Field Guide and search index now use this version.</p> : null}{params.created ? <p className="admin-save-message is-success">Blank guide created. Its permanent ID will not change.</p> : null}{params.error ? <p className="admin-save-message is-error">{params.error}</p> : null}
-        <form className="admin-species-form" action={saveGuideRecord}><input type="hidden" name="id" value={selected.id} /><fieldset><legend>Editorial control</legend><div className="admin-form-grid three"><label><span>Category</span><select name="category" defaultValue={selected.category}>{guideCategories.map((category) => <option value={category} key={category}>{category}</option>)}</select></label><label><span>Publication</span><select name="status" defaultValue={selected.status}><option value="draft">Draft</option><option value="published">Published</option></select></label><label><span>URL slug</span><input name="slug" defaultValue={selected.slug} /></label></div><label><span>Guide title</span><input name="title" defaultValue={selected.title} /></label><label><span>Guide summary</span><textarea name="summary" defaultValue={selected.summary} rows={3} /></label></fieldset><fieldset><legend>Article sections</legend><GuideSectionsEditor initialSections={selected.sections} /></fieldset><fieldset><legend>Context and connections</legend><label><span>Important caution or context</span><textarea name="caution" defaultValue={selected.caution} rows={5} placeholder="Optional. Use this for material readers should see before applying the guide." /></label><label><span>Related Leaf Ledger slugs · one per line</span><textarea name="relatedSpeciesSlugs" defaultValue={selected.relatedSpeciesSlugs.join("\n")} rows={5} placeholder="dairy-cow" /></label></fieldset><div className="admin-form-footer"><p>Published guides require a summary and at least one section with both a heading and body. Drafts remain clearly labelled in the private platform.</p><button className="button button-primary" type="submit">Save guide</button></div></form>
-        <form className="admin-archive-form" action={toggleGuideArchive}><input type="hidden" name="id" value={selected.id} /><div><strong>{selected.archivedAt ? "Restore this guide" : "Archive this guide"}</strong><p>{selected.archivedAt ? "Restoring returns it to the editorial desk and Field Guide preview." : "Archiving hides it from the Field Guide and search without deleting its writing."}</p></div><button className="button button-outline" type="submit">{selected.archivedAt ? "Restore guide" : "Archive guide"}</button></form>
-      </section> : <section className="admin-record-editor"><p>No guide records exist in this view.</p></section>}
+  const publishedCount = activeRecords.filter(record => record.status === "published").length;
+  const draftCount = activeRecords.length - publishedCount;
+  return <main className={styles.page}>
+    <div className={styles.workspace}>
+      <header className={styles.hero}>
+        <div className={styles.heroCopy}>
+          <p className={styles.eyebrow}>OWNER STUDIO / FIELD GUIDE</p>
+          <h1>Guide Desk</h1>
+          <p>Write, organize and publish keeper resources from one compact workspace.</p>
+          <div className={styles.heroActions}>
+            <Link href="/account/owner-tools" className={styles.heroSecondary}><PodscapeLineIcon name="arrow-right"/> Owner Tools</Link>
+            <Link href="/field-guide" target="_blank" rel="noopener noreferrer" className={styles.heroPrimary}>View Field Guide <PodscapeLineIcon name="arrow-right"/></Link>
+          </div>
+        </div>
+        <div className={styles.heroIcon} aria-hidden="true"><PodscapeLineIcon name="book"/></div>
+      </header>
+      <div className={styles.metrics} aria-label="Guide overview">
+        <a href="#guide-records"><strong>{activeRecords.length}</strong><span>Active guides</span></a>
+        <a href="#guide-records"><strong>{publishedCount}</strong><span>Published</span></a>
+        <a href="#guide-records"><strong>{draftCount}</strong><span>Drafts</span></a>
+        <a href="#guide-records"><strong>{archivedRecords.length}</strong><span>Archived</span></a>
+      </div>
+      <nav className={styles.shortcuts} aria-label="Guide Desk shortcuts">
+        <a href="#guide-records"><PodscapeLineIcon name="search"/> Find a guide</a>
+        <a href="#guide-editor"><PodscapeLineIcon name="edit"/> Edit details</a>
+        <a href="#guide-article"><PodscapeLineIcon name="book"/> Article sections</a>
+        <a href="#guide-connections"><PodscapeLineIcon name="leaf"/> Connections</a>
+      </nav>
+      <div className={styles.layout}>
+        <aside className={styles.sidebar} id="guide-records">
+          <div className={styles.sidebarHead}><div><p className={styles.eyebrow}>YOUR LIBRARY</p><h2>Guide records</h2></div><span className={styles.count}>{visibleRecords.length}</span></div>
+          <div className={styles.views}><Link className={!archivedView ? styles.selectedView : ""} href="/admin/guides">Active · {activeRecords.length}</Link><Link className={archivedView ? styles.selectedView : ""} href="/admin/guides?view=archived">Archived · {archivedRecords.length}</Link></div>
+          <GuideDeskNavigator records={visibleRecords.map(item => ({id:item.id,title:item.title,summary:item.summary,category:item.category,status:item.status,archived:Boolean(item.archivedAt)}))} selectedId={selected?.id} archivedView={archivedView}/>
+          {!archivedView ? <form action={createGuideRecord} className={styles.createForm}><button type="submit"><PodscapeLineIcon name="edit"/> New blank guide</button></form> : null}
+        </aside>
+      {selected ? <section className={styles.editor} id="guide-editor"><header className={styles.editorHead}><div><p className="admin-kicker">Permanent ID · {selected.id}</p><h2>{selected.title}</h2><p>{selected.category} · {selected.status} · Last saved {new Date(selected.updatedAt).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" })}</p></div><div className={styles.editorIcon} aria-hidden="true"><PodscapeLineIcon name="book"/></div></header>{params.saved ? <p className="admin-save-message is-success">Guide saved. The Field Guide and search index now use this version.</p> : null}{params.created ? <p className="admin-save-message is-success">Blank guide created. Its permanent ID will not change.</p> : null}{params.error ? <p className="admin-save-message is-error">{params.error}</p> : null}
+        <form className={`admin-species-form ${styles.editorForm}`} action={saveGuideRecord}><input type="hidden" name="id" value={selected.id} /><fieldset><legend><span className={styles.sectionIcon}><PodscapeLineIcon name="edit"/></span> Editorial details</legend><div className="admin-form-grid three"><label><span>Category</span><select name="category" defaultValue={selected.category}>{guideCategories.map((category) => <option value={category} key={category}>{category}</option>)}</select></label><label><span>Publication</span><select name="status" defaultValue={selected.status}><option value="draft">Draft</option><option value="published">Published</option></select></label><label><span>URL slug</span><input name="slug" defaultValue={selected.slug} /></label></div><label><span>Guide title</span><input name="title" defaultValue={selected.title} /></label><label><span>Guide summary</span><textarea name="summary" defaultValue={selected.summary} rows={3} /></label></fieldset><fieldset id="guide-article"><legend><span className={styles.sectionIcon}><PodscapeLineIcon name="book"/></span> Article sections</legend><GuideSectionsEditor initialSections={selected.sections} /></fieldset><fieldset id="guide-connections"><legend><span className={styles.sectionIcon}><PodscapeLineIcon name="leaf"/></span> Context and connections</legend><label><span>Important caution or context</span><textarea name="caution" defaultValue={selected.caution} rows={5} placeholder="Optional. Use this for material readers should see before applying the guide." /></label><label><span>Related Leaf Ledger slugs · one per line</span><textarea name="relatedSpeciesSlugs" defaultValue={selected.relatedSpeciesSlugs.join("\n")} rows={5} placeholder="dairy-cow" /></label></fieldset><div className={`admin-form-footer ${styles.saveFooter}`}><p>Published guides require a summary and at least one section with both a heading and body. Drafts remain clearly labelled in the private platform.</p><button className="button button-primary" type="submit">Save guide</button></div></form>
+        <form className={`admin-archive-form ${styles.archiveForm}`} action={toggleGuideArchive}><input type="hidden" name="id" value={selected.id} /><div><strong>{selected.archivedAt ? "Restore this guide" : "Archive this guide"}</strong><p>{selected.archivedAt ? "Restoring returns it to the editorial desk and Field Guide preview." : "Archiving hides it from the Field Guide and search without deleting its writing."}</p></div><button className="button button-outline" type="submit">{selected.archivedAt ? "Restore guide" : "Archive guide"}</button></form>
+      </section> : <section className={styles.emptyEditor}><PodscapeLineIcon name="book"/><h2>No guides in this view</h2><p>Create a blank guide or switch between active and archived records.</p></section>}
+      </div>
     </div>
   </main>;
 }
