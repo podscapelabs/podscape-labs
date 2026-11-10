@@ -70,7 +70,7 @@
 .accountSummaryTop h2{margin:5px 0;font:400 1.55rem/1.2 var(--serif)}
 .accountSummaryTop h2 span{color:var(--forest)}
 .accountSummaryTop p{margin:0;color:var(--muted);font-size:.72rem}
-.accountLevel{display:flex;align-items:center;gap:5px;flex:none;padding:9px 12px;border-radius:99px;background:var(--forest);color:#fff9ec;font-size:.7rem}
+.accountLevel{display:flex;align-items:center;gap:5px;flex:none;padding:9px 12px;border-radius:99px;background:var(--ps-accent);color:var(--ps-accent-text);font-size:.7rem}
 .accountLevel strong{font-size:.95rem}
 .accountProgressLabels{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:19px 0 8px;color:var(--muted);font-size:.68rem}
 .accountProgressLabels a{color:var(--forest);font-weight:800;white-space:nowrap}
