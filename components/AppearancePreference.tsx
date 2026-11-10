@@ -2,19 +2,19 @@
 import {useEffect,useState} from "react";
 import styles from "./AppearancePreference.module.css";
 
-type Appearance="light"|"dark"|"woodland"|"lilac"|"system";
+type Appearance="light"|"dark"|"woodland"|"lilac"|"ember"|"system";
 const KEY="podscape-theme";
 function isAppearance(value:string|null):value is Appearance{
- return value==="light"||value==="dark"||value==="woodland"||value==="lilac"||value==="system";
+ return value==="light"||value==="dark"||value==="woodland"||value==="lilac"||value==="ember"||value==="system";
 }
-function resolve(mode:Appearance):"light"|"dark"|"woodland"|"lilac"{
+function resolve(mode:Appearance):"light"|"dark"|"woodland"|"lilac"|"ember"{
  return mode==="system"?(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):mode;
 }
 function apply(mode:Appearance){
  const theme=resolve(mode);
  document.documentElement.dataset.theme=theme;
  document.documentElement.dataset.themePreference=mode;
- document.documentElement.style.colorScheme=theme==="light"||theme==="lilac"?"light":"dark";
+ document.documentElement.style.colorScheme=theme==="light"||theme==="lilac"||theme==="ember"?"light":"dark";
  window.dispatchEvent(new CustomEvent("podscape-theme-change",{detail:theme}));
 }
 const options=[
@@ -22,6 +22,7 @@ const options=[
  {id:"dark",title:"Dark",description:"Deep forest",colors:["#12231A","#172B20","#B8C88F"]},
  {id:"woodland",title:"Woodland",description:"Cocoa & chestnut",colors:["#211A16","#30251F","#D6AC76"]},
  {id:"lilac",title:"Lilac",description:"Lavender & plum",colors:["#F5F0FA","#E9DEF2","#7A4C91"]},
+ {id:"ember",title:"Ember",description:"Apricot & terracotta",colors:["#FFF3E5","#F3D5B4","#B85D29"]},
  {id:"system",title:"System",description:"Match your device",colors:["#EEE8D8","#172B20","#B8C88F"]}
 ] as const;
 export function AppearancePreference(){
