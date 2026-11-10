@@ -203,6 +203,29 @@ for(const theme of ["light","dark","woodland","lilac","ember"]){
  const ratio=contrastRatio(background,foreground);
  assert.ok(ratio>=4.5,theme+" controls fail WCAG AA text contrast: "+ratio.toFixed(2)+":1");
 }
+// The Field Guide consumes portal roles, so check both dark and light hero
+// contrast from their real CSS definitions, not only primary action buttons.
+function portalPalette(theme){
+ const selector=theme==="light"?".v2-site":':root[data-theme="'+theme+'"] .v2-site';
+ const spaced=globals.indexOf(selector+" {");
+ const compact=globals.indexOf(selector+"{");
+ const start=spaced>=0&&compact>=0?Math.min(spaced,compact):Math.max(spaced,compact);
+ assert.ok(start>=0,"Missing portal palette "+theme);
+ const brace=globals.indexOf("{",start);
+ return globals.slice(brace+1,globals.indexOf("}",brace));
+}
+for(const theme of ["light","dark","woodland","lilac","ember"]){
+ const p=portalPalette(theme);
+ for(const [name,bg,fg] of [
+  ["hero","--portal-hero-start","--portal-hero-text"],
+  ["hero button","--portal-hero-button-bg","--portal-hero-button-text"],
+  ["surface","--surface","--text-primary"]
+ ]){
+  const ratio=contrastRatio(hexToken(p,bg),hexToken(p,fg));
+  assert.ok(ratio>=4.5,theme+" "+name+" contrast too low: "+ratio.toFixed(2)+":1");
+ }
+}
+
 assert.match(fieldGuide,/\.featured a\{background:var\(--portal-hero-button-bg/,"Field Guide CTA must follow theme");
 assert.match(singleQr,/\.printLabel\{[^}]*background:white;color:black/,"QR print must retain black-on-white label");
 assert.match(bulkQr,/\.previewLabel,\.printLabel\{[^}]*background:white;color:#142c20/,"Bulk print must retain dark-on-white labels");
