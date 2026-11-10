@@ -25,7 +25,7 @@ type WidgetId="recent"|"colony"|"games"|"progress"|"schedule"|"guides"|"communit
 type WidgetGroup="Discovery"|"My Keeper Tools"|"Play & Community";
 type WidgetDef={name:string;description:string;icon:PodscapeIconName;group:WidgetGroup;preview:string;size:"wide"|"compact"};
 const definitions:Record<WidgetId,WidgetDef>={
-  recent:{name:"Recent & Noteworthy",description:"The newest guide and ways to explore Podscape.",icon:"news",group:"Discovery",preview:"Fresh guides · Games · Community",size:"wide"},
+  recent:{name:"Recent & Noteworthy",description:"The newest guide and ways to explore PodScape.",icon:"news",group:"Discovery",preview:"Fresh guides · Games · Community",size:"wide"},
   guides:{name:"Field Guide",description:"Jump into a recent care guide.",icon:"book",group:"Discovery",preview:"Continue discovering husbandry",size:"compact"},
   colony:{name:"My Colony",description:"Quick access to your most recently updated enclosure.",icon:"jar",group:"My Keeper Tools",preview:"Colony · Species · Recorded count",size:"compact"},
   progress:{name:"My Progress",description:"View your level and earned EXP at a glance.",icon:"achievement",group:"My Keeper Tools",preview:"Keeper level · Earned EXP",size:"compact"},
@@ -192,7 +192,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
       if(id==="progress")return compact(id,"leaf","MY PROGRESS",progress?`Level ${progress.level} Keeper`:"Your keeper journey",progress?`${progress.exp.toLocaleString("en-CA")} EXP earned so far.`:"Sign in to start tracking milestones.",progress?"/account/progress":"/account","View progress");
       if(id==="schedule")return compact(id,"calendar","CARE SCHEDULE","Keep your colonies on track","Open your existing Manager care schedule to see and organize care activities.","/keeper/schedule","View schedule");
       if(id==="guides")return compact(id,"book","FIELD GUIDE",guide?.title||"Explore field guides",guide?.description||"Care, husbandry and habitat resources.",guide?.href||"/field-guide",guide?"Read guide":"Browse guides");
-      return compact(id,"community","COMMUNITY","Your community corner","Discover keepers, creators and what's growing around Podscape.","/community","Explore community");
+      return compact(id,"community","COMMUNITY","Your community corner","Discover keepers, creators and what's growing around PodScape.","/community","Explore community");
     })()}
     </WorkspaceEditBlock>)}
     {hydrated&&!canvasEditing?<div className={styles.addWidgetFooter}><button type="button" className={styles.addWidgetButton} onClick={()=>{returnFocus.current=document.activeElement as HTMLElement;setEditing(true)}}><span aria-hidden="true">＋</span> Add Widget</button></div>:null}
