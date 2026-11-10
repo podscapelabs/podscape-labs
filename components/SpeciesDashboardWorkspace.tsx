@@ -6,6 +6,7 @@ import {moveBlock,dropBlock,uniqueAllowed} from "./workspace-layout";
 import {recordExperienceAction} from "./experience-achievements";
 import {confirmWorkspaceReset} from "./workspace-edit-standards";
 import {useWorkspaceEditorDialog} from "./useWorkspaceEditorDialog";
+import {speciesStorageKey} from "@/lib/ui-preferences";
 import homeStyles from "./PodscapeHome.module.css";
 import styles from "./SpeciesProfile.module.css";
 import { PodscapeLineIcon, type PodscapeIconName } from "./PodscapeLineIcon";
@@ -50,7 +51,7 @@ function normalize(value:unknown):Layout{
 
 /** The storage scope never contains a species ID: one layout is shared by every species page. */
 export function SpeciesDashboardWorkspace({widgets,scope,preview=false}:{widgets:Partial<Record<SpeciesWidgetId,ReactNode>>;scope:string;preview?:boolean}){
- const storageKey="podscape-species-dashboard-v1:"+scope;
+ const storageKey=speciesStorageKey(scope);
  const [layout,setLayout]=useState<Layout>(defaultLayout);
  const [hydrated,setHydrated]=useState(false);
  const [canvasEditing,setCanvasEditing]=useState(false);
