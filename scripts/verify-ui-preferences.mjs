@@ -21,10 +21,36 @@ assert.equal(standard.home.order.length,12);
 assert.equal(standard.home.visible.join(","),"recent");
 assert.equal(standard.navBottom.length,5);
 assert.equal(standard.navHome.length,6);
+assert.equal(standard.manager.order.length,7);
+assert.equal(standard.manager.tools.length,6);
+assert.equal(standard.species.order.length,13);
 assert.ok(model.parseUiPreferences(standard));
 const altered=JSON.parse(JSON.stringify(standard));
 altered.home.visible=["recent","colony"];altered.navHome=["ledger","shop","manager","community","guides","podbound"];
 assert.ok(model.parseUiPreferences(altered));
+const extended=JSON.parse(JSON.stringify(standard));
+extended.manager.visible=["hero","tools","enclosures","care","activity"];
+extended.manager.tools=["bulkqr","scan","add","care","schedule","colonies"];
+extended.species.visible=["care","moisture","about","sources"];
+extended.species.order=[...standard.species.order].reverse();
+assert.ok(model.parseUiPreferences(extended),"Valid Manager and Species layouts must round trip");
+assert.equal(model.sameUiPreferences(standard,extended),false);
+for(const key of ["manager","species"]) {
+ const legacy=JSON.parse(JSON.stringify(standard));
+ delete legacy[key];
+ assert.ok(model.parseUiPreferences(legacy),"Cloud preference snapshots without "+key+" must remain readable");
+}
+const invalidManager=JSON.parse(JSON.stringify(extended));
+invalidManager.manager.tools=["scan","scan","qr","care","schedule","add"];
+assert.equal(model.parseUiPreferences(invalidManager),null,"Manager tools cannot contain duplicates");
+invalidManager.manager=extended.manager;
+invalidManager.manager.visible=["care"];
+assert.equal(model.parseUiPreferences(invalidManager),null,"Required Manager widgets cannot disappear");
+const invalidSpecies=JSON.parse(JSON.stringify(extended));
+invalidSpecies.species.order.push("made-up");
+assert.equal(model.parseUiPreferences(invalidSpecies),null,"Unknown Species widget cannot be synced");
+assert.ok(model.managerStorageKey("user-123").endsWith(":user-123"));
+assert.ok(model.speciesStorageKey("user-123").endsWith(":user-123"));
 assert.equal(model.sameUiPreferences(standard,altered),false);
 assert.equal(model.isDefaultUiPreferences(standard),true);
 const invalid=JSON.parse(JSON.stringify(standard));
@@ -42,7 +68,7 @@ for(const check of ["db.auth.getUser()","email_confirmed_at","testerAccessStatus
  assert.ok(route.includes(check),"Preference API missing "+check);
 }
 const migration=read("supabase/migrations/20261110150000_member_ui_preferences.sql");
-for(const check of ["references auth.users(id) on delete cascade","enable row level security","revoke all","grant select, insert, update","auth.uid()","for select to authenticated","for insert to authenticated","for update to authenticated"]){
+for(const check of ["manager_layout jsonb not null","species_layout jsonb not null","references auth.users(id) on delete cascade","enable row level security","revoke all","grant select, insert, update","auth.uid()","for select to authenticated","for insert to authenticated","for update to authenticated"]){
  assert.ok(migration.toLowerCase().includes(check.toLowerCase()),"RLS migration missing "+check);
 }
 assert.ok(!/grant\s+delete/i.test(migration),"Preference deletion must remain denied");
@@ -50,7 +76,11 @@ const bridge=read("components/PreferenceSyncBridge.tsx");
 for(const check of ["sameUiPreferences","isDefaultUiPreferences","status===409","modeChange(\"conflict\")","\"import\"","Use account layout","Use this device & sync","markSaved","readLocalUiPreferences"]){
  assert.ok(bridge.includes(check),"Client sync missing "+check);
 }
+assert.ok(route.includes("manager_layout:parsed.manager")&&route.includes("species_layout:parsed.species"),"Sync API must save both additional dashboards");
+assert.ok(read("components/ManagerWorkspace.tsx").includes("podscape-workspace-layout-changed"),"Manager widget changes must trigger sync");
+assert.ok(read("components/SpeciesDashboardWorkspace.tsx").includes("podscape-workspace-layout-changed"),"Species widget changes must trigger sync");
+assert.ok(bridge.includes("podscape-workspace-layout-changed"),"Sync bridge must listen to workspace changes");
 assert.ok(read("components/HomeWidgets.tsx").includes("podscape-home-widgets-changed"),"Home edits must trigger sync");
 assert.ok(read("components/navigation-customization.ts").includes("podscape-nav-updated"),"Nav changes must trigger sync");
 assert.ok(read("components/OwnerAwareMobileNav.tsx").includes("PreferenceSyncBridge"),"Authenticated sync bridge must mount across the app");
-console.log("UI preference sync checks passed: schema validation, RLS, conflict revision, safe import, and Home/Nav wiring.");
+console.log("UI preference sync checks passed: Home, Manager, Species, navigation, legacy migration, RLS, conflicts, and account-scoped keys.");
