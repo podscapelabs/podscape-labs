@@ -79,3 +79,50 @@
 @media(max-width:760px){.page{padding:12px 12px 82px}.hero{min-height:0;border-radius:18px}.heroCopy{padding:22px}.hero h1{font-size:2.4rem}.heroIcon{display:none}.metrics{gap:7px}.metrics a{min-height:78px;padding:12px 10px;border-radius:12px}.metrics strong{font-size:1.7rem}.metrics span{font-size:.62rem}.layout{grid-template-columns:minmax(0,1fr)}.sidebar{position:static;max-height:none}.recordNav{max-height:280px}.editorHead{padding:17px}.editorIcon{height:45px;width:45px}.editorIcon svg{height:27px;width:27px}.editorForm fieldset{padding:17px}.sidebarHead{padding:17px}}
 @media(max-width:420px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.heroCopy{padding:19px}.hero h1{font-size:2.15rem}.heroActions a{font-size:.7rem;padding:9px 11px}.saveFooter button{width:100%}.recordNav{max-height:240px}}
 @media(prefers-reduced-motion:reduce){.recordNav a{transition:none}}
+
+
+/* Shared Owner Studio scale and editing density. Keep every guide field and action. */
+.page{padding-bottom:125px}
+.hero{min-height:166px;border-radius:19px}
+.heroCopy{padding:clamp(20px,3vw,32px)}
+.hero h1{margin:9px 0;font:600 clamp(2rem,4.5vw,3rem)/1.06 var(--display);letter-spacing:-.035em}
+.heroCopy>p:not(.eyebrow){font-size:.79rem}
+.heroActions{margin-top:17px}
+.heroActions a{min-height:40px;padding:9px 12px}
+.heroIcon{width:108px;height:108px;margin-right:clamp(12px,4vw,42px);transform:none;border-radius:24px}
+.heroIcon svg{width:58px;height:58px}
+.metrics{margin:11px 0;gap:9px}
+.metrics a{min-height:76px;padding:12px 14px;gap:5px;border-radius:13px}
+.metrics strong{font:750 clamp(1.45rem,2.2vw,1.85rem)/1 var(--sans,inherit);color:var(--ink);font-variant-numeric:tabular-nums}
+.metrics span{font-size:.67rem}
+.shortcuts{padding-bottom:12px}
+.shortcuts a{min-height:40px;padding:8px 12px;border-radius:11px}
+.layout{gap:12px}
+.sidebar,.editor,.emptyEditor{border-radius:16px}
+.sidebarHead{padding:16px 17px 12px}
+.sidebarHead h2{font:750 1.1rem/1.2 var(--sans,inherit);margin:5px 0 0}
+.count{font:750 .83rem var(--sans,inherit)}
+.recordNav a{gap:5px;padding:12px 15px}
+.recordNav strong{font:750 .87rem/1.25 var(--sans,inherit)}
+.recordTop{font-size:.6rem}
+.recordNav small{font-size:.68rem}
+.editorHead{padding:16px 19px}
+.editorHead h2{font:750 clamp(1.2rem,2.5vw,1.65rem)/1.15 var(--sans,inherit);letter-spacing:-.02em}
+.editorIcon{width:47px;height:47px;border-radius:13px}
+.editorIcon svg{width:26px;height:26px}
+.editorForm fieldset{padding:clamp(15px,2.3vw,22px);gap:12px}
+.editorForm legend{font-size:.78rem;letter-spacing:0}
+.saveFooter{padding:16px clamp(15px,2.3vw,22px)}
+.saveFooter p{max-width:65ch;font-size:.71rem}
+.archiveForm{margin:14px clamp(15px,2.3vw,22px);padding:14px}
+.page :is(a,button,input,select,textarea):focus-visible{outline-offset:2px}
+@media(max-width:760px){
+ .heroCopy{padding:20px}.hero h1{font-size:2.2rem}
+ .metrics a{min-height:70px;padding:10px}
+ .sidebarHead{padding:14px}
+ .editorHead{padding:14px}
+ .editorForm fieldset{padding:14px}
+ .shortcuts a{min-height:42px}
+ .page{padding-bottom:125px}
+}
+@media(max-width:420px){.metrics{gap:7px}.heroCopy{padding:18px}.hero h1{font-size:2.05rem}.metrics strong{font-size:1.55rem}}
