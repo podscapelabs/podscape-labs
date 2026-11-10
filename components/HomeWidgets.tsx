@@ -19,20 +19,20 @@ export type HomeProgress={level:number;exp:number}|null;
 type CoreId="greeting"|"hero"|"shortcuts"|"spotlight";
 type BlockId=CoreId|WidgetId;
 const coreIds:CoreId[]=["greeting","hero","shortcuts","spotlight"];
-const coreLabels:Record<CoreId,string>={greeting:"Welcome",hero:"Featured discovery",shortcuts:"Quick tools",spotlight:"Spotlight"};
+const coreLabels:Record<CoreId,string>={greeting:"Welcome",hero:"Featured Discovery",shortcuts:"Quick Tools",spotlight:"PodScape Spotlight"};
 const isCore=(id:BlockId):id is CoreId=>coreIds.includes(id as CoreId);
 type WidgetId="recent"|"colony"|"games"|"progress"|"schedule"|"guides"|"community"|"pins";
 type WidgetGroup="Discovery"|"My Keeper Tools"|"Play & Community";
 type WidgetDef={name:string;description:string;icon:PodscapeIconName;group:WidgetGroup;preview:string;size:"wide"|"compact"};
 const definitions:Record<WidgetId,WidgetDef>={
-  recent:{name:"Recent & Noteworthy",description:"The latest species, guides and Shop updates without batch clutter.",icon:"news",group:"Discovery",preview:"Leaf Ledger · Field Guide · Shop",size:"wide"},
+  recent:{name:"Recently Updated",description:"Recent updates from Leaf Ledger, Field Guide and Shop, grouped by category.",icon:"news",group:"Discovery",preview:"Leaf Ledger · Field Guide · Shop",size:"wide"},
   guides:{name:"Field Guide",description:"Jump into a recent care guide.",icon:"book",group:"Discovery",preview:"Continue discovering husbandry",size:"compact"},
   colony:{name:"My Colony",description:"Quick access to your most recently updated enclosure.",icon:"jar",group:"My Keeper Tools",preview:"Colony · Species · Recorded count",size:"compact"},
   progress:{name:"My Progress",description:"View your level and earned EXP at a glance.",icon:"achievement",group:"My Keeper Tools",preview:"Keeper level · Earned EXP",size:"compact"},
   schedule:{name:"Care Schedule",description:"One-tap access to the existing Manager care schedule.",icon:"calendar",group:"My Keeper Tools",preview:"Open your care schedule",size:"compact"},
   games:{name:"Play a Little",description:"Get straight into your Fun Zone activities.",icon:"gamepad",group:"Play & Community",preview:"Puzzles · Quizzes · Word games",size:"compact"},
   community:{name:"Community",description:"Find your way back to the keeper community.",icon:"community",group:"Play & Community",preview:"Keepers · Creators · Updates",size:"compact"},
-  pins:{name:"My Favorites",description:"Your pinned species, games and personal colonies in one place.",icon:"bookmark",group:"Discovery",preview:"Pinned species · Games · Colonies",size:"wide"}
+  pins:{name:"Favorites",description:"Your saved species, games and colonies in one place.",icon:"bookmark",group:"Discovery",preview:"Pinned species · Games · Colonies",size:"wide"}
 };
 const available=Object.keys(definitions) as WidgetId[];
 const groups:WidgetGroup[]=["Discovery","My Keeper Tools","Play & Community"];
@@ -169,27 +169,27 @@ export function HomeWidgets({recentGroups,colony,progress,pinOptions,userId,gree
       if(id==="hero")return <div key={id} className={styles.homeBlock}>{hero}</div>;
       if(id==="shortcuts")return <div key={id} className={styles.homeBlock}>{shortcuts}</div>;
       if(id==="spotlight")return spotlight ? <div key={id} className={styles.homeBlock}>{spotlight}</div> : null;
-      if(id==="pins")return <section className={styles.section} key={id} aria-label="My Favorites">
-        <div className={styles.heading}><h2>Favorites</h2><Link href="/menu">Discover →</Link></div>
+      if(id==="pins")return <section className={styles.section} key={id} aria-label={definitions.pins.name}>
+        <div className={styles.heading}><h2>{definitions.pins.name}</h2><Link href="/menu">Discover →</Link></div>
         {activePins.length?<div className={styles.pinnedGrid}>{activePins.map(item=><article key={pinKey(item)} className={styles.pinnedCard}>
           <span className={styles.pinnedIcon}><PodscapeLineIcon name={item.kind==="colony"?"jar":item.kind==="game"?"creative":"leaf"}/></span>
           <div><small>{item.kind==="colony"?"MY COLONY":item.kind==="game"?"FAVORITE GAME":"SPECIES"}</small><strong>{item.title}</strong><p>{item.description}</p></div>
           <Link href={item.href} aria-label={`Open ${item.title}`}>Open ↗</Link>
           <button type="button" onClick={()=>removePin(item)} aria-label={`Remove ${item.title} from favorites`}>×</button>
         </article>)}</div>:
-        pins.length?<div className={styles.widgetPinEmpty}><p>Some pinned items are no longer available to this account.</p><Link href="/menu">Explore PodScape →</Link></div>:<FirstActionEmptyState icon="bookmark" title="Make Home your own." eyebrow="MY FAVORITES" description="Save a species, colony or game to keep it a tap away. You can change these shortcuts whenever you like." primary={{href:"/ledger",label:"Explore species"}} secondary={{href:"/fun-zone",label:"Explore games"}} compact/>}
+        pins.length?<div className={styles.widgetPinEmpty}><p>Some pinned items are no longer available to this account.</p><Link href="/menu">Explore PodScape →</Link></div>:<FirstActionEmptyState icon="bookmark" title="Make Home your own." eyebrow={definitions.pins.name.toUpperCase()} description="Save a species, colony or game to keep it a tap away. You can change these shortcuts whenever you like." primary={{href:"/ledger",label:"Explore species"}} secondary={{href:"/fun-zone",label:"Explore games"}} compact/>}
       </section>;
 
-      if(id==="recent")return <section className={styles.section} key={id} aria-label="Recent and noteworthy">
-        <div className={styles.heading}><h2>Recent &amp; Noteworthy</h2>{recentGroups.length>1?<span className={styles.spotlightHint}>Browse by category <span aria-hidden="true">↔</span></span>:null}</div>
-        {recentGroups.length?<RecentCategoryCards groups={recentGroups}/>:<FirstActionEmptyState icon="news" eyebrow="DISCOVERY" title="There’s more to explore." description="New updates will appear here when published. In the meantime, discover species and keeper resources across PodScape." primary={{href:"/ledger",label:"Explore species"}} secondary={{href:"/field-guide",label:"Read guides"}} compact/>}
+      if(id==="recent")return <section className={styles.section} key={id} aria-label={definitions.recent.name}>
+        <div className={styles.heading}><h2>{definitions.recent.name}</h2>{recentGroups.length>1?<span className={styles.spotlightHint}>Browse by category <span aria-hidden="true">↔</span></span>:null}</div>
+        {recentGroups.length?<RecentCategoryCards groups={recentGroups}/>:<FirstActionEmptyState icon="news" eyebrow={definitions.recent.name.toUpperCase()} title="There’s more to explore." description="New updates will appear here when published. In the meantime, discover species and keeper resources across PodScape." primary={{href:"/ledger",label:"Explore species"}} secondary={{href:"/field-guide",label:"Read guides"}} compact/>}
       </section>;
-      if(id==="colony")return compact(id,"jar","MY COLONY",colony?colony.name:"Your colonies, close at hand",colony?`${colony.speciesName} · ${colony.quantity} recorded`:"Add a colony in Manager to get a quick link here.",colony?"/keeper/"+colony.id:"/keeper/new",colony?"Open colony":"Add first colony");
-      if(id==="games")return compact(id,"creative","FUN ZONE","A little playtime?","Word games, puzzles and quizzes whenever you need a break.","/fun-zone","Play now");
-      if(id==="progress")return compact(id,"leaf","MY PROGRESS",progress?`Level ${progress.level} Keeper`:"Your keeper journey",progress?`${progress.exp.toLocaleString("en-CA")} EXP earned so far.`:"Sign in to start tracking milestones.",progress?"/account/progress":"/account","View progress");
-      if(id==="schedule")return compact(id,"calendar","CARE SCHEDULE","Keep your colonies on track","Open your existing Manager care schedule to see and organize care activities.","/keeper/schedule","View schedule");
-      if(id==="guides")return compact(id,"book","FIELD GUIDE",guide?.title||"Explore field guides",guide?.description||"Care, husbandry and habitat resources.",guide?.href||"/field-guide",guide?"Read guide":"Browse guides");
-      return compact(id,"community","COMMUNITY","Your community corner","Discover keepers, creators and what's growing around PodScape.","/community","Explore community");
+      if(id==="colony")return compact(id,"jar",definitions.colony.name.toUpperCase(),colony?colony.name:"Your colonies, close at hand",colony?`${colony.speciesName} · ${colony.quantity} recorded`:"Add a colony in Manager to get a quick link here.",colony?"/keeper/"+colony.id:"/keeper/new",colony?"Open colony":"Add first colony");
+      if(id==="games")return compact(id,"creative",definitions.games.name.toUpperCase(),"A little playtime?","Word games, puzzles and quizzes whenever you need a break.","/fun-zone","Play now");
+      if(id==="progress")return compact(id,"achievement",definitions.progress.name.toUpperCase(),progress?`Level ${progress.level} Keeper`:"Your keeper journey",progress?`${progress.exp.toLocaleString("en-CA")} EXP earned so far.`:"Sign in to start tracking milestones.",progress?"/account/progress":"/account","View progress");
+      if(id==="schedule")return compact(id,"calendar",definitions.schedule.name.toUpperCase(),"Keep your colonies on track","Open your existing Manager care schedule to see and organize care activities.","/keeper/schedule","View schedule");
+      if(id==="guides")return compact(id,"book",definitions.guides.name.toUpperCase(),guide?.title||"Explore field guides",guide?.description||"Care, husbandry and habitat resources.",guide?.href||"/field-guide",guide?"Read guide":"Browse guides");
+      return compact(id,"community",definitions.community.name.toUpperCase(),"Your community corner","Discover keepers, creators and what's growing around PodScape.","/community","Explore community");
     })()}
     </WorkspaceEditBlock>)}
     {hydrated&&!canvasEditing?<div className={styles.addWidgetFooter}><button type="button" className={styles.addWidgetButton} onClick={()=>{returnFocus.current=document.activeElement as HTMLElement;setEditing(true)}}><span aria-hidden="true">＋</span> Add Widget</button></div>:null}
