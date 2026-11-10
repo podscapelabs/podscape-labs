@@ -19,7 +19,7 @@ export type HomeProgress={level:number;exp:number}|null;
 type CoreId="greeting"|"hero"|"shortcuts"|"spotlight";
 type BlockId=CoreId|WidgetId;
 const coreIds:CoreId[]=["greeting","hero","shortcuts","spotlight"];
-const coreLabels:Record<CoreId,string>={greeting:"Welcome Greeting",hero:"Discovery Hero",shortcuts:"Quick Shortcuts",spotlight:"Podscape Spotlight"};
+const coreLabels:Record<CoreId,string>={greeting:"Welcome",hero:"Featured discovery",shortcuts:"Quick tools",spotlight:"Spotlight"};
 const isCore=(id:BlockId):id is CoreId=>coreIds.includes(id as CoreId);
 type WidgetId="recent"|"colony"|"games"|"progress"|"schedule"|"guides"|"community"|"pins";
 type WidgetGroup="Discovery"|"My Keeper Tools"|"Play & Community";
@@ -127,7 +127,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
   );
   return <HomeCanvasEditContext.Provider value={canvasEditing}><section className={`${styles.widgetArea} ${canvasEditing?styles.homeCanvasEditing:""}`} aria-label="Your customizable homepage" data-workspace-root="home" onPointerMove={event=>{if(canvasEditing)moveDrag(event)}} onPointerUp={()=>{if(canvasEditing)stopDrag()}} onPointerCancel={()=>{if(canvasEditing)stopDrag()}}>
 {!canvasEditing&&<button type="button" className={styles.desktopDashboardEdit} onClick={()=>enterCanvas()} aria-label="Edit Home dashboard"><PodscapeLineIcon name="edit"/> Edit Home</button>}
-    {canvasEditing?<WorkspaceEditToolbar title="Arrange your Home" description="Drag blocks to move them. Shortcuts stay together." onAdd={()=>{finishCanvas();returnFocus.current=document.activeElement as HTMLElement;setEditing(true)}} onReset={resetToDefault} onDone={finishCanvas}/>:null}
+    {canvasEditing?<WorkspaceEditToolbar title="Arrange Home" description="Drag blocks to move them. Shortcuts stay together." onAdd={()=>{finishCanvas();returnFocus.current=document.activeElement as HTMLElement;setEditing(true)}} onReset={resetToDefault} onDone={finishCanvas}/>:null}
     {editing&&<div className={styles.homeEditorOverlay} onPointerDown={event=>{if(event.target===event.currentTarget)close()}}>
       <div className={`${styles.widgetEditor} ${styles.widgetLibrary}`} id="podscape-home-widget-editor" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="widget-library-title">
         <div className={styles.homeEditorHead}>
@@ -170,7 +170,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
       if(id==="shortcuts")return <div key={id} className={styles.homeBlock}>{shortcuts}</div>;
       if(id==="spotlight")return spotlight ? <div key={id} className={styles.homeBlock}>{spotlight}</div> : null;
       if(id==="pins")return <section className={styles.section} key={id} aria-label="My Favorites">
-        <div className={styles.heading}><h2>My Favorites</h2><Link href="/menu">Discover →</Link></div>
+        <div className={styles.heading}><h2>Favorites</h2><Link href="/menu">Discover →</Link></div>
         {activePins.length?<div className={styles.pinnedGrid}>{activePins.map(item=><article key={pinKey(item)} className={styles.pinnedCard}>
           <span className={styles.pinnedIcon}><PodscapeLineIcon name={item.kind==="colony"?"jar":item.kind==="game"?"creative":"leaf"}/></span>
           <div><small>{item.kind==="colony"?"MY COLONY":item.kind==="game"?"FAVORITE GAME":"SPECIES"}</small><strong>{item.title}</strong><p>{item.description}</p></div>
@@ -181,7 +181,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
       </section>;
 
       if(id==="recent")return <section className={styles.section} key={id} aria-label="Recent and noteworthy">
-        <div className={styles.heading}><h2>Recent &amp; Noteworthy</h2>{recent.length>1?<span className={styles.spotlightHint}>Swipe to explore <span aria-hidden="true">↔</span></span>:null}</div>
+        <div className={styles.heading}><h2>Latest discoveries</h2>{recent.length>1?<span className={styles.spotlightHint}>Swipe to explore <span aria-hidden="true">↔</span></span>:null}</div>
         {recent.length?<div className={styles.recentRail} role="region" aria-roledescription="carousel" aria-label="Recently updated PodScape content" tabIndex={0}>{recent.map(item=><Link href={item.href} className={styles.tile} key={item.href}>
           <div className={styles.widgetRecentIcon}><PodscapeLineIcon name={item.label==="FIELD GUIDE"?"book":item.label==="SHOP"?"shop":"leaf"}/><small>{item.label}</small></div>
           <div className={styles.tileCopy}><strong>{item.title}</strong><small>{item.description}</small><span className={styles.tileArrow} aria-hidden="true">→</span></div>
