@@ -1371,3 +1371,73 @@ h1, h2, h3 { text-wrap: balance; }
 @media(forced-colors:active){
  :root :where(.ps-card){border-color:CanvasText}
 }
+
+
+/* Woodland: warm cocoa, chestnut, parchment and muted copper.
+   A first-party PodScape theme built entirely from shared semantic roles. */
+:root[data-theme="woodland"]{
+ color-scheme:dark;
+ --canvas:#211a16;
+ --paper:#30251f;
+ --paper-strong:#3d2f27;
+ --forest:#d6ac76;
+ --forest-deep:#231812;
+ --moss:#a38e69;
+ --moss-light:#b7a080;
+ --clay:#e0a17c;
+ --amber:#e5b66b;
+ --bark:#d4a784;
+ --ink:#f5e9d7;
+ --muted:#ccb8a4;
+ --line:#655044;
+ --line-dark:rgba(245,233,215,.2);
+ --white:#f8eee0;
+ --header:rgba(33,26,22,.94);
+ --shadow:0 24px 70px rgba(12,7,5,.38);
+ --shadow-soft:0 10px 32px rgba(12,7,5,.25);
+ --ps-accent-text:#261a13;
+ --ps-surface-muted:#44352b;
+}
+:root[data-theme="woodland"] .v2-site{
+ --background:#1b1512;
+ --background-secondary:#251c17;
+ --surface:#30251f;
+ --surface-secondary:#403128;
+ --surface-raised:#47362b;
+ --text-primary:#f3e6d3;
+ --text-secondary:#d0bbaa;
+ --text-muted:#ac9887;
+ --border:#655044;
+ --border-strong:#957660;
+ --accent:#d6ac76;
+ --accent-hover:#ebc38e;
+ --accent-contrast:#261a13;
+ --focus:#edbf77;
+ --ledger:#c8ad82;
+ --podbound:#c7a0a5;
+ --guide:#b6ba8b;
+ --shop:#c6a0bb;
+ --creative:#e1ad88;
+ --directory:#dbc087;
+ --lab:#deb17d;
+ --portal-hero-start:#3a291f;
+ --portal-hero-end:#6a4735;
+ --portal-hero-glow:#9a7156;
+ --portal-hero-text:#faecda;
+ --portal-hero-muted:#e4cbb6;
+ --portal-hero-soft:#e1b899;
+ --portal-hero-button-bg:#f3e3ca;
+ --portal-hero-button-text:#3b261c;
+ --status-neutral-bg:#403127;
+ --status-positive-bg:#384032;
+ --status-warning-bg:#58402a;
+ --shadow-soft:0 10px 32px rgba(12,7,5,.32);
+}
+:root[data-theme="woodland"] .v2-button-primary{color:var(--ps-accent-text)}
+:root[data-theme="woodland"] .brand img,
+:root[data-theme="woodland"] .v2-brand img,
+:root[data-theme="woodland"] .construction-wordmark{
+ filter:invert(91%) sepia(13%) saturate(320%) hue-rotate(342deg) brightness(106%);
+}
+:root[data-theme="woodland"] .theme-icon-sun{opacity:0;transform:rotate(25deg)}
+:root[data-theme="woodland"] .theme-icon-moon{opacity:1;transform:rotate(0)}
