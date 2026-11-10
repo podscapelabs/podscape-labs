@@ -79,3 +79,38 @@
 .pathIcon svg{width:24px;height:24px}
 .category svg{width:26px;height:26px}
 .feature:after{content:none}
+
+
+/* Woodland: override legacy light-only Shop colors using the theme palette. */
+:global(html[data-theme="woodland"]) .hero{
+ background:
+  radial-gradient(ellipse at 94% 12%,color-mix(in srgb,var(--clay) 17%,transparent),transparent 45%),
+  radial-gradient(ellipse at 80% 90%,color-mix(in srgb,var(--amber) 12%,transparent),transparent 46%),
+  linear-gradient(125deg,var(--surface-raised),var(--surface));
+ color:var(--text-primary);
+}
+:global(html[data-theme="woodland"]) .eyebrow{color:var(--accent)}
+:global(html[data-theme="woodland"]) .hero h1{color:var(--text-primary)}
+:global(html[data-theme="woodland"]) .hero p:last-child,
+:global(html[data-theme="woodland"]) .heroCopy>p:not(.eyebrow){color:var(--text-secondary)}
+:global(html[data-theme="woodland"]) .hero .previewTag{
+ border-color:var(--border-strong);
+ background:color-mix(in srgb,var(--accent) 10%,var(--surface-raised));
+ color:var(--text-primary);
+}
+:global(html[data-theme="woodland"]) .path:nth-child(2){background:color-mix(in srgb,var(--amber) 9%,var(--surface))}
+:global(html[data-theme="woodland"]) .path:nth-child(3){background:color-mix(in srgb,var(--clay) 10%,var(--surface))}
+:global(html[data-theme="woodland"]) .path:nth-child(4){background:color-mix(in srgb,var(--moss) 12%,var(--surface))}
+:global(html[data-theme="woodland"]) .feature{
+ background:
+  radial-gradient(circle at 90% 25%,color-mix(in srgb,var(--clay) 22%,transparent),transparent 48%),
+  linear-gradient(120deg,var(--portal-hero-start),var(--portal-hero-end));
+ color:var(--portal-hero-text);
+}
+:global(html[data-theme="woodland"]) .feature a{
+ background:var(--portal-hero-button-bg);
+ color:var(--portal-hero-button-text);
+}
+:global(html[data-theme="woodland"]) .searchSubmit{
+ color:var(--accent-contrast);
+}
