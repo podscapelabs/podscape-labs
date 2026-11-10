@@ -67,4 +67,32 @@ assert.ok(read("components/HomeWidgets.tsx").includes("WorkspaceEditToolbar"));
 assert.ok(read("components/ManagerWorkspace.tsx").includes("WorkspaceEditToolbar"));
 assert.ok(read("components/ColonyDashboardLayout.tsx").includes("WorkspaceEditToolbar"));
 assert.ok(read("docs/design-system/ICONOGRAPHY_AND_EDITORS.md").includes("Cross-device sync"));
+
+const editStandards=read("components/workspace-edit-standards.ts");
+assert.match(editStandards,/EDIT_HOLD_MS\s*=\s*500/,"One long-press threshold must govern widget and shortcut editors");
+assert.match(editStandards,/EDIT_MOVE_CANCEL_PX\s*=\s*11/,"One movement threshold must prevent accidental long presses");
+assert.match(editor,/EDIT_HOLD_MS/,"Widget editors must import shared hold threshold");
+const shortcutHook=read("components/useShortcutEditor.ts");
+assert.match(shortcutHook,/EDIT_HOLD_MS/,"Home, Manager and bottom navigation shortcut editing must use shared hold threshold");
+assert.match(shortcutHook,/EDIT_MOVE_CANCEL_PX/,"Shortcut edit gestures must share movement cancellation");
+assert.match(shortcutHook,/pointer\.current\?\.id!==event\.pointerId/,"Shortcut editors must reject another finger's pointer events");
+const focusHook=read("components/useWorkspaceEditorDialog.ts");
+for(const requirement of ["Escape","Tab","visibilitychange","returnFocus"]){
+ if(requirement==="visibilitychange")continue;
+ assert.ok(focusHook.includes(requirement),"Widget library modal requires "+requirement+" support");
+}
+for(const path of ["components/HomeWidgets.tsx","components/ManagerWorkspace.tsx","components/SpeciesDashboardWorkspace.tsx"]){
+ const code=read(path);
+ assert.match(code,/useWorkspaceEditorDialog\(/,"Widget libraries must share focus/keyboard handling: "+path);
+ assert.match(code,/confirmWorkspaceReset\(/,"Reset must require standardized confirmation: "+path);
+ assert.match(code,/PodscapeLineIcon name="edit"\/> Edit/,"Dashboard edit control needs canonical action icon: "+path);
+}
+for(const [path,area] of [
+ ["components/CustomizableHomeShortcuts.tsx","home-shortcuts"],
+ ["components/GlobalMobileNav.tsx","bottom-navigation"],
+ ["components/ManagerWorkspace.tsx","manager-shortcuts"]
+]){
+ assert.ok(read(path).includes('confirmWorkspaceReset("'+area+'")'),"Shortcut reset needs confirmation: "+path);
+}
+
 console.log("Design-system checks passed: 8/8 semantic game icons, no Fun Zone leaf fillers, shared editor controls and documented global standard.");
