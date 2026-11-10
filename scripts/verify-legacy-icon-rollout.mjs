@@ -67,7 +67,9 @@ for (const path of [
   assert.match(read(path), /PodscapeLineIcon/, "Expected the canonical icon component in " + path);
 }
 const loading=read("app/app/loading.tsx");
-assert.match(loading,/podscape-wordmark\.svg/, "Keep recognizable branded loading identity");
+assert.match(loading,/PodscapeLineIcon name="leaf"/, "App splash must use a branded icon from the shared system");
+assert.match(loading,/<h1>PodScape<\/h1>/, "Use canonical PodScape capitalization in the splash");
+assert.ok(!/™|\bTM\b/.test(loading), "Splash screen must not show trademark decoration");
 assert.match(loading,/styles\.progress/, "Preserve the actual loading progress animation");
 assert.ok(!loading.includes("styles.symbol"), "No decorative glyph in loading screen");
 const funCss=read("app/fun-zone/fun-zone.module.css");
