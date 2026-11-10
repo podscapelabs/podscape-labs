@@ -33,12 +33,12 @@ export const metadata: Metadata = {
 const themeScript = `
   try {
     const saved = localStorage.getItem("podscape-theme");
-    const preference = saved === "light" || saved === "dark" || saved === "woodland" || saved === "lilac" || saved === "system" ? saved : "system";
+    const preference = saved === "light" || saved === "dark" || saved === "woodland" || saved === "lilac" || saved === "ember" || saved === "system" ? saved : "system";
     const theme = preference !== "system" ? preference
       : window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     document.documentElement.dataset.themePreference = preference;
     document.documentElement.dataset.theme = theme;
-    document.documentElement.style.colorScheme = theme === "light" || theme === "lilac" ? "light" : "dark";
+    document.documentElement.style.colorScheme = theme === "light" || theme === "lilac" || theme === "ember" ? "light" : "dark";
   } catch (_) {}
 `;
 
