@@ -4,6 +4,10 @@ export type NavGroup="Main"|"Discover"|"Keeper tools"|"Play & projects"|"Communi
 export type NavChoice={id:string;label:string;href:string;icon:PodscapeIconName;tone:"sage"|"sand"|"rose";group:NavGroup;description:string;planned?:boolean;ownerOnly?:boolean};
 export const navigationChoices:NavChoice[]=[
   {id:"owner-tools",label:"Owner Tools",href:"/account/owner-tools",icon:"manager",tone:"sage",group:"Owner",description:"Your private owner management desks",ownerOnly:true},
+  {id:"owner-analytics",label:"Analytics",href:"/account/owner-tools/analytics",icon:"community",tone:"sage",group:"Owner",description:"Private platform growth and activity metrics",ownerOnly:true},
+  {id:"owner-species",label:"Species Desk",href:"/admin/species",icon:"leaf",tone:"sage",group:"Owner",description:"Edit and publish Leaf Ledger species records",ownerOnly:true},
+  {id:"owner-products",label:"Product Desk",href:"/admin/products",icon:"shop",tone:"sand",group:"Owner",description:"Manage products, prices and inventory",ownerOnly:true},
+  {id:"owner-guides",label:"Guide Desk",href:"/admin/guides",icon:"book",tone:"sage",group:"Owner",description:"Manage Field Guide content",ownerOnly:true},
   {id:"home",label:"Home",href:"/app",icon:"home",tone:"sage",group:"Main",description:"Your Podscape homepage"},
   {id:"menu",label:"Menu",href:"/menu",icon:"menu",tone:"sand",group:"Main",description:"Explore all Podscape features"},
   {id:"search",label:"Search",href:"/search",icon:"search",tone:"sage",group:"Main",description:"Find species, products, guides and more"},
