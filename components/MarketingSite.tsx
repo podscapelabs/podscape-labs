@@ -6,6 +6,7 @@ import { HomeSearch } from "./HomeSearch";
 import { PodscapeLineIcon } from "./PodscapeLineIcon";
 import { CustomizableHomeShortcuts } from "./CustomizableHomeShortcuts";
 import { HomeWidgets, type HomeColony, type HomeProgress } from "./HomeWidgets";
+import type { RecentGroup } from "./RecentCategoryCards";
 import type { PinOption } from "./home-pins";
 import { games as funZoneGames } from "@/lib/fun-zone-games";
 import { InstallPodscape } from "./InstallPodscape";
@@ -70,22 +71,22 @@ export async function MarketingSite(){
   ...products.filter(p=>!p.archivedAt&&p.status==="published")
    .map(p=>({title:p.title,label:"SHOP",description:p.summary||"See what's new in the PodScape Shop.",href:"/shop/"+p.slug,image:p.image,alt:p.imageAlt,updatedAt:p.updatedAt}))
  ];
- // Keep the most recently edited entry when the same named creation appears
- // in multiple catalogues (for example, Dairy Cow in Shop and Leaf Ledger).
- const recentTitles=new Set<string>();
- const recent:Tile[]=recentEntries
-  .filter(item=>Number.isFinite(Date.parse(item.updatedAt||"")))
-  .sort((a,b)=>Date.parse(b.updatedAt)-Date.parse(a.updatedAt)||a.href.localeCompare(b.href))
-  .filter(item=>{
-   const key=item.title.trim().replace(/\s+/g," ").toLocaleLowerCase();
-   if(recentTitles.has(key))return false;
-   recentTitles.add(key);
-   return true;
-  })
-  .slice(0,12)
-  .map(({title,label,description,href,image,alt})=>({title,label,description,href,image,alt}));
+ // Reserve one slot per category, so a large batch of species edits never hides guides or Shop.
+ // Keep the newest entry visible, with a small optional list of related updates behind it.
+ const labels:RecentGroup["label"][]=["SPECIES","FIELD GUIDE","SHOP"];
+ const recentGroups:RecentGroup[]=labels.flatMap(label=>{
+  const seen=new Set<string>();
+  const items=recentEntries.filter(item=>item.label===label&&Number.isFinite(Date.parse(item.updatedAt||"")))
+   .sort((a,b)=>Date.parse(b.updatedAt)-Date.parse(a.updatedAt)||a.href.localeCompare(b.href))
+   .filter(item=>{
+    const key=item.href;
+    if(seen.has(key))return false;
+    seen.add(key);return true;
+   }).slice(0,6);
+  return items.length?[{label,newestAt:items[0].updatedAt,items:items.map(({title,description,href})=>({title,description,href}))}]:[];
+ }).sort((a,b)=>Date.parse(b.newestAt)-Date.parse(a.newestAt));
  return <div className={styles.site}><a className="skip-link" href="#platform-main">Skip to content</a><Header/><main id="platform-main" className={styles.main}>
- <HomeWidgets recent={recent} colony={colony} progress={progress} pinOptions={pinOptions} userId={user?.id||null}
+ <HomeWidgets recentGroups={recentGroups} colony={colony} progress={progress} pinOptions={pinOptions} userId={user?.id||null}
   greeting={<div className={styles.greetingWorkspace}><div className={styles.homeGreetingRow}><Link href="/account" className={styles.welcome}><span className={styles.welcomeMark}><PodscapeLineIcon name="leaf"/></span><HomeGreeting name={name}/><span className={styles.welcomeArrow}>→</span></Link></div><HomeSearch/></div>}
   hero={<section className={styles.hero} aria-label="Discover PodScape">{hero&&<Image src={hero.image!} alt={hero.imageAlt||speciesDisplayName(hero)} fill priority sizes="(max-width: 720px) 100vw, 1100px" className={styles.heroImage}/>}<div className={styles.heroContent}><span className={styles.eyebrow}>EXPLORE PODSCAPE</span><h2>Small creatures.<br/>Big world.</h2><p>Discover species, care guides, community and more.</p></div></section>}
   shortcuts={<><CustomizableHomeShortcuts isOwner={isOwner}/><ShortcutWelcomeTip userId={user?.id||null}/><InstallPodscape/></>}
