@@ -1,0 +1,24 @@
+-- REVIEW ONLY. DO NOT APPLY TO PRODUCTION WITHOUT OWNER APPROVAL.
+-- Observed on 2026-11-10: an authenticated UPDATE storage.objects policy named
+-- "Owner updates product photographs" has no USING/WITH CHECK restrictions.
+-- The authenticated role has UPDATE on storage.objects.
+-- Target: restrict updates to product-photos and a trusted app_metadata owner role.
+-- Preserve existing product-photo INSERT/SELECT policies.
+--
+-- Prerequisites:
+-- 1. Test with a real owner JWT whose app_metadata.role = 'owner'.
+-- 2. Test with a non-owner authenticated JWT: UPDATE must be denied.
+-- 3. Verify no non-product-photos object can be modified via this policy.
+-- 4. Confirm all upload/replace flows work in a disposable staging project.
+-- 5. Retest storage policy composition after change (permissive policies combine).
+--
+-- BEGIN;
+-- ALTER POLICY "Owner updates product photographs" ON storage.objects
+--   USING (bucket_id = 'product-photos' AND (select public.is_podscape_owner()))
+--   WITH CHECK (bucket_id = 'product-photos' AND (select public.is_podscape_owner()));
+-- COMMIT;
+--
+-- Verification (read-only):
+-- SELECT policyname, qual, with_check
+-- FROM pg_policies WHERE schemaname='storage' AND tablename='objects'
+--   AND policyname='Owner updates product photographs';
