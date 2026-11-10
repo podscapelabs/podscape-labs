@@ -4,10 +4,10 @@ import {useEffect,useState} from "react";
 import {MoonIcon,SunIcon} from "./Icons";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
 
-type Theme="light"|"dark"|"woodland";
+type Theme="light"|"dark"|"woodland"|"lilac";
 type ThemePreference=Theme|"system";
-const order:Theme[]=["light","dark","woodland"];
-const names:Record<Theme,string>={light:"Light",dark:"Dark",woodland:"Woodland"};
+const order:Theme[]=["light","dark","woodland","lilac"];
+const names:Record<Theme,string>={light:"Light",dark:"Dark",woodland:"Woodland",lilac:"Lilac"};
 
 export function ThemeToggle(){
  const [theme,setTheme]=useState<Theme|null>(null);
@@ -16,9 +16,9 @@ export function ThemeToggle(){
  useEffect(()=>{
   const sync=()=>{
    const saved=localStorage.getItem("podscape-theme");
-   setPreference(saved==="light"||saved==="dark"||saved==="woodland"?saved:"system");
+   setPreference(saved==="light"||saved==="dark"||saved==="woodland"||saved==="lilac"?saved:"system");
    const current=document.documentElement.dataset.theme;
-   setTheme(current==="dark"||current==="woodland"?current:"light");
+   setTheme(current==="dark"||current==="woodland"||current==="lilac"?current:"light");
   };
   sync();
   window.addEventListener("podscape-theme-change",sync);
@@ -30,7 +30,7 @@ export function ThemeToggle(){
   const next=order[(order.indexOf(current)+1)%order.length];
   document.documentElement.dataset.theme=next;
   document.documentElement.dataset.themePreference=next;
-  document.documentElement.style.colorScheme=next==="light"?"light":"dark";
+  document.documentElement.style.colorScheme=next==="light"||next==="lilac"?"light":"dark";
   localStorage.setItem("podscape-theme",next);
   setTheme(next);
   setPreference(next);
@@ -43,5 +43,6 @@ export function ThemeToggle(){
    <span className="theme-icon theme-icon-sun"><SunIcon/></span>
    <span className="theme-icon theme-icon-moon"><MoonIcon/></span>
    <span className="theme-icon theme-icon-woodland"><PodscapeLineIcon name="leaf"/></span>
+   <span className="theme-icon theme-icon-lilac"><PodscapeLineIcon name="creative"/></span>
  </button>;
 }
