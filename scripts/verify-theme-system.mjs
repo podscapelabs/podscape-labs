@@ -22,6 +22,18 @@ assert.match(globals,/:root\[data-theme="woodland"\]\s*\{/,"Woodland must have i
 assert.match(globals,/:root\[data-theme="woodland"\] \.v2-site/,"Woodland must cover portal theme roles");
 for(const role of ["--canvas","#211a16","--paper","#30251f","--ink","#f5e9d7","--accent-contrast","#261a13"])assert.ok(globals.includes(role),"Missing Woodland palette detail "+role);
 assert.match(appearance,/id:"woodland"/,"Woodland choice must be available in settings");
+assert.match(appearance,/id:"lilac"/,"Lilac choice must be available in settings");
+assert.match(appearance,/value==="lilac"/,"Lilac must be accepted as a saved appearance");
+assert.match(appearance,/theme==="light"\|\|theme==="lilac"/,"Lilac should use native light controls");
+assert.match(themeToggle,/lilac:"Lilac"/,"Quick toggle must name Lilac");
+assert.match(themeToggle,/\["light","dark","woodland","lilac"\]/,"Quick toggle must cycle all four explicit appearances");
+assert.match(themeToggle,/theme-icon-lilac/,"Quick toggle needs the lilac glyph");
+assert.match(layout,/saved === "lilac"/,"Initial bootstrap must restore Lilac");
+assert.match(globals,/:root\[data-theme="lilac"\]\s*\{/,"Lilac needs a dedicated root palette");
+assert.match(globals,/:root\[data-theme="lilac"\] \.v2-site/,"Lilac must cover portal semantic roles");
+assert.match(globals,/--portal-hero-button-text:#fffaff/,"Lilac hero buttons must have legible text");
+assert.match(splashCss,/:global\(html\[data-theme="lilac"\]\) \.page\s*\{[\s\S]*?--splash-bg:#f4eff9;[\s\S]*?--splash-ink:#33223e;[\s\S]*?--splash-accent:#70418b;/,"Lilac splash must follow lavender palette");
+
 assert.match(appearance,/localStorage\.setItem\(KEY,next\)/,"Appearance must persist");
 assert.match(appearanceCss,/grid-template-columns:repeat\(2/,"Theme picker should fit phone widths");
 assert.match(themeToggle,/woodland/,"Quick theme toggle must support Woodland");
@@ -91,6 +103,17 @@ for(const [path,source,checks] of [
 assert.match(shopHome,/--portal-hero-button-text/,"Shop CTA must use role-based contrast");
 assert.match(keeperHome,/--portal-hero-muted/,"Manager hero description must use Woodland contrast roles");
 assert.match(homeSurface,/--portal-hero-button-bg/,"Home hero CTA must use semantic role");
+for(const [name,source,selectors] of [
+ ["Shop",shopHome,[".hero{",".hero h1{",".hero .previewTag{",".path:nth-child(2){",".path:nth-child(3){",".path:nth-child(4){",".feature{"]],
+ ["Manager",keeperHome,[".managerHero{",".managerHero::after{",".managerHeroContent h1{"]],
+ ["Home",homeSurface,[".hero{",".hero:after{",".heroButton{",".spotlightRail .tileVisual:has(.tilePlaceholder){"]]
+]){
+ for(const selector of selectors){
+  assert.ok(source.includes(':global(html[data-theme="lilac"]) '+selector),
+   "Missing Lilac portal override in "+name+": "+selector);
+ }
+}
+
 
 // Inventory only: backgrounds and gradients used for photos, flags, chart series and
 // illustrated heroes can legitimately be fixed. Review rather than blindly rewrite.
