@@ -27,7 +27,8 @@ export function parseUiPreferences(value:unknown,isOwner=false):UiPreferences|nu
  if(!home||typeof home!=="object")return null;
  const layout=home as Record<string,unknown>;
  if(!uniqueStrings(layout.order)||!uniqueStrings(layout.visible))return null;
- if(layout.order.length!==homeOrder.length||!homeOrder.every(id=>layout.order.includes(id)))return null;
+ const requestedOrder=layout.order;
+ if(requestedOrder.length!==homeOrder.length||!homeOrder.every(id=>requestedOrder.includes(id)))return null;
  if(!layout.visible.every(id=>optionalWidgets.includes(id as WidgetId)))return null;
  if(!validNavigation(data.navHome,"home",isOwner)||!validNavigation(data.navBottom,"bottom",isOwner))return null;
  return {
@@ -38,9 +39,13 @@ export function parseUiPreferences(value:unknown,isOwner=false):UiPreferences|nu
 function readLocalHome(){
  try{
   const current=localStorage.getItem(HOME_KEY);
+  const legacy=!current;
   const value=JSON.parse(current||localStorage.getItem(HOME_LEGACY_KEY)||"null") as {order?:unknown;visible?:unknown}|null;
   if(!value||!uniqueStrings(value.order)||!uniqueStrings(value.visible))return defaultUiPreferences().home;
-  const order=[...new Set([...value.order.filter(id=>(homeOrder as readonly string[]).includes(id)),...homeOrder])] as HomeId[];
+  const oldOrder=value.order.filter(id=>(homeOrder as readonly string[]).includes(id));
+  const order=(legacy
+    ? [...new Set([...homeOrder.slice(0,4),...oldOrder,...homeOrder.slice(4)])]
+    : [...new Set([...oldOrder,...homeOrder])]) as HomeId[];
   // The legacy layout stores optional widgets only; ignore invalid saved widget IDs.
   const visible=value.visible.filter(id=>(optionalWidgets as readonly string[]).includes(id)) as WidgetId[];
   return {order,visible};
