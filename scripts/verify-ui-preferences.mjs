@@ -7,12 +7,12 @@ const navSource=read("components/navigation-customization.ts");
 const modelSource=read("lib/ui-preferences.ts");
 function execute(source,dependencies={}){
  const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
- const module={exports:{}};
- runInNewContext(code,{module,exports:module.exports,require:(id)=>{
+ const compiledModule={exports:{}};
+ runInNewContext(code,{module:compiledModule,exports:compiledModule.exports,require:(id)=>{
   if(id==="./navigation-customization"||id==="@/components/navigation-customization")return dependencies.nav;
   throw new Error("Unexpected module "+id);
  }});
- return module.exports;
+ return compiledModule.exports;
 }
 const nav=execute(navSource);
 const model=execute(modelSource,{nav});
@@ -47,7 +47,7 @@ for(const check of ["references auth.users(id) on delete cascade","enable row le
 }
 assert.ok(!/grant\s+delete/i.test(migration),"Preference deletion must remain denied");
 const bridge=read("components/PreferenceSyncBridge.tsx");
-for(const check of ["sameUiPreferences","isDefaultUiPreferences","status===409","modeChange(\"conflict\")","modeChange(\"import\")","Use account layout","Use this device & sync","markSaved","readLocalUiPreferences"]){
+for(const check of ["sameUiPreferences","isDefaultUiPreferences","status===409","modeChange(\"conflict\")","\"import\"","Use account layout","Use this device & sync","markSaved","readLocalUiPreferences"]){
  assert.ok(bridge.includes(check),"Client sync missing "+check);
 }
 assert.ok(read("components/HomeWidgets.tsx").includes("podscape-home-widgets-changed"),"Home edits must trigger sync");
