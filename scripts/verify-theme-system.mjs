@@ -13,6 +13,22 @@ function walk(dir){
 const sheets=[...walk("app"),...walk("components")];
 assert.ok(sheets.length>=68,"Theme scan must cover all existing app and component stylesheets");
 const globals=read("app/globals.css");
+const appearance=read("components/AppearancePreference.tsx");
+const appearanceCss=read("components/AppearancePreference.module.css");
+const themeToggle=read("components/ThemeToggle.tsx");
+const layout=read("app/layout.tsx");
+const splashCss=read("app/app/loading.module.css");
+assert.match(globals,/:root\[data-theme="woodland"\]\s*\{/,"Woodland must have its own root palette");
+assert.match(globals,/:root\[data-theme="woodland"\] \.v2-site/,"Woodland must cover portal theme roles");
+for(const role of ["--canvas","#211a16","--paper","#30251f","--ink","#f5e9d7","--accent-contrast","#261a13"])assert.ok(globals.includes(role),"Missing Woodland palette detail "+role);
+assert.match(appearance,/id:"woodland"/,"Woodland choice must be available in settings");
+assert.match(appearance,/localStorage\.setItem\(KEY,next\)/,"Appearance must persist");
+assert.match(appearanceCss,/grid-template-columns:repeat\(2/,"Theme picker should fit phone widths");
+assert.match(themeToggle,/woodland/,"Quick theme toggle must support Woodland");
+assert.match(layout,/saved === "woodland"/,"Early bootstrap must support Woodland");
+assert.match(layout,/style\.colorScheme = theme === "light"/,"Woodland should use dark native control scheme");
+assert.ok(!splashCss.includes(':global(html:not([data-theme="dark"]))'),"Woodland splash must not be treated as Light");
+
 for(const token of ["--ps-bg","--ps-surface","--ps-surface-raised","--ps-surface-muted","--ps-text","--ps-text-secondary","--ps-border","--ps-accent","--ps-accent-text","--ps-focus","--ps-font-ui","--ps-font-display","--ps-radius-card","--ps-min-control"]){
  assert.ok(globals.includes(token+":"),"Missing theme role: "+token);
 }
