@@ -7,7 +7,7 @@ import styles from "./gallery.module.css";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Card Catalogue | PodBound", description: "Explore officially revealed PodBound cards and original artwork from Podscape Labs." };
+export const metadata = { title: "Card Catalogue | PodBound", description: "Explore officially revealed PodBound cards and original artwork from PodScape Labs." };
 const categories: {value:"all"|CardCategory; label:string}[] = [
   {value:"all",label:"All Cards"}, {value:"species",label:"Species"}, {value:"environment",label:"Environments"},
   {value:"food",label:"Food"}, {value:"event",label:"Events"}, {value:"gameplay",label:"Gameplay"}
