@@ -65,7 +65,7 @@ export default async function OwnerAnalyticsPage() {
         <article className={styles.smallMetric}><PodscapeLineIcon name="check"/><span><strong>{stats.approvedTesters?.toLocaleString("en-CA") ?? "—"}</strong><small>Approved early-access invitations</small></span></article>
         <article className={styles.smallMetric}><PodscapeLineIcon name="calendar"/><span><strong>{stats.last24h?.toLocaleString("en-CA") ?? "—"}</strong><small>Accounts created in 24 hours</small></span></article>
       </div>
-      <p className={styles.explanation}>This is an owner-only, aggregate dashboard. It does not publish or display members' emails, identities, or browsing histories. New metrics can be added later as the platform develops.</p>
+      <p className={styles.explanation}>This is an owner-only, aggregate dashboard. It does not publish or display members&apos; emails, identities, or browsing histories. New metrics can be added later as the platform develops.</p>
     </section>
   </div></main>;
 }
