@@ -17,3 +17,30 @@
 @media(min-width:900px){.slot{padding:16px 28px}.sectionHead,.actions{padding-inline:28px}.header{max-width:760px}}
 @media(max-width:420px){.slot{align-items:flex-start;gap:8px;padding:12px 10px}.number{flex-basis:29px;font-size:1.2rem}.slotBody{gap:6px}.sectionHead{padding:14px 12px}.sectionHead h2{font-size:1.3rem}.actions{gap:12px;padding:14px 12px}.actions button{width:100%}}
 @media(prefers-reduced-motion:reduce){.page *{scroll-behavior:auto}}
+
+
+/* Spotlight is a true Owner Studio portal, with its information kept next to controls. */
+.page{padding:clamp(12px,3vw,30px) clamp(12px,3vw,28px) 130px}
+.wrap{max-width:1100px}
+.header{position:relative;isolation:isolate;overflow:hidden;min-height:165px;display:flex;align-items:center;margin:0 0 15px;padding:clamp(21px,3vw,32px);border:1px solid color-mix(in srgb,var(--portal-hero-text) 12%,transparent);border-radius:19px;background:radial-gradient(circle at 85% 16%,var(--portal-hero-glow),transparent 44%),linear-gradient(110deg,var(--portal-hero-start),var(--portal-hero-end));color:var(--portal-hero-text)}
+.heroCopy{position:relative;z-index:1}
+.header p{margin:0;color:var(--portal-hero-soft);font-size:.62rem;letter-spacing:.13em;font-weight:800}
+.header h1{margin:9px 0;font:600 clamp(2rem,4.4vw,3rem)/1.06 var(--display);letter-spacing:-.035em}
+.header span{color:var(--portal-hero-muted);font-size:.79rem;line-height:1.5}
+.back{margin-top:16px;display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 13px;border:1px solid color-mix(in srgb,var(--portal-hero-text) 25%,transparent);border-radius:11px;background:color-mix(in srgb,var(--portal-hero-text) 6%,transparent);color:var(--portal-hero-text);font-size:.73rem;text-decoration:none}
+.form{border-radius:16px;box-shadow:none}
+.sectionHead{padding:17px 19px}
+.sectionHead h2{font:750 1.15rem/1.2 var(--sans,inherit)}
+.sectionHead small{font-size:.7rem}
+.slot{gap:13px;padding:13px 19px}
+.number{flex:0 0 36px;width:36px;font:750 1.12rem/1 var(--sans,inherit);font-variant-numeric:tabular-nums}
+.slotBody{gap:6px}
+.slotBody strong{font-size:.78rem}
+.slotBody select{min-height:46px}
+.actions{padding:16px 19px;gap:12px}
+.actions button{border-radius:11px}
+.help{margin-top:12px;border:1px solid var(--line);border-radius:13px;background:var(--paper);overflow:hidden}
+.help summary{cursor:pointer;min-height:44px;display:flex;align-items:center;padding:11px 15px;font-size:.74rem;font-weight:750;color:var(--forest)}
+.help p{margin:0;padding:0 15px 15px;font-size:.73rem;color:var(--muted);line-height:1.55}
+@media(max-width:650px){.header{min-height:0;padding:20px}.header h1{font-size:2.15rem}.sectionHead{display:flex;align-items:flex-start;flex-direction:column;gap:6px}.sectionHead small{margin:0}.slot{padding:12px}.actions{padding:13px}}
+@media(max-width:420px){.header{padding:18px}.number{flex-basis:28px;font-size:.95rem}.slot{gap:7px}.actions button{width:100%}}
