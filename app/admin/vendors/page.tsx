@@ -25,7 +25,7 @@ export default async function VendorReviewDesk(){
    <p className={styles.status}>Status: <strong>{v.status}</strong></p>
    {v.tagline?<p className={styles.tagline}>{v.tagline}</p>:null}
    {v.description?<p className={styles.description}>{v.description}</p>:null}
-   <div className={styles.links}>{[v.website_url,v.instagram_url,v.facebook_url].filter(Boolean).map(url=><a key={url} href={url} target="_blank" rel="noopener noreferrer nofollow">{new URL(url).hostname} ↗</a>)}</div>
+   <div className={styles.links}>{[v.website_url,v.instagram_url,v.facebook_url].filter(Boolean).map(url=>{let safe:URL|null=null;try{const parsed=new URL(url);if(parsed.protocol==="https:"&&!parsed.username&&!parsed.password)safe=parsed;}catch{}return safe?<a key={url} href={safe.href} target="_blank" rel="noopener noreferrer nofollow">{safe.hostname} ↗</a>:null;})}</div>
    <div className={styles.review}>
     {(["approved","rejected","pending"] as const).filter(status=>status!==v.status).map(status=><form key={status} action={reviewVendorProfile}>
      <input type="hidden" name="id" value={v.id}/><input type="hidden" name="status" value={status}/>
