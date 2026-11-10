@@ -16,7 +16,7 @@ function UpdateForm({entry}:{entry?:UpdateRecord}){
    <label>Destination within PodScape<input name="href" type="text" maxLength={300} required pattern="/(?!/).*" placeholder="/keeper" defaultValue={entry?.href||"/app"}/></label>
    <label className={styles.full}>Headline<input name="title" required minLength={3} maxLength={100} placeholder="Smoother dashboard customization" defaultValue={entry?.title||""}/></label>
    <label className={styles.full}>Brief description <small>A quick preview for the Home dashboard, up to 240 characters.</small><textarea name="summary" rows={2} required minLength={5} maxLength={240} placeholder="A smoother and more polished PodScape experience." defaultValue={entry?.summary||""}/></label>
-   <label className={styles.full}>Fixes and improvements <small>One improvement per line, up to 12 lines. These appear when users tap View update.</small><textarea name="details" rows={6} maxLength={3000} placeholder={"Dashboard widgets are easier to rearrange\nImproved QR care logging\nRefined mobile navigation"} defaultValue={(entry?.details||[]).join("\n")}/></label>
+   <label className={styles.full}>Fixes and improvements <small>One change per line, up to 12. At least one is required to publish; drafts can be incomplete.</small><textarea name="details" rows={6} maxLength={3000} placeholder={"Dashboard widgets are easier to rearrange\nImproved QR care logging\nRefined mobile navigation"} defaultValue={(entry?.details||[]).join("\n")}/></label>
   </div>
   <div className={styles.actions}>
    <button name="intent" value="draft" className={styles.secondary} type="submit">Save draft</button>
@@ -34,7 +34,7 @@ export default async function UpdatesDesk({searchParams}:{searchParams:Promise<{
   <Link href="/account/owner-tools" className={styles.back}>← Owner Studio</Link>
   <header className={styles.hero}><p>OWNER STUDIO · COMMUNICATIONS</p><h1>Updates Desk</h1><span>Make meaningful progress visible. Draft first, then announce improvements after they are live.</span></header>
   {params.saved?<p role="status" className={styles.success}>Update saved successfully.</p>:null}
-  {params.error?<p role="alert" className={styles.error}>Could not save the update. Check your title, destination and database connection, then retry.</p>:null}
+  {params.error?<p role="alert" className={styles.error}>{params.error==="details"?"Add at least one fix or improvement before publishing.": "Could not save the update. Check the brief description, individual fix lines and destination, then retry."}</p>:null}
   {rows===null?<p role="alert" className={styles.error}>Updates storage is unavailable. Check the updates database migration.</p>:null}
   <div className={styles.stats}><span><strong>{drafts.length}</strong> drafts</span><span><strong>{published.length}</strong> published</span><span><strong>{updateCategories.length}</strong> categories</span></div>
   <section className={styles.panel}><div className={styles.sectionHead}><h2>Compose an announcement</h2><span>New announcements start as drafts</span></div>
