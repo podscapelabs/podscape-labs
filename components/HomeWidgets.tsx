@@ -12,8 +12,8 @@ import {recordExperienceAction} from "./experience-achievements";
 import {confirmWorkspaceReset} from "./workspace-edit-standards";
 import {useWorkspaceEditorDialog} from "./useWorkspaceEditorDialog";
 import {FirstActionEmptyState} from "./FirstActionEmptyState";
+import {RecentCategoryCards,type RecentGroup} from "./RecentCategoryCards";
 
-type Tile={title:string;label:string;description:string;href:string;image?:string|null;alt?:string};
 export type HomeColony={id:string;name:string;quantity:number;speciesName:string}|null;
 export type HomeProgress={level:number;exp:number}|null;
 type CoreId="greeting"|"hero"|"shortcuts"|"spotlight";
@@ -25,7 +25,7 @@ type WidgetId="recent"|"colony"|"games"|"progress"|"schedule"|"guides"|"communit
 type WidgetGroup="Discovery"|"My Keeper Tools"|"Play & Community";
 type WidgetDef={name:string;description:string;icon:PodscapeIconName;group:WidgetGroup;preview:string;size:"wide"|"compact"};
 const definitions:Record<WidgetId,WidgetDef>={
-  recent:{name:"Recent & Noteworthy",description:"The newest guide and ways to explore PodScape.",icon:"news",group:"Discovery",preview:"Fresh guides · Games · Community",size:"wide"},
+  recent:{name:"Recent & Noteworthy",description:"The latest species, guides and Shop updates without batch clutter.",icon:"news",group:"Discovery",preview:"Leaf Ledger · Field Guide · Shop",size:"wide"},
   guides:{name:"Field Guide",description:"Jump into a recent care guide.",icon:"book",group:"Discovery",preview:"Continue discovering husbandry",size:"compact"},
   colony:{name:"My Colony",description:"Quick access to your most recently updated enclosure.",icon:"jar",group:"My Keeper Tools",preview:"Colony · Species · Recorded count",size:"compact"},
   progress:{name:"My Progress",description:"View your level and earned EXP at a glance.",icon:"achievement",group:"My Keeper Tools",preview:"Keeper level · Earned EXP",size:"compact"},
@@ -54,7 +54,7 @@ function readLayout():Layout{
  }catch{return {order:[...defaultOrder],visible:[...defaultVisible]}}
 }
 
-export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,hero,shortcuts,spotlight}:{recent:Tile[];colony:HomeColony;progress:HomeProgress;pinOptions:PinOption[];userId:string|null;greeting:ReactNode;hero:ReactNode;shortcuts:ReactNode;spotlight:ReactNode}){
+export function HomeWidgets({recentGroups,colony,progress,pinOptions,userId,greeting,hero,shortcuts,spotlight}:{recentGroups:RecentGroup[];colony:HomeColony;progress:HomeProgress;pinOptions:PinOption[];userId:string|null;greeting:ReactNode;hero:ReactNode;shortcuts:ReactNode;spotlight:ReactNode}){
   const [layout,setLayout]=useState<Layout>({order:defaultOrder,visible:defaultVisible});
   const [editing,setEditing]=useState(false);
   const [canvasEditing,setCanvasEditing]=useState(false);
@@ -117,7 +117,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
   const optionsByKey=new Map(pinOptions.map(item=>[pinKey(item),item]));
   const activePins=pins.flatMap(p=>{const option=optionsByKey.get(pinKey(p));return option?[option]:[]});
   const removePin=(pin:HomePin)=>{const next=pins.filter(p=>pinKey(p)!==pinKey(pin));writeHomePins(userId,next);setPins(next)};
-  const guide=recent.find(item=>item.label==="GUIDE");
+  const guide=recentGroups.find(group=>group.label==="FIELD GUIDE")?.items[0];
   const compact=(id:WidgetId,icon:PodscapeIconName,eyebrow:string,title:string,description:string,href:string,cta:string)=>(
     <section className={styles.widgetCard} key={id} aria-label={definitions[id].name}>
       <span className={styles.widgetSymbol}><PodscapeLineIcon name={icon}/></span>
@@ -181,11 +181,8 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
       </section>;
 
       if(id==="recent")return <section className={styles.section} key={id} aria-label="Recent and noteworthy">
-        <div className={styles.heading}><h2>Latest discoveries</h2>{recent.length>1?<span className={styles.spotlightHint}>Swipe to explore <span aria-hidden="true">↔</span></span>:null}</div>
-        {recent.length?<div className={styles.recentRail} role="region" aria-roledescription="carousel" aria-label="Recently updated PodScape content" tabIndex={0}>{recent.map(item=><Link href={item.href} className={styles.tile} key={item.href}>
-          <div className={styles.widgetRecentIcon}><PodscapeLineIcon name={item.label==="FIELD GUIDE"?"book":item.label==="SHOP"?"shop":"leaf"}/><small>{item.label}</small></div>
-          <div className={styles.tileCopy}><strong>{item.title}</strong><small>{item.description}</small><span className={styles.tileArrow} aria-hidden="true">→</span></div>
-        </Link>)}</div>:<FirstActionEmptyState icon="news" eyebrow="DISCOVERY" title="There’s more to explore." description="New updates will appear here when published. In the meantime, discover species and keeper resources across PodScape." primary={{href:"/ledger",label:"Explore species"}} secondary={{href:"/field-guide",label:"Read guides"}} compact/>}
+        <div className={styles.heading}><h2>Recent &amp; Noteworthy</h2>{recentGroups.length>1?<span className={styles.spotlightHint}>Browse by category <span aria-hidden="true">↔</span></span>:null}</div>
+        {recentGroups.length?<RecentCategoryCards groups={recentGroups}/>:<FirstActionEmptyState icon="news" eyebrow="DISCOVERY" title="There’s more to explore." description="New updates will appear here when published. In the meantime, discover species and keeper resources across PodScape." primary={{href:"/ledger",label:"Explore species"}} secondary={{href:"/field-guide",label:"Read guides"}} compact/>}
       </section>;
       if(id==="colony")return compact(id,"jar","MY COLONY",colony?colony.name:"Your colonies, close at hand",colony?`${colony.speciesName} · ${colony.quantity} recorded`:"Add a colony in Manager to get a quick link here.",colony?"/keeper/"+colony.id:"/keeper/new",colony?"Open colony":"Add first colony");
       if(id==="games")return compact(id,"creative","FUN ZONE","A little playtime?","Word games, puzzles and quizzes whenever you need a break.","/fun-zone","Play now");
