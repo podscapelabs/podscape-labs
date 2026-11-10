@@ -2,6 +2,7 @@
 import {useEffect,useRef,useState,type PointerEvent,type MouseEvent,type ReactNode} from "react";
 import styles from "./PodscapeHome.module.css";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
+import {EDIT_HOLD_MS,EDIT_MOVE_CANCEL_PX,EDIT_CLICK_SUPPRESS_MS} from "./workspace-edit-standards";
 
 /** Animate layout changes without moving or replacing the real interactive widgets. */
 function workspaceNodes(scope:string){
@@ -157,7 +158,7 @@ export function WorkspaceEditBlock<T extends string>({id,scope,label,index,count
   // long-press timer intercept them before their shortcut editor activates.
   if((event.target as HTMLElement).closest("[data-shortcut-index]"))return;
   // Do not intercept controls such as forms, selection, or nested editable areas.
-  if((event.target as HTMLElement).closest("input,textarea,select,[contenteditable='true']"))return;
+  if((event.target as HTMLElement).closest("input,textarea,select,button,[role='button'],[contenteditable='true']"))return;
   cancelPress();
   const pointerId=event.pointerId;
   press.current={pointerId,x:event.clientX,y:event.clientY};
@@ -169,19 +170,19 @@ export function WorkspaceEditBlock<T extends string>({id,scope,label,index,count
    if(clickReset.current!==null){clearTimeout(clickReset.current);clickReset.current=null}
    // Keep click suppression armed until after release, even for very long holds.
    onLongPress();
-  },450);
+  },EDIT_HOLD_MS);
  };
  const onPressMove=(event:PointerEvent<HTMLDivElement>)=>{
   if(editing){move(event);return}
   const pending=press.current;
-  if(pending&&pending.pointerId===event.pointerId&&Math.hypot(event.clientX-pending.x,event.clientY-pending.y)>11)cancelPress();
+  if(pending&&pending.pointerId===event.pointerId&&Math.hypot(event.clientX-pending.x,event.clientY-pending.y)>EDIT_MOVE_CANCEL_PX)cancelPress();
  };
  const endPress=()=>{
   if(activatedPointer.current!==null){
    activatedPointer.current=null;
    if(clickReset.current!==null)clearTimeout(clickReset.current);
    // Safari may emit a synthetic click shortly after pointerup.
-   clickReset.current=setTimeout(()=>{blockClicks.current=false;clickReset.current=null},1100);
+   clickReset.current=setTimeout(()=>{blockClicks.current=false;clickReset.current=null},EDIT_CLICK_SUPPRESS_MS);
   }
   cancelPress();stop();
  };
@@ -197,7 +198,7 @@ export function WorkspaceEditBlock<T extends string>({id,scope,label,index,count
   onContextMenuCapture={event=>{
    // On iOS a link preview may appear before the hold timer fires. Editable
    // workspace blocks own this gesture, including their nested anchors.
-   if(onLongPress && !(event.target as HTMLElement).closest("input,textarea,select,[contenteditable='true']"))event.preventDefault();
+   if(onLongPress && !(event.target as HTMLElement).closest("input,textarea,select,button,[role='button'],[contenteditable='true']"))event.preventDefault();
   }}
   onDragStartCapture={event=>{if(onLongPress)event.preventDefault()}}>
   {editing?<div className={styles.homeCanvasBlockBar}>
