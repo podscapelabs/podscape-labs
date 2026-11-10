@@ -11,6 +11,7 @@ import {HomeCanvasEditContext} from "./HomeCanvasEditContext";
 import {recordExperienceAction} from "./experience-achievements";
 import {confirmWorkspaceReset} from "./workspace-edit-standards";
 import {useWorkspaceEditorDialog} from "./useWorkspaceEditorDialog";
+import {FirstActionEmptyState} from "./FirstActionEmptyState";
 
 type Tile={title:string;label:string;description:string;href:string;image?:string|null;alt?:string};
 export type HomeColony={id:string;name:string;quantity:number;speciesName:string}|null;
@@ -176,7 +177,7 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
           <Link href={item.href} aria-label={`Open ${item.title}`}>Open ↗</Link>
           <button type="button" onClick={()=>removePin(item)} aria-label={`Remove ${item.title} from favorites`}>×</button>
         </article>)}</div>:
-        <div className={styles.widgetPinEmpty}><p>{pins.length?"Some pinned items are no longer available to this account.":"Nothing pinned yet. Open a species, colony or game and tap Add to Home."}</p><Link href="/menu">Explore Podscape →</Link></div>}
+        pins.length?<div className={styles.widgetPinEmpty}><p>Some pinned items are no longer available to this account.</p><Link href="/menu">Explore PodScape →</Link></div>:<FirstActionEmptyState icon="bookmark" title="Make Home your own." eyebrow="MY FAVORITES" description="Save a species, colony or game to keep it a tap away. You can change these shortcuts whenever you like." primary={{href:"/ledger",label:"Explore species"}} secondary={{href:"/fun-zone",label:"Explore games"}} compact/>}
       </section>;
 
       if(id==="recent")return <section className={styles.section} key={id} aria-label="Recent and noteworthy">
@@ -184,9 +185,9 @@ export function HomeWidgets({recent,colony,progress,pinOptions,userId,greeting,h
         {recent.length?<div className={styles.recentRail} role="region" aria-roledescription="carousel" aria-label="Recently updated PodScape content" tabIndex={0}>{recent.map(item=><Link href={item.href} className={styles.tile} key={item.href}>
           <div className={styles.widgetRecentIcon}><PodscapeLineIcon name={item.label==="FIELD GUIDE"?"book":item.label==="SHOP"?"shop":"leaf"}/><small>{item.label}</small></div>
           <div className={styles.tileCopy}><strong>{item.title}</strong><small>{item.description}</small><span className={styles.tileArrow} aria-hidden="true">→</span></div>
-        </Link>)}</div>:<div className={styles.widgetEmpty}>New and recently updated content will appear here once it is published.</div>}
+        </Link>)}</div>:<FirstActionEmptyState icon="news" eyebrow="DISCOVERY" title="There’s more to explore." description="New updates will appear here when published. In the meantime, discover species and keeper resources across PodScape." primary={{href:"/ledger",label:"Explore species"}} secondary={{href:"/field-guide",label:"Read guides"}} compact/>}
       </section>;
-      if(id==="colony")return compact(id,"jar","MY COLONY",colony?colony.name:"Your colonies, close at hand",colony?`${colony.speciesName} · ${colony.quantity} recorded`:"Add a colony in Manager to get a quick link here.",colony?"/keeper/"+colony.id:"/keeper/collection",colony?"Open colony":"Open Manager");
+      if(id==="colony")return compact(id,"jar","MY COLONY",colony?colony.name:"Your colonies, close at hand",colony?`${colony.speciesName} · ${colony.quantity} recorded`:"Add a colony in Manager to get a quick link here.",colony?"/keeper/"+colony.id:"/keeper/new",colony?"Open colony":"Add first colony");
       if(id==="games")return compact(id,"creative","FUN ZONE","A little playtime?","Word games, puzzles and quizzes whenever you need a break.","/fun-zone","Play now");
       if(id==="progress")return compact(id,"leaf","MY PROGRESS",progress?`Level ${progress.level} Keeper`:"Your keeper journey",progress?`${progress.exp.toLocaleString("en-CA")} EXP earned so far.`:"Sign in to start tracking milestones.",progress?"/account/progress":"/account","View progress");
       if(id==="schedule")return compact(id,"calendar","CARE SCHEDULE","Keep your colonies on track","Open your existing Manager care schedule to see and organize care activities.","/keeper/schedule","View schedule");
