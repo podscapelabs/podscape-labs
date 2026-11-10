@@ -16,7 +16,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: `${siteContent.brand.shortName} | Tools, games, and resources for the isopod hobby`,
   description:
-    "Podscape Labs is an independent Canadian studio creating original tools, games, and resources for the isopod hobby.",
+    "PodScape Labs is an independent Canadian studio creating original tools, games, and resources for the isopod hobby.",
   metadataBase: new URL("https://podscapelabs.com"),
   applicationName: "PodScape Labs",
   icons: { apple: "/podscape-apple-touch-icon.png", icon: [{ url: "/podscape-icon-192.png", sizes: "192x192", type: "image/png" }, { url: "/podscape-icon-512.png", sizes: "512x512", type: "image/png" }] },
