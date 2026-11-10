@@ -9,7 +9,7 @@ import { TestAchievementButton } from "@/components/TestAchievementButton";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Owner Studio | Podscape Labs", robots: { index: false, follow: false } };
+export const metadata = { title: "Owner Studio | PodScape Labs", robots: { index: false, follow: false } };
 
 export default async function OwnerToolsPage() {
   if (!(await isAdminAuthenticated())) redirect("/admin");
