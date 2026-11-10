@@ -8,6 +8,7 @@ import { customerSupabase } from "@/lib/customer-auth/server";
 import { CreateEnclosure } from "@/components/KeeperWorkspace";
 import { KeeperMobileNav } from "@/components/KeeperMobileNav";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
+import { FirstActionEmptyState } from "@/components/FirstActionEmptyState";
 import { getMemberCollectionState } from "@/lib/member-collection";
 import { listEnclosures, listManagerActivity } from "@/lib/keeper";
 import { getSpeciesRecords } from "@/lib/species-store";
@@ -71,7 +72,7 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
                 <span><strong>{enclosure.name === "Primary colony" && record ? speciesDisplayName(record) : enclosure.name}</strong><small>{record ? speciesDisplayName(record) : "Species record"} · {enclosure.status.replaceAll("-"," ")}</small></span>
                 <em>{enclosure.quantity} recorded</em><b>›</b>
               </Link>;
-            })}</div> : <div className={styles.emptyInline}><p>No active colonies yet.</p><Link href="/keeper/collection">Explore your collection →</Link></div>}
+            })}</div> : <FirstActionEmptyState icon="jar" eyebrow="YOUR FIRST COLONY" title="Your first colony starts here." description="Add an enclosure to begin recording its population, care and observations. Your new colony will appear here automatically." primary={{href:"/keeper/new",label:"Add Your First Colony"}} secondary={{href:"/ledger",label:"Explore species"}} compact/>}
           </section>} />
           {archived.length ? <details className={styles.archived}><summary>Archived bins ({archived.length})</summary><div>{archived.map((enclosure) => <Link href={`/keeper/${enclosure.id}`} key={enclosure.id}>{enclosure.name} →</Link>)}</div></details> : null}
           {selectedRecord ? <CreateEnclosure speciesId={selectedRecord.id} speciesName={`${speciesDisplayName(selectedRecord)} · ${speciesScientificName(selectedRecord)}`} /> : null}
