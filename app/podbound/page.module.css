@@ -13,30 +13,20 @@
 .heroDecoration{display:none!important}
 
 
-/* Keep the illustrated trading cards green—their artwork is the game's identity.
-   Portal backdrop and copy follow the selected PodScape appearance. */
-:global(html[data-theme="woodland"]) .hero,
-:global(html[data-theme="lilac"]) .hero,
-:global(html[data-theme="ember"]) .hero{
+/* All five themes share one semantic hero contract. The card illustration
+   keeps PodBound's trademark forest-green artwork independent of UI theme. */
+.hero{
  background:radial-gradient(ellipse at 79% 14%,color-mix(in srgb,var(--moss) 33%,transparent),transparent 47%),
  linear-gradient(120deg,var(--paper-strong),var(--paper));
  color:var(--ink);
 }
-:global(html[data-theme="woodland"]) .hero:after,
-:global(html[data-theme="lilac"]) .hero:after,
-:global(html[data-theme="ember"]) .hero:after{
+.hero:after{
  background:linear-gradient(90deg,color-mix(in srgb,var(--paper-strong) 96%,transparent) 2%,
  color-mix(in srgb,var(--paper-strong) 82%,transparent) 45%,transparent 84%);
 }
-:global(html[data-theme="woodland"]) .kicker,
-:global(html[data-theme="lilac"]) .kicker,
-:global(html[data-theme="ember"]) .kicker{color:var(--forest)}
-:global(html[data-theme="woodland"]) .heroCopy>p:not(.kicker),
-:global(html[data-theme="lilac"]) .heroCopy>p:not(.kicker),
-:global(html[data-theme="ember"]) .heroCopy>p:not(.kicker){color:var(--muted)}
-:global(html[data-theme="woodland"]) .heroButton,
-:global(html[data-theme="lilac"]) .heroButton,
-:global(html[data-theme="ember"]) .heroButton{
+.kicker{color:var(--forest)}
+.heroCopy>p:not(.kicker){color:var(--muted)}
+.heroButton{
  background:var(--forest);
  color:var(--ps-accent-text);
 }
