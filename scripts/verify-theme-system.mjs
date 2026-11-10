@@ -183,7 +183,9 @@ function contrastRatio(a,b){
 }
 function themePalette(theme){
  const selector=theme==="light"?":root":':root[data-theme="'+theme+'"]';
- const start=globals.indexOf(selector+"{")>=0?globals.indexOf(selector+"{"):globals.indexOf(selector+" {");
+ const withSpace=globals.indexOf(selector+" {");
+ const compact=globals.indexOf(selector+"{");
+ const start=withSpace>=0&&compact>=0?Math.min(withSpace,compact):Math.max(withSpace,compact);
  assert.ok(start>=0,"Missing theme palette "+theme);
  const opening=globals.indexOf("{",start);
  return globals.slice(opening+1,globals.indexOf("}",opening));
