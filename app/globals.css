@@ -1517,3 +1517,74 @@ h1, h2, h3 { text-wrap: balance; }
 :root[data-theme="lilac"] .theme-icon-moon,
 :root[data-theme="lilac"] .theme-icon-woodland{opacity:0;transform:rotate(25deg)}
 :root[data-theme="lilac"] .theme-icon-lilac{opacity:1;transform:rotate(0)}
+
+
+/* Ember — final PodScape alternate theme.
+   Warm apricot, clay and amber paired with dark espresso for readable UI. */
+:root[data-theme="ember"]{
+ color-scheme:light;
+ --canvas:#fff3e5;
+ --paper:#fffaf3;
+ --paper-strong:#f7e2cc;
+ --forest:#a64c21;
+ --forest-deep:#64351f;
+ --moss:#b8814c;
+ --moss-light:#eac69d;
+ --clay:#b85d29;
+ --amber:#c16a29;
+ --bark:#874927;
+ --ink:#3e281d;
+ --muted:#705a4e;
+ --line:#e3c4aa;
+ --line-dark:rgba(62,40,29,.16);
+ --white:#fffaf3;
+ --header:rgba(255,246,236,.94);
+ --shadow:0 24px 70px rgba(94,49,27,.12);
+ --shadow-soft:0 10px 32px rgba(94,49,27,.09);
+ --ps-accent-text:#fffaf3;
+ --ps-surface-muted:#f5e3d1;
+}
+:root[data-theme="ember"] .v2-site{
+ --background:#fff3e5;
+ --background-secondary:#f9e8d5;
+ --surface:#fffaf3;
+ --surface-secondary:#f7e8d8;
+ --surface-raised:#f2d9c1;
+ --text-primary:#3e281d;
+ --text-secondary:#705a4e;
+ --text-muted:#866d5e;
+ --border:#e3c4aa;
+ --border-strong:#c7926d;
+ --accent:#a64c21;
+ --accent-hover:#873d1b;
+ --accent-contrast:#fffaf3;
+ --focus:#b05a25;
+ --ledger:#aa6432;
+ --podbound:#b66c43;
+ --guide:#b07b45;
+ --shop:#af632f;
+ --creative:#bf744c;
+ --directory:#a95737;
+ --lab:#b87341;
+ --portal-hero-start:#f6dfc5;
+ --portal-hero-end:#e7ac75;
+ --portal-hero-glow:#f5bd80;
+ --portal-hero-text:#3e281d;
+ --portal-hero-muted:#654833;
+ --portal-hero-soft:#a64c21;
+ --portal-hero-button-bg:#a64c21;
+ --portal-hero-button-text:#fffaf3;
+ --status-neutral-bg:#f6e7d7;
+ --status-positive-bg:#e8e8d7;
+ --status-warning-bg:#fbe1bd;
+ --shadow-soft:0 10px 32px rgba(94,49,27,.1);
+}
+:root[data-theme="ember"] .v2-button-primary,
+:root[data-theme="ember"] .button-primary,
+:root[data-theme="ember"] .podbound-link{color:var(--ps-accent-text)}
+.theme-icon-ember{opacity:0;transform:rotate(-25deg)}
+:root[data-theme="ember"] .theme-icon-sun,
+:root[data-theme="ember"] .theme-icon-moon,
+:root[data-theme="ember"] .theme-icon-woodland,
+:root[data-theme="ember"] .theme-icon-lilac{opacity:0;transform:rotate(25deg)}
+:root[data-theme="ember"] .theme-icon-ember{opacity:1;transform:rotate(0)}
