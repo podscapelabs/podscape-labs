@@ -50,7 +50,8 @@ export const FUN_ZONE_LESSONS:Record<string,readonly string[]>={
   "Begin with enclosure materials. A little new vocabulary is introduced directly in the clues.",
   "Use common keeper words such as cork, shelter and enclosure. The number in brackets tells you the answer length.",
   "Manca means juvenile. Substrate is the enclosure floor material. Oniscus is the name of an isopod genus.",
-  "Pereon is the thoracic region, pleon is the abdominal region, and exuvia is a shed exoskeleton."
+  "Pereon is the thoracic region, pleon is the abdominal region, and exuvia is a shed exoskeleton.",
+  "A marsupium is a female brood pouch; pleopods and uropods are appendages. Genus is the first part of a scientific species name."
  ],
  "word-search":[
   "Find familiar words from a keeper's enclosure. The complete word list is displayed so you can learn by spotting.",
