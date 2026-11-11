@@ -826,3 +826,45 @@
 .recentCategoryHead a.recentCategoryName{color:inherit;text-decoration:none}
 .recentCategoryHead a.recentCategoryName:hover{text-decoration:underline;text-underline-offset:3px}
 .recentCategoryHead a.recentCategoryName:focus-visible{outline:2px solid var(--ps-focus);outline-offset:3px;border-radius:3px}
+
+
+/* Widget library scan pass: one compact shared treatment for every portal. */
+.widgetLibraryFilter{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;flex:none;margin:0 0 12px;padding:4px;border-radius:13px;background:var(--paper-strong);border:1px solid var(--line)}
+.widgetLibraryFilter button{display:flex;align-items:center;justify-content:center;gap:6px;min-height:43px;min-width:0;border:1px solid transparent;border-radius:10px;color:var(--muted);background:transparent;font:inherit;font-size:.73rem;font-weight:750;cursor:pointer}
+.widgetLibraryFilter button span{font-size:.65rem;opacity:.8;font-variant-numeric:tabular-nums}
+.widgetLibraryFilter button[aria-pressed=true]{color:var(--forest);background:var(--paper);border-color:var(--line);box-shadow:0 1px 3px color-mix(in srgb,var(--ink) 7%,transparent)}
+.widgetLibraryFilter button:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
+.widgetLibraryGroups{scrollbar-gutter:stable}
+.widgetLibraryGroups>section{margin-bottom:15px}
+.widgetLibraryGroups h3{font-size:1.07rem;margin:0 0 8px}
+.widgetGallery{gap:7px}
+.widgetGalleryCard{border-radius:12px}
+.widgetPreview{min-height:69px;padding:12px}
+.widgetPreview>span{width:40px;height:40px;border-radius:11px}
+.widgetPreview>span svg{width:23px;height:23px}
+.widgetPreview strong{font-size:.95rem;line-height:1.2}
+.widgetGalleryCopy{padding:9px 12px 12px;gap:3px}
+.widgetGalleryCopy>strong{font-size:.93rem}
+.widgetGalleryCopy p{font-size:.67rem;line-height:1.35;margin:0 0 5px}
+.widgetGalleryCopy button{min-height:44px}
+.widgetRemove{background:var(--paper-strong)!important;color:var(--forest)!important;border:1px solid var(--line)!important}
+.widgetRemove:hover{border-color:var(--forest)!important}
+.widgetLibrary>.homeEditorHead+p{margin:8px 0 11px}
+.widgetLibraryActions{margin-bottom:10px}
+.widgetLibraryFooter{margin-top:0}
+@media(max-width:720px){
+ .homeEditorOverlay>.widgetLibrary{width:100%;max-height:90dvh}
+ .widgetLibraryFilter{margin-bottom:10px}
+ .widgetLibraryFilter button{min-height:44px;font-size:.7rem}
+ .widgetGallery{grid-template-columns:1fr;gap:7px}
+ .widgetGalleryCard{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;min-height:68px}
+ .widgetPreview{min-height:68px;padding:10px 9px;gap:9px}
+ .widgetPreview>span{width:38px;height:38px}
+ .widgetPreview strong{font-size:.91rem}
+ .widgetPreview i{display:none}
+ .widgetGalleryCopy{display:flex;align-items:center;justify-content:flex-end;padding:9px 9px 9px 0}
+ .widgetGalleryCopy>strong,.widgetGalleryCopy p{display:none}
+ .widgetGalleryCopy button{min-width:108px;max-width:126px;min-height:44px;padding:8px;font-size:.67rem;white-space:normal}
+ .widgetLibraryGroups>section{margin-bottom:13px}
+}
+@media(max-width:370px){.widgetLibraryFilter button{gap:3px;font-size:.65rem}.widgetGalleryCopy button{min-width:96px;max-width:104px}}
