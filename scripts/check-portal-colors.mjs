@@ -23,7 +23,7 @@ const roles=[
  "--portal-hero-button-bg","--portal-hero-button-text","--accent-contrast"
 ];
 const registry=read("lib/theme-registry.ts");
-const themeIds=[...registry.matchAll(/\\{id:"([a-z-]+)",title:/g)].map(match=>match[1]);
+const themeIds=[...registry.matchAll(/\{id:"([a-z-]+)",title:/g)].map(match=>match[1]);
 assert.ok(themeIds.length>=5,"Five PodScape environments must be registered.");
 const rootBlock=theme=>{
  const selector=theme==="light"?":root {":':root[data-theme="'+theme+'"]{';
@@ -41,7 +41,7 @@ for(const theme of themeIds){
    theme+" is missing "+canonical);
  }
 }
-const v2=global.split(".v2-site {")[1]?.split("\\n}")[0]||"";
+const v2=global.split(".v2-site {")[1]?.split("\n}")[0]||"";
 assert(v2,"Shared .v2-site role mapping is missing.");
 for(const role of roles)assert(v2.includes(role+": var(--theme-"+role.slice(2)+")"),
  "Portal role must inherit the canonical theme token "+role);
