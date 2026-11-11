@@ -132,7 +132,7 @@ function Crossword({puzzle,onComplete}:{puzzle:CrosswordPuzzle;onComplete:Comple
    const success=(answers[i]||"").toUpperCase()===clue.answer;
    return <label key={clue.answer}><span><strong>{clueNumbers.get(clue.r+":"+clue.c)} {places[i].dir}.</strong> {clue.clue}</span><input aria-label={`Answer to clue ${i+1}`} value={answers[i]||""} maxLength={clue.answer.length} autoComplete="off" spellCheck={false} onChange={e=>{setAnswers(a=>({...a,[i]:e.target.value.replace(/[^a-z]/gi,"").toUpperCase()}));setChecked(false)}} data-correct={checked&&success}/></label>;
   })}</div>
-  <div className={styles.actions}><button type="button" onClick={()=>{setChecked(true);if(complete)onComplete({answers:puzzle.clues.map((_,i)=>answers[i]||"")})}}>Check answers</button><button type="button" className={styles.secondary} onClick={()=>{setAnswers({});setChecked(false)}}>Reset</button></div>
+  <div className={styles.actions}>{!(checked&&complete)?<><button type="button" onClick={()=>{setChecked(true);if(complete)onComplete({answers:puzzle.clues.map((_,i)=>answers[i]||"")})}}>Check answers</button><button type="button" className={styles.secondary} onClick={()=>{setAnswers({});setChecked(false)}}>Reset</button></>:null}</div>
   {conflicts>0?<p className={styles.errorText} role="status">{conflicts} crossing {conflicts===1?"letter disagrees":"letters disagree"} between answers. Check the highlighted cells.</p>:null}
   {checked?<p className={styles.feedbackText} role="status">{complete?"All five correct! Crossword complete.":`${correct} of ${puzzle.clues.length} answers correct. ${conflicts?"Resolve the crossings too.":"Keep going!"}`}</p>:null}
  </div>;
