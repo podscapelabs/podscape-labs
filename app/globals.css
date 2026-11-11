@@ -1632,3 +1632,15 @@ h1, h2, h3 { text-wrap: balance; }
 :root[data-theme="ember"] .theme-icon-woodland,
 :root[data-theme="ember"] .theme-icon-lilac{opacity:0;transform:rotate(25deg)}
 :root[data-theme="ember"] .theme-icon-ember{opacity:1;transform:rotate(0)}
+
+
+/* Gameplay feedback is intentionally independent of appearance themes.
+   Equal meanings always share colours and non-colour symbols across Fun Zone. */
+:root{
+ --game-correct:#176448;
+ --game-present:#825500;
+ --game-absent:#475569;
+ --game-incorrect:#a12940;
+ --game-state-text:#ffffff;
+ --game-state-outline:#ffffff;
+}
