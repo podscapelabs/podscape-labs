@@ -38,7 +38,7 @@ const definitions:Record<WidgetId,WidgetDef>={
   community:{name:homeWidgetNames.community,description:"Find your way back to the keeper community.",icon:"community",group:"Play & Community",preview:"Keepers · Creators · Updates",size:"compact"},
   pins:{name:homeWidgetNames.pins,description:"Your saved species, games and colonies in one place.",icon:"bookmark",group:"Discovery",preview:"Pinned species · Games · Colonies",size:"wide"}
 };
-const available=Object.keys(definitions) as WidgetId[];
+const available=(Object.keys(definitions) as WidgetId[]).filter(id=>widgetAllowed("home",id));
 const groups=portalWidgetGroups.home;
 const storageKey="podscape-home-widgets-v2";
 const legacyKey="podscape-home-widgets-v1";
