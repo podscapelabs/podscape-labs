@@ -8,7 +8,7 @@ export default async function MenuPage(){
  return <div className={`v2-site ${styles.site}`}><Header/><main className={styles.menuPage}>
   <div className="v2-container">
    <h1>Menu</h1>
-   <p>Explore PodScape. Pin the destinations you visit most to keep them at the top of your Menu.</p>
+   <p>Explore PodScape. Pin your favourite destinations for quicker access.</p>
    <MenuPinnedDirectory isOwner={isOwner}/>
   </div>
  </main></div>;
