@@ -59,36 +59,26 @@ export default function Leaderboard(){
  return <main className={styles.page}><div className={styles.wrap}>
   <Link href="/fun-zone" className={styles.back}><span aria-hidden="true">←</span> Fun Zone</Link>
   <header className={styles.hero}>
-   <div><p className={styles.eyebrow}>PODSCAPE / FUN ZONE</p><h1>Arcade Rankings</h1><p>Big bragging rights. Tiny little victories. See who&apos;s been exploring the arcade.</p></div>
+   <div><p className={styles.eyebrow}>PODSCAPE / FUN ZONE</p><h1>Arcade Rankings</h1><p>Verified puzzles. Real standings. Your place in the arcade.</p></div>
    <span className={styles.heroIcon} aria-hidden="true"><PodscapeLineIcon name="trophy"/></span>
   </header>
   <section className={styles.controls} aria-label="Ranking filters">
-   <div className={styles.controlHead}><div><small>LEADERBOARD</small><h2>Choose your standings.</h2></div><span className={styles.utc}>UTC periods</span></div>
+   <div className={styles.controlHead}><div><small>FILTER THE BOARD</small><h2>Standings</h2></div><span className={styles.utc}>UTC</span></div>
    <div className={styles.tabs} role="group" aria-label="Ranking period">{periods.map(p=><button key={p.id} type="button" aria-pressed={period===p.id} className={period===p.id?styles.active:""} onClick={()=>setPeriod(p.id)}>{p.label}</button>)}</div>
-   <label className={styles.filterLabel} htmlFor="ranking-game">Show rankings for</label>
+   <label className={styles.filterLabel} htmlFor="ranking-game">Game</label>
    <select id="ranking-game" className={styles.select} value={game} onChange={e=>setGame(e.target.value)}>
     <option value="all">All ranked games</option>
     {games.map(item=><option key={item.key} value={item.key}>{item.title}</option>)}
    </select>
    <p className={styles.helper}>{period==="daily"?"Today, starting 00:00 UTC.":period==="weekly"?"This week, starting Monday 00:00 UTC.":period==="monthly"?"This month, starting on the 1st at 00:00 UTC.":"Every verified completion since tracking began."}</p>
   </section>
-  <section className={styles.entryGuide} aria-labelledby="ranking-entry-title">
-   <div className={styles.entryGuideHead}>
-    <div><small>HOW TO ENTER</small><h2 id="ranking-entry-title">{selectedGame?"Ranking in "+selectedGame.title:"Join the arcade rankings"}</h2></div>
-    <span className={styles.entryPoints}>+100 pts / puzzle</span>
-   </div>
-   <p className={styles.entryIntro}>{entryDescription}</p>
-   <ol className={styles.entrySteps}>
-    <li><span>1</span><div><strong>Sign in</strong><small>Use a verified PodScape account so your completed puzzles are saved.</small></div></li>
-    <li><span>2</span><div><strong>Complete a puzzle</strong><small>Finish a challenge and let PodScape verify the result. Only the first completion of each puzzle counts.</small></div></li>
-    <li><span>3</span><div><strong>Join rankings</strong><small>Enable public participation under Your standing. Your display name and verified points will appear on the board.</small></div></li>
-   </ol>
-   <div className={styles.entryGuideFooter}>
-    <span>Each puzzle counts in the period when it was first completed. Replays do not earn extra points or reset the date.</span>
-    <Link href={selectedGame?.href||"/fun-zone"}>{selectedGame?"Play "+selectedGame.title:"Browse ranked games"} <span aria-hidden="true">→</span></Link>
-   </div>
-  </section>
   {error?<div role="alert" className={styles.alert}>{error} <button type="button" onClick={()=>setReload(x=>x+1)}>Try again</button></div>:null}
+  <section className={styles.personal} aria-label="Your ranking participation">
+   <div className={styles.personalTitle}><span><PodscapeLineIcon name="achievement"/></span><div><small>YOUR ARCADE</small><h2>Your standing</h2></div></div>
+   {!board&&!loading?<p>Personal rankings are temporarily unavailable.</p>:!board?.signedIn?<p>Sign in to enter the public rankings. You can still explore the leaderboard without participating.</p>:
+    <><div className={styles.consent}><div><strong>Show me on arcade rankings</strong><p>Your name and verified points appear publicly when enabled. Turn this off anytime.</p></div><button type="button" disabled={updating||loading} aria-pressed={board.participating} onClick={()=>setPublic(!board.participating)} className={board.participating?styles.optedIn:styles.optedOut}>{updating?"Saving…":board.participating?"Participating ✓":"Join rankings"}</button></div>
+     {board.participating?(board.mine?<div className={styles.myStanding}><span>#{board.mine.position} · {periods.find(p=>p.id===period)?.label} rank</span><b>{format(board.mine.points)} pts</b></div>:<p>Your profile is public, but you haven&apos;t completed a ranked puzzle in this period yet.</p>):<p className={styles.helper}>Your completions are still saved privately. Ranking points remain separate from EXP and Duck Bucks. Podium achievements may award EXP.</p>}</>}
+  </section>
   <section className={styles.standings} aria-label="Ranking standings" aria-busy={loading}>
    <div className={styles.standingsHead}><div><small>THE SCOREBOARD</small><h2>{periods.find(x=>x.id===period)?.label} leaders</h2></div><span>{loading?"Updating…":entries.length?format(entries.length)+" ranked players":"No entries"}</span></div>
    {loading?<p className={styles.empty}>Loading verified arcade results…</p>:
@@ -101,14 +91,38 @@ export default function Leaderboard(){
      {others.length?<div className={styles.list}>{others.map((entry,i)=><div key={entry.position+"-"+entry.name+"-"+i} className={entry.mine?styles.myRow:styles.row}><span className={styles.rank}>#{entry.position}</span><div><strong>{entry.name}{entry.mine?" · You":""}</strong><small>{entry.completions} completed</small></div><b>{format(entry.points)} pts</b></div>)}</div>:null}
     </>}
   </section>
-  <section className={styles.personal} aria-label="Your ranking participation">
-   <div className={styles.personalTitle}><span><PodscapeLineIcon name="achievement"/></span><div><small>YOUR ARCADE</small><h2>Your standing</h2></div></div>
-   {!board&&!loading?<p>Personal rankings are temporarily unavailable.</p>:!board?.signedIn?<p>Sign in to enter the public rankings. You can still explore the leaderboard without participating.</p>:
-    <><div className={styles.consent}><div><strong>Show me on arcade rankings</strong><p>Optional. Your PodScape display name and verified puzzle totals become public on the leaderboard. Turn this off anytime.</p></div><button type="button" disabled={updating||loading} aria-pressed={board.participating} onClick={()=>setPublic(!board.participating)} className={board.participating?styles.optedIn:styles.optedOut}>{updating?"Saving…":board.participating?"Participating ✓":"Join rankings"}</button></div>
-     {board.participating?(board.mine?<div className={styles.myStanding}><span>#{board.mine.position} this period</span><b>{format(board.mine.points)} pts</b></div>:<p>Your profile is public, but you haven&apos;t completed a ranked puzzle in this period yet.</p>):<p className={styles.helper}>Your completions are still saved privately. Ranking points remain separate from EXP and Duck Bucks. Podium achievements may award EXP.</p>}</>}
-  </section>
-  <section className={styles.rewards} aria-label="Leaderboard achievements and EXP">
-   <div className={styles.rewardsTitle}><span><PodscapeLineIcon name="trophy"/></span><div><small>ACHIEVEMENTS & EXP</small><h2>Podium rewards</h2><p>Finish on the podium, unlock permanent achievements and earn bonus EXP when rankings close.</p></div></div>
+  <div className={styles.expRankingsLink}>
+    <div><strong>More than games?</strong><p>See how your lifetime EXP and keeper level compare across all of PodScape.</p></div>
+    <Link href="/account/progress/rankings">Lifetime EXP Rankings <span aria-hidden="true">→</span></Link>
+  </div>
+  <details className={styles.entryGuide}>
+   <summary className={styles.entryGuideHead}>
+    <span className={styles.detailIcon} aria-hidden="true"><PodscapeLineIcon name="book"/></span>
+    <span className={styles.detailCopy}><strong>How rankings work</strong><small>{selectedGame?selectedGame.title+" · ":""}One verified puzzle = 100 points</small></span>
+    <span className={styles.detailChevron} aria-hidden="true"><PodscapeLineIcon name="chevron-down"/></span>
+   </summary>
+   <div className={styles.detailBody}>
+    <h2 className={styles.visuallyHidden}>How to enter arcade rankings</h2>
+   <p className={styles.entryIntro}>{entryDescription}</p>
+   <ol className={styles.entrySteps}>
+    <li><span>1</span><div><strong>Sign in</strong><small>Use a verified PodScape account so your completed puzzles are saved.</small></div></li>
+    <li><span>2</span><div><strong>Complete a puzzle</strong><small>Finish a challenge and let PodScape verify the result. Only the first completion of each puzzle counts.</small></div></li>
+    <li><span>3</span><div><strong>Join rankings</strong><small>Enable public participation under Your standing. Your display name and verified points will appear on the board.</small></div></li>
+   </ol>
+   <div className={styles.entryGuideFooter}>
+    <span>Each puzzle counts in the period when it was first completed. Replays do not earn extra points or reset the date.</span>
+    <Link href={selectedGame?.href||"/fun-zone"}>{selectedGame?"Play "+selectedGame.title:"Browse ranked games"} <span aria-hidden="true">→</span></Link>
+   </div>
+   </div>
+  </details>
+  <details className={styles.rewards}>
+   <summary className={styles.rewardsTitle}>
+    <span className={styles.detailIcon} aria-hidden="true"><PodscapeLineIcon name="trophy"/></span>
+    <span className={styles.detailCopy}><strong>Podium rewards & achievements</strong><small>Daily +50 · Weekly +200 · Monthly +500 EXP for 1st</small></span>
+    <span className={styles.detailChevron} aria-hidden="true"><PodscapeLineIcon name="chevron-down"/></span>
+   </summary>
+   <div className={styles.detailBody}>
+    <p className={styles.rewardRule}>Finish on the podium to earn bonus EXP when eligible ranking periods close.</p>
    <div className={styles.rewardTableWrap}><table className={styles.rewardTable}>
     <thead><tr><th scope="col">Board</th><th scope="col">1st</th><th scope="col">2nd</th><th scope="col">3rd</th></tr></thead>
     <tbody>
@@ -133,11 +147,8 @@ export default function Leaderboard(){
       <b>+{format(award.exp)} EXP</b>
      </div>)}</div>}
    </div>
-  </section>
-  <div className={styles.expRankingsLink}>
-    <div><strong>More than games?</strong><p>See how your lifetime EXP and keeper level compare across all of PodScape.</p></div>
-    <Link href="/account/progress/rankings">Lifetime EXP Rankings <span aria-hidden="true">→</span></Link>
-  </div>
+   </div>
+  </details>
   <p className={styles.note}>Ranking points = 100 per unique server-verified puzzle completion. Ties share a rank. Daily, weekly and monthly boards reset by UTC calendar periods; All time persists. Only opted-in players appear. The Pod Exchange is not ranked because simulated wealth isn&apos;t a verified puzzle score.</p>
  </div></main>;
 }
