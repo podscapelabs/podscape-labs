@@ -55,4 +55,4 @@ assert.ok(vercel.crons.some(job=>job.path==="/api/cron/ranking-awards"&&job.sche
 assert.match(progress,/Podium achievement/,"Permanent badges must not display misleading +0 EXP");
 
 assert.match(puzzle,/record_member_puzzle_completion/,"Existing scoring remains based on server-verified completions");
-console.log("Arcade rankings source checks passed: real completions, opt-in, UTC periods, filters, podium and existing game links.");
+console.log("Arcade rankings source checks passed: automatic verified completions, UTC periods, filters, podium and rewards.");
