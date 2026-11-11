@@ -46,8 +46,8 @@ function Connections({puzzle,onComplete}:{puzzle:ConnectionsPuzzle;onComplete:Co
  const reset=()=>{setRound(x=>x+1);setSelected([]);setSolved([]);setMistakes(0);setNotice("")};
  return <div className={styles.playArea}>
   <div className={styles.smallStats}><span>{solved.length} / {puzzle.groups.length} groups found</span><span>{Math.max(0,4-mistakes)} mistakes left</span></div>
-  {solved.map(label=>{const group=puzzle.groups.find(g=>g.label===label)!;return <div className={styles.solvedGroup} key={label}><strong>{label}</strong><span>{group.words.join(" · ")}</span></div>})}
-  {completed||exhausted?<div className={styles.result}><h2>{completed?"Colony connected!":"Round complete"}</h2>
+  <div className={completed?styles.completedGroups:styles.solvedGroups}>{solved.map(label=>{const group=puzzle.groups.find(g=>g.label===label)!;return <div className={styles.solvedGroup} key={label}><strong>{label}</strong><span>{group.words.join(" · ")}</span></div>})}</div>
+  {completed||exhausted?<div className={`${styles.result} ${completed?styles.compactResult:""}`}><h2>{completed?"Colony connected!":"Round complete"}</h2>
     <p>{completed?"All four categories found.":`You found ${solved.length} of four groups. Review the categories below, then try a fresh arrangement.`}</p>
     {exhausted&&puzzle.groups.filter(g=>!solved.includes(g.label)).map(g=><div className={styles.revealGroup} key={g.label}><strong>{g.label}</strong><span>{g.words.join(" · ")}</span></div>)}
     {exhausted?<button type="button" onClick={reset}>Try again ↻</button>:null}
