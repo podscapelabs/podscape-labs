@@ -29,6 +29,6 @@ export function PuzzleLibrary({title,subtitle,eyebrow="Fun Zone / Puzzle Library
    </article>)}</div>
    {shown.length===0?<p className={styles.empty}>No puzzles match this filter yet.</p>:null}
    <p className={styles.note}>Complete puzzles in order to unlock the next challenge. Your completed puzzles remain replayable, and eligible Fun Zone achievements award EXP only once.</p>
-   <WorkspaceLinks items={[{href:"/fun-zone",label:"All games"},{href:"/ledger",label:"Leaf Ledger"}]}/>
+   <WorkspaceLinks items={[{href:"/fun-zone",label:"All games"},...(gameKey?[{href:"/fun-zone/leaderboard?game="+encodeURIComponent(gameKey),label:"Game rankings"}]:[]),{href:"/ledger",label:"Leaf Ledger"}]}/>
  </div></main>;
 }
