@@ -159,3 +159,127 @@
 .expRankingsLink a:hover{border-color:var(--accent)}
 .expRankingsLink a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 @media(max-width:680px){.expRankingsLink{align-items:stretch;flex-direction:column}.expRankingsLink a{align-self:stretch}}
+
+
+/* At-a-glance arcade leaderboard — compact information hierarchy.
+   Controls, personal place and live standings come before optional detail. */
+.page{padding-top:8px}
+.wrap{gap:11px}
+.back{min-height:32px}
+.hero{padding:18px 20px;border-radius:17px}
+.hero h1{font-size:clamp(30px,4vw,42px);line-height:1.08}
+.hero p:last-child{margin-top:6px;font-size:12px;line-height:1.4}
+.eyebrow{margin-bottom:7px}
+.heroIcon{width:56px;height:56px;border-radius:16px}
+.heroIcon svg{width:30px;height:30px}
+.controls,.standings,.personal{padding:15px 18px;border-radius:15px}
+.controlHead{margin-bottom:9px}
+.controlHead h2,.standingsHead h2{font-size:clamp(22px,3vw,27px);margin-top:3px}
+.controlHead small,.standingsHead small{font-size:9px;letter-spacing:.12em}
+.utc,.standingsHead>span{font-size:11px}
+.tabs{padding:3px;gap:3px;margin-bottom:9px;border-radius:11px}
+.tabs button{min-height:37px;border-radius:9px;font-size:11px}
+.filterLabel{font-size:11px;margin-bottom:4px}
+.select{min-height:40px;border-radius:10px;font-size:12px;padding:6px 11px}
+.controls>.helper{font-size:10px!important;margin-top:7px}
+.personal{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px 12px;align-items:center}
+.personalTitle{gap:9px}
+.personalTitle>span{width:34px;height:34px;border-radius:10px}
+.personalTitle svg{width:19px;height:19px}
+.personalTitle small{font-size:9px}
+.personalTitle h2{font-size:clamp(21px,3vw,26px);margin-top:3px}
+.personal>.consent{margin:0;display:contents}
+.personal>.consent>div{display:none}
+.personal>.consent>button{grid-column:2;grid-row:1;min-height:36px;padding:7px 12px;border-radius:10px;white-space:nowrap;font-size:11px}
+.personal>.myStanding{grid-column:1/-1;margin:0;padding:10px 12px;min-height:43px}
+.personal>.myStanding span{font-size:12px}
+.personal>.myStanding b{font-size:16px}
+.personal>p{grid-column:1/-1;margin:0;font-size:11px;line-height:1.4}
+.standingsHead{margin-bottom:9px}
+.podium{margin:8px 0 0;gap:8px}
+.podiumCard{padding:12px 8px;gap:5px;border-radius:12px}
+.medal{width:36px;height:36px}
+.medal svg{width:21px;height:21px}
+.podiumCard strong{font-size:12px}
+.podiumCard>b{font-size:18px}
+.podiumCard>b small{font-size:10px}
+.podiumCard>span:last-child{font-size:10px}
+.row,.myRow{min-height:51px;padding:8px 12px}
+.expRankingsLink{padding:10px 13px;border-radius:12px}
+.expRankingsLink strong{font-size:12px}
+.expRankingsLink p{margin-top:3px;font-size:10px}
+.expRankingsLink a{min-height:38px;font-size:11px}
+.entryGuide,.rewards{display:block;min-width:0;padding:0;border-radius:14px;overflow:hidden}
+.entryGuideHead,.rewardsTitle{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;list-style:none}
+.entryGuideHead::-webkit-details-marker,.rewardsTitle::-webkit-details-marker{display:none}
+.entryGuideHead::marker,.rewardsTitle::marker{content:""}
+.entryGuideHead:focus-visible,.rewardsTitle:focus-visible{outline:3px solid var(--accent);outline-offset:-4px;border-radius:13px}
+.detailIcon{display:grid;place-items:center;flex:none;width:35px;height:35px;border-radius:10px;background:var(--surface-secondary);color:var(--accent)}
+.detailIcon svg{width:20px;height:20px}
+.detailCopy{flex:1;min-width:0;display:grid;gap:4px}
+.detailCopy strong{font-size:13px;line-height:1.25;color:var(--text-primary)}
+.detailCopy small{font-size:10px;line-height:1.4;color:var(--text-secondary)}
+.detailChevron{flex:none;color:var(--accent);display:grid;place-items:center}
+.detailChevron svg{width:17px;height:17px;transition:transform .16s ease}
+.entryGuide[open] .detailChevron svg,.rewards[open] .detailChevron svg{transform:rotate(180deg)}
+.detailBody{display:grid;gap:12px;padding:0 14px 15px}
+.visuallyHidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.entryIntro{margin:0;font-size:12px}
+.entrySteps{gap:7px}
+.entrySteps li{padding:10px}
+.entryGuideFooter{margin-top:0}
+.rewardsTitle svg{width:20px;height:20px}
+.rewardTable th,.rewardTable td{padding:9px 8px}
+.rewardHistory{padding-top:11px}
+.rewardHistory h3{font-size:19px;margin-bottom:9px}
+.note{padding:0 3px;font-size:10px;line-height:1.55}
+@media(max-width:680px){
+ .wrap{gap:9px}
+ .page{padding-top:5px}
+ .back{min-height:29px}
+ .hero{padding:14px 15px;border-radius:14px}
+ .hero h1{font-size:31px}
+ .hero p:last-child{font-size:11px}
+ .heroIcon{width:43px;height:43px;border-radius:12px}
+ .heroIcon svg{width:26px;height:26px}
+ .controls,.standings,.personal{padding:12px;border-radius:14px}
+ .controlHead{margin-bottom:7px}
+ .controlHead h2,.standingsHead h2{font-size:23px}
+ .tabs{margin-bottom:8px}
+ .tabs button{min-height:35px;font-size:11px;padding:5px 2px}
+ .select{min-height:39px}
+ .personal{gap:8px}
+ .personalTitle h2{font-size:22px}
+ .personal>.consent>button{min-height:36px;align-self:auto;font-size:10px;padding:7px 10px}
+ .personal>.myStanding{min-height:42px;padding:9px 11px}
+ .podium{gap:6px}
+ .podiumCard{padding:10px 5px;gap:5px}
+ .podiumCard>b{font-size:16px}
+ .medal{width:30px;height:30px}
+ .medal svg{width:18px;height:18px}
+ .entryGuide,.rewards{padding:0;border-radius:13px}
+ .entryGuideHead,.rewardsTitle{padding:11px 12px}
+ .detailBody{padding:0 12px 13px;gap:10px}
+ .entrySteps{grid-template-columns:1fr}
+ .entrySteps li{padding:8px 9px}
+ .rewardMilestones{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .rewardMilestones>span{padding:8px;gap:5px;font-size:10px;flex-wrap:wrap}
+ .rewardMilestones svg{width:16px;height:16px}
+ .expRankingsLink{flex-direction:row;align-items:center;gap:8px}
+ .expRankingsLink p{display:none}
+ .expRankingsLink a{min-height:36px;align-self:auto;padding:7px 9px;text-align:center;font-size:10px}
+}
+@media(max-width:390px){
+ .hero h1{font-size:28px}
+ .heroIcon{width:38px;height:38px}
+ .controls>.helper{line-height:1.4}
+ .personalTitle>span{display:none}
+ .personalTitle h2{font-size:20px}
+ .personal>.consent>button{font-size:10px}
+ .podiumCard strong{font-size:10px}
+ .podiumCard>b{font-size:14px}
+ .expRankingsLink{flex-wrap:wrap}
+ .expRankingsLink a{width:100%}
+ .rewardMilestones{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){.detailChevron svg{transition:none}}
