@@ -14,7 +14,8 @@
     "check:portal-colors": "node scripts/check-portal-colors.mjs",
     "test:fun-zone": "node scripts/verify-fun-zone.mjs",
     "test:account-isolation:staging": "node scripts/test-account-isolation-staging.mjs",
-    "check:theme-system": "node scripts/verify-theme-system.mjs"
+    "check:theme-system": "node scripts/verify-theme-system.mjs",
+    "test:pod-exchange": "node scripts/test-pod-exchange.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
