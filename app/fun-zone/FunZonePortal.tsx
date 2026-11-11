@@ -6,6 +6,7 @@ import {WorkspaceEditBlock,WorkspaceEditToolbar,useWorkspaceDrag} from "@/compon
 import {dropBlock,moveBlock,uniqueAllowed,visibleBlocks} from "@/components/workspace-layout";
 import {useWorkspaceEditorDialog} from "@/components/useWorkspaceEditorDialog";
 import {confirmWorkspaceReset} from "@/components/workspace-edit-standards";
+import {WidgetLibraryFilter,widgetMatchesView,type WidgetLibraryView} from "@/components/WidgetLibraryFilter";
 import {portalWidgetGroups,widgetAllowed,widgetGroup,widgetPurpose} from "@/components/workspace-widget-policy";
 import {ARCADE_CATEGORIES,ARCADE_GAMES,ARCADE_GAME_KEYS,ARCADE_LAYOUT_KEY,GAME_FAVOURITES_KEY,categoryCounts,normaliseFavourites,type ArcadeCategory,type ArcadeGame} from "@/lib/fun-zone-arcade";
 import {FunZoneCarousel} from "./FunZoneCarousel";
@@ -56,6 +57,7 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
  const [category,setCategory]=useState<ArcadeCategory>("Word Games");
  const [editing,setEditing]=useState(false);
  const [libraryOpen,setLibraryOpen]=useState(false);
+ const [libraryView,setLibraryView]=useState<WidgetLibraryView>("available");
  const dialogRef=useWorkspaceEditorDialog(libraryOpen,()=>setLibraryOpen(false));
  const editAnchor=useRef<{id:WidgetKey;top:number}|null>(null);
  const enterCanvas=(id?:WidgetKey)=>{
@@ -142,9 +144,10 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
     </div>
     <p>Add games and widgets to your arcade. Your layout and favourites stay saved on this device.</p>
     <div className={homeEditStyles.widgetLibraryActions}><span>{layout.visible.length} of {defaultOrder.length} widgets added</span><button type="button" onClick={()=>{setLibraryOpen(false);enterCanvas()}}>Arrange Fun Zone</button></div>
+    <WidgetLibraryFilter view={libraryView} onChange={setLibraryView} added={defaultOrder.filter(id=>layout.visible.includes(id)).length} total={defaultOrder.length}/>
     <div className={homeEditStyles.widgetLibraryGroups}>
-     {portalWidgetGroups["fun-zone"].map(group=><section key={group}><h3>{group}</h3><div className={homeEditStyles.widgetGallery}>
-      {(["featured","categories","favourites","progress","exchange"] as CoreWidget[]).filter(id=>widgetGroup("fun-zone",id)===group).map(id=>{
+     {portalWidgetGroups["fun-zone"].filter(group=>(["featured","categories","favourites","progress","exchange"] as CoreWidget[]).some(id=>widgetGroup("fun-zone",id)===group&&widgetMatchesView(layout.visible.includes(id),libraryView))).map(group=><section key={group}><h3>{group}</h3><div className={homeEditStyles.widgetGallery}>
+      {(["featured","categories","favourites","progress","exchange"] as CoreWidget[]).filter(id=>widgetGroup("fun-zone",id)===group&&widgetMatchesView(layout.visible.includes(id),libraryView)).map(id=>{
        const added=layout.visible.includes(id);
        return <article className={homeEditStyles.widgetGalleryCard} key={id}>
         <div className={homeEditStyles.widgetPreview} aria-hidden="true">
@@ -156,8 +159,8 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
        </article>;
       })}
      </div></section>)}
-     <section><h3>Pin a game</h3><div className={homeEditStyles.widgetGallery}>
-      {ARCADE_GAMES.map(game=>{const id=`game:${game.key}` as WidgetKey;const added=layout.visible.includes(id);
+     {ARCADE_GAMES.some(game=>widgetMatchesView(layout.visible.includes(`game:${game.key}` as WidgetKey),libraryView))?<section><h3>Pin a game</h3><div className={homeEditStyles.widgetGallery}>
+      {ARCADE_GAMES.filter(game=>widgetMatchesView(layout.visible.includes(`game:${game.key}` as WidgetKey),libraryView)).map(game=>{const id=`game:${game.key}` as WidgetKey;const added=layout.visible.includes(id);
        return <article key={id} className={homeEditStyles.widgetGalleryCard}>
         <div className={homeEditStyles.widgetPreview} aria-hidden="true"><span><PodscapeLineIcon name={game.icon}/></span><div><strong>{game.title}</strong><small>{game.category}</small></div><i>Compact</i></div>
         <div className={homeEditStyles.widgetGalleryCopy}><strong>{game.title}</strong><p>{game.description}</p>
@@ -165,7 +168,7 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
         </div>
        </article>;
       })}
-     </div></section>
+     </div></section>:null}
     </div>
     <div className={homeEditStyles.widgetLibraryFooter}><small>{active.length} blocks in your Fun Zone · Saved on this device</small><button type="button" onClick={reset}>Reset layout</button></div>
    </div>
