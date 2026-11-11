@@ -9,6 +9,17 @@ const market=await import("data:text/javascript;base64,"+Buffer.from(compiled).t
 assert.equal(market.STOCKS.length,6);
 assert.equal(new Set(market.STOCKS.map(s=>s.symbol)).size,6);
 assert.equal(market.MARKET_INTERVAL_MS,300000);
+// The clock and market never restart when a browser or calendar day changes.
+for(const date of ["2026-11-10T00:00:00Z","2032-01-01T00:00:00Z","2050-06-15T13:17:00Z"]){
+ const cycle=market.cycleAt(Date.parse(date));
+ assert.equal(market.priceAt("DUCK",cycle),market.priceAt("DUCK",cycle),"Prices remain deterministic across years");
+ assert.ok(market.headlineAt(cycle).story.headline,"Every future cycle has a market bulletin");
+}
+assert.equal(market.decodeSavedPortfolio(null).isNew,true,"Only a genuinely missing wallet starts fresh");
+assert.equal(market.decodeSavedPortfolio(JSON.stringify(market.defaultPortfolio())).isNew,false,"Persisted wallet remains existing");
+assert.throws(()=>market.decodeSavedPortfolio("{broken json"),/No balance was reset/,"Malformed data must never silently reset");
+assert.throws(()=>market.decodeSavedPortfolio(JSON.stringify({cash:-1,holdings:{},trades:[]})),/No balance was reset/);
+
 for(const cycle of [0,1,2,3,4,5,12,30000]){
  const headline=market.headlineAt(cycle);
  assert.ok(headline.story.headline&&headline.story.detail,"Every market tick has news");
