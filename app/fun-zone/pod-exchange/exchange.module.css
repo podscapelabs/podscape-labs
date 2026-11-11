@@ -69,3 +69,77 @@
 }
 @media(max-width:380px){.stock{gap:7px;padding:10px 5px}.stockIcon{width:31px;height:31px;font-size:20px}.stockName strong,.stockPrice strong{font-size:11px}.marketStatus small{font-size:8px}}
 @media(prefers-reduced-motion:reduce){.stock,.action{transition:none}}
+
+
+/* PodScape portal refinement: dense but readable market controls, never a separate visual system. */
+.header h1{font-weight:500}
+.marketStatus{background:var(--surface-secondary)}
+.disclaimer{display:flex;align-items:center;gap:7px;padding:9px 13px}
+.disclaimer>span{color:var(--accent);font-size:14px}
+.balances strong{line-height:1.18}
+.balances strong svg,.stockPrice strong svg,.quote strong svg{width:.85em;height:.85em}
+.bulletin{min-height:72px}
+.stock{transition:background-color .16s ease,border-color .16s ease}
+.stock[aria-pressed=true]{box-shadow:inset 3px 0 0 var(--accent)}
+.stockPrice strong{white-space:nowrap}
+.tradeSection{scroll-margin-top:22px}
+.portfolio{scroll-margin-top:22px}
+.reset{font-size:11px;line-height:1.2;padding:9px 12px;min-height:35px}
+.history p{display:flex;align-items:center;flex-wrap:wrap;gap:5px}
+.empty svg,.footer svg{display:inline-block;vertical-align:-.25em}
+.action{background:var(--accent);color:var(--accent-contrast);font-weight:800}
+@media(max-width:720px){
+ .page{padding-top:11px}
+ .wrap{width:calc(100% - 28px)}
+ .header{align-items:center;margin-bottom:9px}
+ .header h1{font-size:clamp(28px,8vw,36px);max-width:none}
+ .header p:last-child{margin-top:6px;font-size:11px}
+ .eyebrow{font-size:9px}
+ .marketStatus{min-width:114px;padding:9px 10px}
+ .disclaimer{font-size:10px;margin-bottom:10px;border-radius:12px}
+ .balances{gap:8px;margin-bottom:10px}
+ .balances>div{padding:12px;border-radius:14px}
+ .balances>div:first-child{grid-column:1/-1}
+ .balances>div:first-child strong{font-size:27px}
+ .balances strong{font-size:21px}
+ .balances small{font-size:10px}
+ .bulletin{min-height:0;padding:12px 14px;margin-bottom:11px;border-radius:14px}
+ .newsLabel{font-size:9px;letter-spacing:.12em}
+ .bulletin>div strong{font-size:12px}
+ .bulletin p{font-size:10px}
+ .mobileSwitch{position:relative;z-index:1;margin-bottom:10px}
+ .mobileSwitch button{min-height:42px}
+ .marketHiddenMobile{display:none}
+ .holdingsHiddenMobile{display:none}
+ .panel,.portfolio{border-radius:16px}
+ .panelHead{padding:13px 14px 9px}
+ .panelHead h2{font-size:25px}
+ .panelHead p{font-size:11px}
+ .panelHead>small{font-size:10px}
+ .list{padding:0 7px 7px}
+ .stock{min-height:59px;padding:8px 9px;gap:9px}
+ .stockIcon{width:34px;height:34px;border-radius:10px;font-size:21px}
+ .stockName strong{font-size:12px}
+ .stockName small{font-size:10px}
+ .stockPrice strong{font-size:12px}
+ .tradeHeading{padding:15px 15px 6px}
+ .tradeHeading>span{width:43px;height:43px;font-size:24px}
+ .tradeHeading h2{font-size:25px}
+ .quote{padding:8px 15px 0}
+ .quote strong{font-size:25px}
+ .chart{width:calc(100% - 30px);height:76px;margin:5px 15px 0}
+ .chartHint{margin:0 15px 11px}
+ .sideSwitch{margin:0 15px 11px}
+ .quantity{margin:0 15px}
+ .orderDetails{padding:10px 15px}
+ .action{width:calc(100% - 30px);margin:0 15px 14px;min-height:45px}
+ .message{margin:0 15px 14px}
+ .portfolio .panelHead{align-items:flex-start}
+ .portfolio .panelHead h2{font-size:25px}
+ .portfolio .panelHead p{max-width:28ch;line-height:1.35}
+ .reset{white-space:nowrap;padding:8px 10px}
+ .holdings{padding:0 14px 10px}
+ .holdings>div{padding:10px 2px}
+ .history{padding:11px 14px 14px}
+ .footer{font-size:10px}
+}
