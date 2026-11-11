@@ -18,7 +18,7 @@ export async function GET(request:Request){
  const {data:{user}}=client?await client.auth.getUser():{data:{user:null}};
  const {data:preference,error:preferenceError}=user?await db.from("fun_zone_ranking_preferences").select("public_enabled,hide_username").eq("user_id",user.id).maybeSingle():{data:null,error:null};
  if(preferenceError)return NextResponse.json({error:"Rankings database update is pending"},{status:503,headers:noStore});
- const enabled=preference?.public_enabled===true;
+ const enabled=preference?.public_enabled!==false;
  const {data,error}=await db.rpc("get_fun_zone_rankings",{
   p_period:period,p_game_key:game,p_viewer_id:enabled?user?.id||null:null
  });
@@ -64,11 +64,6 @@ export async function POST(request:Request){
   if(error)return NextResponse.json({error:"Unable to save username privacy"},{status:503,headers:noStore});
   return NextResponse.json({saved:true,hideUsername:input.hideUsername},{headers:noStore});
  }
- if(typeof input.enabled!=="boolean")return NextResponse.json({error:"Invalid preference"},{status:400,headers:noStore});
- const enabled=(body as {enabled:boolean}).enabled;
- const db=getSupabaseAdmin();
- if(!db)return NextResponse.json({error:"Rankings are unavailable"},{status:503});
- const {error}=await db.from("fun_zone_ranking_preferences").upsert({user_id:user.id,public_enabled:enabled,reward_opted_in_at:enabled?new Date().toISOString():null,updated_at:new Date().toISOString()},{onConflict:"user_id"});
- if(error){console.error("Ranking preference error",error.code);return NextResponse.json({error:"Unable to save your preference"},{status:503});}
- return NextResponse.json({saved:true,participating:enabled},{headers:noStore});
+ if(typeof input.enabled!=="boolean")return NextResponse.json({error:"Only privacy settings may be updated"},{status:400,headers:noStore});
+ return NextResponse.json({error:"Ranking participation is automatic"},{status:400,headers:noStore});
 }
