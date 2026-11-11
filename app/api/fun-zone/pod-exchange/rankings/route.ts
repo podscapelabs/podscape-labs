@@ -38,7 +38,7 @@ export async function GET(){
  const {data:{user}}=client?await client.auth.getUser():{data:{user:null}};
  try{
   const {data:preference,error:prefError}=user?await admin.from("member_exchange_ranking_preferences")
-   .select("public_enabled,eligible").eq("user_id",user.id).maybeSingle():{data:null,error:null};
+   .select("public_enabled,eligible,hide_username").eq("user_id",user.id).maybeSingle():{data:null,error:null};
   if(prefError)throw new Error("Ranking preferences unavailable");
   const {data:ownWallet,error:ownError}=user?await admin.from("member_exchange_portfolios")
    .select("user_id").eq("user_id",user.id).maybeSingle():{data:null,error:null};
@@ -49,14 +49,16 @@ export async function GET(){
   if(reviewError)throw new Error("Review status unavailable");
   const participating=preference?.public_enabled===true&&preference.eligible===true;
   const eligible=preference?.eligible===true;
-  const preferences=await readAll<{user_id:string}>(async (from,to)=>
-    await admin.from("member_exchange_ranking_preferences").select("user_id")
+  const preferences=await readAll<{user_id:string;hide_username:boolean}>(async (from,to)=>
+    await admin.from("member_exchange_ranking_preferences").select("user_id,hide_username")
       .eq("public_enabled",true).eq("eligible",true).order("user_id",{ascending:true}).range(from,to)
   );
   const participants:Participant[]=[];
   const cycle=cycleAt(Date.now()),weekStart=monday(new Date());
   for(let from=0;from<preferences.length;from+=batchSize){
-   const ids=preferences.slice(from,from+batchSize).map(x=>x.user_id);
+   const preferenceBatch=preferences.slice(from,from+batchSize);
+   const hiddenIds=new Set(preferenceBatch.filter(x=>x.hide_username).map(x=>x.user_id));
+   const ids=preferenceBatch.map(x=>x.user_id);
    if(!ids.length)continue;
    const [wallets,profiles,snapshots]=await Promise.all([
     admin.from("member_exchange_portfolios").select("user_id,cash,holdings").in("user_id",ids),
@@ -75,14 +77,14 @@ export async function GET(){
     const profit=Math.round((value-STARTING_BUCKS)*100)/100;
     const weeklyPct=baseline!==undefined&&Number.isFinite(baseline)&&baseline>0
      ?formatPct((value-baseline)/baseline*100):null;
-    const name=String(names.get(wallet.user_id)||"PodScape Investor").trim().slice(0,80)||"PodScape Investor";
+    const name=hiddenIds.has(wallet.user_id)?"Anonymous Investor":String(names.get(wallet.user_id)||"PodScape Investor").trim().slice(0,80)||"PodScape Investor";
     participants.push({id:wallet.user_id,name,value,profit,
      returnPct:formatPct(profit/STARTING_BUCKS*100),weeklyPct});
    }
   }
   const viewerId=participating?user?.id||null:null;
   return NextResponse.json({
-   signedIn:!!user,participating,eligible,needsWallet,reviewStatus:review?.status||null,reviewerNote:review?.status==="declined"?review.reviewer_note:null,legacyReviewRequired:!!user&&!!ownWallet&&!eligible,
+   signedIn:!!user,participating,hideUsername:preference?.hide_username===true,eligible,needsWallet,reviewStatus:review?.status||null,reviewerNote:review?.status==="declined"?review.reviewer_note:null,legacyReviewRequired:!!user&&!!ownWallet&&!eligible,
    cycle,weekStart,weeklyReady:participants.some(p=>p.weeklyPct!==null),
    wealth:standings(participants,"wealth",viewerId),
    return:standings(participants,"return",viewerId),
@@ -106,11 +108,24 @@ export async function POST(request:Request){
  if(!data||typeof data!=="object")return NextResponse.json({error:"Invalid request"},{status:400,headers});
  const input=data as {enabled?:unknown;action?:unknown};
  const reviewing=input.action==="requestReview";
- if(!reviewing&&typeof input.enabled!=="boolean")
+
+ const changingPrivacy=typeof (data as {hideUsername?:unknown}).hideUsername==="boolean"&&input.enabled===undefined&&!reviewing;
+ if(!reviewing&&!changingPrivacy&&typeof input.enabled!=="boolean")
   return NextResponse.json({error:"Invalid preference"},{status:400,headers});
  const enabled=input.enabled===true;
  const admin=getSupabaseAdmin();
  if(!admin)return NextResponse.json({error:"Market ranking unavailable"},{status:503,headers});
+ if(changingPrivacy){
+  const {data:existing,error:existingError}=await admin.from("member_exchange_ranking_preferences")
+   .select("user_id").eq("user_id",user.id).maybeSingle();
+  if(existingError)return NextResponse.json({error:"Market ranking privacy unavailable"},{status:503,headers});
+  if(!existing)return NextResponse.json({error:"Initialize your market wallet before changing ranking privacy"},{status:409,headers});
+  const hidden=(data as {hideUsername:boolean}).hideUsername;
+  const {error:privacyError}=await admin.from("member_exchange_ranking_preferences")
+   .update({hide_username:hidden,updated_at:new Date().toISOString()}).eq("user_id",user.id);
+  if(privacyError)return NextResponse.json({error:"Unable to save username privacy"},{status:503,headers});
+  return NextResponse.json({saved:true,hideUsername:hidden},{headers});
+ }
  if(reviewing){
   const {data:wallet,error:walletError}=await admin.from("member_exchange_portfolios")
    .select("user_id").eq("user_id",user.id).maybeSingle();
