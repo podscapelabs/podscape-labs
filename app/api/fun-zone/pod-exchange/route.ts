@@ -41,7 +41,7 @@ export async function GET(){
  catch(error){console.error("Exchange portfolio read failed",(error as {code?:string}).code);return NextResponse.json({error:"Unable to load your saved portfolio; nothing was reset"},{status:503})}
 }
 export async function POST(request:Request){
- if(Number(request.headers.get("content-length")||0)>6000)return NextResponse.json({error:"Request too large"},{status:413});
+ if(Number(request.headers.get("content-length")||0)>16000)return NextResponse.json({error:"Request too large"},{status:413});
  const auth=await account();
  if(auth.error)return auth.error;
  const {admin,user}=auth;
