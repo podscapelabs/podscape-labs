@@ -14,7 +14,7 @@ assert.match(sql,/enable row level security/g,"Ranking tables require RLS");
 assert.match(sql,/revoke all on public.member_exchange_ranking_preferences from anon, authenticated/);
 assert.match(sql,/revoke all on public.member_exchange_weekly_snapshots from anon, authenticated/);
 assert.match(sql,/primary key \(user_id, week_start\)/,"Weekly baselines are idempotent");
-assert.match(exchange,/initialized===true&&!saved/,"Only clean server-initialized wallets qualify");
+assert.match(exchange,/eligible:!saved/,"Fresh wallets qualify; legacy wallets require audit");
 assert.match(exchange,/eligible:true/,"Fresh wallets become eligible on successful initialization");
 assert.match(api,/totalValue\(portfolio,cycle\)/,"Current wealth must be server-calculated");
 assert.match(api,/priceAt|totalValue/,"Market prices must not arrive from the client");
