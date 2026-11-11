@@ -63,7 +63,7 @@ export function PodExchange(){
     const response=await fetch("/api/fun-zone/pod-exchange",{cache:"no-store"});
     if(response.ok){
      const state=await response.json() as CloudState;
-     if(!state.exists||!state.portfolio)return;
+     if(!state.exists||!state.portfolio||!state.userId)return;
      update(sanitizePortfolio(state.portfolio));
      if(state.userId){saveLocalSnapshot(state.portfolio);localStorage.setItem(OWNER_KEY,state.userId)}
     }
@@ -90,7 +90,9 @@ export function PodExchange(){
       state=await initialize.json() as CloudState;
      }
      if(!state.exists||!state.portfolio)throw new Error("Your saved portfolio was not returned by the server.");
+     if(!state.userId)throw new Error("Cloud wallet ownership was not confirmed.");
      update(sanitizePortfolio(state.portfolio));saveLocalSnapshot(state.portfolio);
+     localStorage.setItem(OWNER_KEY,state.userId);
      applyMode("cloud");setStorageMessage("Saved to your PodScape account");
     }else{
      const data=await response.json().catch(()=>({})) as {error?:string};
