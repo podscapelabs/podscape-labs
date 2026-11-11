@@ -4,11 +4,11 @@
  * scripts/verify-theme-system.mjs. System is a preference, not a sixth palette.
  */
 export const THEMES = [
- {id:"light",title:"Light",description:"Botanical parchment",scheme:"light",colors:["#e9e4d2","#f5f0df","#173d2b"]},
- {id:"dark",title:"Dark",description:"Midnight forest",scheme:"dark",colors:["#101b18","#1b2923","#c3d09f"]},
- {id:"woodland",title:"Woodland",description:"Cocoa & chestnut",scheme:"dark",colors:["#211a16","#30251f","#d6ac76"]},
- {id:"lilac",title:"Lilac",description:"Lavender & plum",scheme:"light",colors:["#ebe0f1","#e6d1ed","#70418b"]},
- {id:"ember",title:"Ember",description:"Apricot & terracotta",scheme:"light",colors:["#f7e5d1","#f2d7b9","#a64c21"]},
+ {id:"light",title:"Light",description:"Botanical parchment",scheme:"light",colors:["#e9e4d2","#f5f0df","#173d2b"],glyph:"sun"},
+ {id:"dark",title:"Dark",description:"Midnight forest",scheme:"dark",colors:["#101b18","#1b2923","#c3d09f"],glyph:"moon"},
+ {id:"woodland",title:"Woodland",description:"Cocoa & chestnut",scheme:"dark",colors:["#211a16","#30251f","#d6ac76"],glyph:"leaf"},
+ {id:"lilac",title:"Lilac",description:"Lavender & plum",scheme:"light",colors:["#ebe0f1","#e6d1ed","#70418b"],glyph:"creative"},
+ {id:"ember",title:"Ember",description:"Apricot & terracotta",scheme:"light",colors:["#f7e5d1","#f2d7b9","#a64c21"],glyph:"sun"},
 ] as const;
 export type ThemeId = (typeof THEMES)[number]["id"];
 export type ThemePreference = ThemeId | "system";
