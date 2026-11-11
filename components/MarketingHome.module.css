@@ -23,3 +23,16 @@
  .menuGroup{margin-top:22px}
  .menuGroup h2{margin-bottom:12px}
 }
+
+/* Menu refinement: keep clear editorial sections while reducing excessive list scrolling. */
+.menuPage h1{font-size:clamp(2.6rem,5vw,3.4rem);line-height:1.08}
+.menuPage>div>p{max-width:48ch;margin:7px 0 18px;line-height:1.48;font-size:.88rem}
+.menuGroup{margin:22px 0 0}
+.menuGroup h2{font-size:clamp(1.25rem,2.8vw,1.55rem);margin:0 0 10px}
+@media(max-width:720px){
+ .menuPage{padding-top:16px;padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
+ .menuPage h1{font-size:clamp(2.45rem,10vw,3.1rem)}
+ .menuPage>div>p{font-size:.83rem;margin:5px 0 17px}
+ .menuGroup{margin-top:19px}
+ .menuGroup h2{font-size:1.29rem;margin-bottom:9px}
+}
