@@ -112,7 +112,7 @@ begin
      insert into public.member_achievements(user_id,achievement_key)
       values(v_row.user_id,'ranking_weekly_champion') on conflict do nothing;
     end if;
-    if v_row.place=1 and (select count(*) from public.fun_zone_ranking_awards
+    if v_row.place=1 and (select count(distinct (period_key,period_start)) from public.fun_zone_ranking_awards
       where user_id=v_row.user_id and placement=1 and period_key<>'all-time')>=3 then
      insert into public.member_achievements(user_id,achievement_key)
       values(v_row.user_id,'ranking_three_wins') on conflict do nothing;
