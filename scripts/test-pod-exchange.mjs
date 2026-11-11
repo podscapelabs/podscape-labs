@@ -17,6 +17,31 @@ for(let block=100;block<112;block++){
  assert.notEqual(stories[0].headline,previous.headline,"Adjacent bulletin decks must not repeat a story");
 }
 
+// Timed market events are shared and deterministic. Legacy pricing stays frozen.
+assert.ok(market.MARKET_V2_START_CYCLE>market.cycleAt(Date.parse("2026-11-11T00:00:00Z")));
+assert.equal(market.MARKET_SESSION_TICKS,72);
+for(const tick of [market.MARKET_V2_START_CYCLE,market.MARKET_V2_START_CYCLE+59,market.MARKET_V2_START_CYCLE+250]){
+ const session=market.marketSessionAt(tick);
+ assert.ok(session.title&&session.detail&&session.featured);
+ assert.equal(session.endCycle-session.startCycle,72);
+ assert.deepEqual(session,market.marketSessionAt(tick));
+ assert.equal(market.sessionImpactAt(session.featured,session.startCycle),0);
+ assert.equal(market.sessionImpactAt(session.featured,session.endCycle),0);
+ assert.ok(Math.abs(market.sessionImpactAt(session.featured,session.startCycle+36))>=.14);
+ for(const stock of market.STOCKS){
+  const quote=market.priceAt(stock.symbol,tick);
+  assert.ok(quote>0&&Number.isFinite(quote));
+  assert.equal(quote,market.priceAt(stock.symbol,tick));
+ }
+}
+assert.equal(market.sessionImpactAt("DUCK",market.MARKET_V2_START_CYCLE-1),0);
+for(const cash of [0,20,10000,100000]){
+ const count=market.maxAffordableShares(146.29,cash);
+ assert.ok(count>=0&&count<=999999);
+ if(count>0)assert.ok(market.tradeTotal(146.29,count,"buy")<=cash);
+ if(count<999999)assert.ok(market.tradeTotal(146.29,count+1,"buy")>cash);
+}
+
 assert.equal(market.TRADE_FEE_RATE,.005);
 assert.equal(market.tradeFee(1000),5);
 assert.equal(market.tradeTotal(100,2,"buy"),201);
@@ -109,6 +134,10 @@ assert.ok(duckIcon.includes('export function DuckBuckIcon'),"reusable outline du
 assert.ok(ui.includes('<DuckBucks amount=')&&watchlist.includes('<DuckBucks amount='),"all currency values use shared formatter");
 assert.ok(!ui.includes("🦆")&&!watchlist.includes("🦆"),"no emoji currency in Exchange or watchlist");
 assert.ok(ui.includes("Duck Bucks"),"all cash is Duck Bucks");
+assert.ok(ui.includes("marketSessionAt(cycle)")&&ui.includes("sessionImpactAt("),"Six-hour market agenda uses deterministic prices");
+assert.ok(ui.includes("chartHours")&&ui.includes("24h"),"Charts support a full-day view");
+assert.ok(ui.includes("maxAffordableShares(price,portfolio.cash)"),"Quick-fill respects fees");
+assert.ok(ui.indexOf('className={styles.marketLeadersLink}')>ui.indexOf('className={styles.columns}'),"Trading appears before secondary ranking navigation");
 assert.ok(ui.includes("headlineAt(cycle).story"),"Exchange always displays current story");
 assert.ok(ui.includes('id="exchange-rules"')&&ui.includes("How to Play"),"Exchange has collapsible rules");
 assert.ok(styling.includes(".rulesBody"),"Rules styled with theme roles");
