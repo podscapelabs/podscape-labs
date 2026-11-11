@@ -11,7 +11,7 @@ export async function GET(){
  const {data:preference,error:prefError}=user?await admin.from("member_exp_ranking_preferences")
   .select("public_enabled,hide_username").eq("user_id",user.id).maybeSingle():{data:null,error:null};
  if(prefError)return NextResponse.json({error:"EXP rankings migration is pending"},{status:503,headers});
- const participating=preference?.public_enabled===true;
+ const participating=preference?.public_enabled!==false;
  const {data,error}=await admin.rpc("get_member_exp_rankings",{p_viewer_id:participating?user?.id||null:null});
  if(error){console.error("EXP ranking unavailable",error.code);return NextResponse.json({error:"EXP rankings migration is pending"},{status:503,headers});}
  // Mask names inside the authenticated server route before returning records.
@@ -51,13 +51,5 @@ export async function POST(request:Request){
   if(error)return NextResponse.json({error:"Unable to save username privacy"},{status:503,headers});
   return NextResponse.json({saved:true,hideUsername:input.hideUsername},{headers});
  }
- if(typeof input.enabled!=="boolean")return NextResponse.json({error:"Invalid preference"},{status:400,headers});
- const admin=getSupabaseAdmin();
- if(!admin)return NextResponse.json({error:"EXP rankings unavailable"},{status:503,headers});
- const {error}=await admin.from("member_exp_ranking_preferences").upsert({
-  user_id:user.id,public_enabled:(body as {enabled:boolean}).enabled,
-  updated_at:new Date().toISOString()
- },{onConflict:"user_id"});
- if(error){console.error("EXP ranking opt-in failed",error.code);return NextResponse.json({error:"Could not save ranking preference"},{status:503,headers});}
- return NextResponse.json({saved:true,participating:(body as {enabled:boolean}).enabled},{headers});
+ return NextResponse.json({error:"Ranking participation is automatic"},{status:400,headers});
 }
