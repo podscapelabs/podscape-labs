@@ -32,9 +32,9 @@ export async function GET(request:Request){
  const rows=(Array.isArray(data)?data:[]).map(row=>({
   name:String(row.display_name||"PodScape Keeper").slice(0,80),
   points:Number(row.ranking_points||0),completions:Number(row.completed_count||0),
-  position:Number(row.position||0),mine:enabled&&row.user_id===user?.id
+  position:Number(row.rank_position||0),mine:enabled&&row.user_id===user?.id
  }));
- return NextResponse.json({period,game,rows:rows.filter(row=>row.position<=50),mine:rows.find(row=>row.mine)||null,participating:enabled,signedIn:!!user,timezone:"UTC",awards},{headers:noStore});
+ return NextResponse.json({period,game,rows:rows.filter(row=>row.rank_position<=50),mine:rows.find(row=>row.mine)||null,participating:enabled,signedIn:!!user,timezone:"UTC",awards},{headers:noStore});
 }
 export async function POST(request:Request){
  if(Number(request.headers.get("content-length")||0)>300)return NextResponse.json({error:"Request too large"},{status:413});
