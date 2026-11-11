@@ -267,3 +267,40 @@
 .marketLeadersLink small{font-size:10px;color:var(--text-secondary);line-height:1.4}
 .marketLeadersArrow{color:var(--accent);font-size:20px}
 @media(max-width:600px){.marketLeadersLink{padding:10px;min-height:59px}.marketLeadersIcon{width:34px;height:34px}.marketLeadersLink strong{font-size:12px}}
+
+/* Exchange refinement: compact mobile route to trading, with consistent theme tokens. */
+.marketAgenda{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:9px;margin:0 0 12px;min-width:0}
+.agendaNow,.agendaNext{display:grid;align-content:start;gap:6px;min-width:0;padding:14px 16px;border:1px solid var(--border);border-radius:15px;background:var(--surface)}
+.agendaNow{border-color:color-mix(in srgb,var(--accent) 35%,var(--border));background:color-mix(in srgb,var(--accent) 5%,var(--surface))}
+.marketAgenda small{color:var(--text-secondary);font-size:9px;letter-spacing:.09em;font-weight:800}
+.marketAgenda strong{font:500 clamp(18px,2.6vw,23px)/1.15 var(--display);color:var(--text-primary)}
+.marketAgenda p{font-size:11px;color:var(--text-secondary);line-height:1.45;margin:0}
+.marketAgenda span{font-size:10px;font-weight:750;color:var(--accent);line-height:1.4}
+.agendaNext strong{font-size:17px}
+.chartToolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 19px 12px}
+.chartToolbar .chartHint{margin:0}
+.chartToolbar>div{display:flex;align-items:center;gap:4px;padding:3px;background:var(--surface-secondary);border:1px solid var(--border);border-radius:9px}
+.chartToolbar button{border:0;border-radius:7px;background:transparent;color:var(--text-secondary);min-height:29px;min-width:39px;cursor:pointer;font:750 11px inherit}
+.chartToolbar button[aria-pressed=true]{background:var(--accent);color:var(--accent-contrast)}
+.quickTrade{display:flex;align-items:center;justify-content:space-between;gap:9px;margin:7px 19px 0}
+.quickTrade button{border:1px solid var(--border);background:var(--surface-secondary);color:var(--accent);border-radius:9px;min-height:35px;padding:6px 12px;font:800 11px inherit;cursor:pointer}
+.quickTrade button:disabled{opacity:.45;cursor:not-allowed}
+.quickTrade span{color:var(--text-secondary);font-size:10px;text-align:right}
+.rulesDock{display:grid;gap:0;margin-top:14px}
+.rulesDock .rules,.rulesDock .achievementGuide{margin-bottom:8px}
+@media(max-width:720px){
+ .marketAgenda{grid-template-columns:minmax(0,1fr)}
+ .agendaNow,.agendaNext{padding:12px 14px;gap:5px;border-radius:13px}
+ .agendaNext{grid-template-columns:minmax(0,1fr) auto;align-items:center}
+ .agendaNext>small:first-child,.agendaNext>strong,.agendaNext>p{grid-column:1}
+ .agendaNext>small:last-child{grid-column:2;grid-row:1/4;max-width:100px;text-align:right}
+ .agendaNext strong{font-size:17px}
+ .header{padding:17px}
+ .header h1{font-size:clamp(27px,7vw,32px)}
+ .marketStatus{min-width:102px}
+ .marketLeadersLink{margin-bottom:10px}
+ .chartToolbar{margin:3px 15px 11px}
+ .quickTrade{margin:7px 15px 0}
+}
+@media(max-width:380px){.agendaNext{display:grid;grid-template-columns:1fr}.agendaNext>small:last-child{grid-column:1;grid-row:auto;text-align:left;max-width:none}}
+@media(prefers-reduced-motion:reduce){.chartToolbar button,.quickTrade button{transition:none}}
