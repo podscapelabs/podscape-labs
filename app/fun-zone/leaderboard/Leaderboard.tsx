@@ -32,16 +32,6 @@ export default function Leaderboard(){
    .finally(()=>{if(!controller.signal.aborted)setLoading(false);});
   return ()=>controller.abort();
  },[period,game,reload]);
- const setPublic=async(enabled:boolean)=>{
-  if(updating)return;setUpdating(true);setError("");
-  try{
-   const response=await fetch("/api/fun-zone/rankings",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({enabled})});
-   const json=await response.json();
-   if(!response.ok)throw new Error(json.error||"Could not save your preference");
-   setReload(x=>x+1);
-  }catch(e){setError(e instanceof Error?e.message:"Could not update your preference");}
-  finally{setUpdating(false)}
- };
  const setHidden=async(hideUsername:boolean)=>{
   if(updating)return;setUpdating(true);setError("");
   try{
@@ -77,19 +67,19 @@ export default function Leaderboard(){
   </header>
   {error?<div role="alert" className={styles.alert}>{error} <button type="button" onClick={()=>setReload(x=>x+1)}>Try again</button></div>:null}
   <section className={styles.personal} aria-label="Your ranking participation">
-   <div className={styles.personalTitle}><span><PodscapeLineIcon name="achievement"/></span><div><small>YOUR ARCADE</small><h2>{board?.participating?"You’re on the board":"Join Arcade Rankings"}</h2></div></div>
-   {!board&&!loading?<p>Personal rankings are temporarily unavailable.</p>:!board?.signedIn?<div className={styles.joinSignIn}><p>Sign in to join the leaderboard. Browsing stays open to everyone.</p><Link href="/account" className={styles.joinLink}>Sign in to join <span aria-hidden="true">→</span></Link></div>:
-    <><div className={styles.consent}><div><strong>{board.participating?"Public participation is on":"Get on the leaderboard"}</strong><p>{board.participating?"Your verified points are public. Your username follows your privacy choice.":"Your saved puzzle points will appear when you join."}</p></div><button type="button" disabled={updating||loading} aria-pressed={board.participating} onClick={()=>setPublic(!board.participating)} className={board.participating?styles.optedIn:styles.optedOut} aria-label={board.participating?"Leave public arcade rankings":"Join public arcade rankings"}>{updating?"Saving…":board.participating?"Leave rankings":"Join rankings"}</button></div>
+   <div className={styles.personalTitle}><span><PodscapeLineIcon name="achievement"/></span><div><small>YOUR ARCADE</small><h2>Your arcade standing</h2></div></div>
+   {!board&&!loading?<p>Personal rankings are temporarily unavailable.</p>:!board?.signedIn?<div className={styles.joinSignIn}><p>Sign in to save your puzzle scores. Verified completions are ranked automatically.</p><Link href="/account" className={styles.joinLink}>Sign in <span aria-hidden="true">→</span></Link></div>:
+    <>
      <div className={styles.privacyAction}><RankingModal trigger={board.hideUsername?"Username hidden · Manage":"Username visible · Manage"} title="Ranking name privacy" subtle>
       <label className={styles.namePrivacy}>
       <input type="checkbox" checked={board.hideUsername===true} disabled={updating||loading}
        onChange={event=>setHidden(event.target.checked)}/>
       <span><strong>Hide my username</strong><small>{board.hideUsername?"You appear as Anonymous Keeper. Your points and placement remain visible.":"Show Anonymous Keeper instead of your display name on public rankings."}</small></span>
      </label>
-     <small className={styles.privacyHint}>{board.participating?"Your scores and rank remain visible · Leave anytime":"Private until you join · Your name visibility is your choice"}</small>
+     <small className={styles.privacyHint}>Your rank and score update automatically · You control your public name</small>
       <p className={styles.rewardRule}>Only your public display name is replaced. Your rank, points, achievements and EXP rewards remain unchanged.</p>
      </RankingModal></div>
-     {board.participating?(board.mine?<div className={styles.myStanding}><span>#{board.mine.position} · {periods.find(p=>p.id===period)?.label} rank</span><b>{format(board.mine.points)} pts</b></div>:<p>Your profile is public, but you haven&apos;t completed a ranked puzzle in this period yet.</p>):<p className={styles.helper}>Your completions are still saved privately. Ranking points remain separate from EXP and Duck Bucks. Podium achievements may award EXP.</p>}</>}
+     {board.mine?<div className={styles.myStanding}><span>#{board.mine.position} · {periods.find(p=>p.id===period)?.label} rank</span><b>{format(board.mine.points)} pts</b></div>:<p>Your profile is public, but you haven&apos;t completed a ranked puzzle in this period yet.</p>}</>}
   </section>
   <section className={styles.controls} aria-label="Ranking filters">
    <div className={styles.controlHead}><div><small>FILTER THE BOARD</small><h2>Standings</h2></div><span className={styles.utc}>UTC</span></div>
@@ -114,7 +104,7 @@ export default function Leaderboard(){
    <ol className={styles.entrySteps}>
     <li><span>1</span><div><strong>Sign in</strong><small>Use a verified PodScape account so your completed puzzles are saved.</small></div></li>
     <li><span>2</span><div><strong>Complete a puzzle</strong><small>Finish a challenge and let PodScape verify the result. Only the first completion of each puzzle counts.</small></div></li>
-    <li><span>3</span><div><strong>Join rankings</strong><small>Enable public participation under Your standing. Your display name and verified points will appear on the board.</small></div></li>
+    <li><span>3</span><div><strong>See your rank</strong><small>Verified completions count automatically. Hide your username in the privacy settings if you prefer.</small></div></li>
    </ol>
    <div className={styles.entryGuideFooter}>
     <span>Each puzzle counts in the period when it was first completed. Replays do not earn extra points or reset the date.</span>
@@ -146,7 +136,7 @@ export default function Leaderboard(){
     <span><PodscapeLineIcon name="achievement"/> Three-Peat <small>Hidden</small></span>
     <span><PodscapeLineIcon name="achievement"/> Arcade Legend <small>Hidden</small></span>
    </div>
-   <p className={styles.rewardRule}>Rewards require at least two opted-in participants on a board, a verified first-time puzzle completion, and public ranking participation before the period closes. No Pod Coins are awarded.</p>
+   <p className={styles.rewardRule}>Rewards require at least two eligible players on a board and verified first-time puzzle completions. No Pod Coins are awarded.</p>
    <div className={styles.rewardHistory}><h3>Your recent rewards</h3>
     {!board?.signedIn?<p>Sign in to see your ranking rewards and achievements.</p>:!board.awards?.length?<p>No podium rewards yet. The next completed rankings may be your first!</p>:
      <div className={styles.rewardHistoryList}>{board.awards.map((award,i)=><div key={award.period+"-"+award.board+"-"+award.date+"-"+i}>
@@ -157,12 +147,12 @@ export default function Leaderboard(){
    </div>
   </section>
 
-  <p className={styles.note}>Ranking points = 100 per unique server-verified puzzle completion. Ties share a rank. Daily, weekly and monthly boards reset by UTC calendar periods; All time persists. Only opted-in players appear. The Pod Exchange is not ranked because simulated wealth isn&apos;t a verified puzzle score.</p>
+  <p className={styles.note}>Ranking points = 100 per unique server-verified puzzle completion. Ties share a rank. Daily, weekly and monthly boards reset by UTC calendar periods; All time persists. Verified puzzle players appear automatically. Username privacy is optional; fictional market rankings have their own boards.</p>
   </RankingModal></div>
   <section className={styles.standings} aria-label="Ranking standings" aria-busy={loading}>
    <div className={styles.standingsHead}><div><small>THE SCOREBOARD</small><h2>{periods.find(x=>x.id===period)?.label} leaders</h2></div><span>{loading?"Updating…":entries.length?format(entries.length)+" ranked players":"No entries"}</span></div>
    {loading?<p className={styles.empty}>Loading verified arcade results…</p>:
-    !entries.length?<div className={styles.empty}><PodscapeLineIcon name="trophy"/><h3>First place is waiting.</h3><p>No players have opted in with verified completions for this selection yet. Be the first to put your name on the board.</p><Link href="/fun-zone">Explore games →</Link></div>:
+    !entries.length?<div className={styles.empty}><PodscapeLineIcon name="trophy"/><h3>First place is waiting.</h3><p>No verified completions for this selection yet. Play a puzzle to appear here automatically.</p><Link href="/fun-zone">Explore games →</Link></div>:
     <>
      <div className={`${styles.podium} ${top.length===1?styles.soloPodium:top.length===2?styles.duoPodium:""}`}>{top.map((entry,i)=><article key={entry.position+"-"+entry.name+"-"+i} className={styles.podiumCard} aria-label={"Position "+entry.position}>
       <span className={styles.place}>#{entry.position}</span><span className={styles.medal} aria-hidden="true"><PodscapeLineIcon name="trophy"/></span>
