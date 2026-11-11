@@ -52,8 +52,9 @@ export function CustomerAccountForm({ kind, initialName = "", embedded = false }
     <form className={styles.form} action={submit}>
       {kind === "sign-up" || kind === "profile" ? (
         <div className={styles.field}>
-          <label htmlFor="customer-display-name">Display name <span className={styles.optional}>(optional)</span></label>
-          <input id="customer-display-name" type="text" name="displayName" maxLength={60} autoComplete="nickname" defaultValue={initialName} />
+          <label htmlFor="customer-display-name">Username <span aria-hidden="true">*</span></label>
+          <input id="customer-display-name" type="text" name="displayName" minLength={3} maxLength={24} pattern="[A-Za-z0-9_]{3,24}" title="3–24 letters, numbers or underscores; no spaces" autoComplete="nickname" defaultValue={initialName} required />
+          <small>Unique across PodScape · 3–24 letters, numbers or underscores · No spaces</small>
         </div>
       ) : null}
       {["login", "sign-up", "forgot"].includes(kind) ? (
