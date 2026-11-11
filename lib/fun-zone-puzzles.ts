@@ -90,7 +90,7 @@ const extra:Entry[]=[
  Q("In a scientific name like Porcellio scaber, which word is the genus?",["Porcellio","scaber","Both words combined","Neither word"],0,"The genus is the first word. Here it is Porcellio, and scaber is the specific epithet."),
  Q("In Armadillidium klugii, which word comes after the genus?",["klugii","Armadillidium","Both words are genera","No second word is used"],0,"klugii is called a specific epithet. Together with Armadillidium it makes the two-part species name."),
  Q("Which name denotes a genus rather than a species?",["Oniscus","Porcellio scaber","Armadillidium maculatum","Porcellio dilatatus"],0,"Oniscus is a genus; the other options are binomial species names."),
- Q("What does 'sp.' indicate after a genus name?",["An unidentified or unspecified species in that genus","A confirmed subspecies","A colour morph","An extinct species"],0,"The abbreviation sp. means a species within the stated genus has not been specified.")
+ Q("Which of these looks like a two-part scientific species name?",["Porcellio scaber","Powder Blue","Rubber Ducky","Dairy Cow"],0,"A binomial species name contains a genus followed by a specific epithet. This example is Porcellio scaber."),
  ]),
  quiz("compare-the-keepers","Species Comparisons","Compare common hobby species without relying only on colour.","Medium",[
  Q("Which of these isopods is especially well known for its large adult size?",["Porcellio hoffmannseggi","Trichorhina tomentosa","Cubaris sp. ‘Papaya’","Porcellionides pruinosus"],0,"Porcellio hoffmannseggi is among the larger terrestrial isopods commonly maintained in captivity."),
@@ -120,11 +120,11 @@ const extra:Entry[]=[
  ])
  ].map(p=>({gameKey:"keepers-challenge" as const,mode:"quiz" as const,puzzle:p})),
  ...[
- quiz("manca","Young Isopods","Learn the word manca through young isopods.","Intro",[
- Q("What is a manca?",["An early juvenile isopod","An adult female only","A genus","A fungal spore"],0,"Mancae are juvenile stages of isopods and other peracarid crustaceans."),
- Q("Where do developing embryos of female terrestrial isopods remain?",["In a ventral brood pouch","In a hanging silk nest","Inside cork bark","In open standing water"],0,"Females brood developing offspring in a ventral marsupium."),
- Q("What is the marsupium?",["The brood pouch","An antenna segment","A feeding mouthpart","A soil layer"],0,"In peracarid crustaceans, the marsupium is a brood pouch carried by the female."),
- Q("Why should a keeper avoid unnecessary disturbance around young mancae?",["Very small juveniles may be delicate","It changes their species","They require dry air","They cannot eat leaf litter"],0,"Gentle handling and stable conditions reduce unnecessary disturbance.")
+ quiz("manca","Young Isopods","Meet baby isopods and learn one new life-stage term.","Intro",[
+ Q("A very young isopod is called a juvenile. What does juvenile mean?",["A young animal","An adult male","An enclosure material","A colour morph"],0,"Juvenile simply means young. You'll see it often in keeper notes."),
+ Q("What is the term manca used for?",["An early juvenile isopod","A piece of leaf litter","A type of humidity gauge","An adult male only"],0,"A manca is a very early juvenile stage in isopod development."),
+ Q("Where does a female isopod carry her developing young?",["In a brood pouch beneath her body","On a silk thread","Under a leaf she never touches","In a water-filled nest"],0,"Many isopods carry embryos in a brood pouch. Scientists call this pouch a marsupium."),
+ Q("What is helpful when you notice tiny young isopods?",["Keep conditions stable and handle gently","Dry every refuge immediately","Remove all shelter","Change the setup daily"],0,"Very small young may be delicate. Consistent, species-appropriate conditions are important.")
  ]),
  quiz("body-parts","The Parts You Can See","Learn anatomy by recognizing familiar body features first.","Medium",[
  Q("What are antennae primarily used for?",["Sensing the environment","Storing eggs","Replacing the legs","Producing substrate"],0,"Antennae are important sensory appendages."),
@@ -288,6 +288,42 @@ for(const e of puzzleEntries){
   const p=e.puzzle as SearchPuzzle;
   if(p.words.length!==8||p.words.some(w=>!/^[A-Z]+$/.test(w)||w.length>p.size))throw new Error("Invalid search "+e.puzzle.id);
  }
+}
+// Reject cloned rounds and verbatim repeated questions in a game. Teaching
+// one term through different games is deliberate spaced reinforcement.
+const seenPuzzles=new Set<string>();
+const seenQuizPrompts=new Map<string,Set<string>>();
+const normalize=(value:string)=>value.toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+for(const entry of puzzleEntries){
+ const {puzzle,mode,gameKey}=entry;
+ let fingerprint:string;
+ if(mode==="quiz"){
+  const questions=(puzzle as QuizPuzzle).questions;
+  fingerprint=questions.map(q=>normalize(q.prompt)).sort().join("|");
+  let seen=seenQuizPrompts.get(gameKey);
+  if(!seen){seen=new Set();seenQuizPrompts.set(gameKey,seen);}
+  for(const question of questions){
+   const prompt=normalize(question.prompt);
+   if(seen.has(prompt))throw new Error("Duplicate question in "+gameKey+": "+prompt);
+   seen.add(prompt);
+   if(new Set(question.choices.map(normalize)).size!==4)throw new Error("Duplicate answer choices in "+gameKey);
+  }
+ }else if(mode==="connections"){
+  const groups=(puzzle as ConnectionsPuzzle).groups;
+  fingerprint=groups.flatMap(g=>g.words.map(normalize)).sort().join("|");
+  if(new Set(groups.map(g=>normalize(g.label))).size!==4)throw new Error("Repeated group labels in "+gameKey);
+ }else if(mode==="search"){
+  const words=(puzzle as SearchPuzzle).words.map(normalize);
+  fingerprint=words.slice().sort().join("|");
+  if(new Set(words).size!==words.length)throw new Error("Repeated search word in "+gameKey);
+ }else if(mode==="burrow"){
+  fingerprint=(puzzle as BurrowPuzzle).answer.toLowerCase();
+ }else{
+  fingerprint=(puzzle as CrosswordPuzzle).clues.map(c=>c.answer).sort().join("|");
+ }
+ const key=gameKey+":"+mode+":"+fingerprint;
+ if(seenPuzzles.has(key))throw new Error("Duplicate puzzle content in "+gameKey+": "+puzzle.id);
+ seenPuzzles.add(key);
 }
 for(const key of gameKeys){
  const count=getPuzzles(key).length;
