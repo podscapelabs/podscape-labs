@@ -44,3 +44,44 @@
 .medallionRing{display:grid;place-items:center}
 .medallionRing svg{width:35px;height:35px;stroke-width:1.75}
 @media(max-width:760px){.medallionRing svg{width:28px;height:28px}}
+
+
+/* Progress achievement library: browse by intent without losing unlock/locked filters. */
+.categoryPicker{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 14px}
+.categoryChoice{display:flex;align-items:center;gap:10px;min-width:0;min-height:71px;padding:12px;text-align:left;border:1px solid var(--border);border-radius:13px;background:var(--surface);color:var(--text-primary);font:inherit;cursor:pointer;transition:border-color .16s,background-color .16s}
+.categoryChoice[aria-pressed=true]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--surface))}
+.categoryChoice:hover{border-color:var(--accent)}
+.categoryChoice:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.categoryIcon,.categoryHeadingIcon{display:grid;place-items:center;flex:none;width:36px;height:36px;border-radius:11px;background:var(--surface-secondary);color:var(--accent)}
+.categoryIcon svg,.categoryHeadingIcon svg{width:20px;height:20px}
+.categoryDetails{display:grid;gap:4px;min-width:0;flex:1}
+.categoryDetails strong{font-size:12px;font-weight:800;line-height:1.25}
+.categoryDetails small{font-size:10px;line-height:1.35;color:var(--text-secondary)}
+.categoryCount{flex:none;color:var(--accent);font-size:11px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.achievementSections{display:grid;gap:22px}
+.achievementCategorySection{display:grid;gap:11px;min-width:0}
+.categoryHeading{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.categoryHeading>div{display:flex;align-items:center;gap:9px;min-width:0}
+.categoryHeadingIcon{width:31px;height:31px;border-radius:9px}
+.categoryHeadingIcon svg{width:18px;height:18px}
+.categoryHeading h3{margin:0;font:500 clamp(19px,3vw,24px)/1.15 var(--display)}
+.categoryHeading>span{font-size:11px;color:var(--text-secondary);font-variant-numeric:tabular-nums;white-space:nowrap}
+@media(max-width:700px){
+ .categoryChoice{min-height:66px;padding:9px;gap:7px}
+ .categoryIcon{width:32px;height:32px;border-radius:9px}
+ .categoryIcon svg{width:18px;height:18px}
+ .categoryDetails strong{font-size:11px}
+ .categoryDetails small{font-size:9px}
+ .categoryCount{font-size:10px}
+ .achievementSections{gap:19px}
+ .categoryHeading h3{font-size:19px}
+}
+@media(max-width:450px){
+ .categoryPicker{grid-template-columns:1fr;gap:6px}
+ .categoryChoice{min-height:57px;padding:8px 11px}
+ .categoryDetails strong{font-size:12px}
+ .categoryDetails small{font-size:10px}
+ .categoryHeading>span{font-size:10px}
+ .categoryHeading h3{font-size:18px}
+}
+@media(prefers-reduced-motion:reduce){.categoryChoice{transition:none}}
