@@ -37,7 +37,7 @@ async function readPortfolio(admin:NonNullable<Awaited<ReturnType<typeof getSupa
 export async function GET(){
  const auth=await account();
  if(auth.error)return auth.error;
- try{return NextResponse.json(await readPortfolio(auth.admin!,auth.user!.id),{headers:{"Cache-Control":"no-store"}})}
+ try{return NextResponse.json({...await readPortfolio(auth.admin!,auth.user!.id),userId:auth.user!.id},{headers:{"Cache-Control":"no-store"}})}
  catch(error){console.error("Exchange portfolio read failed",(error as {code?:string}).code);return NextResponse.json({error:"Unable to load your saved portfolio; nothing was reset"},{status:503})}
 }
 export async function POST(request:Request){
@@ -66,7 +66,7 @@ export async function POST(request:Request){
   });
   if(error){console.error("Exchange initialization error",error.code);
    return NextResponse.json({error:"Could not sync portfolio; local data has been preserved"},{status:503})}
-  try{return NextResponse.json(await readPortfolio(admin!,user!.id),{headers:{"Cache-Control":"no-store"}})}
+  try{return NextResponse.json({...await readPortfolio(admin!,user!.id),userId:user!.id},{headers:{"Cache-Control":"no-store"}})}
   catch{return NextResponse.json({error:"Could not read synchronized portfolio"},{status:503})}
  }
  if(data.action!=="trade")return NextResponse.json({error:"Unsupported action"},{status:400});
@@ -97,6 +97,6 @@ export async function POST(request:Request){
  });
  try{
   const state=await readPortfolio(admin!,user!.id);
-  return NextResponse.json({...state,unlocked,duplicate:Boolean(result?.duplicate)},{headers:{"Cache-Control":"no-store"}});
+  return NextResponse.json({...state,userId:user!.id,unlocked,duplicate:Boolean(result?.duplicate)},{headers:{"Cache-Control":"no-store"}});
  }catch{return NextResponse.json({error:"Trade was saved, but refreshing the wallet failed. Reload to recover your balance."},{status:503})}
 }
