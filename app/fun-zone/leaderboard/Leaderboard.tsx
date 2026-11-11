@@ -3,6 +3,7 @@ import {useEffect,useState} from "react";
 import Link from "next/link";
 import {ARCADE_GAMES} from "@/lib/fun-zone-arcade";
 import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
+import {RankingModal} from "@/components/RankingModal";
 import styles from "./leaderboard.module.css";
 
 type Period="daily"|"weekly"|"monthly"|"all-time";
@@ -79,12 +80,15 @@ export default function Leaderboard(){
    <div className={styles.personalTitle}><span><PodscapeLineIcon name="achievement"/></span><div><small>YOUR ARCADE</small><h2>{board?.participating?"You’re on the board":"Join Arcade Rankings"}</h2></div></div>
    {!board&&!loading?<p>Personal rankings are temporarily unavailable.</p>:!board?.signedIn?<div className={styles.joinSignIn}><p>Sign in to join the leaderboard. Browsing stays open to everyone.</p><Link href="/account" className={styles.joinLink}>Sign in to join <span aria-hidden="true">→</span></Link></div>:
     <><div className={styles.consent}><div><strong>{board.participating?"Public participation is on":"Get on the leaderboard"}</strong><p>{board.participating?"Your verified points are public. Your username follows your privacy choice.":"Your saved puzzle points will appear when you join."}</p></div><button type="button" disabled={updating||loading} aria-pressed={board.participating} onClick={()=>setPublic(!board.participating)} className={board.participating?styles.optedIn:styles.optedOut} aria-label={board.participating?"Leave public arcade rankings":"Join public arcade rankings"}>{updating?"Saving…":board.participating?"Leave rankings":"Join rankings"}</button></div>
-     <label className={styles.namePrivacy}>
+     <div className={styles.privacyAction}><RankingModal trigger={board.hideUsername?"Username hidden · Manage":"Username visible · Manage"} title="Ranking name privacy" subtle>
+      <label className={styles.namePrivacy}>
       <input type="checkbox" checked={board.hideUsername===true} disabled={updating||loading}
        onChange={event=>setHidden(event.target.checked)}/>
       <span><strong>Hide my username</strong><small>{board.hideUsername?"You appear as Anonymous Keeper. Your points and placement remain visible.":"Show Anonymous Keeper instead of your display name on public rankings."}</small></span>
      </label>
      <small className={styles.privacyHint}>{board.participating?"Your scores and rank remain visible · Leave anytime":"Private until you join · Your name visibility is your choice"}</small>
+      <p className={styles.rewardRule}>Only your public display name is replaced. Your rank, points, achievements and EXP rewards remain unchanged.</p>
+     </RankingModal></div>
      {board.participating?(board.mine?<div className={styles.myStanding}><span>#{board.mine.position} · {periods.find(p=>p.id===period)?.label} rank</span><b>{format(board.mine.points)} pts</b></div>:<p>Your profile is public, but you haven&apos;t completed a ranked puzzle in this period yet.</p>):<p className={styles.helper}>Your completions are still saved privately. Ranking points remain separate from EXP and Duck Bucks. Podium achievements may award EXP.</p>}</>}
   </section>
   <section className={styles.controls} aria-label="Ranking filters">
@@ -113,12 +117,13 @@ export default function Leaderboard(){
     <div><strong>More than games?</strong><p>See how your lifetime EXP and keeper level compare across all of PodScape.</p></div>
     <Link href="/account/progress/rankings">Lifetime EXP Rankings <span aria-hidden="true">→</span></Link>
   </div>
-  <details className={styles.entryGuide}>
-   <summary className={styles.entryGuideHead}>
+  <div className={styles.helpAction}><RankingModal trigger="Rules, rewards & achievements" title="Arcade Rankings guide">
+  <section className={styles.entryGuide}>
+   <div className={styles.entryGuideHead}>
     <span className={styles.detailIcon} aria-hidden="true"><PodscapeLineIcon name="book"/></span>
     <span className={styles.detailCopy}><strong>How rankings work</strong><small>{selectedGame?selectedGame.title+" · ":""}One verified puzzle = 100 points</small></span>
-    <span className={styles.detailChevron} aria-hidden="true"><PodscapeLineIcon name="arrow-down"/></span>
-   </summary>
+    
+   </div>
    <div className={styles.detailBody}>
     <h2 className={styles.visuallyHidden}>How to enter arcade rankings</h2>
    <p className={styles.entryIntro}>{entryDescription}</p>
@@ -132,13 +137,13 @@ export default function Leaderboard(){
     <Link href={selectedGame?.href||"/fun-zone"}>{selectedGame?"Play "+selectedGame.title:"Browse ranked games"} <span aria-hidden="true">→</span></Link>
    </div>
    </div>
-  </details>
-  <details className={styles.rewards}>
-   <summary className={styles.rewardsTitle}>
+  </section>
+  <section className={styles.rewards}>
+   <div className={styles.rewardsTitle}>
     <span className={styles.detailIcon} aria-hidden="true"><PodscapeLineIcon name="trophy"/></span>
     <span className={styles.detailCopy}><strong>Podium rewards & achievements</strong><small>Daily +50 · Weekly +200 · Monthly +500 EXP for 1st</small></span>
     <span className={styles.detailChevron} aria-hidden="true"><PodscapeLineIcon name="arrow-down"/></span>
-   </summary>
+   </div>
    <div className={styles.detailBody}>
     <p className={styles.rewardRule}>Finish on the podium to earn bonus EXP when eligible ranking periods close.</p>
    <div className={styles.rewardTableWrap}><table className={styles.rewardTable}>
@@ -167,6 +172,8 @@ export default function Leaderboard(){
    </div>
    </div>
   </details>
+
   <p className={styles.note}>Ranking points = 100 per unique server-verified puzzle completion. Ties share a rank. Daily, weekly and monthly boards reset by UTC calendar periods; All time persists. Only opted-in players appear. The Pod Exchange is not ranked because simulated wealth isn&apos;t a verified puzzle score.</p>
+  </RankingModal></div>
  </div></main>;
 }
