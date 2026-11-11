@@ -6,6 +6,7 @@ import {WorkspaceEditBlock,WorkspaceEditToolbar,useWorkspaceDrag} from "@/compon
 import {dropBlock,moveBlock,uniqueAllowed,visibleBlocks} from "@/components/workspace-layout";
 import {useWorkspaceEditorDialog} from "@/components/useWorkspaceEditorDialog";
 import {confirmWorkspaceReset} from "@/components/workspace-edit-standards";
+import {portalWidgetGroups,widgetGroup,widgetPurpose} from "@/components/workspace-widget-policy";
 import {ARCADE_CATEGORIES,ARCADE_GAMES,ARCADE_GAME_KEYS,ARCADE_LAYOUT_KEY,GAME_FAVOURITES_KEY,categoryCounts,normaliseFavourites,type ArcadeCategory,type ArcadeGame} from "@/lib/fun-zone-arcade";
 import {FunZoneCarousel} from "./FunZoneCarousel";
 import {PodExchangeWatchlist} from "./PodExchangeWatchlist";
@@ -142,19 +143,19 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
     <p>Add games and widgets to your arcade. Your layout and favourites stay saved on this device.</p>
     <div className={homeEditStyles.widgetLibraryActions}><span>{layout.visible.length} of {defaultOrder.length} widgets added</span><button type="button" onClick={()=>{setLibraryOpen(false);enterCanvas()}}>Arrange Fun Zone</button></div>
     <div className={homeEditStyles.widgetLibraryGroups}>
-     <section><h3>Arcade widgets</h3><div className={homeEditStyles.widgetGallery}>
-      {(["featured","categories","favourites","progress","exchange"] as CoreWidget[]).map(id=>{
+     {portalWidgetGroups["fun-zone"].map(group=><section key={group}><h3>{group}</h3><div className={homeEditStyles.widgetGallery}>
+      {(["featured","categories","favourites","progress","exchange"] as CoreWidget[]).filter(id=>widgetGroup("fun-zone",id)===group).map(id=>{
        const added=layout.visible.includes(id);
        return <article className={homeEditStyles.widgetGalleryCard} key={id}>
         <div className={homeEditStyles.widgetPreview} aria-hidden="true">
          <span><PodscapeLineIcon name={icon(id)}/></span><div><strong>{label(id)}</strong><small>{id==="featured"?"Highlights & play now":id==="categories"?"Browse the game library":id==="favourites"?"Your saved games":id==="progress"?"EXP & milestones":"Duck Bucks & market prices"}</small></div><i>Wide</i>
         </div>
-        <div className={homeEditStyles.widgetGalleryCopy}><strong>{label(id)}</strong><p>{id==="exchange"?"Follow your fictional stock portfolio.":id==="progress"?"Keep your keeper progress close.":id==="favourites"?"Launch your favourite games quickly.":id==="categories"?"Discover games by type.":"Featured games in one swipeable card."}</p>
+        <div className={homeEditStyles.widgetGalleryCopy}><strong>{label(id)}</strong><p>{widgetPurpose("fun-zone",id)}</p>
          <button type="button" className={added?homeEditStyles.widgetRemove:homeEditStyles.widgetAdd} aria-pressed={added} onClick={()=>added?remove(id):add(id)}>{added?"✓ Added · Remove":"+ Add to Fun Zone"}</button>
         </div>
        </article>;
       })}
-     </div></section>
+     </div></section>)}
      <section><h3>Pin a game</h3><div className={homeEditStyles.widgetGallery}>
       {ARCADE_GAMES.map(game=>{const id=`game:${game.key}` as WidgetKey;const added=layout.visible.includes(id);
        return <article key={id} className={homeEditStyles.widgetGalleryCard}>
