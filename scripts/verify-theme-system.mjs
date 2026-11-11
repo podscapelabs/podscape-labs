@@ -236,6 +236,36 @@ assert.match(nav,/id:"lab",label:"Updates & Improvements",href:"\/updates"/,"Pre
 assert.match(platform,/label: "Updates & Improvements", href: "\/updates"/,"Platform directory must use archive");
 assert.ok(!platform.includes("https://www.podbound.net"),"PodBound is a single in-app destination");
 
+// Full-environment parity: named themes must supply their own canvas, cards,
+// secondary and raised surfaces. This catches accidental Light-mode fallbacks
+// in portal areas that consume semantic tokens.
+const environmentPalettes=new Map();
+for(const theme of ["light","dark","woodland","lilac","ember"]){
+ const rootPalette=themePalette(theme);
+ const portal=portalPalette(theme);
+ const legacySurface=hexToken(rootPalette,"--paper");
+ const canvas=hexToken(rootPalette,"--canvas");
+ const surface=hexToken(portal,"--surface");
+ const secondary=hexToken(portal,"--surface-secondary");
+ const raised=hexToken(portal,"--surface-raised");
+ const portalBackground=hexToken(portal,"--background");
+ const text=hexToken(portal,"--text-primary");
+ assert.notEqual(canvas,legacySurface,theme+" needs a distinct page and card layer");
+ assert.notEqual(portalBackground,surface,theme+" portal background must not merge with cards");
+ assert.notEqual(surface,secondary,theme+" needs a distinct secondary surface");
+ assert.notEqual(surface,raised,theme+" needs raised card separation");
+ assert.ok(contrastRatio(surface,text)>=4.5,theme+" surface text must meet WCAG AA");
+ environmentPalettes.set(theme,canvas+"|"+surface+"|"+secondary+"|"+raised);
+}
+assert.equal(new Set(environmentPalettes.values()).size,5,"All five themes must have distinct surface environments");
+const ledgerTheme=read("app/ledger/discover.module.css");
+assert.match(ledgerTheme,/border:1px solid var\\(--border\\);[\\s\\S]*?background:radial-gradient\\(circle at 84% 22%,var\\(--portal-hero-glow\\)/,
+ "Leaf Ledger must not preserve a hardcoded green frame across themes");
+assert.match(ledgerTheme,/\\.heroDestinations a\\.heroDestinationActive\\{background:var\\(--portal-hero-button-bg\\)/,
+ "Ledger actions must follow each theme's portal button role");
+assert.match(home,/\\.spotlightRail \\.tileCopy,[\\s\\S]*?background:var\\(--ps-surface\\)/,
+ "Home Spotlight must inherit theme card surfaces");
+
 // Inventory only: backgrounds and gradients used for photos, flags, chart series and
 // illustrated heroes can legitimately be fixed. Review rather than blindly rewrite.
 const hardcoded=sheets.map(path=>({
