@@ -5,6 +5,7 @@ import { OwnerAwareMobileNav } from "@/components/OwnerAwareMobileNav";
 import { AchievementToast } from "@/components/AchievementToast";
 import { AppSwipeBack } from "@/components/AppSwipeBack";
 import { OnlinePresenceProvider } from "@/components/OnlinePresenceProvider";
+import {THEMES,THEME_STORAGE_KEY} from "@/lib/theme-registry";
 
 export const viewport: Viewport = {
   themeColor: [
@@ -30,15 +31,21 @@ export const metadata: Metadata = {
   },
 };
 
+// First paint uses the same registry as the appearance picker and theme toggle.
+// System resolves to Light/Dark; all other registered palettes are first-class.
+const themeIds=THEMES.map(t=>t.id);
+const themeSchemes=Object.fromEntries(THEMES.map(t=>[t.id,t.scheme]));
 const themeScript = `
   try {
-    const saved = localStorage.getItem("podscape-theme");
-    const preference = saved === "light" || saved === "dark" || saved === "woodland" || saved === "lilac" || saved === "ember" || saved === "system" ? saved : "system";
+    const ids = ${JSON.stringify(themeIds)};
+    const schemes = ${JSON.stringify(themeSchemes)};
+    const saved = localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)});
+    const preference = ids.includes(saved) || saved === "system" ? saved : "system";
     const theme = preference !== "system" ? preference
       : window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     document.documentElement.dataset.themePreference = preference;
     document.documentElement.dataset.theme = theme;
-    document.documentElement.style.colorScheme = theme === "light" || theme === "lilac" || theme === "ember" ? "light" : "dark";
+    document.documentElement.style.colorScheme = schemes[theme] || "light";
   } catch (_) {}
 `;
 
