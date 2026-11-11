@@ -1,61 +1,73 @@
-import type { Metadata } from "next";
-import Image from "next/image";
-import { ArrowUpRightIcon } from "@/components/Icons";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { MaintenanceMemberAccess } from "@/components/MaintenanceMemberAccess";
-import { siteContent } from "@/content/site";
+import type {Metadata} from "next";
+import Link from "next/link";
+import {ThemeToggle} from "@/components/ThemeToggle";
+import {MaintenanceMemberAccess} from "@/components/MaintenanceMemberAccess";
+import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
+import {customerSupabase} from "@/lib/customer-auth/server";
+import {testerAccessStatus} from "@/lib/customer-auth/access";
+import styles from "./pod-access.module.css";
 
-export const metadata: Metadata = {
-  title: "PodScape Labs | Site update in progress",
-  description: "PodScape Labs is preparing an updated home for its original projects.",
+export const dynamic="force-dynamic";
+export const metadata:Metadata={
+ title:"Pod Access | PodScape Early Access",
+ description:"PodScape is opening in stages. Invited beta testers can sign in or create an account while the public launch is being prepared.",
 };
 
-export default function ConstructionPage() {
-  return (
-    <main className="construction-page">
-      <div className="construction-frame">
-        <header className="construction-header">
-          <Image
-            className="construction-wordmark"
-            src="/assets/logos/podscape-wordmark.svg"
-            alt="PodScape Labs"
-            width={232}
-            height={38}
-            priority
-          />
-          <div className="construction-header-actions">
-            <a href="#member-access" className="construction-member-link">Member sign in</a>
-            <ThemeToggle />
-          </div>
-        </header>
+export default async function PodAccessPage(){
+ const db=await customerSupabase();
+ const {data:{user}}=db?await db.auth.getUser():{data:{user:null}};
+ const verifiedEmail=user?.email_confirmed_at?user.email?.trim().toLowerCase():undefined;
+ const approved=verifiedEmail?(await testerAccessStatus(verifiedEmail))==="approved":false;
+ return <main className={`v2-site ${styles.page}`} id="pod-access">
+  <div className={styles.shell}>
+   <header className={styles.header}>
+    <Link href="/" className={styles.brand} aria-label="PodScape Labs, home">
+     <span className={styles.brandMark}><PodscapeLineIcon name="leaf"/></span>
+     <span className={styles.brandText}><strong>PodScape</strong><small>LABS / EARLY ACCESS</small></span>
+    </Link>
+    <div className={styles.headerActions}>
+     {approved?<Link className={styles.headerLink} href="/app">Open my PodScape <PodscapeLineIcon name="arrow-right"/></Link>:
+      <a className={styles.headerLink} href="#member-access">Member access <PodscapeLineIcon name="arrow-right"/></a>}
+     <ThemeToggle/>
+    </div>
+   </header>
 
-        <section className="construction-content" aria-labelledby="construction-title">
-          <div className="construction-status">
-            <span aria-hidden="true" />
-            Site update in progress
-          </div>
-          <p className="eyebrow">Independent Canadian Studio</p>
-          <h1 id="construction-title">A new site is taking shape.</h1>
-          <p className="construction-intro">
-            PodScape Labs is preparing an updated home for its original projects. The studio is still active while this work is underway.
-          </p>
-          <a
-            className="button button-primary construction-action"
-            href={siteContent.podbound.url}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Visit PodBound<ArrowUpRightIcon />
-          </a>
-        </section>
+   <div className={styles.content}>
+    <section className={styles.hero} aria-labelledby="pod-access-title">
+     <div className={styles.heroTop}>
+      <span className={styles.status}><span className={styles.statusDot} aria-hidden="true"/> Public launch in preparation</span>
+      <span className={styles.heroIndex}>POD / 001</span>
+     </div>
+     <p className={styles.eyebrow}>YOUR HOBBY. YOUR SPACE.</p>
+     <h1 id="pod-access-title">A little world is already open.</h1>
+     <p className={styles.heroIntro}>PodScape is opening in stages. While we prepare the public experience, invited explorers can step inside, try features, and help shape what comes next.</p>
+     <div className={styles.heroActions}>
+      {approved?<Link href="/app" className={styles.primaryAction}>Enter your PodScape <PodscapeLineIcon name="arrow-right"/></Link>:
+       <a href="#member-access" className={styles.primaryAction}>Enter Early Access <PodscapeLineIcon name="arrow-right"/></a>}
+      <a href="https://podbound.net" target="_blank" rel="noopener noreferrer" className={styles.secondaryAction}>Visit PodBound <PodscapeLineIcon name="arrow-right"/></a>
+     </div>
+     <div className={styles.heroFoot}><PodscapeLineIcon name="shield-check"/><span>Public maintenance view · Invitation-only beta access</span></div>
+    </section>
 
-        <MaintenanceMemberAccess />
+    <MaintenanceMemberAccess approved={approved}/>
+   </div>
 
-        <footer className="construction-footer">
-          <span>{siteContent.brand.location}</span>
-          <span>{siteContent.footer.copyright}</span>
-        </footer>
-      </div>
-    </main>
-  );
+   <section className={styles.explore} aria-labelledby="pod-access-explore">
+    <div className={styles.exploreHead}>
+     <div><p className={styles.smallEyebrow}>WHAT'S INSIDE</p><h2 id="pod-access-explore">Your little corner of the hobby.</h2></div>
+     <p>Already part of the beta? This is what awaits beyond Pod Access.</p>
+    </div>
+    <div className={styles.exploreGrid}>
+     <div className={styles.feature}><span><PodscapeLineIcon name="leaf"/></span><div><strong>Explore</strong><p>Discover isopods in the Leaf Ledger.</p></div></div>
+     <div className={styles.feature}><span><PodscapeLineIcon name="gamepad"/></span><div><strong>Play</strong><p>Try Fun Zone games and community rankings.</p></div></div>
+     <div className={styles.feature}><span><PodscapeLineIcon name="manager"/></span><div><strong>Keep</strong><p>Make colony care your own.</p></div></div>
+    </div>
+   </section>
+
+   <footer className={styles.footer}>
+    <span>PodScape Labs · Made in Canada</span>
+    <span>Thanks for helping this little world grow. <span aria-hidden="true">✦</span></span>
+   </footer>
+  </div>
+ </main>;
 }
