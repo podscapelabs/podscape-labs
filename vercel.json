@@ -5,5 +5,11 @@
       "feature/keeper-qr-quick-care": false,
       "codex/platform-rebuild-v2": false
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/ranking-awards",
+      "schedule": "10 0 * * *"
+    }
+  ]
 }
