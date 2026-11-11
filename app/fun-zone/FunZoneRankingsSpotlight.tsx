@@ -119,7 +119,7 @@ export function FunZoneRankingsSpotlight(){
      <div className={styles.rankingsSlideFoot}>
       <span>{board.participating&&board.mine?
        <><strong>Your rank #{board.mine.position}</strong> · {detail}: {amount(board.mine,slide.id)}</>:
-       board.participating?"You're participating — keep playing!":"Want to appear? Join the full leaderboard."}</span>
+       board.participating?"You're participating — keep playing!":"Join the full leaderboard to appear here."}</span>
       <Link href={slide.href}>{board.participating?"View standings":"Explore & join"} <span aria-hidden="true">→</span></Link>
      </div>
     </article>;
