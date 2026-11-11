@@ -4,7 +4,7 @@ import {useEffect,useState} from "react";
 import Link from "next/link";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
 import {DuckBuckIcon} from "./DuckBucks";
-import {cycleAt,headlineAt,STOCKS} from "@/lib/pod-exchange";
+import {cycleAt,headlineAt,newsImpactAt,STOCKS} from "@/lib/pod-exchange";
 import styles from "./HomeMarketNews.module.css";
 
 export function HomeMarketNews(){
@@ -17,6 +17,8 @@ export function HomeMarketNews(){
  },[]);
  const story=cycle===null?null:headlineAt(cycle);
  const company=story?STOCKS.find(stock=>stock.symbol===story.story.symbol):null;
+ const impact=story&&cycle!==null?newsImpactAt(story.story.symbol,cycle):0;
+ const storyAge=story&&cycle!==null?cycle-story.publishedCycle:0;
  return <section className={styles.card} aria-label="The Pod Exchange market news">
   <div className={styles.head}>
    <span className={styles.headlineIcon}><PodscapeLineIcon name="news"/></span>
@@ -27,6 +29,7 @@ export function HomeMarketNews(){
    <span className={styles.storyLabel}><DuckBuckIcon size={16}/> {company?.symbol||"PODX"} · {cycle===null?"Opening market…":"Latest bulletin"}</span>
    <strong>{story?.story.headline||"Tiny markets, big news."}</strong>
    <p>{story?.story.detail||"See what&apos;s happening at The Pod Exchange."}</p>
+   {story?<span className={styles.marketInfluence}>{impact>=0?"+":""}{(impact*100).toFixed(1)}% impact · {storyAge===0?"Breaking":storyAge===1?"Cooling":"Fading"}</span>:null}
    <span className={styles.cta}>Visit The Pod Exchange <PodscapeLineIcon name="arrow-right"/></span>
   </Link>
   <small className={styles.foot}>Fictional headlines refresh every 15 minutes · No real money</small>
