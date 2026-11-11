@@ -4,6 +4,8 @@
  */
 export const MARKET_INTERVAL_MS=5*60*1000;
 export const STARTING_BUCKS=10_000;
+/** A small, symmetric fee discourages zero-risk flip-flopping every tick. */
+export const TRADE_FEE_RATE=.005;
 export const STORAGE_KEY="podscape:pod-exchange-beta-v1";
 export type Stock={symbol:string;name:string;sector:string;summary:string;base:number;volatility:number;icon:string};
 export type Trade={id:string;cycle:number;symbol:string;side:"buy"|"sell";shares:number;unitPrice:number};
@@ -47,17 +49,53 @@ export function headlineAt(cycle:number):{story:MarketNews;publishedCycle:number
  if(!story)throw Error("Missing market bulletin");
  return {story,publishedCycle};
 }
+/** Pure, bounded market: any future UTC tick reproduces the same result.
+ * Daily regimes blend continuously, avoiding midnight jumps or server jobs.
+ * Trade activity currently does not alter shared prices (beta game rules).
+ */
+const smoothstep=(n:number)=>{const x=Math.max(0,Math.min(1,n));return x*x*(3-2*x);};
+const blend=(a:number,b:number,t:number)=>a+(b-a)*t;
+function marketMood(index:number,cycle:number):number{
+ const day=Math.floor(cycle/288),fraction=(cycle%288+288)%288/288;
+ const phase=smoothstep(fraction);
+ const yesterday=(random(day*31+index*811)-.5)*.14;
+ const tomorrow=(random((day+1)*31+index*811)-.5)*.14;
+ return blend(yesterday,tomorrow,phase);
+}
+function priceNoise(index:number,cycle:number):number{
+ // Mix a slowly changing wobble with a small tick-to-tick surprise.
+ const window=Math.floor(cycle/6),fraction=((cycle%6)+6)%6/6;
+ const a=random(window*97+index*1409)-.5;
+ const b=random((window+1)*97+index*1409)-.5;
+ return blend(a,b,smoothstep(fraction))*.043+(random(cycle*7919+index*1013)-.5)*.018;
+}
+/** Event impact fades over three five-minute ticks; story stays visible. */
+export function newsImpactAt(symbol:string,cycle:number):number{
+ const {story,publishedCycle}=headlineAt(cycle);
+ if(story.symbol!==symbol)return 0;
+ const age=cycle-publishedCycle;
+ return story.effect*([1,.62,.3][age]??0);
+}
+/** No runaway compounding or predictable fixed-period sine-wave profit. */
 export function priceAt(symbol:string,cycle:number):number{
  const stock=STOCKS.find(item=>item.symbol===symbol);
- if(!stock)return 0;
+ if(!stock||!Number.isSafeInteger(cycle))return 0;
  const index=STOCKS.findIndex(item=>item.symbol===symbol)+1;
- // Slow, bounded motion around each company's baseline; no infinite random walk.
- const slow=Math.sin((cycle+index*47)/14.2)*.115*stock.volatility;
- const medium=Math.sin((cycle+index*41)/4.7)*.038*stock.volatility;
- const noise=(random(cycle*97+index*1247)-.5)*.027*stock.volatility;
- const news=newsAt(cycle);
- const catalyst=news?.symbol===symbol?news.effect:0;
- return money(Math.max(1,stock.base*(1+slow+medium+noise+catalyst)));
+ // Company character stays distinct; all movement is mathematically bounded.
+ const regime=marketMood(index,cycle)*stock.volatility;
+ const shortTerm=priceNoise(index,cycle)*stock.volatility;
+ const seasonal=Math.sin(cycle/113+index*3.7)*.028*stock.volatility;
+ const impact=newsImpactAt(symbol,cycle);
+ const raw=stock.base*(1+regime+shortTerm+seasonal+impact);
+ return money(Math.min(stock.base*1.6,Math.max(stock.base*.55,raw)));
+}
+/** The displayed estimate is also the charge used by both local and cloud trades. */
+export function tradeFee(subtotal:number):number{
+ return subtotal>0?Math.max(.01,money(subtotal*TRADE_FEE_RATE)):0;
+}
+export function tradeTotal(price:number,shares:number,side:"buy"|"sell"):number{
+ const subtotal=money(price*shares),fee=tradeFee(subtotal);
+ return money(subtotal+(side==="buy"?fee:-fee));
 }
 export function defaultPortfolio():Portfolio{return {cash:STARTING_BUCKS,holdings:{},trades:[]};}
 /** Distinguish a legitimately new wallet from corrupt or unreadable saved data.
@@ -104,13 +142,14 @@ export type OrderResult={ok:true;portfolio:Portfolio}|{ok:false;error:string};
 export function executeOrder(portfolio:Portfolio,symbol:string,side:"buy"|"sell",shares:number,cycle:number):OrderResult{
  if(!STOCKS.some(s=>s.symbol===symbol))return {ok:false,error:"Unknown company."};
  if(!Number.isSafeInteger(shares)||shares<1||shares>1_000_000)return {ok:false,error:"Choose a valid number of whole shares."};
- const price=priceAt(symbol,cycle),cost=money(shares*price);
- if(!Number.isFinite(cost)||cost<=0)return {ok:false,error:"Unable to price this trade."};
+ const price=priceAt(symbol,cycle),subtotal=money(shares*price),charge=tradeTotal(price,shares,side);
+ if(!Number.isFinite(charge)||charge<=0||!Number.isFinite(subtotal)||subtotal<=0)return {ok:false,error:"Unable to price this trade."};
  const owned=portfolio.holdings[symbol]||0;
- if(side==="buy"&&cost>portfolio.cash)return {ok:false,error:"Not enough Duck Bucks for this trade."};
+ if(side==="buy"&&charge>portfolio.cash)return {ok:false,error:"Not enough Duck Bucks for this trade."};
  if(side==="sell"&&shares>owned)return {ok:false,error:"You don't own that many shares."};
- const cash=money(portfolio.cash+(side==="buy"?-cost:cost));
+ const cash=money(portfolio.cash+(side==="buy"?-charge:charge));
  const qty=owned+(side==="buy"?shares:-shares);
+ if(qty>1_000_000)return {ok:false,error:"The share limit for this company is one million."};
  const holdings={...portfolio.holdings};
  if(qty===0)delete holdings[symbol];else holdings[symbol]=qty;
  const trade:Trade={id:cycle+":"+symbol+":"+side+":"+Date.now()+":"+Math.random().toString(36).slice(2,8),cycle,symbol,side,shares,unitPrice:price};
