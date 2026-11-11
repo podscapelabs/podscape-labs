@@ -59,10 +59,19 @@ begin
  if inserted_count=0 then return false; end if;
  for trade in select value from jsonb_array_elements(p_trades) loop
   if jsonb_typeof(trade)<>'object'
-    or trade->>'symbol' not in ('DUCK','MOO','PANDA','BLUE','TITAN','CLOWN')
-    or trade->>'side' not in ('buy','sell')
+    or (trade->>'symbol') not in ('DUCK','MOO','PANDA','BLUE','TITAN','CLOWN')
+    or (trade->>'side') not in ('buy','sell')
     or length(coalesce(trade->>'id','')) not between 12 and 150
-    or (trade->>'shares') !~ '^[0-9]{1,7}
+    or (trade->>'shares') !~ '^[0-9]{1,7}$'
+    or (trade->>'cycle') !~ '^[0-9]{1,15}$'
+    or (trade->>'unitPrice') !~ '^[0-9]{1,12}(\.[0-9]{1,2})?$'
+  then raise exception 'Invalid legacy trade history'; end if;
+  insert into public.member_exchange_orders(user_id,trade_id,symbol,side,shares,cycle,unit_price)
+  values(p_user_id,trade->>'id',trade->>'symbol',trade->>'side',
+   (trade->>'shares')::integer,(trade->>'cycle')::bigint,(trade->>'unitPrice')::numeric)
+  on conflict do nothing;
+ end loop;
+ return true;
 end;
 $$;
 revoke all on function public.initialize_member_exchange_portfolio(uuid,numeric,jsonb,jsonb) from public,anon,authenticated;
