@@ -14,7 +14,7 @@ function validProof(action:Action,proof:unknown):boolean{
  const data=proof as Record<string,unknown>;
  if(action==="onboarding_complete"){
   const steps=data.steps;
-  return Array.isArray(steps)&&steps.join(",")==="welcome,portals,editing,layout"&&
+  return Array.isArray(steps)&&["welcome,portals,editing,layout","welcome,portals,editing,layout,appearance"].includes(steps.join(","))&&
    ["discover","keep","play","collect","default"].includes(String(data.focus));
  }
  if(action==="nav_personalized"){
