@@ -66,6 +66,7 @@ export function sessionImpactAt(symbol:string,cycle:number):number{
  const event=marketSessionAt(cycle);
  if(event.featured!==symbol)return 0;
  const progress=(cycle-event.startCycle)/MARKET_SESSION_TICKS;
+ if(progress<=0||progress>=1)return 0;
  return event.direction*event.intensity*Math.sin(Math.PI*progress)**2;
 }
 
