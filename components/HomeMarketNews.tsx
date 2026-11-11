@@ -25,8 +25,8 @@ export function HomeMarketNews(){
   </div>
   <Link className={styles.storyLink} href="/fun-zone/pod-exchange" aria-label={story?`Open The Pod Exchange: ${story.story.headline}`:"Open The Pod Exchange"}>
    <span className={styles.storyLabel}><DuckBuckIcon size={16}/> {company?.symbol||"PODX"} · {cycle===null?"Opening market…":"Latest bulletin"}</span>
-   <strong>{story?.news.headline||"Tiny markets, big news."}</strong>
-   <p>{story?.news.detail||"See what's happening at The Pod Exchange."}</p>
+   <strong>{story?.story.headline||"Tiny markets, big news."}</strong>
+   <p>{story?.story.detail||"See what&apos;s happening at The Pod Exchange."}</p>
    <span className={styles.cta}>Visit The Pod Exchange <PodscapeLineIcon name="arrow-right"/></span>
   </Link>
   <small className={styles.foot}>Fictional headlines refresh every 15 minutes · No real money</small>
