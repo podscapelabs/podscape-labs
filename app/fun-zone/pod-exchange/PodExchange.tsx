@@ -175,6 +175,7 @@ export function PodExchange(){
    <div className={styles.marketStatus}><span><i aria-hidden="true"/> MARKET OPEN</span><small>{now===null?"Loading market…":`Next tick ${countdown(timeLeft)}`}</small></div>
   </header>
   <p className={styles.disclaimer}><span aria-hidden="true">✳</span> A fictional market game · No real money, cash-out, Pod Coins or prizes.</p>
+  {storageMode==="error"?<div className={styles.walletAlert} role="alert"><div><strong>Saved wallet unavailable</strong><p>{storageMessage} Your existing Duck Bucks and shares have not been reset.</p></div><button type="button" onClick={()=>window.location.reload()}>Retry loading</button></div>:null}
   <details className={styles.rules} id="exchange-rules">
    <summary><span><PodscapeLineIcon name="book"/> How to Play</span><span className={styles.rulesHint}>The basics <span aria-hidden="true">⌄</span></span></summary>
    <div className={styles.rulesBody}>
@@ -222,7 +223,7 @@ export function PodExchange(){
      <div className={styles.orderDetails}><span>You own {owned}</span><span>Total {validCount?<DuckBucks amount={total}/>:"—"}</span></div>
      <button className={styles.action} disabled={!allowed} onClick={order} type="button">{pending?"Saving trade…":side==="buy"?"Buy":"Sell"} {company.symbol} shares</button>
      {message?<p className={styles.message} role="status">{message}</p>:null}
-     {!ready&&storageMode==="error"?<p className={styles.message} role="alert">{storageMessage} Reload to retry; your previous portfolio was not reset.</p>:null}
+
     </div>
    </section>
   </div>
