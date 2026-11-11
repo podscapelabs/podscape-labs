@@ -5,7 +5,7 @@
 ## Ownership
 
 - `lib/theme-registry.ts` is the only runtime registry for theme identity, display name, swatch preview, icon, order and native colour scheme. `system` is a preference that resolves to Light or Dark.
-- `app/globals.css` contains theme colour definitions. Each theme currently supplies a legacy root palette and its `.v2-site` portal palette. This is the remaining **dual-definition migration debt**; future consolidation should generate both from a single palette object.
+- `app/globals.css` contains theme colour definitions. Each theme now supplies legacy and portal roles in one root palette block. The shared `.v2-site` adapter maps all `--theme-*` portal roles without any theme-specific page declarations.
 - Shared components should use roles, **never** ask which theme is selected. Do not create new `html[data-theme="..."]` branches in page CSS.
 - `app/app/loading.module.css` takes splash colours from `--canvas`, `--ink`, `--muted` and `--forest`. The first-paint script, picker and toggle all use the registry.
 
@@ -24,8 +24,8 @@ The legacy `--canvas`, `--paper`, `--paper-strong`, `--forest`, `--ink`, `--line
 ## Adding a theme
 
 1. Declare the identity and swatch in `THEMES` in the registry.
-2. Define its palette in the root and v2 CSS blocks until the palette-generator migration is complete.
-3. Run `pnpm check:theme-system` and `pnpm typecheck`, then build a preview and visually audit the screen matrix below. The theme system's source gate derives its registered theme list automatically.
+2. Define its palette once in a `:root[data-theme="new-name"]` block in `app/globals.css`, including legacy roles and `--theme-*` roles. Do not add a `.v2-site` palette override.
+3. Run `pnpm check:theme-system`, `pnpm check:portal-colors` and `pnpm typecheck`, then build a preview and visually audit the screen matrix below. The theme system's source gate derives its registered theme list automatically.
 4. A new theme should **never** require edits to Home, Ledger, Manager, Shop or any other individual page. If it does, migrate the component to semantic roles and add a regression test instead.
 
 ## Screen matrix (required before release)
@@ -38,4 +38,4 @@ Photo/artwork colours, species photographs, game card art, status semantics and 
 
 ## Release truth
 
-Source verification cannot prove pixel-level theme parity. Test a preview deployment and authenticated mobile flows before promoting. The existing fixed-colour CSS inventory is migration debt, **not evidence of complete compliance**.
+Source verification cannot prove pixel-level theme parity. Test a preview deployment and authenticated mobile flows before promoting. The existing fixed-colour CSS inventory is migration debt, **not evidence of complete compliance**. Home, Shop, and Manager no longer contain theme-specific page overrides, but remaining page modules still require visual inspection.
