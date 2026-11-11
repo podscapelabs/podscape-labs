@@ -108,6 +108,22 @@ for(const [page,source,roles] of [
 assert.match(shopHome,/\.feature a\{background:var\(--portal-hero-button-bg\);color:var\(--portal-hero-button-text\)\}/);
 assert.match(keeperHome,/\.managerHeroContent h1\{color:var\(--portal-hero-text\)\}/);
 assert.match(homeSurface,/\.heroButton\{background:var\(--portal-hero-button-bg\);color:var\(--portal-hero-button-text\)\}/);
+// MarketingSite renders Home without .v2-site: its scoped theme adapter is mandatory.
+// If absent, unresolved portal hero vars silently remove the hero card background.
+const requiredHomeRoles=["start","end","glow","text","muted","soft","button-bg","button-text"];
+for(const role of requiredHomeRoles){
+ const cssName="--portal-hero-"+role;
+ const rootName="--theme-portal-hero-"+role;
+ assert.ok(homeSurface.includes(cssName+":var("+rootName+")"),
+  "Home theme boundary must bridge "+rootName+" to "+cssName);
+ for(const theme of themeIds){
+  assert.ok(themePalette(theme).includes(rootName+":"),
+   theme+" palette missing Home hero token "+rootName);
+ }
+}
+assert.match(homeSurface,/\.hero\{\s*background:linear-gradient\(125deg,var\(--portal-hero-start\),var\(--portal-hero-end\)\)/,
+ "Home hero must paint a themed gradient rather than falling through to transparent");
+
 
 // Legacy portal closure: no green-only guide, QR actions or stale Lab front door.
 const fieldGuide=read("app/field-guide/field-guide-home.module.css");
