@@ -45,6 +45,10 @@ export const achievementCatalog: AchievementDefinition[] = [
   { key:"exchange_five_trades", title:"Tiny Trader", description:"Complete five Pod Exchange trades.", exp:30, coins:0, icon:"▦", href:"/fun-zone/pod-exchange", status:"available" },
   { key:"exchange_three_companies", title:"Diversified Burrow", description:"Trade shares in three different fictional companies.", exp:35, coins:0, icon:"❧", href:"/fun-zone/pod-exchange", status:"available" },
   { key:"exchange_fifteen_trades", title:"The Big Quacker", description:"Complete fifteen Pod Exchange trades.", exp:60, coins:0, icon:"✺", href:"/fun-zone/pod-exchange", status:"available" },
+  // Level milestones are permanent and use lifetime EXP, even after future Molt cycles.
+  { key:"level_ten", title:"Finding Your Feet", description:"Reach Keeper Level 10.", exp:50, coins:0, icon:"✦", href:"/account/progress", status:"available" },
+  { key:"level_twenty_five", title:"Seasoned Keeper", description:"Reach Keeper Level 25.", exp:150, coins:0, icon:"✺", href:"/account/progress", status:"available" },
+  { key:"level_fifty", title:"Among the Ancients", description:"Reach Keeper Level 50.", exp:300, coins:0, icon:"✺", href:"/account/progress", status:"available", hidden:true },
   // Keeper and puzzle milestones use verified server-side records.
   { key:"keeper_first_enclosure", title:"A Little World", description:"Create your first enclosure in Manager.", exp:15, coins:0, icon:"▤", href:"/keeper", status:"available" },
   { key:"keeper_five_enclosures", title:"Room to Roam", description:"Create five different enclosures in Manager.", exp:60, coins:0, icon:"▦", href:"/keeper", status:"available" },
