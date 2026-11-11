@@ -35,13 +35,11 @@ export function ThemeToggle(){
  const next=THEME_IDS[(THEME_IDS.indexOf(theme||"light")+1)%THEME_IDS.length];
  const currentName=THEMES.find(t=>t.id===(theme||"light"))?.title||"Light";
  const nextName=THEMES.find(t=>t.id===next)?.title||"Light";
+ const glyph=THEMES.find(t=>t.id===(theme||"light"))?.glyph||"sun";
+ const icon=glyph==="moon"?<MoonIcon/>:glyph==="leaf"?<PodscapeLineIcon name="leaf"/>:glyph==="creative"?<PodscapeLineIcon name="creative"/>:<SunIcon/>;
  return <button className="theme-toggle" type="button" onClick={toggleTheme}
   aria-label={`${preference==="system"?"Following device appearance. ":""}Switch to ${nextName} theme`}
   title={`Current: ${currentName} · Switch to ${nextName}`}>
-   <span className="theme-icon theme-icon-sun"><SunIcon/></span>
-   <span className="theme-icon theme-icon-moon"><MoonIcon/></span>
-   <span className="theme-icon theme-icon-woodland"><PodscapeLineIcon name="leaf"/></span>
-   <span className="theme-icon theme-icon-lilac"><PodscapeLineIcon name="creative"/></span>
-   <span className="theme-icon theme-icon-ember"><SunIcon/></span>
+  <span className="theme-icon">{icon}</span>
  </button>;
 }
