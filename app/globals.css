@@ -23,6 +23,46 @@
   --max-width: 1440px;
   --serif: Georgia, "Times New Roman", serif;
   --sans: Arial, Helvetica, sans-serif;
+
+  /* Portal environment roles: one canonical definition per theme. */
+  --theme-background: #e9e4d2;
+  --theme-background-secondary: #e0ddcb;
+  --theme-surface: #f5f0df;
+  --theme-surface-secondary: #e5e1ce;
+  --theme-surface-raised: #fff9e9;
+  --theme-text-primary: #17241c;
+  --theme-text-secondary: #4f5a51;
+  --theme-text-muted: #74796f;
+  --theme-border: #d4cbb7;
+  --theme-border-strong: #9c9d83;
+  --theme-accent: #314f1d;
+  --theme-accent-hover: #203711;
+  --theme-portal-hero-start: #17382a;
+  --theme-portal-hero-end: #335541;
+  --theme-portal-hero-glow: #56765d;
+  --theme-portal-hero-text: #f6f1e5;
+  --theme-portal-hero-muted: #dce4d8;
+  --theme-portal-hero-soft: #bbd0b7;
+  --theme-portal-hero-button-bg: #f6f1e5;
+  --theme-portal-hero-button-text: #17382a;
+  --theme-accent-contrast: #fffaf0;
+  --theme-focus: #b57418;
+  --theme-ledger: #39591e;
+  --theme-podbound: #174d77;
+  --theme-guide: #08746f;
+  --theme-shop: #76517f;
+  --theme-creative: #9f4f32;
+  --theme-directory: #7e6828;
+  --theme-lab: #b46c0c;
+  --theme-radius-small: 12px;
+  --theme-radius-medium: 18px;
+  --theme-radius-large: 26px;
+  --theme-shadow-soft: 0 10px 32px rgba(32,43,34,.09);
+  --theme-control-height: 44px;
+  --theme-status-neutral-bg: #e7e1d3;
+  --theme-status-positive-bg: #e0e9d4;
+  --theme-status-warning-bg: #f0e3c9;
+  --theme-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
 }
 
 :root[data-theme="dark"] {
@@ -44,6 +84,41 @@
   --header: rgba(18, 35, 26, .92);
   --shadow: 0 24px 70px rgba(0, 0, 0, .28);
   --shadow-soft: 0 10px 32px rgba(0, 0, 0, .22);
+
+  /* Portal environment roles: one canonical definition per theme. */
+  --theme-background: #0d1915;
+  --theme-background-secondary: #12221b;
+  --theme-surface: #1b2b22;
+  --theme-surface-secondary: #23392c;
+  --theme-surface-raised: #304534;
+  --theme-text-primary: #e8dfc4;
+  --theme-text-secondary: #b8b49f;
+  --theme-text-muted: #8f9486;
+  --theme-border: #3a5141;
+  --theme-border-strong: #55684d;
+  --theme-accent: #9db26f;
+  --theme-accent-hover: #b7c98b;
+  --theme-portal-hero-start: #10261d;
+  --theme-portal-hero-end: #274737;
+  --theme-portal-hero-glow: #44634e;
+  --theme-portal-hero-text: #f6f1e5;
+  --theme-portal-hero-muted: #d4dfd0;
+  --theme-portal-hero-soft: #b8cbb0;
+  --theme-portal-hero-button-bg: #f6f1e5;
+  --theme-portal-hero-button-text: #17382a;
+  --theme-accent-contrast: #102319;
+  --theme-focus: #e3a641;
+  --theme-ledger: #7fa04d;
+  --theme-podbound: #4d8fc4;
+  --theme-guide: #47aaa5;
+  --theme-shop: #ae82b5;
+  --theme-creative: #c9795d;
+  --theme-directory: #b39a4a;
+  --theme-lab: #df9a2d;
+  --theme-shadow-soft: 0 10px 32px rgba(0,0,0,.25);
+  --theme-status-neutral-bg: #1c3026;
+  --theme-status-positive-bg: #263d29;
+  --theme-status-warning-bg: #3b3020;
 }
 
 * { box-sizing: border-box; }
@@ -561,45 +636,45 @@ h1, h2, h3 { text-wrap: balance; }
 
 /* Platform rebuild v2 ----------------------------------------------------- */
 .v2-site {
-  --background: #e9e4d2;
-  --background-secondary: #e0ddcb;
-  --surface: #f5f0df;
-  --surface-secondary: #e5e1ce;
-  --surface-raised: #fff9e9;
-  --text-primary: #17241c;
-  --text-secondary: #4f5a51;
-  --text-muted: #74796f;
-  --border: #d4cbb7;
-  --border-strong: #9c9d83;
-  --accent: #314f1d;
-  --accent-hover: #203711;
+  --background: var(--theme-background);
+  --background-secondary: var(--theme-background-secondary);
+  --surface: var(--theme-surface);
+  --surface-secondary: var(--theme-surface-secondary);
+  --surface-raised: var(--theme-surface-raised);
+  --text-primary: var(--theme-text-primary);
+  --text-secondary: var(--theme-text-secondary);
+  --text-muted: var(--theme-text-muted);
+  --border: var(--theme-border);
+  --border-strong: var(--theme-border-strong);
+  --accent: var(--theme-accent);
+  --accent-hover: var(--theme-accent-hover);
   /* Shared portal colour roles: deep heroes never inherit a light-mode text green. */
-  --portal-hero-start: #17382a;
-  --portal-hero-end: #335541;
-  --portal-hero-glow: #56765d;
-  --portal-hero-text: #f6f1e5;
-  --portal-hero-muted: #dce4d8;
-  --portal-hero-soft: #bbd0b7;
-  --portal-hero-button-bg: #f6f1e5;
-  --portal-hero-button-text: #17382a;
-  --accent-contrast: #fffaf0;
-  --focus: #b57418;
-  --ledger: #39591e;
-  --podbound: #174d77;
-  --guide: #08746f;
-  --shop: #76517f;
-  --creative: #9f4f32;
-  --directory: #7e6828;
-  --lab: #b46c0c;
-  --radius-small: 12px;
-  --radius-medium: 18px;
-  --radius-large: 26px;
-  --shadow-soft: 0 10px 32px rgba(32,43,34,.09);
-  --control-height: 44px;
-  --status-neutral-bg: #e7e1d3;
-  --status-positive-bg: #e0e9d4;
-  --status-warning-bg: #f0e3c9;
-  --display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --portal-hero-start: var(--theme-portal-hero-start);
+  --portal-hero-end: var(--theme-portal-hero-end);
+  --portal-hero-glow: var(--theme-portal-hero-glow);
+  --portal-hero-text: var(--theme-portal-hero-text);
+  --portal-hero-muted: var(--theme-portal-hero-muted);
+  --portal-hero-soft: var(--theme-portal-hero-soft);
+  --portal-hero-button-bg: var(--theme-portal-hero-button-bg);
+  --portal-hero-button-text: var(--theme-portal-hero-button-text);
+  --accent-contrast: var(--theme-accent-contrast);
+  --focus: var(--theme-focus);
+  --ledger: var(--theme-ledger);
+  --podbound: var(--theme-podbound);
+  --guide: var(--theme-guide);
+  --shop: var(--theme-shop);
+  --creative: var(--theme-creative);
+  --directory: var(--theme-directory);
+  --lab: var(--theme-lab);
+  --radius-small: var(--theme-radius-small);
+  --radius-medium: var(--theme-radius-medium);
+  --radius-large: var(--theme-radius-large);
+  --shadow-soft: var(--theme-shadow-soft);
+  --control-height: var(--theme-control-height);
+  --status-neutral-bg: var(--theme-status-neutral-bg);
+  --status-positive-bg: var(--theme-status-positive-bg);
+  --status-warning-bg: var(--theme-status-warning-bg);
+  --display: var(--theme-display);
   min-height: 100vh;
   background: var(--background);
   color: var(--text-primary);
@@ -608,41 +683,7 @@ h1, h2, h3 { text-wrap: balance; }
   line-height: 1.45;
 }
 
-:root[data-theme="dark"] .v2-site {
-  --background: #0d1915;
-  --background-secondary: #12221b;
-  --surface: #1b2b22;
-  --surface-secondary: #23392c;
-  --surface-raised: #304534;
-  --text-primary: #e8dfc4;
-  --text-secondary: #b8b49f;
-  --text-muted: #8f9486;
-  --border: #3a5141;
-  --border-strong: #55684d;
-  --accent: #9db26f;
-  --accent-hover: #b7c98b;
-  --portal-hero-start: #10261d;
-  --portal-hero-end: #274737;
-  --portal-hero-glow: #44634e;
-  --portal-hero-text: #f6f1e5;
-  --portal-hero-muted: #d4dfd0;
-  --portal-hero-soft: #b8cbb0;
-  --portal-hero-button-bg: #f6f1e5;
-  --portal-hero-button-text: #17382a;
-  --accent-contrast: #102319;
-  --focus: #e3a641;
-  --ledger: #7fa04d;
-  --podbound: #4d8fc4;
-  --guide: #47aaa5;
-  --shop: #ae82b5;
-  --creative: #c9795d;
-  --directory: #b39a4a;
-  --lab: #df9a2d;
-  --shadow-soft: 0 10px 32px rgba(0,0,0,.25);
-  --status-neutral-bg: #1c3026;
-  --status-positive-bg: #263d29;
-  --status-warning-bg: #3b3020;
-}
+
 
 .v2-site *, .v2-site *::before, .v2-site *::after { box-sizing: border-box; }
 .v2-site a { color: inherit; text-decoration: none; }
@@ -1397,42 +1438,43 @@ h1, h2, h3 { text-wrap: balance; }
  --shadow-soft:0 10px 32px rgba(12,7,5,.25);
  --ps-accent-text:#261a13;
  --ps-surface-muted:#44352b;
+
+  /* Portal environment roles: one canonical definition per theme. */
+  --theme-background: #1b1512;
+  --theme-background-secondary: #251c17;
+  --theme-surface: #30251f;
+  --theme-surface-secondary: #403128;
+  --theme-surface-raised: #47362b;
+  --theme-text-primary: #f3e6d3;
+  --theme-text-secondary: #d0bbaa;
+  --theme-text-muted: #ac9887;
+  --theme-border: #655044;
+  --theme-border-strong: #957660;
+  --theme-accent: #d6ac76;
+  --theme-accent-hover: #ebc38e;
+  --theme-accent-contrast: #261a13;
+  --theme-focus: #edbf77;
+  --theme-ledger: #c8ad82;
+  --theme-podbound: #c7a0a5;
+  --theme-guide: #b6ba8b;
+  --theme-shop: #c6a0bb;
+  --theme-creative: #e1ad88;
+  --theme-directory: #dbc087;
+  --theme-lab: #deb17d;
+  --theme-portal-hero-start: #3a291f;
+  --theme-portal-hero-end: #6a4735;
+  --theme-portal-hero-glow: #9a7156;
+  --theme-portal-hero-text: #faecda;
+  --theme-portal-hero-muted: #e4cbb6;
+  --theme-portal-hero-soft: #e1b899;
+  --theme-portal-hero-button-bg: #f3e3ca;
+  --theme-portal-hero-button-text: #3b261c;
+  --theme-status-neutral-bg: #403127;
+  --theme-status-positive-bg: #384032;
+  --theme-status-warning-bg: #58402a;
+  --theme-shadow-soft: 0 10px 32px rgba(12,7,5,.32);
 }
-:root[data-theme="woodland"] .v2-site{
- --background:#1b1512;
- --background-secondary:#251c17;
- --surface:#30251f;
- --surface-secondary:#403128;
- --surface-raised:#47362b;
- --text-primary:#f3e6d3;
- --text-secondary:#d0bbaa;
- --text-muted:#ac9887;
- --border:#655044;
- --border-strong:#957660;
- --accent:#d6ac76;
- --accent-hover:#ebc38e;
- --accent-contrast:#261a13;
- --focus:#edbf77;
- --ledger:#c8ad82;
- --podbound:#c7a0a5;
- --guide:#b6ba8b;
- --shop:#c6a0bb;
- --creative:#e1ad88;
- --directory:#dbc087;
- --lab:#deb17d;
- --portal-hero-start:#3a291f;
- --portal-hero-end:#6a4735;
- --portal-hero-glow:#9a7156;
- --portal-hero-text:#faecda;
- --portal-hero-muted:#e4cbb6;
- --portal-hero-soft:#e1b899;
- --portal-hero-button-bg:#f3e3ca;
- --portal-hero-button-text:#3b261c;
- --status-neutral-bg:#403127;
- --status-positive-bg:#384032;
- --status-warning-bg:#58402a;
- --shadow-soft:0 10px 32px rgba(12,7,5,.32);
-}
+
 :root[data-theme="woodland"] .v2-button-primary{color:var(--ps-accent-text)}
 :root[data-theme="woodland"] .brand img,
 :root[data-theme="woodland"] .v2-brand img,
@@ -1472,42 +1514,43 @@ h1, h2, h3 { text-wrap: balance; }
  --shadow-soft:0 10px 32px rgba(67,42,84,.09);
  --ps-accent-text:#fffaff;
  --ps-surface-muted:#e3cde9;
+
+  /* Portal environment roles: one canonical definition per theme. */
+  --theme-background: #ebe0f1;
+  --theme-background-secondary: #e4d4eb;
+  --theme-surface: #f4e7f6;
+  --theme-surface-secondary: #e6d1ed;
+  --theme-surface-raised: #e9d3ee;
+  --theme-text-primary: #33223e;
+  --theme-text-secondary: #685970;
+  --theme-text-muted: #81718b;
+  --theme-border: #c7afd0;
+  --theme-border-strong: #b99bc8;
+  --theme-accent: #70418b;
+  --theme-accent-hover: #593174;
+  --theme-accent-contrast: #fffaff;
+  --theme-focus: #8f55aa;
+  --theme-ledger: #8266a2;
+  --theme-podbound: #945b9c;
+  --theme-guide: #93719b;
+  --theme-shop: #8a5293;
+  --theme-creative: #ae6293;
+  --theme-directory: #8163a6;
+  --theme-lab: #a36c97;
+  --theme-portal-hero-start: #eadbf3;
+  --theme-portal-hero-end: #c6a7d9;
+  --theme-portal-hero-glow: #ddc1e9;
+  --theme-portal-hero-text: #33223e;
+  --theme-portal-hero-muted: #5e4a6b;
+  --theme-portal-hero-soft: #70418b;
+  --theme-portal-hero-button-bg: #70418b;
+  --theme-portal-hero-button-text: #fffaff;
+  --theme-status-neutral-bg: #ede3f3;
+  --theme-status-positive-bg: #e0e9de;
+  --theme-status-warning-bg: #f5e5dd;
+  --theme-shadow-soft: 0 10px 32px rgba(67,42,84,.1);
 }
-:root[data-theme="lilac"] .v2-site{
- --background:#ebe0f1;
- --background-secondary:#e4d4eb;
- --surface:#f4e7f6;
- --surface-secondary:#e6d1ed;
- --surface-raised:#e9d3ee;
- --text-primary:#33223e;
- --text-secondary:#685970;
- --text-muted:#81718b;
- --border:#c7afd0;
- --border-strong:#b99bc8;
- --accent:#70418b;
- --accent-hover:#593174;
- --accent-contrast:#fffaff;
- --focus:#8f55aa;
- --ledger:#8266a2;
- --podbound:#945b9c;
- --guide:#93719b;
- --shop:#8a5293;
- --creative:#ae6293;
- --directory:#8163a6;
- --lab:#a36c97;
- --portal-hero-start:#eadbf3;
- --portal-hero-end:#c6a7d9;
- --portal-hero-glow:#ddc1e9;
- --portal-hero-text:#33223e;
- --portal-hero-muted:#5e4a6b;
- --portal-hero-soft:#70418b;
- --portal-hero-button-bg:#70418b;
- --portal-hero-button-text:#fffaff;
- --status-neutral-bg:#ede3f3;
- --status-positive-bg:#e0e9de;
- --status-warning-bg:#f5e5dd;
- --shadow-soft:0 10px 32px rgba(67,42,84,.1);
-}
+
 :root[data-theme="lilac"] .v2-button-primary{color:var(--ps-accent-text)}
 :root[data-theme="lilac"] .button-primary,
 :root[data-theme="lilac"] .podbound-link{color:var(--ps-accent-text)}
@@ -1543,42 +1586,43 @@ h1, h2, h3 { text-wrap: balance; }
  --shadow-soft:0 10px 32px rgba(94,49,27,.09);
  --ps-accent-text:#fffaf3;
  --ps-surface-muted:#efcfb0;
+
+  /* Portal environment roles: one canonical definition per theme. */
+  --theme-background: #f7e5d1;
+  --theme-background-secondary: #f3d9bf;
+  --theme-surface: #fbead8;
+  --theme-surface-secondary: #f2d7b9;
+  --theme-surface-raised: #f0cfb0;
+  --theme-text-primary: #3e281d;
+  --theme-text-secondary: #705a4e;
+  --theme-text-muted: #866d5e;
+  --theme-border: #d9b08e;
+  --theme-border-strong: #c7926d;
+  --theme-accent: #a64c21;
+  --theme-accent-hover: #873d1b;
+  --theme-accent-contrast: #fffaf3;
+  --theme-focus: #b05a25;
+  --theme-ledger: #aa6432;
+  --theme-podbound: #b66c43;
+  --theme-guide: #b07b45;
+  --theme-shop: #af632f;
+  --theme-creative: #bf744c;
+  --theme-directory: #a95737;
+  --theme-lab: #b87341;
+  --theme-portal-hero-start: #f6dfc5;
+  --theme-portal-hero-end: #e7ac75;
+  --theme-portal-hero-glow: #f5bd80;
+  --theme-portal-hero-text: #3e281d;
+  --theme-portal-hero-muted: #654833;
+  --theme-portal-hero-soft: #a64c21;
+  --theme-portal-hero-button-bg: #a64c21;
+  --theme-portal-hero-button-text: #fffaf3;
+  --theme-status-neutral-bg: #f6e7d7;
+  --theme-status-positive-bg: #e8e8d7;
+  --theme-status-warning-bg: #fbe1bd;
+  --theme-shadow-soft: 0 10px 32px rgba(94,49,27,.1);
 }
-:root[data-theme="ember"] .v2-site{
- --background:#f7e5d1;
- --background-secondary:#f3d9bf;
- --surface:#fbead8;
- --surface-secondary:#f2d7b9;
- --surface-raised:#f0cfb0;
- --text-primary:#3e281d;
- --text-secondary:#705a4e;
- --text-muted:#866d5e;
- --border:#d9b08e;
- --border-strong:#c7926d;
- --accent:#a64c21;
- --accent-hover:#873d1b;
- --accent-contrast:#fffaf3;
- --focus:#b05a25;
- --ledger:#aa6432;
- --podbound:#b66c43;
- --guide:#b07b45;
- --shop:#af632f;
- --creative:#bf744c;
- --directory:#a95737;
- --lab:#b87341;
- --portal-hero-start:#f6dfc5;
- --portal-hero-end:#e7ac75;
- --portal-hero-glow:#f5bd80;
- --portal-hero-text:#3e281d;
- --portal-hero-muted:#654833;
- --portal-hero-soft:#a64c21;
- --portal-hero-button-bg:#a64c21;
- --portal-hero-button-text:#fffaf3;
- --status-neutral-bg:#f6e7d7;
- --status-positive-bg:#e8e8d7;
- --status-warning-bg:#fbe1bd;
- --shadow-soft:0 10px 32px rgba(94,49,27,.1);
-}
+
 :root[data-theme="ember"] .v2-button-primary,
 :root[data-theme="ember"] .button-primary,
 :root[data-theme="ember"] .podbound-link{color:var(--ps-accent-text)}
