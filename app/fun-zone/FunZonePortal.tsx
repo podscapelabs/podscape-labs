@@ -1,5 +1,5 @@
 "use client";
-import {useEffect,useState} from "react";
+import {useEffect,useLayoutEffect,useRef,useState} from "react";
 import Link from "next/link";
 import {PodscapeLineIcon,type PodscapeIconName} from "@/components/PodscapeLineIcon";
 import {WorkspaceEditBlock,WorkspaceEditToolbar,useWorkspaceDrag} from "@/components/WorkspaceEditCanvas";
@@ -9,6 +9,7 @@ import {ARCADE_CATEGORIES,ARCADE_GAMES,ARCADE_GAME_KEYS,ARCADE_LAYOUT_KEY,GAME_F
 import {FunZoneCarousel} from "./FunZoneCarousel";
 import {PodExchangeWatchlist} from "./PodExchangeWatchlist";
 import styles from "./fun-zone-portal.module.css";
+import homeEditStyles from "@/components/PodscapeHome.module.css";
 
 type CoreWidget="featured"|"categories"|"favourites"|"progress"|"exchange";
 type WidgetKey=CoreWidget|`game:${string}`;
@@ -54,6 +55,25 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
  const [editing,setEditing]=useState(false);
  const [libraryOpen,setLibraryOpen]=useState(false);
  const dialogRef=useWorkspaceEditorDialog(libraryOpen,()=>setLibraryOpen(false));
+ const editAnchor=useRef<{id:WidgetKey;top:number}|null>(null);
+ const enterCanvas=(id?:WidgetKey)=>{
+  if(id){
+   const block=Array.from(document.querySelectorAll<HTMLElement>('[data-workspace-scope="fun-zone"]')).find(node=>node.dataset.workspaceBlock===id);
+   editAnchor.current=block?{id,top:block.getBoundingClientRect().top}:null;
+  }else editAnchor.current=null;
+  setLibraryOpen(false);
+  setEditing(true);
+ };
+ useLayoutEffect(()=>{
+  if(!editing||!editAnchor.current)return;
+  const {id,top}=editAnchor.current;
+  editAnchor.current=null;
+  const block=Array.from(document.querySelectorAll<HTMLElement>('[data-workspace-scope="fun-zone"]')).find(node=>node.dataset.workspaceBlock===id);
+  if(!block)return;
+  const delta=block.getBoundingClientRect().top-top;
+  if(Math.abs(delta)>1)window.scrollBy({top:delta,behavior:"instant"});
+ },[editing]);
+ const finishCanvas=()=>{stopDrag();editAnchor.current=null;setEditing(false)};
  useEffect(()=>{
   setLayout(readLayout(layoutKey));
   setFavourites(normaliseFavourites(readStored<unknown>(favoritesKey,[])));
@@ -106,13 +126,13 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
   }
   return null;
  };
- return <div className={styles.portal} data-workspace-root="fun-zone" onPointerMove={e=>{if(editing)moveDrag(e)}} onPointerUp={()=>{if(editing)stopDrag()}} onPointerCancel={()=>{if(editing)stopDrag()}}>
-  <header className={styles.hero}><div><span className={styles.heroEyebrow}>PODSCAPE / FUN ZONE</span><h1>Your little arcade.</h1><p>Your favourite games, your layout. Find a puzzle, chase a high score or spend some Duck Bucks.</p></div><button type="button" className={styles.editButton} onClick={()=>setEditing(x=>!x)}><PodscapeLineIcon name={editing?"check":"edit"}/>{editing?"Done":"Customize"}</button></header>
+ return <div className={`${styles.portal} ${editing?homeEditStyles.homeCanvasEditing:""}`} data-workspace-root="fun-zone" onPointerMove={e=>{if(editing)moveDrag(e)}} onPointerUp={()=>{if(editing)stopDrag()}} onPointerCancel={()=>{if(editing)stopDrag()}}>
+  <header className={styles.hero}><div><span className={styles.heroEyebrow}>PODSCAPE / FUN ZONE</span><h1>Your little arcade.</h1><p>Your favourite games, your layout. Find a puzzle, chase a high score or spend some Duck Bucks.</p></div><button type="button" className={styles.editButton} onClick={()=>editing?finishCanvas():enterCanvas()}><PodscapeLineIcon name={editing?"check":"edit"}/>{editing?"Done":"Customize"}</button></header>
   <nav className={styles.quickLinks} aria-label="Fun Zone shortcuts"><a href="#arcade-games"><PodscapeLineIcon name="grid"/> Categories</a><a href="#arcade-favourites"><PodscapeLineIcon name="bookmark"/> My Games</a><Link href="/fun-zone/leaderboard"><PodscapeLineIcon name="trophy"/> Rankings</Link><Link href="/fun-zone/pod-exchange"><PodscapeLineIcon name="gamepad"/> Pod Exchange</Link></nav>
-  {editing?<WorkspaceEditToolbar title="Arrange Fun Zone" description="Drag the handles or use arrows to reorder games and widgets." onAdd={()=>{stopDrag();setEditing(false);setLibraryOpen(true)}} onReset={reset} onDone={()=>{stopDrag();setEditing(false)}}/>:null}
-  <div className={styles.widgets}>{active.map((id,i)=><div key={id} id={id==="categories"?"arcade-games":id==="favourites"?"arcade-favourites":undefined}><WorkspaceEditBlock id={id} scope="fun-zone" label={label(id)} index={i} count={active.length} editing={editing} dragging={dragging===id} required={false} onMove={move} onRemove={remove} begin={beginDrag} move={moveDrag} stop={stopDrag} onLongPress={()=>setEditing(true)}>{renderWidget(id)}</WorkspaceEditBlock></div>)}</div>
+  {editing?<WorkspaceEditToolbar title="Arrange Fun Zone" description="Drag the handles or use arrows to reorder games and widgets." onAdd={()=>{finishCanvas();setLibraryOpen(true)}} onReset={reset} onDone={finishCanvas}/>:null}
+  <div className={styles.widgets}>{active.map((id,i)=><div key={id} id={id==="categories"?"arcade-games":id==="favourites"?"arcade-favourites":undefined}><WorkspaceEditBlock id={id} scope="fun-zone" label={label(id)} index={i} count={active.length} editing={editing} dragging={dragging===id} required={false} onMove={move} onRemove={remove} begin={beginDrag} move={moveDrag} stop={stopDrag} onLongPress={()=>enterCanvas(id)}>{renderWidget(id)}</WorkspaceEditBlock></div>)}</div>
   {hydrated&&!editing?<button className={styles.addWidget} type="button" onClick={()=>setLibraryOpen(true)}><PodscapeLineIcon name="grid"/> Add Widgets & Games</button>:null}
-  {libraryOpen?<div className={styles.overlay} onPointerDown={event=>{if(event.target===event.currentTarget)setLibraryOpen(false)}}><section className={styles.dialog} ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="arcade-widget-title"><header><div><span className={styles.eyebrow}>YOUR ARCADE · YOUR WAY</span><h2 id="arcade-widget-title">Widget Library</h2></div><button type="button" onClick={()=>setLibraryOpen(false)}>Done</button></header><p>Pin specific games, show categories or add progress and market widgets. Everything saves to this device.</p>
+  {libraryOpen?<div className={styles.overlay} onPointerDown={event=>{if(event.target===event.currentTarget)setLibraryOpen(false)}}><section className={styles.dialog} ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="arcade-widget-title"><header><div><span className={styles.eyebrow}>YOUR ARCADE · YOUR WAY</span><h2 id="arcade-widget-title">Widget Library</h2></div><button type="button" onClick={()=>setLibraryOpen(false)}>Done</button></header><p>Pin games, categories, progress, or the market watchlist. Everything saves to this device.</p><button type="button" className={styles.arrangeLink} onClick={()=>{setLibraryOpen(false);enterCanvas()}}>Arrange Fun Zone →</button>
    <h3>Arcade widgets</h3><div className={styles.libraryGrid}>{(["featured","categories","favourites","progress","exchange"] as CoreWidget[]).map(id=><div key={id} className={styles.libraryCard}><PodscapeLineIcon name={icon(id)}/><strong>{label(id)}</strong><button type="button" aria-pressed={layout.visible.includes(id)} onClick={()=>layout.visible.includes(id)?remove(id):add(id)}>{layout.visible.includes(id)?"✓ Added · Remove":"+ Add Widget"}</button></div>)}</div>
    <h3>Pin a game</h3><div className={styles.libraryGrid}>{ARCADE_GAMES.map(game=>{const id=`game:${game.key}` as WidgetKey;return <div key={id} className={styles.libraryCard}><PodscapeLineIcon name={game.icon}/><strong>{game.title}</strong><small>{game.category}</small><button type="button" aria-pressed={layout.visible.includes(id)} onClick={()=>layout.visible.includes(id)?remove(id):add(id)}>{layout.visible.includes(id)?"✓ Added · Remove":"+ Add Game"}</button></div>})}</div>
   </section></div>:null}
