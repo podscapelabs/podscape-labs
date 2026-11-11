@@ -192,6 +192,11 @@ export function PodExchange(){
    <div className={styles.marketStatus}><span><i aria-hidden="true"/> MARKET OPEN</span><small>{now===null?"Loading market…":`Next tick ${countdown(timeLeft)}`}</small></div>
   </header>
   <p className={styles.disclaimer}><PodscapeLineIcon name="gamepad"/> A fictional market game · No real money, cash-out, Pod Coins or prizes.</p>
+  <Link href="/fun-zone/pod-exchange/rankings" className={styles.marketLeadersLink}>
+   <span className={styles.marketLeadersIcon}><PodscapeLineIcon name="trophy"/></span>
+   <span><strong>Market Rankings</strong><small>The Rich List · Top Investors · Weekly Market Movers</small></span>
+   <span className={styles.marketLeadersArrow} aria-hidden="true">→</span>
+  </Link>
   {storageMode==="error"?<div className={styles.walletAlert} role="alert"><div><strong>Saved wallet unavailable</strong><p>{storageMessage} Your existing Duck Bucks and shares have not been reset.</p></div><button type="button" onClick={()=>window.location.reload()}>Retry loading</button></div>:null}
   <details className={styles.rules} id="exchange-rules">
    <summary><span><PodscapeLineIcon name="book"/> How to Play</span><span className={styles.rulesHint}>The basics <span aria-hidden="true">⌄</span></span></summary>
