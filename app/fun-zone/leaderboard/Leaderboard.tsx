@@ -8,7 +8,7 @@ import styles from "./leaderboard.module.css";
 type Period="daily"|"weekly"|"monthly"|"all-time";
 type Standing={name:string;points:number;completions:number;position:number;mine:boolean};
 type Award={board:string;period:string;place:number;exp:number;date:string};
-type Board={rows:Standing[];mine:Standing|null;participating:boolean;signedIn:boolean;timezone:string;awards:Award[]};
+type Board={rows:Standing[];mine:Standing|null;participating:boolean;hideUsername:boolean;signedIn:boolean;timezone:string;awards:Award[]};
 const periods:{id:Period;label:string}[]=[{id:"daily",label:"Daily"},{id:"weekly",label:"Weekly"},{id:"monthly",label:"Monthly"},{id:"all-time",label:"All time"}];
 const games=ARCADE_GAMES.filter(game=>game.key!=="pod-exchange");
 const format=(n:number)=>n.toLocaleString("en-CA");
@@ -41,6 +41,18 @@ export default function Leaderboard(){
   }catch(e){setError(e instanceof Error?e.message:"Could not update your preference");}
   finally{setUpdating(false)}
  };
+ const setHidden=async(hideUsername:boolean)=>{
+  if(updating)return;setUpdating(true);setError("");
+  try{
+   const response=await fetch("/api/fun-zone/rankings",{
+    method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({hideUsername})
+   });
+   const result=await response.json();
+   if(!response.ok)throw new Error(result.error||"Could not save username privacy");
+   setReload(x=>x+1);
+  }catch(e){setError(e instanceof Error?e.message:"Could not update username privacy");}
+  finally{setUpdating(false)}
+ };
  const selectedGame=games.find(item=>item.key===game);
  const gameEntryGuides:Record<string,string>={
   "crossword-colony":"Finish a Crossword Colony puzzle by solving all its clues.",
@@ -66,8 +78,13 @@ export default function Leaderboard(){
   <section className={styles.personal} aria-label="Your ranking participation">
    <div className={styles.personalTitle}><span><PodscapeLineIcon name="achievement"/></span><div><small>YOUR ARCADE</small><h2>{board?.participating?"You’re on the board":"Join Arcade Rankings"}</h2></div></div>
    {!board&&!loading?<p>Personal rankings are temporarily unavailable.</p>:!board?.signedIn?<div className={styles.joinSignIn}><p>Sign in to join the leaderboard. Browsing stays open to everyone.</p><Link href="/account" className={styles.joinLink}>Sign in to join <span aria-hidden="true">→</span></Link></div>:
-    <><div className={styles.consent}><div><strong>{board.participating?"Public participation is on":"Get on the leaderboard"}</strong><p>{board.participating?"Your name and verified points are currently public.":"Your saved puzzle points will appear when you join."}</p></div><button type="button" disabled={updating||loading} aria-pressed={board.participating} onClick={()=>setPublic(!board.participating)} className={board.participating?styles.optedIn:styles.optedOut} aria-label={board.participating?"Leave public arcade rankings":"Join public arcade rankings"}>{updating?"Saving…":board.participating?"Leave rankings":"Join rankings"}</button></div>
-     <small className={styles.privacyHint}>{board.participating?"Participating · Visible to everyone · Leave anytime":"Private until you join · Only your display name and verified puzzle points become public"}</small>
+    <><div className={styles.consent}><div><strong>{board.participating?"Public participation is on":"Get on the leaderboard"}</strong><p>{board.participating?"Your verified points are public. Your username follows your privacy choice.":"Your saved puzzle points will appear when you join."}</p></div><button type="button" disabled={updating||loading} aria-pressed={board.participating} onClick={()=>setPublic(!board.participating)} className={board.participating?styles.optedIn:styles.optedOut} aria-label={board.participating?"Leave public arcade rankings":"Join public arcade rankings"}>{updating?"Saving…":board.participating?"Leave rankings":"Join rankings"}</button></div>
+     <label className={styles.namePrivacy}>
+      <input type="checkbox" checked={board.hideUsername===true} disabled={updating||loading}
+       onChange={event=>setHidden(event.target.checked)}/>
+      <span><strong>Hide my username</strong><small>{board.hideUsername?"You appear as Anonymous Keeper. Your points and placement remain visible.":"Show Anonymous Keeper instead of your display name on public rankings."}</small></span>
+     </label>
+     <small className={styles.privacyHint}>{board.participating?"Your scores and rank remain visible · Leave anytime":"Private until you join · Your name visibility is your choice"}</small>
      {board.participating?(board.mine?<div className={styles.myStanding}><span>#{board.mine.position} · {periods.find(p=>p.id===period)?.label} rank</span><b>{format(board.mine.points)} pts</b></div>:<p>Your profile is public, but you haven&apos;t completed a ranked puzzle in this period yet.</p>):<p className={styles.helper}>Your completions are still saved privately. Ranking points remain separate from EXP and Duck Bucks. Podium achievements may award EXP.</p>}</>}
   </section>
   <section className={styles.controls} aria-label="Ranking filters">
