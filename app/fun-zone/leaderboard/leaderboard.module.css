@@ -308,3 +308,6 @@
  .soloPodium .podiumCard>b{font-size:16px}
  .soloPodium .podiumCard>span:last-child{font-size:10px}
 }
+
+/* Make the leaderboard opt-in disclosure readable without expanding the whole card. */
+.privacyHint{grid-column:1/-1;font-size:10px;color:var(--text-secondary);line-height:1.35}
