@@ -8,7 +8,7 @@ const hub=read("app/account/progress/ProgressDashboard.tsx");
 const arcade=read("app/fun-zone/leaderboard/Leaderboard.tsx");
 assert.match(migration,/public\.member_progress/,"Score must come from real lifetime EXP");
 assert.match(migration,/member_exp_ranking_preferences/,"Participation must be separate from Arcade Rankings");
-assert.match(migration,/public_enabled boolean not null default false/,"Ranking defaults to private");
+assert.match(read("supabase/migrations/202611110008_automatic_rankings_and_legacy_wallet_audits.sql"),/alter table public\.member_exp_ranking_preferences alter column public_enabled set default true/,"New EXP rankings are automatic");
 assert.match(migration,/rank\(\) over\(order by greatest\(0,p\.total_exp\) desc\)/,"Lifetime rankings must support shared ranks");
 assert.match(migration,/floor\(sqrt\(greatest\(0,p\.total_exp\)::numeric\)\/10\)\+1/,"Level calculation must match My Progress formula");
 assert.match(migration,/revoke all on public\.member_exp_ranking_preferences from anon, authenticated/,"Preferences must not be publicly readable");
@@ -16,7 +16,8 @@ assert.match(migration,/grant execute on function public\.get_member_exp_ranking
 assert.match(api,/getSupabaseAdmin/,"Query must use server DB credentials");
 assert.match(api,/client\.auth\.getUser/,"Participation must be owned by signed-in user");
 assert.match(api,/user\.email_confirmed_at/,"Joining requires verified identity");
-assert.match(api,/public_enabled/,"Opt in is reversible");
+assert.match(api,/const participating=preference\?\.public_enabled!==false/,"EXP rankings have automatic participation");
+assert.doesNotMatch(page,/Join rankings|Leave rankings|toggleParticipation/,"No join/leave buttons");
 assert.match(page,/Lifetime EXP Rankings/,"Lifetime leaderboard must be visible");
 assert.match(page,/Level \{format\(keeper\.level\)\}/,"Leaderboard must show level");
 assert.match(page,/keeper\.exp/,"Leaderboard must show earned EXP");
