@@ -101,3 +101,55 @@
 /* The Duck Bucks icon is a vector outline, not an emoji; scale it with text in cards. */
 .exchangeWidget h2 svg{display:inline-block;vertical-align:-.17em;margin-right:.12em;flex:none}
 .watchlistStats strong svg{vertical-align:middle;flex:none}
+
+
+/* Portal parity: same shared edit toolbar, handles and animated jiggle used on Home. */
+.portal{gap:14px}
+.portal .widgets{gap:14px}
+.hero{padding:21px 23px;min-height:158px;border-radius:19px}
+.hero h1{margin:8px 0;font-size:clamp(2.15rem,4.6vw,3.25rem)}
+.quickLinks a{min-height:60px;border-radius:14px}
+.card{border-radius:17px;padding:18px}
+.blockTitle{margin-bottom:12px}
+.blockTitle h2{font-size:clamp(1.5rem,3.1vw,2rem)}
+.categoryGrid button{min-height:91px;border-radius:12px}
+.categoryListing{margin-top:14px;padding-top:11px}
+.gameCard{border-radius:11px}
+.exchangeWidget{border:1px solid color-mix(in srgb,var(--portal-hero-text) 18%,var(--portal-hero-start));border-radius:17px;padding:18px 20px}
+.exchangeWidget h2{font-size:25px}
+.exchangeWidget>.watchlistStats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:stretch;flex-wrap:nowrap;margin:11px 0 14px}
+.exchangeWidget>.watchlistStats>span{min-width:0;flex:none;padding:11px 12px}
+.watchlistStats strong{font-size:20px}
+.exchangeWidget>div:last-child{gap:10px}
+.exchangeWidget>div:last-child>a{min-height:39px;display:inline-flex;align-items:center;justify-content:center}
+.statGrid strong{font-size:clamp(19px,3vw,25px);font-weight:800;line-height:1.15}
+.arrangeLink{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border:1px solid var(--border);border-radius:10px;background:var(--surface-secondary);color:var(--text-primary);font-size:12px;font-weight:750;cursor:pointer}
+.portal .widgets [data-workspace-scope="fun-zone"]{min-width:0}
+.portal .widgets [data-workspace-scope="fun-zone"] [data-drag-handle]{touch-action:none}
+@media(max-width:720px){
+ .portal{gap:11px}
+ .portal .widgets{gap:11px}
+ .hero{min-height:0;padding:17px;border-radius:17px}
+ .hero h1{font-size:32px}
+ .hero p{font-size:11px;max-width:34ch}
+ .card{padding:13px;border-radius:16px}
+ .blockTitle h2{font-size:24px}
+ .categoryGrid button{min-height:87px}
+ .categoryHeading h3{font-size:21px}
+ .gameCard{padding:9px}
+ .exchangeWidget{padding:15px 16px;border-radius:16px}
+ .exchangeWidget h2{font-size:24px;line-height:1.1;margin:8px 0}
+ .exchangeWidget>.watchlistStats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 12px}
+ .exchangeWidget>.watchlistStats>span{padding:10px;gap:4px}
+ .watchlistStats strong{font-size:clamp(14px,4vw,19px)}
+ .watchlistStats small{font-size:10px}
+ .exchangeWidget>div:last-child span{font-size:10px}
+ .exchangeWidget>div:last-child a{font-size:11px;padding:9px 11px}
+ .statGrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .statGrid>div{padding:9px}
+ .statGrid strong{font-size:19px}
+ .statGrid small{font-size:10px}
+}
+@media(max-width:380px){
+ .exchangeWidget>.watchlistStats{grid-template-columns:1fr}
+}
