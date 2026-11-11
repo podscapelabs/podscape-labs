@@ -46,7 +46,7 @@ export default async function PodAccessPage(){
        <a href="#member-access" className={styles.primaryAction}>Enter Early Access <PodscapeLineIcon name="arrow-right"/></a>}
       <a href="https://podbound.net" target="_blank" rel="noopener noreferrer" className={styles.secondaryAction}>Visit PodBound <PodscapeLineIcon name="arrow-right"/></a>
      </div>
-     <div className={styles.heroFoot}><PodscapeLineIcon name="shield-check"/><span>Public maintenance view · Invitation-only beta access</span></div>
+     <div className={styles.heroFoot}><PodscapeLineIcon name="lock"/><span>Public maintenance view · Invitation-only beta access</span></div>
     </section>
 
     <MaintenanceMemberAccess approved={approved}/>
