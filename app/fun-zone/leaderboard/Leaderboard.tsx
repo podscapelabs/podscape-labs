@@ -76,7 +76,7 @@ export default function Leaderboard(){
   <section className={styles.personal} aria-label="Your ranking participation">
    <div className={styles.personalTitle}><span><PodscapeLineIcon name="achievement"/></span><div><small>YOUR ARCADE</small><h2>Your standing</h2></div></div>
    {!board&&!loading?<p>Personal rankings are temporarily unavailable.</p>:!board?.signedIn?<p>Sign in to enter the public rankings. You can still explore the leaderboard without participating.</p>:
-    <><div className={styles.consent}><div><strong>Show me on arcade rankings</strong><p>Your name and verified points appear publicly when enabled. Turn this off anytime.</p></div><button type="button" disabled={updating||loading} aria-pressed={board.participating} onClick={()=>setPublic(!board.participating)} className={board.participating?styles.optedIn:styles.optedOut}>{updating?"Saving…":board.participating?"Participating ✓":"Join rankings"}</button></div>
+    <><div className={styles.consent}><div><strong>Show me on arcade rankings</strong><p>Your name and verified points appear publicly when enabled. Turn this off anytime.</p></div><button type="button" disabled={updating||loading} aria-pressed={board.participating} onClick={()=>setPublic(!board.participating)} className={board.participating?styles.optedIn:styles.optedOut} aria-label={board.participating?"Leave public arcade rankings":"Join public arcade rankings"}>{updating?"Saving…":board.participating?"Participating ✓":"Join rankings"}</button></div>
      {board.participating?(board.mine?<div className={styles.myStanding}><span>#{board.mine.position} · {periods.find(p=>p.id===period)?.label} rank</span><b>{format(board.mine.points)} pts</b></div>:<p>Your profile is public, but you haven&apos;t completed a ranked puzzle in this period yet.</p>):<p className={styles.helper}>Your completions are still saved privately. Ranking points remain separate from EXP and Duck Bucks. Podium achievements may award EXP.</p>}</>}
   </section>
   <section className={styles.standings} aria-label="Ranking standings" aria-busy={loading}>
@@ -84,7 +84,7 @@ export default function Leaderboard(){
    {loading?<p className={styles.empty}>Loading verified arcade results…</p>:
     !entries.length?<div className={styles.empty}><PodscapeLineIcon name="trophy"/><h3>First place is waiting.</h3><p>No players have opted in with verified completions for this selection yet. Be the first to put your name on the board.</p><Link href="/fun-zone">Explore games →</Link></div>:
     <>
-     <div className={styles.podium}>{top.map((entry,i)=><article key={entry.position+"-"+entry.name+"-"+i} className={styles.podiumCard} aria-label={"Position "+entry.position}>
+     <div className={`${styles.podium} ${top.length===1?styles.soloPodium:top.length===2?styles.duoPodium:""}`}>{top.map((entry,i)=><article key={entry.position+"-"+entry.name+"-"+i} className={styles.podiumCard} aria-label={"Position "+entry.position}>
       <span className={styles.place}>#{entry.position}</span><span className={styles.medal} aria-hidden="true"><PodscapeLineIcon name="trophy"/></span>
       <strong>{entry.name}{entry.mine?" · You":""}</strong><b>{format(entry.points)} <small>pts</small></b><span>{entry.completions} verified {entry.completions===1?"puzzle":"puzzles"}</span>
      </article>)}</div>
