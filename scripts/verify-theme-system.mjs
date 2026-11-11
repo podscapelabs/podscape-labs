@@ -30,8 +30,8 @@ for(const {id,scheme} of registered){
  const selector=id==="light"?":root":':root[data-theme="'+id+'"]';
  assert.ok(globals.includes(selector),"Missing root palette for "+id);
  if(id!=="light")assert.ok(globals.includes(selector+' .v2-site'),"Missing portal palette for "+id);
- assert.ok(splashCss.includes('html[data-theme="'+id+'"]')||id==="light",
-  "Loading screen must support "+id);
+ assert.ok(splashCss.includes("--splash-bg:var(--canvas)")&&splashCss.includes("--splash-ink:var(--ink)")&&splashCss.includes("--splash-accent:var(--forest)"),
+  "Loading screen must inherit shared theme roles");
  assert.ok(registry.includes('id:"'+id+'"'),"Missing theme metadata for "+id);
 }
 assert.match(appearance,/THEMES,SYSTEM_OPTION,THEME_STORAGE_KEY/,"Appearance picker must use the registry");
