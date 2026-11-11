@@ -151,3 +151,18 @@
 .holdingIcon{display:inline-grid;place-items:center;color:var(--accent)}
 .holdingIcon svg{width:21px;height:21px}
 @media(max-width:720px){.stockIcon svg{width:21px;height:21px}.tradeHeading>span svg{width:27px;height:27px}.holdingIcon svg{width:19px;height:19px}}
+
+/* Small collapsible rules panel — neutral PodScape surface, closed by default. */
+.rules{border:1px solid var(--border);border-radius:13px;background:var(--surface);margin:0 0 12px;overflow:hidden}
+.rules summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 15px;cursor:pointer;color:var(--text-primary);font-size:12px;font-weight:800;min-height:46px}
+.rules summary::-webkit-details-marker{display:none}
+.rules summary>span:first-child{display:inline-flex;align-items:center;gap:9px}
+.rules summary svg{display:inline-block;width:19px;height:19px;color:var(--accent)}
+.rulesHint{font-size:11px;color:var(--text-secondary);font-weight:600}
+.rulesHint>span{display:inline-block;margin-left:5px;transition:transform .15s ease}
+.rules[open] .rulesHint>span{transform:rotate(180deg)}
+.rulesBody{border-top:1px solid var(--border);padding:11px 15px 13px;display:grid;gap:9px}
+.rulesBody p{margin:0;font-size:12px;line-height:1.5;color:var(--text-secondary)}
+.rulesBody strong{color:var(--text-primary)}
+.rulesBody small{font-size:10px;line-height:1.5;color:var(--text-secondary)}
+.rules summary:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
