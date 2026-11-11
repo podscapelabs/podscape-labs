@@ -90,7 +90,7 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
   setFavourites(next);
   try{localStorage.setItem(favoritesKey,JSON.stringify(next));}catch{/* Local-only beta */}
  };
- const add=(id:WidgetKey)=>saveLayout({order:layout.order.includes(id)?layout.order:[...layout.order,id],visible:[...layout.visible.filter(x=>x!==id),id]});
+ const add=(id:WidgetKey)=>{if(!widgetAllowed("fun-zone",id)||!defaultOrder.includes(id))return;saveLayout({order:layout.order.includes(id)?layout.order:[...layout.order,id],visible:[...layout.visible.filter(x=>x!==id),id]});};
  const remove=(id:WidgetKey)=>saveLayout({...layout,visible:layout.visible.filter(x=>x!==id)});
  const reset=()=>{
   if(!confirmWorkspaceReset("fun-zone"))return;
