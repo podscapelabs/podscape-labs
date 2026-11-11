@@ -29,7 +29,12 @@ assert.ok(themeIds.length>=5,"Existing five themes must remain available");
 for(const {id,scheme} of registered){
  const selector=id==="light"?":root":':root[data-theme="'+id+'"]';
  assert.ok(globals.includes(selector),"Missing root palette for "+id);
- if(id!=="light")assert.ok(globals.includes(selector+' .v2-site'),"Missing portal palette for "+id);
+ const rootPalette=id==="light"?":root":selector;
+ assert.ok(globals.includes(rootPalette),"Missing theme palette for "+id);
+ for(const role of ["--theme-background","--theme-surface","--theme-portal-hero-start","--theme-portal-hero-button-text"]){
+  assert.ok(themePalette(id).includes(role+":"),"Missing canonical portal token "+role+" in "+id);
+ }
+ assert.ok(!globals.includes(selector+" .v2-site"),"Duplicate per-theme v2 palette in "+id);
  assert.ok(splashCss.includes("--splash-bg:var(--canvas)")&&splashCss.includes("--splash-ink:var(--ink)")&&splashCss.includes("--splash-accent:var(--forest)"),
   "Loading screen must inherit shared theme roles");
  assert.ok(registry.includes('id:"'+id+'"'),"Missing theme metadata for "+id);
@@ -167,13 +172,16 @@ for(const theme of themeIds){
 // The Field Guide consumes portal roles, so check both dark and light hero
 // contrast from their real CSS definitions, not only primary action buttons.
 function portalPalette(theme){
- const selector=theme==="light"?".v2-site":':root[data-theme="'+theme+'"] .v2-site';
- const spaced=globals.indexOf(selector+" {");
- const compact=globals.indexOf(selector+"{");
- const start=spaced>=0&&compact>=0?Math.min(spaced,compact):Math.max(spaced,compact);
- assert.ok(start>=0,"Missing portal palette "+theme);
- const brace=globals.indexOf("{",start);
- return globals.slice(brace+1,globals.indexOf("}",brace));
+ // Light's root supplies defaults; each theme root overrides only its roles.
+ const defaults=themePalette("light");
+ const selected=theme==="light"?"":themePalette(theme);
+ const values=new Map();
+ for(const source of [defaults,selected]){
+  for(const match of source.matchAll(/--theme-([\\w-]+)\\s*:\\s*([^;]+);/g)){
+   values.set(match[1],match[2].trim());
+  }
+ }
+ return [...values.entries()].map(([name,value])=>"--"+name+":"+value+";").join("\n");
 }
 for(const theme of themeIds){
  const p=portalPalette(theme);
