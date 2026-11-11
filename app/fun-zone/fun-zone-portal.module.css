@@ -261,3 +261,69 @@
 .exchangeWidget>.marketLeadersPreview .marketLeadersHeading a{background:var(--surface-secondary);color:var(--accent);padding:7px 9px;font-size:10px}
 .exchangeWidget>.marketLeadersPreview>p{color:var(--text-secondary);margin:0}
 .exchangeWidget>.marketLeadersPreview .marketLeadersTop>div>span{font-size:11px}
+
+
+/* Rankings Spotlight — five boards, one finger-swipe. Designed for every theme. */
+.rankingsSpotlight{min-width:0;display:grid;gap:10px;padding:16px 17px 12px;border:1px solid var(--border);border-radius:18px;background:var(--surface);color:var(--text-primary)}
+.rankingsSpotlightHead{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.rankingsSpotlightHead>div{min-width:0}
+.rankingsSpotlightHead .eyebrow{font-size:9px;letter-spacing:.12em}
+.rankingsSpotlightHead h2{font:500 clamp(23px,3.2vw,30px)/1.1 var(--display);margin:4px 0}
+.rankingsSpotlightHead p{font-size:11px;line-height:1.4;color:var(--text-secondary);margin:0}
+.rankingsIndex{font-size:11px;flex:none;font-weight:750;font-variant-numeric:tabular-nums;color:var(--text-secondary)}
+.rankingsViewport{display:flex;min-width:0;max-width:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;border-radius:13px}
+.rankingsViewport::-webkit-scrollbar{display:none}
+.rankingsViewport:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.rankingsSlide{scroll-snap-align:start;scroll-snap-stop:always;flex:0 0 100%;width:100%;min-width:0;display:grid;align-content:start;gap:9px;padding:13px 14px;border:1px solid var(--border);background:var(--surface-secondary);border-radius:13px}
+.rankingsSlideTitle{display:flex;align-items:center;gap:10px;min-width:0}
+.rankingsSlideIcon{display:grid;place-items:center;flex:none;width:37px;height:37px;border-radius:11px;background:var(--surface);color:var(--accent)}
+.rankingsSlideIcon svg{height:21px;width:21px}
+.rankingsSlideTitle>div{min-width:0;flex:1}
+.rankingsSlideTitle small{font-size:9px;font-weight:800;letter-spacing:.1em;color:var(--text-secondary)}
+.rankingsSlideTitle h3{font:500 clamp(19px,2.6vw,25px)/1.13 var(--display);margin:3px 0 0}
+.rankingsSlideTitle>a{display:inline-flex;flex:none;align-items:center;gap:5px;min-height:37px;padding:8px 10px;text-decoration:none;border-radius:10px;border:1px solid var(--border);font-size:10px;font-weight:800;color:var(--accent);background:var(--surface)}
+.rankingsSlideTitle>a:focus-visible,.rankingsSlideFoot>a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.rankingsTopThree{display:grid;gap:0;min-height:110px;align-content:start;border:1px solid var(--border);border-radius:11px;overflow:hidden;background:var(--surface)}
+.rankingPlace{display:grid;grid-template-columns:31px minmax(0,1fr) auto;align-items:center;gap:9px;min-height:38px;padding:8px 11px;font-size:12px}
+.rankingPlace+.rankingPlace{border-top:1px solid var(--border)}
+.rankingPlaceNumber{font-size:12px;font-weight:850;color:var(--accent);font-variant-numeric:tabular-nums}
+.rankingPlaceName{font-size:12px;font-weight:700;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.rankingPlaceName small{display:block;margin-top:3px;font-size:10px;font-weight:500;color:var(--text-secondary)}
+.rankingPlace strong{font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rankingsEmpty{display:grid;place-items:center;min-height:110px;border:1px dashed var(--border);border-radius:11px;padding:16px;text-align:center;color:var(--text-secondary);background:var(--surface);font-size:12px;line-height:1.5}
+.rankingsSlideFoot{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:10px;min-height:32px;color:var(--text-secondary)}
+.rankingsSlideFoot>span{min-width:0;line-height:1.35}
+.rankingsSlideFoot strong{color:var(--text-primary)}
+.rankingsSlideFoot>a{flex:none;display:inline-flex;align-items:center;gap:4px;color:var(--accent);font-size:11px;font-weight:800;text-decoration:none;min-height:34px}
+.rankingsPager{display:flex;align-items:center;justify-content:center;gap:16px}
+.rankingsPager>button{width:39px;height:39px;display:grid;place-items:center;border-radius:10px;background:var(--surface-secondary);border:1px solid var(--border);color:var(--accent);cursor:pointer}
+.rankingsPager>button svg{width:18px;height:18px}
+.rankingsPager>button:disabled{opacity:.35;cursor:default}
+.rankingsPager>button:focus-visible,.rankingsPager>div button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.rankingsPager>div{display:flex;align-items:center;gap:7px}
+.rankingsPager>div button{width:10px;height:10px;min-width:10px;padding:0;border:0;border-radius:50%;background:var(--border-strong);cursor:pointer}
+.rankingsPager>div button[aria-current=true]{width:25px;border-radius:8px;background:var(--accent)}
+@media(max-width:720px){
+ .rankingsSpotlight{gap:9px;padding:12px;border-radius:16px}
+ .rankingsSpotlightHead h2{font-size:25px}
+ .rankingsSpotlightHead p{font-size:10px}
+ .rankingsSlide{padding:10px;gap:8px;border-radius:12px}
+ .rankingsSlideIcon{width:32px;height:32px;border-radius:9px}
+ .rankingsSlideIcon svg{height:19px;width:19px}
+ .rankingsSlideTitle h3{font-size:22px}
+ .rankingsSlideTitle small{font-size:8px}
+ .rankingsSlideTitle>a{padding:7px;min-height:34px}
+ .rankingPlace{grid-template-columns:25px minmax(0,1fr) auto;gap:6px;padding:8px;min-height:39px}
+ .rankingPlaceName{font-size:11px}
+ .rankingPlace strong{font-size:11px}
+ .rankingsSlideFoot{gap:6px}
+ .rankingsSlideFoot>a{font-size:10px}
+}
+@media(max-width:390px){
+ .rankingsSpotlightHead h2{font-size:23px}
+ .rankingsSlideTitle h3{font-size:20px}
+ .rankingsSlideTitle>a{font-size:9px}
+ .rankingsSlideFoot{flex-wrap:wrap}
+ .rankingsSlideFoot>a{margin-left:auto}
+}
+@media(prefers-reduced-motion:reduce){.rankingsViewport{scroll-behavior:auto}}
