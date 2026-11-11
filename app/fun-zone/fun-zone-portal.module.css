@@ -243,25 +243,11 @@
  .categoryGames .gameCard{gap:6px}
 }
 
-.marketLeadersPreview{display:grid;gap:8px;margin:11px 0 5px;padding:11px 12px;border:1px solid var(--border);border-radius:11px;background:var(--surface-secondary)}
-.marketLeadersHeading{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.marketLeadersHeading strong{font-size:12px}
-.marketLeadersHeading a{font-size:11px;font-weight:800;color:var(--accent);text-decoration:none}
-.marketLeadersPreview>p{margin:0;font-size:11px;color:var(--text-secondary)}
-.marketLeadersTop{display:grid;gap:6px}
-.marketLeadersTop>div{display:grid;grid-template-columns:26px minmax(0,1fr) auto;align-items:center;gap:8px;min-height:32px;font-size:11px}
-.marketLeadersTop>div+div{border-top:1px solid var(--border);padding-top:7px}
-.marketLeadersTop>div>span{color:var(--accent);font-weight:850}
-.marketLeadersTop strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.marketLeadersTop b{font-variant-numeric:tabular-nums;white-space:nowrap;font-size:11px}
-
-/* Keep the live market leader mini-board legible inside the tinted Exchange widget. */
-.exchangeWidget>.marketLeadersPreview{display:grid;grid-template-columns:minmax(0,1fr);align-items:stretch;justify-content:stretch;gap:8px;background:var(--surface);color:var(--text-primary);width:100%;padding:11px 12px}
-.exchangeWidget>.marketLeadersPreview .marketLeadersHeading{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between}
-.exchangeWidget>.marketLeadersPreview .marketLeadersHeading a{background:var(--surface-secondary);color:var(--accent);padding:7px 9px;font-size:10px}
-.exchangeWidget>.marketLeadersPreview>p{color:var(--text-secondary);margin:0}
-.exchangeWidget>.marketLeadersPreview .marketLeadersTop>div>span{font-size:11px}
-
+/* Keep the Duck Bucks watchlist focused on prices; rankings live in Spotlight. */
+.exchangeWidget>.marketRankingsShortcut{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:9px 0 14px;padding:10px 12px;background:color-mix(in srgb,var(--portal-hero-text) 9%,transparent);border:1px solid color-mix(in srgb,var(--portal-hero-text) 19%,transparent);border-radius:11px}
+.marketRankingsShortcut strong{font-size:11px;color:var(--portal-hero-text)}
+.exchangeWidget>.marketRankingsShortcut a{display:inline-flex;justify-content:center;min-height:36px;align-items:center;padding:7px 10px;font-size:10px}
+@media(max-width:390px){.exchangeWidget>.marketRankingsShortcut{flex-wrap:wrap}}
 
 /* Rankings Spotlight — five boards, one finger-swipe. Designed for every theme. */
 .rankingsSpotlight{min-width:0;display:grid;gap:10px;padding:16px 17px 12px;border:1px solid var(--border);border-radius:18px;background:var(--surface);color:var(--text-primary)}
