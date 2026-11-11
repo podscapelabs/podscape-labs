@@ -138,7 +138,7 @@
 .profile,.progress,.activity,.accordions{box-shadow:none}
 .edit{display:inline-flex;align-items:center;justify-content:center;min-height:44px}
 .accountSummaryTop a.accountLevel{color:#fff9ec}
-:root[data-theme="dark"] .accountSummaryTop a.accountLevel{background:#31563b;color:#fff9ec}
+
 
 /* Account is a portal too: consistent top gutter and compact mobile sections. */
 @media(max-width:720px){
@@ -184,3 +184,12 @@
  .accountSettings .panel{padding:13px}
 }
 @media(prefers-reduced-motion:reduce){.accountActions>a{transition:none}}
+
+/* Account level actions must remain legible in every named theme. */
+.accountSummaryTop a.accountLevel,
+.accountSummaryTop a.accountLevel:hover,
+.accountSummaryTop a.accountLevel:focus-visible,
+.accountSummaryTop a.accountLevel strong{
+ background:var(--ps-accent);
+ color:var(--ps-accent-text);
+}
