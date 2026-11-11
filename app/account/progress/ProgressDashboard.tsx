@@ -18,23 +18,26 @@ function achievementMark(key:string):PodscapeIconName{
  if(key.startsWith("puzzle_")||key.startsWith("secret_arcade")||key.startsWith("secret_burrow"))return "challenge";
  if(key.startsWith("ledger_")||key.startsWith("collection_"))return "leaf";
  if(key.startsWith("care_")||key.startsWith("keeper_"))return "manager";
+ if(key.startsWith("level_"))return "trophy";
  if(key.startsWith("nav_"))return "grid";
  if(key.includes("personalized")||key.startsWith("customize_"))return "edit";
  return "achievement";
 }
 
-type AchievementCategory="exploration"|"fun-zone"|"customization"|"care";
+type AchievementCategory="exploration"|"fun-zone"|"customization"|"care"|"progression";
 const achievementCategories:{id:AchievementCategory;title:string;subtitle:string;icon:PodscapeIconName}[]=[
  {id:"exploration",title:"Exploration & Collection",subtitle:"Species discoveries and collection milestones",icon:"leaf"},
  {id:"fun-zone",title:"Fun Zone & Rankings",subtitle:"Puzzles, Pod Exchange, rankings and hidden arcade surprises",icon:"gamepad"},
  {id:"customization",title:"Customization & Navigation",subtitle:"Make PodScape yours, one workspace at a time",icon:"grid"},
- {id:"care",title:"Colony Care",subtitle:"Keeping and care milestones",icon:"manager"}
+ {id:"care",title:"Colony Care",subtitle:"Keeping and care milestones",icon:"manager"},
+ {id:"progression",title:"Keeper Progression",subtitle:"Level milestones and future Molt achievements",icon:"trophy"}
 ];
 function achievementCategory(key:string):AchievementCategory{
  if(key.startsWith("ledger_")||key.startsWith("collection_"))return "exploration";
  if(key.startsWith("puzzle_")||key.startsWith("exchange_")||key.startsWith("ranking_")||
     key==="secret_arcade_variety"||key==="secret_burrow_streak")return "fun-zone";
  if(key.startsWith("care_")||key.startsWith("keeper_"))return "care";
+ if(key.startsWith("level_"))return "progression";
  return "customization";
 }
 
