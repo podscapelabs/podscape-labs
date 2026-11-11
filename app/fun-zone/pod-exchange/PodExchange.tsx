@@ -6,7 +6,7 @@ import styles from "./exchange.module.css";
 import {DuckBucks,DuckBuckIcon,duckBucksNumber} from "@/components/DuckBucks";
 import {PodscapeLineIcon,type PodscapeIconName} from "@/components/PodscapeLineIcon";
 import {achievementCatalog} from "@/data/achievement-catalog";
-import {STOCKS,STORAGE_KEY,MARKET_INTERVAL_MS,STARTING_BUCKS,cycleAt,defaultPortfolio,decodeSavedPortfolio,executeOrder,money,headlineAt,newsImpactAt,priceAt,tradeFee,tradeTotal,sanitizePortfolio,totalValue,type Portfolio} from "@/lib/pod-exchange";
+import {STOCKS,STORAGE_KEY,MARKET_INTERVAL_MS,STARTING_BUCKS,cycleAt,defaultPortfolio,decodeSavedPortfolio,executeOrder,money,headlineAt,newsImpactAt,priceAt,tradeFee,tradeSubtotal,tradeTotal,sanitizePortfolio,totalValue,type Portfolio} from "@/lib/pod-exchange";
 
 const companyMarks:Record<string,PodscapeIconName>={MOO:"leaf",PANDA:"jar",BLUE:"arrow-right",TITAN:"bin",CLOWN:"creative"};
 function CompanyMark({symbol}:{symbol:string}){return symbol==="DUCK"?<DuckBuckIcon size={25}/>:<PodscapeLineIcon name={companyMarks[symbol]||"gamepad"}/>;}
@@ -137,7 +137,7 @@ export function PodExchange(){
  const owned=portfolio.holdings[symbol]||0;
  const count=Number(quantity);
  const validCount=/^[1-9]\d{0,5}$/.test(quantity)&&Number.isSafeInteger(count);
- const subtotal=validCount?money(price*count):0;
+ const subtotal=validCount?tradeSubtotal(price,count):0;
  const fee=validCount?tradeFee(subtotal):0;
  const total=validCount?tradeTotal(price,count,side):0;
  const allowed=ready&&!pending&&now!==null&&validCount&&(side==="buy"?total<=portfolio.cash:count<=owned);
