@@ -350,3 +350,22 @@
 .learningTrailLinks a:hover{border-color:var(--accent)}
 .learningTrailLinks a:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 @media(max-width:620px){.learningTrail{padding:10px 11px}.learningTrailLinks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.learningTrailLinks a{min-width:0;font-size:10px;padding:7px 5px;text-align:center}}
+
+/* Release polish: the five-board spotlight is a glance, not another full page. */
+.rankingsSpotlight{gap:8px}
+.rankingsSpotlightHead h2{margin:0}
+.rankingsSlide{gap:7px}
+.rankingsSlideTitle p{display:none}
+.rankingsSlideFoot{min-height:0;margin:0}
+.rankingsTopThree{min-height:0}
+.rankingPlace{min-height:34px}
+.rankingsPager{gap:6px}
+@media(max-width:720px){
+ .rankingsSpotlight{padding:11px;gap:8px}
+ .rankingsSpotlightHead h2{font-size:22px}
+ .rankingsSlide{padding:10px}
+ .rankingsSlideTitle h3{font-size:19px}
+ .rankingsSlideTitle>a{min-height:32px;padding:6px 8px}
+ .rankingPlace{min-height:34px;padding:7px 8px}
+ .rankingsPager>.rankingsPagerTabs button{min-height:35px}
+}
