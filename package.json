@@ -24,7 +24,8 @@
     "test:market-rankings": "node scripts/verify-market-rankings.mjs",
     "test:ranking-name-privacy": "node scripts/verify-ranking-name-privacy.mjs",
     "test:fun-zone-rankings-spotlight": "node scripts/verify-fun-zone-rankings-spotlight.mjs",
-    "test:ranking-modal-refinement": "node scripts/verify-ranking-modal-refinement.mjs"
+    "test:ranking-modal-refinement": "node scripts/verify-ranking-modal-refinement.mjs",
+    "test:pod-access": "node scripts/verify-pod-access.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
