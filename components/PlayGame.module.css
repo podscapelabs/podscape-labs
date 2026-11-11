@@ -83,3 +83,12 @@
 @media(forced-colors:active){
  .guessRow>span[data-result],.letterKeyboard span[data-result],.connectionGrid button[aria-pressed="true"]{forced-color-adjust:auto;border:2px solid CanvasText}
 }
+
+/* Short teaching moment before playing: science terms are defined, never assumed. */
+.learningCard{display:flex;align-items:flex-start;gap:11px;margin:0 0 15px;padding:12px 14px;border:1px solid color-mix(in srgb,var(--accent) 28%,var(--border));border-radius:13px;background:color-mix(in srgb,var(--accent) 5%,var(--surface));color:var(--text-primary)}
+.learningCard>span{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:10px;background:var(--surface);color:var(--accent)}
+.learningCard svg{width:20px;height:20px}
+.learningCard>div{min-width:0}
+.learningCard strong{display:block;font-size:12px;margin:0 0 4px;color:var(--text-primary)}
+.learningCard p{font-size:11px;line-height:1.5;color:var(--text-secondary);margin:0}
+@media(max-width:600px){.learningCard{padding:10px 11px;gap:8px}.learningCard>span{width:29px;height:29px}.learningCard svg{width:18px;height:18px}.learningCard p{font-size:10px}}
