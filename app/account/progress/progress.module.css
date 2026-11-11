@@ -85,3 +85,16 @@
  .categoryHeading h3{font-size:18px}
 }
 @media(prefers-reduced-motion:reduce){.categoryChoice{transition:none}}
+
+
+/* Progress hub entrypoint for optional lifetime EXP standings. */
+.lifetimeRankingLink{display:flex;align-items:center;gap:11px;min-height:69px;padding:12px 15px;margin:0 0 14px;border:1px solid var(--border);border-radius:15px;background:var(--surface);color:var(--text-primary);text-decoration:none}
+.lifetimeRankingLink:hover{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 5%,var(--surface))}
+.lifetimeRankingLink:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.lifetimeRankingIcon{display:grid;place-items:center;width:43px;height:43px;flex:none;border-radius:12px;background:var(--surface-secondary);color:var(--accent)}
+.lifetimeRankingIcon svg{width:24px;height:24px}
+.lifetimeRankingLink>span:nth-child(2){display:grid;gap:5px;min-width:0;flex:1}
+.lifetimeRankingLink strong{font-size:13px}
+.lifetimeRankingLink small{font-size:11px;line-height:1.45;color:var(--text-secondary)}
+.lifetimeRankingArrow{color:var(--accent);font-size:19px}
+@media(max-width:520px){.lifetimeRankingLink{padding:10px;gap:9px;min-height:62px}.lifetimeRankingIcon{width:38px;height:38px}.lifetimeRankingLink strong{font-size:12px}.lifetimeRankingLink small{font-size:10px}}
