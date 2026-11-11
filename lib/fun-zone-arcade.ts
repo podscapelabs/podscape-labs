@@ -14,6 +14,13 @@ const categoryFromPuzzle=(category:string,key:string):ArcadeCategory=>{
  if(category==="Logic")return "Puzzles & Logic";
  return "Trivia & Knowledge";
 };
+// Discovery order is based on onboarding ease, not alphabetical game title.
+ // This only changes the catalogue; saved game keys, favourites and completions stay intact.
+const discoveryOrder:Record<string,number>={
+ "species-quiz":1,"word-search":2,"word-burrow":3,"word-of-the-week":4,
+ "species-detective":5,"keepers-challenge":6,"colony-connections":7,
+ "crossword-colony":8,"pod-exchange":9
+};
 export const ARCADE_GAMES:ArcadeGame[]=[
  ...puzzles.map(game=>({
   key:game.key,title:game.title,description:game.subtitle,
@@ -21,9 +28,9 @@ export const ARCADE_GAMES:ArcadeGame[]=[
   href:"/fun-zone/"+game.key,icon:gameIcon(game.key),
   featured:game.key==="word-burrow"
  })),
- {key:"word-search",title:"Word Search",description:"Find hidden isopod and hobby terms.",category:"Word Games",href:"/fun-zone/word-search",icon:"word-search"},
+ {key:"word-search",title:"Word Search",description:"Start with familiar words, then discover anatomy and scientific names.",category:"Word Games",href:"/fun-zone/word-search",icon:"word-search"},
  {key:"pod-exchange",title:"The Pod Exchange",description:"Trade fictional stocks using Duck Bucks.",category:"Simulations",href:"/fun-zone/pod-exchange",icon:"gamepad",beta:true,featured:true}
-];
+].sort((a,b)=>(discoveryOrder[a.key]??99)-(discoveryOrder[b.key]??99));
 export const ARCADE_GAME_KEYS=ARCADE_GAMES.map(g=>g.key);
 export const categoryCounts=Object.fromEntries(ARCADE_CATEGORIES.map(category=>[category,ARCADE_GAMES.filter(game=>game.category===category).length])) as Record<ArcadeCategory,number>;
 export const GAME_FAVOURITES_KEY="podscape:fun-zone:favourites-v1";
