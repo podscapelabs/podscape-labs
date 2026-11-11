@@ -30,6 +30,6 @@ export function usePuzzleCompletion(gameKey:string,puzzleId:string){
 }
 export function PuzzleSaveStatus({status,retry}:{status:PuzzleSaveState;retry?:null|(()=>void)}){
  return <p role="status" aria-live="polite" style={{minHeight:"1.5em",fontSize:12,lineHeight:1.5,color:"var(--text-secondary)"}}>
- {status==="saving"?"Saving puzzle completion…":status==="saved"?"Completion recorded. Achievement EXP is awarded once per milestone.":status==="unavailable"?<>Puzzle finished, but your result could not be saved. No EXP was awarded. {retry?<button type="button" onClick={retry} style={{marginLeft:9,padding:"6px 10px",borderRadius:8,border:"1px solid var(--border)",background:"var(--surface)"}}>Retry saving</button>:null}</>:""}
+ {status==="saving"?"Saving puzzle completion…":status==="saved"?"Progress saved.":status==="unavailable"?<>Puzzle finished, but your result could not be saved. No EXP was awarded. {retry?<button type="button" onClick={retry} style={{marginLeft:9,padding:"6px 10px",borderRadius:8,border:"1px solid var(--border)",background:"var(--surface)"}}>Retry saving</button>:null}</>:""}
  </p>;
 }
