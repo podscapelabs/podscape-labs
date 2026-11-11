@@ -15,7 +15,7 @@ import {FirstActionEmptyState} from "./FirstActionEmptyState";
 import {RecentCategoryCards,type RecentGroup} from "./RecentCategoryCards";
 import {homeWidgetNames} from "./workspace-widget-labels";
 import {HomeMarketNews} from "./HomeMarketNews";
-import {portalWidgetGroups,widgetGroup,widgetPurpose} from "./workspace-widget-policy";
+import {portalWidgetGroups,widgetAllowed,widgetGroup,widgetPurpose} from "./workspace-widget-policy";
 
 export type HomeColony={id:string;name:string;quantity:number;speciesName:string}|null;
 export type HomeProgress={level:number;exp:number}|null;
