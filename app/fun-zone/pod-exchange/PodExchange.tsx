@@ -7,7 +7,7 @@ import {DuckBucks,DuckBuckIcon,duckBucksNumber} from "@/components/DuckBucks";
 import {ExchangeCompanyIcon} from "@/components/ExchangeCompanyIcon";
 import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
 import {achievementCatalog} from "@/data/achievement-catalog";
-import {STOCKS,STORAGE_KEY,MARKET_INTERVAL_MS,MARKET_V2_START_CYCLE,STARTING_BUCKS,cycleAt,marketSessionAt,sessionImpactAt,defaultPortfolio,decodeSavedPortfolio,executeOrder,money,headlineAt,newsImpactAt,priceAt,tradeFee,tradeSubtotal,tradeTotal,sanitizePortfolio,totalValue,type Portfolio} from "@/lib/pod-exchange";
+import {STOCKS,STORAGE_KEY,MARKET_INTERVAL_MS,MARKET_V2_START_CYCLE,STARTING_BUCKS,cycleAt,marketSessionAt,sessionImpactAt,defaultPortfolio,decodeSavedPortfolio,executeOrder,money,headlineAt,newsImpactAt,priceAt,tradeFee,tradeSubtotal,tradeTotal,maxAffordableShares,sanitizePortfolio,totalValue,type Portfolio} from "@/lib/pod-exchange";
 
 function CompanyMark({symbol}:{symbol:string}){return <ExchangeCompanyIcon symbol={symbol}/>;}
 const change=(n:number)=>(n>=0?"+":"")+n.toFixed(2)+"%";
@@ -157,7 +157,7 @@ export function PodExchange(){
  const eventDelta=sessionLive?sessionImpactAt(session.featured,cycle)*100:0;
  const nextMarketEvent=MARKET_V2_START_CYCLE*MARKET_INTERVAL_MS-(now??0);
  const eventCountdown=(ms:number)=>ms>0?Math.floor(ms/3600000)+"h "+Math.floor(ms%3600000/60000)+"m":"Now";
- const maxShares=side==="buy"?Math.max(0,Math.floor(portfolio.cash/Math.max(.01,tradeTotal(price,1,"buy")))):owned;
+ const maxShares=side==="buy"?maxAffordableShares(price,portfolio.cash):owned;
  async function order(){
   if(!ready||pending||tradingRef.current||now===null)return;
   const tick=cycleAt(Date.now());
