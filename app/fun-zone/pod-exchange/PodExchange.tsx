@@ -80,8 +80,9 @@ export function PodExchange(){
      update(saved.portfolio);applyMode("local");setStorageMessage("Saved on this device · Sign in for cloud sync");
     }else if(response.ok){
      let state=await response.json() as CloudState;
+     if(!state.userId)throw new Error("Account identity could not be verified. No wallet was changed.");
      if(!state.exists){
-      const saved=localWalletForAccount(state.userId||"");
+      const saved=localWalletForAccount(state.userId);
       const initialize=await fetch("/api/fun-zone/pod-exchange",{
        method:"POST",headers:{"Content-Type":"application/json"},
        body:JSON.stringify({action:"initialize",legacy:saved.isNew?null:saved.portfolio})
