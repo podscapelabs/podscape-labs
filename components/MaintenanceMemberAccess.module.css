@@ -1,37 +1,34 @@
-.section {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 460px);
-  align-items: center;
-  gap: clamp(28px, 5vw, 75px);
-  padding: clamp(28px, 5vw, 62px) clamp(22px, 7vw, 110px);
-  border-top: 1px solid var(--line);
-  background: var(--paper-strong);
-  scroll-margin-top: 18px;
-}
-.introduction { min-width: 0; }
-.eyebrow { margin: 0 0 14px; font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; font-weight: 800; color: var(--clay); }
-.introduction h2 { margin: 0; max-width: 620px; font: 400 clamp(2.1rem, 4.5vw, 3.7rem)/1.04 var(--serif); letter-spacing: -.04em; }
-.introduction > p:not(.eyebrow) { max-width: 540px; margin: 18px 0 0; color: var(--muted); font-size: .95rem; line-height: 1.6; }
-.introduction .note { font-size: .76rem !important; }
-.panel { overflow: hidden; min-width: 0; padding: clamp(17px, 3vw, 28px); border: 1px solid var(--line); border-radius: var(--radius-medium); background: var(--paper); box-shadow: var(--shadow-soft); }
-.tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 4px; gap: 4px; border: 1px solid var(--line); border-radius: 13px; background: var(--canvas); }
-.tabs button { min-height: 44px; border: 0; border-radius: 9px; padding: 8px 10px; background: transparent; color: var(--muted); font-size: .84rem; font-weight: 800; cursor: pointer; }
-.tabs button.selected { background: var(--forest); color: var(--paper-strong); box-shadow: 0 2px 8px #00000016; }
-:global(:root[data-theme="dark"]) .tabs button.selected { color: var(--forest-deep); }
-.tabs button:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
-.form { margin-top: 20px; }
-.form h3 { margin: 0; font: 400 1.65rem/1.2 var(--serif); }
-.form > p { margin: 7px 0 20px; font-size: .83rem; line-height: 1.5; color: var(--muted); }
-.form :global(form) { margin: 0; }
-.form :global(input) { min-height: 46px; }
-.form :global(button[type="submit"]) { min-height: 46px; }
-@media (max-width: 800px) {
-  .section { grid-template-columns: 1fr; gap: 24px; }
-  .introduction h2 { font-size: clamp(2.1rem, 7vw, 3.1rem); }
-  .introduction > p:not(.eyebrow) { margin-top: 12px; }
-}
-@media (max-width: 520px) {
-  .section { padding: 28px 18px; }
-  .panel { padding: 17px; }
-  .introduction h2 { font-size: 2.3rem; }
-}
+.section{display:flex;flex-direction:column;min-width:0;scroll-margin-top:14px;padding:clamp(17px,2.7vw,25px);background:var(--surface);border:1px solid var(--border);border-radius:20px;color:var(--text-primary);gap:15px}
+.heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.heading>div{min-width:0}
+.eyebrow{margin:0 0 6px;font-size:9px;letter-spacing:.13em;font-weight:850;color:var(--accent)}
+.heading h2{font:500 clamp(25px,2.8vw,32px)/1.12 var(--display);margin:0;letter-spacing:-.025em}
+.heading p:not(.eyebrow){font-size:11px;line-height:1.55;color:var(--text-secondary);margin:9px 0 0;max-width:49ch}
+.headingIcon{display:grid;flex:none;place-items:center;width:40px;height:40px;border:1px solid var(--border);border-radius:11px;background:var(--surface-secondary);color:var(--accent)}
+.headingIcon svg{width:22px;height:22px}
+.tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;padding:4px;border:1px solid var(--border);border-radius:12px;background:var(--surface-secondary)}
+.tabs button{min-height:41px;border:0;border-radius:9px;padding:8px 10px;background:transparent;color:var(--text-secondary);font-size:12px;font-weight:800;cursor:pointer}
+.tabs button.selected{background:var(--accent);color:var(--accent-contrast)}
+.tabs button:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.form{display:flex;flex-direction:column;min-width:0;gap:10px}
+.formIntro{font-size:11px;line-height:1.5;margin:0;color:var(--text-secondary)}
+.form :global(form){gap:11px;display:flex;flex-direction:column;margin:0}
+.form :global(form > div){gap:5px}
+.form :global(form label){font-size:11px;letter-spacing:0;font-weight:800;color:var(--text-primary)}
+.form :global(form input){min-height:43px;border:1px solid var(--border);border-radius:10px;background:var(--surface-secondary);color:var(--text-primary);padding:10px 12px;font-size:14px}
+.form :global(form input:focus-visible){outline:3px solid var(--focus);outline-offset:1px}
+.form :global(form button[type="submit"]){min-height:44px;border:1px solid var(--accent);border-radius:10px;background:var(--accent);color:var(--accent-contrast);font-size:11px;letter-spacing:.01em;text-transform:none;padding:10px 13px;cursor:pointer}
+.form :global(form button:disabled){cursor:wait}
+.form :global(form small){color:var(--text-secondary);font-size:10px}
+.form :global(form a){font-size:11px;color:var(--accent);font-weight:750}
+.form :global(form p[role="alert"]){font-size:11px;color:var(--text-primary);background:var(--surface-secondary);border-color:var(--border);margin:0;padding:8px 10px}
+.form :global(form p[role="status"]){font-size:11px;background:var(--surface-secondary);border-color:var(--border);margin:0;padding:8px 10px}
+.accessNote{display:flex;align-items:flex-start;gap:8px;color:var(--text-secondary);border-top:1px solid var(--border);margin:0;padding-top:12px;font-size:10px;line-height:1.5}
+.accessNote svg{width:16px;height:16px;flex:none;color:var(--accent)}
+.signedIn{display:flex;flex-direction:column;gap:13px;background:var(--surface-secondary);padding:16px;border:1px solid var(--border);border-radius:12px}
+.signedIn strong{font-size:14px}
+.signedIn p{margin:6px 0 0;color:var(--text-secondary);font-size:11px}
+.signedIn a{min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-radius:10px;background:var(--accent);color:var(--accent-contrast);padding:11px 13px;font-size:12px;font-weight:800}
+.signedIn svg{width:16px;height:16px}
+@media(max-width:850px){.section{border-radius:17px;gap:12px}.heading h2{font-size:29px}.form :global(form){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.form :global(form > div){min-width:0}.form :global(form button[type="submit"]),.form :global(form p),.form :global(form .formLinks){grid-column:1/-1}}
+@media(max-width:600px){.section{border-radius:15px;padding:16px;gap:13px}.heading h2{font-size:27px}.headingIcon{width:35px;height:35px}.form :global(form){display:flex;gap:10px}.form :global(form input){min-height:43px}.tabs button{min-height:40px}.formIntro{margin:0}}
