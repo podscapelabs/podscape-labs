@@ -18,5 +18,5 @@ export default async function Page({params}:{params:Promise<{puzzle:string}>}){
  if(!entry||entry.mode!=="search")notFound();
  const progress=await getFunZoneProgress("word-search");
  if(!progress.available||!canPlayPuzzle("word-search",entry.puzzle.id,progress.ids))redirect("/fun-zone/word-search");
- return <PlatformShell><GenusWordSearch puzzleData={entry.puzzle as SearchPuzzle} learningNote={getFunZoneLearningNote("word-search",getPuzzles("word-search").findIndex(item=>item.puzzle.id===entry.puzzle.id))}/></PlatformShell>;
+ const ordered=getPuzzles("word-search");const index=ordered.findIndex(item=>item.puzzle.id===entry.puzzle.id);const next=ordered[index+1];return <PlatformShell><GenusWordSearch puzzleData={entry.puzzle as SearchPuzzle} learningNote={getFunZoneLearningNote("word-search",index)} nextHref={next?`/fun-zone/word-search/${next.puzzle.id}`:undefined} nextTitle={next?.puzzle.title}/></PlatformShell>;
 }
