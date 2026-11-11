@@ -784,93 +784,32 @@
  .recentRail>.recentCategoryCard{min-height:215px}
 }
 
-/* Woodland accent foreground follows the same legibility rule as Dark. */
-:root[data-theme="woodland"] .homeCanvasToolbar>button:last-child,
-:root[data-theme="woodland"] .homeCanvasEditing .homeCanvasDragging .homeCanvasHandle,
-:root[data-theme="woodland"] .homeEditorHead button{
- color:var(--ps-accent-text);
-}
 
-
-/* Woodland: Home's large visual hero follows the same chestnut portal atmosphere. */
-:global(html[data-theme="woodland"]) .hero{
- background:linear-gradient(125deg,#33231c,#64432f);
+/* Universal Home: each theme supplies the atmosphere and all cards consume shared roles. */
+.homeCanvasToolbar>button:last-child,
+.homeCanvasEditing .homeCanvasDragging .homeCanvasHandle,
+.homeEditorHead button{color:var(--ps-accent-text)}
+.hero{
+ background:linear-gradient(125deg,var(--portal-hero-start),var(--portal-hero-end));
  color:var(--portal-hero-text);
 }
-:global(html[data-theme="woodland"]) .hero:after{
- background:linear-gradient(90deg,rgba(35,22,16,.91) 0%,rgba(44,29,21,.72) 40%,rgba(57,35,24,.09) 100%);
+.hero:after{
+ background:linear-gradient(90deg,
+ color-mix(in srgb,var(--portal-hero-start) 91%,transparent) 0%,
+ color-mix(in srgb,var(--portal-hero-start) 72%,transparent) 43%,transparent 100%);
 }
-:global(html[data-theme="woodland"]) .heroButton{
- background:var(--portal-hero-button-bg);
- color:var(--portal-hero-button-text);
+.heroButton{background:var(--portal-hero-button-bg);color:var(--portal-hero-button-text)}
+.spotlightRail .tileCopy,.recentRail .recentCategoryPrimary,.recentRail .recentCategoryFooter{
+ background:var(--ps-surface);color:var(--ps-text);
 }
-:global(html[data-theme="woodland"]) .spotlightRail .tileVisual:has(.tilePlaceholder){
- background:
-  radial-gradient(circle at 79% 17%,color-mix(in srgb,var(--amber) 16%,transparent),transparent 43%),
-  linear-gradient(130deg,var(--surface-raised),color-mix(in srgb,var(--moss) 14%,var(--surface)));
+.spotlightRail .tileVisual:has(.tilePlaceholder){
+ background:radial-gradient(circle at 78% 16%,color-mix(in srgb,var(--portal-hero-glow) 24%,transparent),transparent 48%),
+ linear-gradient(130deg,var(--ps-surface-muted),var(--ps-surface-raised));
 }
-:global(html[data-theme="woodland"]) .spotlightRail .tileVisual:has(.tilePlaceholder)::before,
-:global(html[data-theme="woodland"]) .spotlightRail .tileVisual:has(.tilePlaceholder)::after{
- border-color:color-mix(in srgb,var(--accent) 28%,transparent);
+.spotlightRail .tileVisual:has(.tilePlaceholder)::before,
+.spotlightRail .tileVisual:has(.tilePlaceholder)::after{
+ border-color:color-mix(in srgb,var(--ps-accent) 26%,transparent);
 }
-
-/* Category labels now navigate to their permanent updates archive. */
 .recentCategoryHead a.recentCategoryName{color:inherit;text-decoration:none}
 .recentCategoryHead a.recentCategoryName:hover{text-decoration:underline;text-underline-offset:3px}
 .recentCategoryHead a.recentCategoryName:focus-visible{outline:2px solid var(--ps-focus);outline-offset:3px;border-radius:3px}
-
-
-/* Lilac: Home discovery and Spotlight share the lavender/rose-plum palette. */
-:global(html[data-theme="lilac"]) .hero{
- background:linear-gradient(125deg,#eadbf3,#bd98d2);
- color:#33223e;
-}
-:global(html[data-theme="lilac"]) .hero:after{
- background:linear-gradient(90deg,rgba(245,234,250,.96) 0%,rgba(232,212,241,.84) 43%,rgba(197,166,218,.07) 100%);
-}
-:global(html[data-theme="lilac"]) .heroButton{background:#70418b;color:#fffaff}
-:global(html[data-theme="lilac"]) .spotlightRail .tileVisual:has(.tilePlaceholder){
- background:radial-gradient(circle at 79% 17%,#d1b0df,transparent 45%),
- linear-gradient(130deg,#f2e7f7,#d6bfdf);
-}
-:global(html[data-theme="lilac"]) .spotlightRail .tileVisual:has(.tilePlaceholder)::before,
-:global(html[data-theme="lilac"]) .spotlightRail .tileVisual:has(.tilePlaceholder)::after{
- border-color:rgba(112,65,139,.25);
-}
-
-
-/* Ember: discovery and Spotlight follow the apricot/terracotta system. */
-:global(html[data-theme="ember"]) .hero{
- background:linear-gradient(125deg,#f6dfc5,#dc995f);
- color:#3e281d;
-}
-:global(html[data-theme="ember"]) .hero:after{
- background:linear-gradient(90deg,rgba(255,241,221,.96) 0%,rgba(246,211,173,.85) 42%,rgba(208,137,83,.08) 100%);
-}
-:global(html[data-theme="ember"]) .heroButton{background:#a64c21;color:#fffaf3}
-:global(html[data-theme="ember"]) .spotlightRail .tileVisual:has(.tilePlaceholder){
- background:radial-gradient(circle at 79% 17%,#eab680,transparent 45%),
- linear-gradient(130deg,#fff1df,#f2d0ad);
-}
-:global(html[data-theme="ember"]) .spotlightRail .tileVisual:has(.tilePlaceholder)::before,
-:global(html[data-theme="ember"]) .spotlightRail .tileVisual:has(.tilePlaceholder)::after{
- border-color:rgba(166,76,33,.26);
-}
-
-
-/* Universal home surfaces: every palette paints discovery rails, not just accents.
-   The colours below are semantic, so all five environments remain distinct. */
-:global(html) .spotlightRail .tileCopy,
-:global(html) .recentRail .recentCategoryPrimary,
-:global(html) .recentRail .recentCategoryFooter{
- background:var(--ps-surface);
- color:var(--ps-text);
-}
-:global(html) .spotlightRail .tileVisual:has(.tilePlaceholder){
- background:radial-gradient(circle at 78% 16%,color-mix(in srgb,var(--forest) 20%,transparent),transparent 48%),
- linear-gradient(130deg,var(--ps-surface-muted),var(--ps-surface-raised));
-}
-:global(html) .spotlightRail .tileVisual:has(.tilePlaceholder)::before,
-:global(html) .spotlightRail .tileVisual:has(.tilePlaceholder)::after{
- border-color:color-mix(in srgb,var(--forest) 26%,transparent);
-}
