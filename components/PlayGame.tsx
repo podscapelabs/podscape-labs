@@ -137,7 +137,7 @@ function Crossword({puzzle,onComplete}:{puzzle:CrosswordPuzzle;onComplete:Comple
   {checked?<p className={styles.feedbackText} role="status">{complete?"All five correct! Crossword complete.":`${correct} of ${puzzle.clues.length} answers correct. ${conflicts?"Resolve the crossings too.":"Keep going!"}`}</p>:null}
  </div>;
 }
-export function PlayGame({game,challenge}:{game:Game;challenge:{gameKey:string;mode:string;puzzle:Puzzle}}){
+export function PlayGame({game,challenge,learningNote}:{game:Game;challenge:{gameKey:string;mode:string;puzzle:Puzzle};learningNote?:string}){
  const {saved,record,retry}=usePuzzleCompletion(challenge.gameKey,challenge.puzzle.id);
  return <main className={styles.page}><div className={styles.wrap}>
   <nav className={styles.crumb}><Link href="/fun-zone">Fun Zone</Link><span>/</span><Link href={`/fun-zone/${game.key}`}>{game.title}</Link></nav>
@@ -147,6 +147,7 @@ export function PlayGame({game,challenge}:{game:Game;challenge:{gameKey:string;m
    <div className={styles.heroLinks}><Link href={`/fun-zone/${game.key}`}>All {game.title} puzzles</Link><Link href="/account/progress">Achievements</Link></div>
   </header>
   <div className={styles.notice}>Early-access challenge · Unique completions count toward EXP achievements · No Pod Coins</div>
+  {learningNote?<aside className={styles.learningCard} aria-label="Learn before you play"><span><PodscapeLineIcon name="book"/></span><div><strong>Before you play</strong><p>{learningNote}</p></div></aside>:null}
   {challenge.mode==="connections"?<Connections puzzle={challenge.puzzle as ConnectionsPuzzle} onComplete={record}/>:
     challenge.mode==="burrow"?<Burrow puzzle={challenge.puzzle as BurrowPuzzle} onComplete={record}/>:
     challenge.mode==="crossword"?<Crossword puzzle={challenge.puzzle as CrosswordPuzzle} onComplete={record}/>:
