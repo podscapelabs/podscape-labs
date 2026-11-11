@@ -254,3 +254,10 @@
 .marketLeadersTop>div>span{color:var(--accent);font-weight:850}
 .marketLeadersTop strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .marketLeadersTop b{font-variant-numeric:tabular-nums;white-space:nowrap;font-size:11px}
+
+/* Keep the live market leader mini-board legible inside the tinted Exchange widget. */
+.exchangeWidget>.marketLeadersPreview{display:grid;grid-template-columns:minmax(0,1fr);align-items:stretch;justify-content:stretch;gap:8px;background:var(--surface);color:var(--text-primary);width:100%;padding:11px 12px}
+.exchangeWidget>.marketLeadersPreview .marketLeadersHeading{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.exchangeWidget>.marketLeadersPreview .marketLeadersHeading a{background:var(--surface-secondary);color:var(--accent);padding:7px 9px;font-size:10px}
+.exchangeWidget>.marketLeadersPreview>p{color:var(--text-secondary);margin:0}
+.exchangeWidget>.marketLeadersPreview .marketLeadersTop>div>span{font-size:11px}
