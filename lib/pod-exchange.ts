@@ -162,6 +162,16 @@ export function tradeTotal(price:number,shares:number,side:"buy"|"sell"):number{
  const feeCents=Math.max(1,Math.floor((cents+100)/200));
  return (cents+(side==="buy"?feeCents:-feeCents))/100;
 }
+/** Exact cent-safe largest whole-share purchase, including the server's 0.5% fee. */
+export function maxAffordableShares(price:number,cash:number):number{
+ if(!Number.isFinite(price)||price<=0||!Number.isFinite(cash)||cash<0)return 0;
+ let low=0,high=Math.min(999999,Math.floor(cash/price));
+ while(low<high){
+  const mid=Math.ceil((low+high)/2);
+  if(tradeTotal(price,mid,"buy")<=cash)low=mid;else high=mid-1;
+ }
+ return low;
+}
 export function defaultPortfolio():Portfolio{return {cash:STARTING_BUCKS,holdings:{},trades:[]};}
 /** Distinguish a legitimately new wallet from corrupt or unreadable saved data.
  * Never turn a malformed existing portfolio silently into starting funds.
