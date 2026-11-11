@@ -93,8 +93,8 @@ export function FunZoneRankingsSpotlight(){
  };
  return <section className={styles.rankingsSpotlight} aria-label="Rankings Spotlight, swipe to see different leaderboards">
   <div className={styles.rankingsSpotlightHead}>
-   <div><span className={styles.eyebrow}>THE COMMUNITY · AT A GLANCE</span><h2>Rankings Spotlight</h2><p>Five standings, one swipe. See the leaders across PodScape.</p></div>
-   <span className={styles.rankingsIndex}>{active+1} / {slides.length}</span>
+   <div><span className={styles.eyebrow}>COMMUNITY STANDINGS</span><h2>Rankings Spotlight</h2></div>
+
   </div>
   <div className={styles.rankingsViewport} ref={track} onScroll={onScroll} tabIndex={0} aria-label="Swipeable ranking cards" onKeyDown={event=>{if(event.key==="ArrowRight"){event.preventDefault();navigate(active+1)}else if(event.key==="ArrowLeft"){event.preventDefault();navigate(active-1)}}}>
    {slides.map(slide=>{
@@ -116,12 +116,7 @@ export function FunZoneRankingsSpotlight(){
       <div className={styles.rankingsEmpty}>
        {!data.attempted?"Checking standings…":!board.available?"Standings temporarily unavailable":board.waiting?"Market Movers begins with the next weekly snapshot":"The podium is waiting for its first ranked players."}
       </div>}
-     <div className={styles.rankingsSlideFoot}>
-      <span>{board.participating&&board.mine?
-       <><strong>Your rank #{board.mine.position}</strong> · {detail}: {amount(board.mine,slide.id)}</>:
-       board.participating?"You're participating — keep playing!":"Join the full leaderboard to appear here."}</span>
-      <Link href={slide.href}>{"View standings"} <span aria-hidden="true">→</span></Link>
-     </div>
+     {board.mine?<p className={styles.rankingsSlideFoot}><span><strong>Your rank #{board.mine.position}</strong> · {detail}: {amount(board.mine,slide.id)}</span></p>:null}
     </article>;
    })}
   </div>
