@@ -7,6 +7,7 @@ import {dropBlock,moveBlock,uniqueAllowed,visibleBlocks} from "@/components/work
 import {useWorkspaceEditorDialog} from "@/components/useWorkspaceEditorDialog";
 import {ARCADE_CATEGORIES,ARCADE_GAMES,ARCADE_GAME_KEYS,ARCADE_LAYOUT_KEY,GAME_FAVOURITES_KEY,categoryCounts,normaliseFavourites,type ArcadeCategory,type ArcadeGame} from "@/lib/fun-zone-arcade";
 import {FunZoneCarousel} from "./FunZoneCarousel";
+import {PodExchangeWatchlist} from "./PodExchangeWatchlist";
 import styles from "./fun-zone-portal.module.css";
 
 type CoreWidget="featured"|"categories"|"favourites"|"progress"|"exchange";
@@ -78,7 +79,6 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
  const {dragging,begin:beginDrag,move:moveDrag,stop:stopDrag}=useWorkspaceDrag<WidgetKey>("fun-zone",active,reorder);
  const move=(id:WidgetKey,dir:number)=>saveLayout({...layout,order:moveBlock(layout.order,layout.visible,id,dir)});
  const favouriteGames=favourites.flatMap(key=>{const game=ARCADE_GAMES.find(g=>g.key===key);return game?[game]:[]});
- const featuredGame=ARCADE_GAMES.find(g=>g.key==="pod-exchange");
  const done=Object.values(completedByGame).reduce((sum,n)=>sum+n,0);
  const renderWidget=(id:WidgetKey)=>{
   if(id==="featured")return <FunZoneCarousel signedIn={Boolean(userId)} exp={exp} coins={coins}/>;
@@ -99,7 +99,7 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
    <div className={styles.statGrid}><div><strong>{userId?exp.toLocaleString("en-CA"):"—"}</strong><small>EXP earned</small></div><div><strong>{userId?coins.toLocaleString("en-CA"):"—"}</strong><small>Pod Coins (separate)</small></div><div><strong>{trackingAvailable?done:"—"}</strong><small>Puzzle completions</small></div></div>
    <div className={styles.inlineLinks}><Link href="/account/progress">Achievements →</Link><Link href="/fun-zone/leaderboard">Leaderboards →</Link></div>
   </section>;
-  if(id==="exchange")return <section className={styles.exchangeWidget}><span className={styles.eyebrow}>MARKET SIMULATION · BETA</span><h2>🦆 Duck Bucks Watchlist</h2><p>Rubber Ducky Inc. and five other ridiculous companies are waiting on the trading floor.</p><div><span>Six fictional stocks</span><Link href="/fun-zone/pod-exchange">Open The Pod Exchange →</Link></div></section>;
+  if(id==="exchange")return <PodExchangeWatchlist/>;
   if(id.startsWith("game:")){
    const game=ARCADE_GAMES.find(g=>g.key===id.slice(5));
    return game?<section className={styles.card} aria-label={game.title}><div className={styles.blockTitle}><div><span className={styles.eyebrow}>PINNED GAME</span><h2>{game.title}</h2></div><PodscapeLineIcon name={game.icon}/></div><p className={styles.pinnedDescription}>{game.description}</p><div className={styles.inlineLinks}><Link href={game.href}>Play {game.title} →</Link><button type="button" onClick={()=>toggleFavourite(game.key)}>{favourites.includes(game.key)?"♥ Favourite":"♡ Favourite"}</button></div></section>:null;
