@@ -242,3 +242,15 @@
  .gameActions button,.gameActions a{width:44px;height:44px;min-width:44px;min-height:44px}
  .categoryGames .gameCard{gap:6px}
 }
+
+.marketLeadersPreview{display:grid;gap:8px;margin:11px 0 5px;padding:11px 12px;border:1px solid var(--border);border-radius:11px;background:var(--surface-secondary)}
+.marketLeadersHeading{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.marketLeadersHeading strong{font-size:12px}
+.marketLeadersHeading a{font-size:11px;font-weight:800;color:var(--accent);text-decoration:none}
+.marketLeadersPreview>p{margin:0;font-size:11px;color:var(--text-secondary)}
+.marketLeadersTop{display:grid;gap:6px}
+.marketLeadersTop>div{display:grid;grid-template-columns:26px minmax(0,1fr) auto;align-items:center;gap:8px;min-height:32px;font-size:11px}
+.marketLeadersTop>div+div{border-top:1px solid var(--border);padding-top:7px}
+.marketLeadersTop>div>span{color:var(--accent);font-weight:850}
+.marketLeadersTop strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.marketLeadersTop b{font-variant-numeric:tabular-nums;white-space:nowrap;font-size:11px}
