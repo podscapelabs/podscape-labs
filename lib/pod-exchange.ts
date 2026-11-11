@@ -110,12 +110,21 @@ export function priceAt(symbol:string,cycle:number):number{
  return money(Math.min(stock.base*1.6,Math.max(stock.base*.55,raw)));
 }
 /** The displayed estimate is also the charge used by both local and cloud trades. */
+/** Keep both the client and PostgreSQL settlement in integer cents.
+ * 0.5% = one cent per 200 cents, with half-cents rounded upward.
+ */
+export function tradeSubtotal(price:number,shares:number):number{
+ return (Math.round(price*100)*shares)/100;
+}
 export function tradeFee(subtotal:number):number{
- return subtotal>0?Math.max(.01,money(subtotal*TRADE_FEE_RATE)):0;
+ if(!Number.isFinite(subtotal)||subtotal<=0)return 0;
+ const cents=Math.round(subtotal*100);
+ return Math.max(1,Math.floor((cents+100)/200))/100;
 }
 export function tradeTotal(price:number,shares:number,side:"buy"|"sell"):number{
- const subtotal=money(price*shares),fee=tradeFee(subtotal);
- return money(subtotal+(side==="buy"?fee:-fee));
+ const cents=Math.round(price*100)*shares;
+ const feeCents=Math.max(1,Math.floor((cents+100)/200));
+ return (cents+(side==="buy"?feeCents:-feeCents))/100;
 }
 export function defaultPortfolio():Portfolio{return {cash:STARTING_BUCKS,holdings:{},trades:[]};}
 /** Distinguish a legitimately new wallet from corrupt or unreadable saved data.
@@ -124,7 +133,7 @@ export function defaultPortfolio():Portfolio{return {cash:STARTING_BUCKS,holding
 export function isValidPortfolioSnapshot(value:unknown):value is Portfolio{
  if(!value||typeof value!=="object")return false;
  const p=value as Partial<Portfolio>;
- if(typeof p.cash!=="number"||!Number.isFinite(p.cash)||p.cash<0||p.cash>1e10||
+ if(typeof p.cash!=="number"||!Number.isFinite(p.cash)||p.cash<0||p.cash>1e13||
     money(p.cash)!==p.cash||!p.holdings||typeof p.holdings!=="object"||Array.isArray(p.holdings))return false;
  for(const [symbol,qty] of Object.entries(p.holdings)){
   if(!STOCKS.some(s=>s.symbol===symbol)||!Number.isSafeInteger(qty)||qty<0||qty>1_000_000)return false;
@@ -141,7 +150,7 @@ export function decodeSavedPortfolio(raw:string|null):{portfolio:Portfolio;isNew
 export function sanitizePortfolio(value:unknown):Portfolio{
  if(!value||typeof value!=="object")return defaultPortfolio();
  const x=value as Partial<Portfolio>;
- if(typeof x.cash!=="number"||!Number.isFinite(x.cash)||x.cash<0||x.cash>1e10)return defaultPortfolio();
+ if(typeof x.cash!=="number"||!Number.isFinite(x.cash)||x.cash<0||x.cash>1e13)return defaultPortfolio();
  const holdings:Record<string,number>={};
  for(const stock of STOCKS){
   const q=x.holdings?.[stock.symbol]??0;
@@ -156,18 +165,18 @@ export function sanitizePortfolio(value:unknown):Portfolio{
  return {cash:money(x.cash),holdings,trades};
 }
 export function totalValue(portfolio:Portfolio,cycle:number):number{
- return money(portfolio.cash+STOCKS.reduce((sum,stock)=>sum+(portfolio.holdings[stock.symbol]||0)*priceAt(stock.symbol,cycle),0));
+ return (Math.round(portfolio.cash*100)+STOCKS.reduce((sum,stock)=>sum+Math.round(priceAt(stock.symbol,cycle)*100)*(portfolio.holdings[stock.symbol]||0),0))/100;
 }
 export type OrderResult={ok:true;portfolio:Portfolio}|{ok:false;error:string};
 export function executeOrder(portfolio:Portfolio,symbol:string,side:"buy"|"sell",shares:number,cycle:number):OrderResult{
  if(!STOCKS.some(s=>s.symbol===symbol))return {ok:false,error:"Unknown company."};
  if(!Number.isSafeInteger(shares)||shares<1||shares>1_000_000)return {ok:false,error:"Choose a valid number of whole shares."};
- const price=priceAt(symbol,cycle),subtotal=money(shares*price),charge=tradeTotal(price,shares,side);
+ const price=priceAt(symbol,cycle),subtotal=tradeSubtotal(price,shares),charge=tradeTotal(price,shares,side);
  if(!Number.isFinite(charge)||charge<=0||!Number.isFinite(subtotal)||subtotal<=0)return {ok:false,error:"Unable to price this trade."};
  const owned=portfolio.holdings[symbol]||0;
  if(side==="buy"&&charge>portfolio.cash)return {ok:false,error:"Not enough Duck Bucks for this trade."};
  if(side==="sell"&&shares>owned)return {ok:false,error:"You don't own that many shares."};
- const cash=money(portfolio.cash+(side==="buy"?-charge:charge));
+ const cash=(Math.round(portfolio.cash*100)+(side==="buy"?-1:1)*Math.round(charge*100))/100;
  const qty=owned+(side==="buy"?shares:-shares);
  if(qty>1_000_000)return {ok:false,error:"The share limit for this company is one million."};
  const holdings={...portfolio.holdings};
