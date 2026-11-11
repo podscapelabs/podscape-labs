@@ -41,8 +41,8 @@ export default function Leaderboard(){
   finally{setUpdating(false)}
  };
  const entries=board?.rows||[];
- const top=entries.filter(x=>x.position<=3);
- const others=entries.filter(x=>x.position>3);
+ const top=entries.slice(0,3);
+ const others=entries.slice(3);
  return <main className={styles.page}><div className={styles.wrap}>
   <Link href="/fun-zone" className={styles.back}><span aria-hidden="true">←</span> Fun Zone</Link>
   <header className={styles.hero}>
@@ -65,7 +65,7 @@ export default function Leaderboard(){
    {loading?<p className={styles.empty}>Loading verified arcade results…</p>:
     !entries.length?<div className={styles.empty}><PodscapeLineIcon name="trophy"/><h3>First place is waiting.</h3><p>No players have opted in with verified completions for this selection yet. Be the first to put your name on the board.</p><Link href="/fun-zone">Explore games →</Link></div>:
     <>
-     <div className={styles.podium}>{top.map(entry=><article key={entry.position+"-"+entry.name} className={styles.podiumCard} aria-label={"Position "+entry.position}>
+     <div className={styles.podium}>{top.map((entry,i)=><article key={entry.position+"-"+entry.name+"-"+i} className={styles.podiumCard} aria-label={"Position "+entry.position}>
       <span className={styles.place}>#{entry.position}</span><span className={styles.medal} aria-hidden="true"><PodscapeLineIcon name="trophy"/></span>
       <strong>{entry.name}{entry.mine?" · You":""}</strong><b>{format(entry.points)} <small>pts</small></b><span>{entry.completions} verified {entry.completions===1?"puzzle":"puzzles"}</span>
      </article>)}</div>
