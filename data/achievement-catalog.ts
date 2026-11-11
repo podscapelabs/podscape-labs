@@ -40,4 +40,9 @@ export const achievementCatalog: AchievementDefinition[] = [
   { key:"puzzle_sixteen", title:"Puzzle Explorer", description:"Complete 16 different Fun Zone puzzles.", exp:80, coins:0, icon:"▦", href:"/fun-zone", status:"available" },
   { key:"puzzle_all_eight_games", title:"Eight Ways to Play", description:"Finish at least one puzzle in each of the eight game categories.", exp:125, coins:0, icon:"✺", href:"/fun-zone", status:"available" },
   { key:"puzzle_all_thirty_two", title:"Fun Zone Master", description:"Complete all 32 unique Fun Zone puzzles.", exp:200, coins:0, icon:"✦", href:"/fun-zone", status:"available" },
+  { key:"exchange_first_trade", title:"First Quack on Wall Street", description:"Make your very first trade on The Pod Exchange.", exp:15, coins:0, icon:"◇", href:"/fun-zone/pod-exchange", status:"available" },
+  { key:"exchange_first_sale", title:"Paper Wings", description:"Sell shares for the first time on The Pod Exchange.", exp:20, coins:0, icon:"✧", href:"/fun-zone/pod-exchange", status:"available" },
+  { key:"exchange_five_trades", title:"Tiny Trader", description:"Complete five trades in the fictional isopod market.", exp:30, coins:0, icon:"▦", href:"/fun-zone/pod-exchange", status:"available" },
+  { key:"exchange_three_companies", title:"Diversified Burrow", description:"Trade shares in three different Pod Exchange companies.", exp:35, coins:0, icon:"❧", href:"/fun-zone/pod-exchange", status:"available" },
+  { key:"exchange_fifteen_trades", title:"The Big Quacker", description:"Complete fifteen trades on The Pod Exchange.", exp:60, coins:0, icon:"✺", href:"/fun-zone/pod-exchange", status:"available" },
 ];
