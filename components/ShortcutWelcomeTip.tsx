@@ -74,7 +74,7 @@ export function ShortcutWelcomeTip({userId}:{userId:string|null}){
   document.body.style.overflow="hidden";
   requestAnimationFrame(()=>modalRef.current?.querySelector<HTMLElement>("button")?.focus());
   const onKey=(event:KeyboardEvent)=>{
-   if(event.key==="Escape"){event.preventDefault();skip();}
+   if(event.key==="Escape"){event.preventDefault();if(step>=3)dismiss();else skip();}
    if(event.key!=="Tab")return;
    const fields=Array.from(modalRef.current?.querySelectorAll<HTMLElement>("button:not([disabled]),input:not([disabled]),select:not([disabled])")||[]);
    if(!fields.length)return;
@@ -84,7 +84,7 @@ export function ShortcutWelcomeTip({userId}:{userId:string|null}){
   };
   document.addEventListener("keydown",onKey);
   return ()=>{document.body.style.overflow=previous;document.removeEventListener("keydown",onKey);};
- },[visible]);
+ },[visible,step]);
  if(!visible)return null;
  const current=steps[step];
  const selected=starterChoices.find(choice=>choice.id===focus);
@@ -92,7 +92,7 @@ export function ShortcutWelcomeTip({userId}:{userId:string|null}){
   <section className={styles.dialog} ref={modalRef} data-onboarding-dialog role="dialog" aria-modal="true" aria-labelledby="customize-welcome-title" aria-describedby="customize-welcome-description">
    <div className={styles.tourTop}>
     <span>WELCOME / {String(step+1).padStart(2,"0")} OF {String(steps.length).padStart(2,"0")}</span>
-    <button type="button" onClick={step===steps.length-1||skipped?dismiss:skip}>{step===steps.length-1||skipped?"Close":"Skip tutorial"}</button>
+    <button type="button" onClick={step>=3||skipped?dismiss:skip}>{step>=3||skipped?"Close":"Skip tutorial"}</button>
    </div>
    <div className={styles.tourBody} key={step}>
    <div className={styles.icon} aria-hidden="true"><PodscapeLineIcon name={current.icon}/></div>
