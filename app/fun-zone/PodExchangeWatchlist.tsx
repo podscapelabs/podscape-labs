@@ -9,6 +9,7 @@ export function PodExchangeWatchlist(){
  const [time,setTime]=useState<number|null>(null);
  const [portfolio,setPortfolio]=useState<Portfolio>(defaultPortfolio);
  const [portfolioAvailable,setPortfolioAvailable]=useState(false);
+ const [marketLeaders,setMarketLeaders]=useState<Array<{name:string;value:number;position:number}>>([]);
  useEffect(()=>{
   let mounted=true;
   const read=async()=>{
@@ -40,6 +41,20 @@ export function PodExchangeWatchlist(){
   window.addEventListener("podscape-exchange-wallet-updated",update);
   return()=>{mounted=false;window.clearInterval(timer);window.removeEventListener("storage",update);window.removeEventListener("podscape-exchange-wallet-updated",update)}
  },[]);
+ useEffect(()=>{
+  let active=true;
+  const load=async()=>{
+   try{
+    const response=await fetch("/api/fun-zone/pod-exchange/rankings",{cache:"no-store"});
+    if(!response.ok)return;
+    const data=await response.json() as {wealth?:{rows?:Array<{name:string;value:number;position:number}>}};
+    if(active)setMarketLeaders((data.wealth?.rows||[]).slice(0,3));
+   }catch{/* Keep the widget usable when market rankings are unavailable. */}
+  };
+  void load();
+  const timer=window.setInterval(()=>void load(),60_000);
+  return()=>{active=false;window.clearInterval(timer)};
+ },[]);
  const cycle=cycleAt(time??0);
  const price=priceAt("DUCK",cycle);
  const gain=(price/priceAt("DUCK",cycle-1)-1)*100;
@@ -48,6 +63,12 @@ export function PodExchangeWatchlist(){
   <div className={styles.watchlistStats}>
    <span><small>Portfolio value</small><strong>{time===null||!portfolioAvailable?"Syncing…":<DuckBucks amount={totalValue(portfolio,cycle)}/>}</strong></span>
    <span><small style={{display:"flex",alignItems:"center",gap:6}}><ExchangeCompanyIcon symbol="DUCK" size={17}/> DUCK · Rubber Ducky Inc.</small><strong>{time===null?"Loading…":<DuckBucks amount={price}/>}</strong><small>{time===null?"5-minute market":(gain>=0?"+":"")+gain.toFixed(2)+"% this tick"}</small></span>
+  </div>
+  <div className={styles.marketLeadersPreview}>
+   <div className={styles.marketLeadersHeading}><strong>Market Leaders</strong><Link href="/fun-zone/pod-exchange/rankings">All rankings →</Link></div>
+   {marketLeaders.length?<div className={styles.marketLeadersTop}>{marketLeaders.map((trader,i)=><div key={trader.position+"-"+i}>
+    <span>#{trader.position}</span><strong>{trader.name}</strong><b><DuckBucks amount={trader.value}/></b>
+   </div>)}</div>:<p>The Rich List opens when investors join.</p>}
   </div>
   <div><span>{STOCKS.length} fictional companies</span><Link href="/fun-zone/pod-exchange">Open the Exchange →</Link></div>
  </section>;
