@@ -9,6 +9,11 @@ const market=await import("data:text/javascript;base64,"+Buffer.from(compiled).t
 assert.equal(market.STOCKS.length,6);
 assert.equal(new Set(market.STOCKS.map(s=>s.symbol)).size,6);
 assert.equal(market.MARKET_INTERVAL_MS,300000);
+assert.equal(market.TRADE_FEE_RATE,.005);
+assert.equal(market.tradeFee(1000),5);
+assert.equal(market.tradeTotal(100,2,"buy"),201);
+assert.equal(market.tradeTotal(100,2,"sell"),199);
+assert.equal(market.tradeFee(.01),.01);
 // The clock and market never restart when a browser or calendar day changes.
 for(const date of ["2026-11-10T00:00:00Z","2032-01-01T00:00:00Z","2050-06-15T13:17:00Z"]){
  const cycle=market.cycleAt(Date.parse(date));
@@ -37,13 +42,29 @@ for(const t of [0,1,18,100000,1234567]){
 }
 let wallet=market.defaultPortfolio();
 assert.equal(market.totalValue(wallet,125000),10000);
+for(const stock of market.STOCKS){
+ for(let tick=100000;tick<102000;tick++){
+  const p=market.priceAt(stock.symbol,tick);
+  assert.ok(p>=market.money(stock.base*.55)-.01,"Stock may not crash below its game floor");
+  assert.ok(p<=market.money(stock.base*1.6)+.01,"Stock may not spiral above its game ceiling");
+  assert.equal(p,market.priceAt(stock.symbol,tick),"Same UTC tick returns identical price");
+ }
+}
+for(const start of [0,3,30000,200000]){
+ const headline=market.headlineAt(start).story;
+ assert.ok(Math.abs(market.newsImpactAt(headline.symbol,start)-headline.effect)<1e-10);
+ assert.ok(Math.abs(market.newsImpactAt(headline.symbol,start+1)-headline.effect*.62)<1e-10);
+ assert.ok(Math.abs(market.newsImpactAt(headline.symbol,start+2)-headline.effect*.3)<1e-10);
+ assert.equal(market.newsImpactAt(headline.symbol,start+3),market.newsAt(start+3)?.symbol===headline.symbol?market.newsAt(start+3).effect:0);
+}
+
 const p=market.priceAt("DUCK",125000);
 const buy=market.executeOrder(wallet,"DUCK","buy",2,125000);
 assert.equal(buy.ok,true,"purchase succeeded");
 if(!buy.ok)throw Error("buy failed");
 wallet=buy.portfolio;
 assert.equal(wallet.holdings.DUCK,2);
-assert.equal(wallet.cash,market.money(10000-p*2));
+assert.equal(wallet.cash,market.money(10000-market.tradeTotal(p,2,"buy")));
 assert.equal(market.executeOrder(wallet,"DUCK","sell",3,125000).ok,false);
 assert.equal(market.executeOrder(wallet,"DUCK","buy",99999,125000).ok,false);
 assert.equal(market.executeOrder(wallet,"DUCK","buy",1.1,125000).ok,false);
@@ -51,8 +72,10 @@ assert.equal(market.executeOrder(wallet,"INVALID","buy",1,125000).ok,false);
 const sell=market.executeOrder(wallet,"DUCK","sell",2,125000);
 assert.equal(sell.ok,true);
 if(!sell.ok)throw Error("sell failed");
-assert.equal(sell.portfolio.cash,10000,"same-tick round trip balances exactly");
+assert.equal(sell.portfolio.cash,market.money(10000-market.tradeFee(market.money(p*2))*2),"same-tick round trip pays fees and cannot print free money");
 assert.equal(sell.portfolio.holdings.DUCK,undefined);
+assert.ok(sell.portfolio.cash<10000,"Rapid same-price flipping must lose money");
+assert.equal(market.executeOrder(market.defaultPortfolio(),"DUCK","sell",1,125000).ok,false);
 assert.equal(market.sanitizePortfolio({cash:-8,holdings:{}}).cash,10000);
 const home=readFileSync(resolve("components/HomeWidgets.tsx"),"utf8");
 const homeNews=readFileSync(resolve("components/HomeMarketNews.tsx"),"utf8");
@@ -75,6 +98,11 @@ assert.ok(ui.includes("Duck Bucks"),"all cash is Duck Bucks");
 assert.ok(ui.includes("headlineAt(cycle).story"),"Exchange always displays current story");
 assert.ok(ui.includes('id="exchange-rules"')&&ui.includes("How to Play"),"Exchange has collapsible rules");
 assert.ok(styling.includes(".rulesBody"),"Rules styled with theme roles");
+assert.ok(ui.includes("tradeFee(subtotal)")&&ui.includes("tradeTotal(price,count,side)"),"Trade desk must show server-matching fee");
+assert.ok(ui.includes("newsImpactAt(news.symbol,cycle)"),"News bulletin must display actual mathematical impact");
+const walletMigration=readFileSync(resolve("supabase/migrations/20261110234500_pod_exchange_persistent_portfolios.sql"),"utf8");
+assert.ok(walletMigration.includes("total_cost*0.005"),"Database must use same trade fee as local wallet");
+assert.ok(walletMigration.includes("net_total>wallet.cash"),"Cloud purchases must include fees in affordability checks");
 assert.ok(ui.includes('role="status"'),"trade confirmation is accessible");
 assert.ok(ui.includes("STORAGE_KEY"),"persist to device");
 assert.ok(listing.includes('href:"/fun-zone/pod-exchange"'),"listed in Fun Zone");
