@@ -107,13 +107,13 @@ export function PodExchange(){
   const onWalletEvent=()=>{if(modeRef.current==="cloud")void syncFromServer()};
   window.addEventListener("storage",onStorage);
   window.addEventListener("focus",refresh);
-  window.addEventListener("visibilitychange",refresh);
+  document.addEventListener("visibilitychange",refresh);
   window.addEventListener("podscape-exchange-wallet-updated",onWalletEvent);
   return()=>{
    live=false;window.clearInterval(interval);
    window.removeEventListener("storage",onStorage);
    window.removeEventListener("focus",refresh);
-   window.removeEventListener("visibilitychange",refresh);
+   document.removeEventListener("visibilitychange",refresh);
    window.removeEventListener("podscape-exchange-wallet-updated",onWalletEvent);
   };
  },[]);
