@@ -7,7 +7,8 @@ import styles from "./leaderboard.module.css";
 
 type Period="daily"|"weekly"|"monthly"|"all-time";
 type Standing={name:string;points:number;completions:number;position:number;mine:boolean};
-type Board={rows:Standing[];mine:Standing|null;participating:boolean;signedIn:boolean;timezone:string};
+type Award={board:string;period:string;place:number;exp:number;date:string};
+type Board={rows:Standing[];mine:Standing|null;participating:boolean;signedIn:boolean;timezone:string;awards:Award[]};
 const periods:{id:Period;label:string}[]=[{id:"daily",label:"Daily"},{id:"weekly",label:"Weekly"},{id:"monthly",label:"Monthly"},{id:"all-time",label:"All time"}];
 const games=ARCADE_GAMES.filter(game=>game.key!=="pod-exchange");
 const format=(n:number)=>n.toLocaleString("en-CA");
@@ -104,7 +105,34 @@ export default function Leaderboard(){
    <div className={styles.personalTitle}><span><PodscapeLineIcon name="achievement"/></span><div><small>YOUR ARCADE</small><h2>Your standing</h2></div></div>
    {!board&&!loading?<p>Personal rankings are temporarily unavailable.</p>:!board?.signedIn?<p>Sign in to enter the public rankings. You can still explore the leaderboard without participating.</p>:
     <><div className={styles.consent}><div><strong>Show me on arcade rankings</strong><p>Optional. Your PodScape display name and verified puzzle totals become public on the leaderboard. Turn this off anytime.</p></div><button type="button" disabled={updating||loading} aria-pressed={board.participating} onClick={()=>setPublic(!board.participating)} className={board.participating?styles.optedIn:styles.optedOut}>{updating?"Saving…":board.participating?"Participating ✓":"Join rankings"}</button></div>
-     {board.participating?(board.mine?<div className={styles.myStanding}><span>#{board.mine.position} this period</span><b>{format(board.mine.points)} pts</b></div>:<p>Your profile is public, but you haven't completed a ranked puzzle in this period yet.</p>):<p className={styles.helper}>Your completions are still saved privately. Rankings never affect your EXP or Duck Bucks.</p>}</>}
+     {board.participating?(board.mine?<div className={styles.myStanding}><span>#{board.mine.position} this period</span><b>{format(board.mine.points)} pts</b></div>:<p>Your profile is public, but you haven't completed a ranked puzzle in this period yet.</p>):<p className={styles.helper}>Your completions are still saved privately. Ranking points remain separate from EXP and Duck Bucks. Podium achievements may award EXP.</p>}</>}
+  </section>
+  <section className={styles.rewards} aria-label="Leaderboard achievements and EXP">
+   <div className={styles.rewardsTitle}><span><PodscapeLineIcon name="trophy"/></span><div><small>ACHIEVEMENTS & EXP</small><h2>Podium rewards</h2><p>Finish on the podium, unlock permanent achievements and earn bonus EXP when rankings close.</p></div></div>
+   <div className={styles.rewardTableWrap}><table className={styles.rewardTable}>
+    <thead><tr><th scope="col">Board</th><th scope="col">1st</th><th scope="col">2nd</th><th scope="col">3rd</th></tr></thead>
+    <tbody>
+     {([{key:"daily",label:"Daily",values:[50,30,15]},
+      {key:"weekly",label:"Weekly",values:[200,125,75]},
+      {key:"monthly",label:"Monthly",values:[500,300,175]},
+      {key:"all-time",label:"All-time milestone",values:[750,450,250]}] as const).map(row=><tr key={row.key}><th scope="row">{row.label}</th>{row.values.map((value,i)=><td key={i}>+{value} <small>EXP</small></td>)}</tr>)}
+    </tbody>
+   </table></div>
+   <p className={styles.rewardRule}>These are overall arcade rewards. Each individual game board earns 25% of the listed EXP, with a maximum of two game-board payouts per period. All-time milestones pay only once per improvement, not at every refresh.</p>
+   <div className={styles.rewardMilestones}>
+    <span><PodscapeLineIcon name="achievement"/> A Place on the Podium</span>
+    <span><PodscapeLineIcon name="achievement"/> Crowned for a Week</span>
+    <span><PodscapeLineIcon name="achievement"/> Three-Peat <small>Hidden</small></span>
+    <span><PodscapeLineIcon name="achievement"/> Arcade Legend <small>Hidden</small></span>
+   </div>
+   <p className={styles.rewardRule}>Rewards require at least two opted-in participants on a board, a verified first-time puzzle completion, and public ranking participation before the period closes. No Pod Coins are awarded.</p>
+   <div className={styles.rewardHistory}><h3>Your recent rewards</h3>
+    {!board?.signedIn?<p>Sign in to see your ranking rewards and achievements.</p>:!board.awards?.length?<p>No podium rewards yet. The next completed rankings may be your first!</p>:
+     <div className={styles.rewardHistoryList}>{board.awards.map((award,i)=><div key={award.period+"-"+award.board+"-"+award.date+"-"+i}>
+      <span><strong>{award.board==="all"?"Overall Arcade":games.find(g=>g.key===award.board)?.title||award.board}</strong><small>{award.period==="all-time"?"All-time milestone":award.period} · #{award.place}</small></span>
+      <b>+{format(award.exp)} EXP</b>
+     </div>)}</div>}
+   </div>
   </section>
   <p className={styles.note}>Ranking points = 100 per unique server-verified puzzle completion. Ties share a rank. Daily, weekly and monthly boards reset by UTC calendar periods; All time persists. Only opted-in players appear. The Pod Exchange is not ranked because simulated wealth isn't a verified puzzle score.</p>
  </div></main>;
