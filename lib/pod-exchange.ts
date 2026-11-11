@@ -37,8 +37,13 @@ export const cycleAt=(ms:number)=>Math.floor(ms/MARKET_INTERVAL_MS);
 export const money=(value:number)=>Math.round((value+Number.EPSILON)*100)/100;
 function random(seed:number){let n=(seed|0)^0x9e3779b9;n=Math.imul(n^(n>>>16),0x21f0aaad);n=Math.imul(n^(n>>>15),0x735a2d97);return ((n^(n>>>15))>>>0)/4294967296;}
 export function newsAt(cycle:number):MarketNews|null{
- // News breaks once every three cycles; all visitors see the same event.
- return cycle%3===0?NEWS[Math.floor(random(cycle+337)*NEWS.length)]:null;
+ // Every three UTC ticks. Avoid back-to-back identical stories without
+ // storing server state, so all users see the same headline indefinitely.
+ if(cycle%3!==0)return null;
+ let pick=Math.floor(random(cycle+337)*NEWS.length);
+ const previous=Math.floor(random(cycle-3+337)*NEWS.length);
+ if(pick===previous)pick=(pick+1+Math.floor(random(cycle+931)*3))%NEWS.length;
+ return NEWS[pick];
 }
 /** Persistent bulletin: the latest headline remains visible through all three ticks.
  * priceAt still uses newsAt so the actual price catalyst applies on publication only.
