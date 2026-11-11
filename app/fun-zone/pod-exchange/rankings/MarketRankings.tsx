@@ -6,7 +6,7 @@ import styles from "./market-rankings.module.css";
 type Kind="wealth"|"return"|"weekly";
 type Entry={name:string;value:number;profit:number;returnPct:number;weeklyPct:number|null;position:number;mine:boolean};
 type BoardSlice={rows:Entry[];mine:Entry|null;count:number};
-type Data={signedIn:boolean;participating:boolean;eligible:boolean;needsWallet:boolean;legacyReviewRequired:boolean;cycle:number;weekStart:string;weeklyReady:boolean;wealth:BoardSlice;return:BoardSlice;weekly:BoardSlice};
+type Data={signedIn:boolean;participating:boolean;eligible:boolean;needsWallet:boolean;legacyReviewRequired:boolean;reviewStatus:string|null;reviewerNote:string|null;cycle:number;weekStart:string;weeklyReady:boolean;wealth:BoardSlice;return:BoardSlice;weekly:BoardSlice};
 const tabs:{id:Kind;title:string;description:string}[]=[
  {id:"wealth",title:"The Rich List",description:"Cash + current share value"},
  {id:"return",title:"Top Investors",description:"Return on the original 10,000 Duck Bucks"},
@@ -43,6 +43,18 @@ export default function MarketRankings(){
   }catch(e){setError(e instanceof Error?e.message:"Unable to update rankings")}
   finally{setUpdating(false)}
  }
+ async function requestReview(){
+  if(updating)return;setUpdating(true);setError("");
+  try{
+   const response=await fetch("/api/fun-zone/pod-exchange/rankings",{
+    method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({action:"requestReview"})
+   });
+   const body=await response.json();if(!response.ok)throw Error(body.error||"Could not request verification");
+   setReload(v=>v+1);
+  }catch(e){setError(e instanceof Error?e.message:"Unable to request verification")}
+  finally{setUpdating(false)}
+ }
  const selected=tabs.find(t=>t.id===kind)!;
  const board=data?.[kind];
  const top=board?.rows.slice(0,3)||[];
@@ -61,12 +73,12 @@ export default function MarketRankings(){
    {loading?<span className={styles.status}>Checking…</span>:
     !data?.signedIn?<Link className={styles.joinButton} href="/account">Sign in to join →</Link>:
     data.needsWallet?<Link className={styles.joinButton} href="/fun-zone/pod-exchange">Start trading →</Link>:
-    !data.eligible?<span className={styles.status}>Verification required</span>:
+    !data.eligible?(data.reviewStatus==="pending"?<span className={styles.status}>Review pending</span>:<button type="button" className={styles.joinButton} disabled={updating} onClick={requestReview}>{updating?"Submitting…":"Request verification"}</button>):
     <button type="button" className={data.participating?styles.leaveButton:styles.joinButton}
      disabled={updating} aria-pressed={data.participating}
      onClick={()=>join(!data.participating)}>
      {updating?"Saving…":data.participating?"Leave rankings":"Join rankings"}</button>}
-   {data?.needsWallet?<p className={styles.eligibility}>Open the Exchange to create your free, cloud-saved starting wallet. You can join after it is initialized.</p>:data?.legacyReviewRequired?<p className={styles.eligibility}>Existing beta wallets cannot be ranked until their starting balances are verified. Your holdings remain safe, and you can still view the leaderboard.</p>:
+   {data?.needsWallet?<p className={styles.eligibility}>Open the Exchange to create your free, cloud-saved starting wallet. You can join after it is initialized.</p>:data?.legacyReviewRequired?<p className={styles.eligibility}>Existing beta wallets require owner verification before competing. Your holdings remain safe. {data.reviewStatus==="pending"?"Your request is in the owner review queue.":data.reviewStatus==="declined"?"A previous review was declined. You may request another review.":""} {data.reviewerNote?data.reviewerNote:""}</p>:
     <p className={styles.privacy}>Independent opt-in · Display name, fictional value and returns become public · No real currency</p>}
   </section>
   <section className={styles.rankings} aria-label="Market leaderboard">
