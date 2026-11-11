@@ -116,6 +116,15 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
   if(id==="featured")return <FunZoneCarousel signedIn={Boolean(userId)} exp={exp} coins={coins}/>;
   if(id==="categories")return <section className={styles.card} aria-label="Game categories">
    <div className={styles.blockTitle}><div><span className={styles.eyebrow}>GAME LIBRARY</span><h2>Pick a game.</h2></div><span className={styles.subtle}>{ARCADE_GAMES.length} games to explore</span></div>
+   <div className={styles.learningTrail} aria-label="Suggested beginner learning path">
+    <div><span className={styles.learningTrailEyebrow}>NEW TO THE HOBBY?</span><strong>Start simple. Learn as you play.</strong><p>These games introduce everyday keeper words before the more scientific challenges.</p></div>
+    <div className={styles.learningTrailLinks}>
+     <Link href="/fun-zone/species-quiz">1 · Isopod basics</Link>
+     <Link href="/fun-zone/word-search">2 · Spot familiar words</Link>
+     <Link href="/fun-zone/word-of-the-week">3 · Learn vocabulary</Link>
+     <Link href="/fun-zone/colony-connections">4 · Connect the ideas</Link>
+    </div>
+   </div>
    <div className={styles.categoryGrid}>{ARCADE_CATEGORIES.map(item=><button key={item} type="button" aria-pressed={category===item} onClick={()=>setCategory(item)}>
     <span className={styles.categoryIcon}><PodscapeLineIcon name={item==="Word Games"?"letters":item==="Puzzles & Logic"?"connections":item==="Trivia & Knowledge"?"quiz":item==="Simulations"?"gamepad":"podbound"}/></span>
     <strong>{item}</strong><small>{categoryCounts[item]} {categoryCounts[item]===1?"game":"games"}</small>
