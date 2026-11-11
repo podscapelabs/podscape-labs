@@ -114,3 +114,40 @@
  .entryGuideFooter{flex-direction:column;align-items:stretch}
  .entryGuideFooter>a{width:100%}
 }
+
+
+/* Achievement reward desk — keep awards glanceable, never compete with trading/game controls. */
+.rewards{display:grid;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:19px;padding:clamp(15px,3vw,23px)}
+.rewardsTitle{display:flex;align-items:flex-start;gap:12px}
+.rewardsTitle>span{flex:none;display:grid;place-items:center;width:43px;height:43px;border-radius:13px;background:var(--surface-secondary);color:var(--accent)}
+.rewardsTitle svg{width:24px;height:24px}
+.rewardsTitle small{font-size:10px;color:var(--accent);letter-spacing:.13em;font-weight:800}
+.rewardsTitle h2{font:500 clamp(24px,3vw,30px)/1.1 var(--display);margin:6px 0}
+.rewardsTitle p,.rewardRule{margin:0;font-size:12px;line-height:1.5;color:var(--text-secondary)}
+.rewardTableWrap{width:100%;overflow-x:auto}
+.rewardTable{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border:1px solid var(--border);border-radius:13px;font-size:12px}
+.rewardTable th,.rewardTable td{text-align:left;padding:13px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
+.rewardTable thead th{font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--text-secondary);background:var(--surface-secondary)}
+.rewardTable tbody th{font-weight:750}
+.rewardTable tbody tr:last-child :is(th,td){border-bottom:0}
+.rewardTable td{font-weight:750;font-variant-numeric:tabular-nums;color:var(--accent)}
+.rewardTable td small{font-size:10px;font-weight:500;color:var(--text-secondary)}
+.rewardMilestones{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.rewardMilestones>span{display:flex;align-items:center;gap:8px;min-width:0;padding:11px;border:1px solid var(--border);border-radius:11px;background:var(--surface-secondary);font-size:12px;font-weight:750}
+.rewardMilestones svg{flex:none;width:20px;height:20px;color:var(--accent)}
+.rewardMilestones small{color:var(--text-secondary);font-size:10px;font-weight:500}
+.rewardHistory{padding-top:13px;border-top:1px solid var(--border)}
+.rewardHistory h3{font:500 22px var(--display);margin:0 0 12px}
+.rewardHistory>p{font-size:12px;color:var(--text-secondary);line-height:1.55;margin:0}
+.rewardHistoryList{display:grid;gap:7px}
+.rewardHistoryList>div{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px;background:var(--surface-secondary)}
+.rewardHistoryList>div span{display:grid;gap:4px}
+.rewardHistoryList strong{font-size:12px}
+.rewardHistoryList small{font-size:11px;color:var(--text-secondary);text-transform:capitalize}
+.rewardHistoryList b{font-size:12px;color:var(--accent);white-space:nowrap;font-variant-numeric:tabular-nums}
+@media(max-width:680px){
+ .rewards{padding:15px;border-radius:17px}
+ .rewardMilestones{grid-template-columns:1fr}
+ .rewardTable th,.rewardTable td{padding:12px 7px;font-size:11px}
+ .rewardTable td small{font-size:9px}
+}
