@@ -22,7 +22,7 @@ export const ARCADE_GAMES:ArcadeGame[]=[
   featured:game.key==="word-burrow"
  })),
  {key:"word-search",title:"Word Search",description:"Find hidden isopod and hobby terms.",category:"Word Games",href:"/fun-zone/word-search",icon:"word-search"},
- {key:"pod-exchange",title:"The Pod Exchange",description:"Trade fictional stocks using 🦆 Duck Bucks.",category:"Simulations",href:"/fun-zone/pod-exchange",icon:"gamepad",beta:true,featured:true}
+ {key:"pod-exchange",title:"The Pod Exchange",description:"Trade fictional stocks using Duck Bucks.",category:"Simulations",href:"/fun-zone/pod-exchange",icon:"gamepad",beta:true,featured:true}
 ];
 export const ARCADE_GAME_KEYS=ARCADE_GAMES.map(g=>g.key);
 export const categoryCounts=Object.fromEntries(ARCADE_CATEGORIES.map(category=>[category,ARCADE_GAMES.filter(game=>game.category===category).length])) as Record<ArcadeCategory,number>;
