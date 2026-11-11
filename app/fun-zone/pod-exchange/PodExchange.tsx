@@ -4,12 +4,11 @@ import {announceAchievement,type AchievementNotice} from "@/components/Achieveme
 import Link from "next/link";
 import styles from "./exchange.module.css";
 import {DuckBucks,DuckBuckIcon,duckBucksNumber} from "@/components/DuckBucks";
-import {PodscapeLineIcon,type PodscapeIconName} from "@/components/PodscapeLineIcon";
+import {ExchangeCompanyIcon} from "@/components/ExchangeCompanyIcon";
 import {achievementCatalog} from "@/data/achievement-catalog";
 import {STOCKS,STORAGE_KEY,MARKET_INTERVAL_MS,STARTING_BUCKS,cycleAt,defaultPortfolio,decodeSavedPortfolio,executeOrder,money,headlineAt,newsImpactAt,priceAt,tradeFee,tradeSubtotal,tradeTotal,sanitizePortfolio,totalValue,type Portfolio} from "@/lib/pod-exchange";
 
-const companyMarks:Record<string,PodscapeIconName>={MOO:"leaf",PANDA:"jar",BLUE:"arrow-right",TITAN:"bin",CLOWN:"creative"};
-function CompanyMark({symbol}:{symbol:string}){return symbol==="DUCK"?<DuckBuckIcon size={25}/>:<PodscapeLineIcon name={companyMarks[symbol]||"gamepad"}/>;}
+function CompanyMark({symbol}:{symbol:string}){return <ExchangeCompanyIcon symbol={symbol}/>;}
 const change=(n:number)=>(n>=0?"+":"")+n.toFixed(2)+"%";
 const countdown=(ms:number)=>String(Math.floor(ms/60000)).padStart(2,"0")+":"+String(Math.floor((ms%60000)/1000)).padStart(2,"0");
 function Sparkline({symbol,cycle}:{symbol:string;cycle:number}){
