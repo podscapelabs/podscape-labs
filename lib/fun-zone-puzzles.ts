@@ -79,9 +79,9 @@ const extra:Entry[]=[
  Q("Which species is commonly called the Clown isopod?",["Armadillidium klugii","Oniscus asellus","Porcellio dilatatus","Armadillidium gestroi"],0,"Armadillidium klugii is sold under the hobby name Clown."),
  Q("What should you use alongside colour when identifying unfamiliar isopods?",["Body shape and reliable taxonomic characters","Only the seller's photograph","Only the substrate colour","Only enclosure temperature"],0,"Colour varies across individuals and morphs; identification should consider morphology and reliable references.")
  ]),
- quiz("taxonomy-desk","Names & Classification","Match species names to their correct group.","Medium",[
- Q("Which genus contains Porcellio scaber?",["Porcellio","Cubaris","Armadillidium","Oniscus"],0,"The genus is the first part of the scientific binomial: Porcellio scaber."),
- Q("In Armadillidium klugii, what does 'klugii' denote?",["The specific epithet","The genus","An enclosure type","A colour standard"],0,"The second element is the specific epithet; together with the genus it forms the species name."),
+ quiz("taxonomy-desk","Reading a Species Name","A gentle introduction to scientific labels.","Medium",[
+ Q("In a scientific name like Porcellio scaber, which word is the genus?",["Porcellio","scaber","Both words combined","Neither word"],0,"The genus is the first word. Here it is Porcellio, and scaber is the specific epithet."),
+ Q("In Armadillidium klugii, which word comes after the genus?",["klugii","Armadillidium","Both words are genera","No second word is used"],0,"klugii is called a specific epithet. Together with Armadillidium it makes the two-part species name."),
  Q("Which name denotes a genus rather than a species?",["Oniscus","Porcellio scaber","Armadillidium maculatum","Porcellio dilatatus"],0,"Oniscus is a genus; the other options are binomial species names."),
  Q("What does 'sp.' indicate after a genus name?",["An unidentified or unspecified species in that genus","A confirmed subspecies","A colour morph","An extinct species"],0,"The abbreviation sp. means a species within the stated genus has not been specified.")
  ]),
@@ -113,17 +113,17 @@ const extra:Entry[]=[
  ])
  ].map(p=>({gameKey:"keepers-challenge" as const,mode:"quiz" as const,puzzle:p})),
  ...[
- quiz("manca","Meet the Manca","Learn juvenile development terms.","Intro",[
+ quiz("manca","Young Isopods","Learn the word manca through young isopods.","Intro",[
  Q("What is a manca?",["An early juvenile isopod","An adult female only","A genus","A fungal spore"],0,"Mancae are juvenile stages of isopods and other peracarid crustaceans."),
  Q("Where do developing embryos of female terrestrial isopods remain?",["In a ventral brood pouch","In a hanging silk nest","Inside cork bark","In open standing water"],0,"Females brood developing offspring in a ventral marsupium."),
  Q("What is the marsupium?",["The brood pouch","An antenna segment","A feeding mouthpart","A soil layer"],0,"In peracarid crustaceans, the marsupium is a brood pouch carried by the female."),
  Q("Why should a keeper avoid unnecessary disturbance around young mancae?",["Very small juveniles may be delicate","It changes their species","They require dry air","They cannot eat leaf litter"],0,"Gentle handling and stable conditions reduce unnecessary disturbance.")
  ]),
- quiz("body-parts","Anatomy Essentials","Put names to the structures you see.","Medium",[
+ quiz("body-parts","The Parts You Can See","Learn anatomy by recognizing familiar body features first.","Medium",[
  Q("What are antennae primarily used for?",["Sensing the environment","Storing eggs","Replacing the legs","Producing substrate"],0,"Antennae are important sensory appendages."),
- Q("What is the pereon?",["The main thoracic body region","The underside of cork bark","A juvenile morph","A fungal structure"],0,"The pereon is the thoracic trunk region of an isopod."),
- Q("What is the pleon?",["The abdominal body region","A type of leaf","A breathing enclosure","A food supplement"],0,"The pleon is the abdominal region."),
- Q("Where are uropods located?",["Toward the posterior end","At the antenna tips","Above the eyes","Inside the stomach"],0,"Uropods are paired posterior appendages.")
+ Q("What is an exoskeleton?",["The hard outer body covering","A type of food","A breeding box","The soil layer"],0,"An exoskeleton is a protective outer skeleton. Isopods shed it when they moult."),
+ Q("What happens to the outer covering during a moult?",["It is shed","It becomes a new species","It turns into a leaf","It disappears from every enclosure"],0,"The shed outer skeleton is called an exuvia. Many isopods may eat it afterward."),
+ Q("What does posterior mean when describing an isopod?",["Toward the rear","Toward the head","Above the animal","Inside its food"],0,"Posterior means toward the back end. Scientists use this word when describing structures such as uropods."),
  ]),
  quiz("molting","The Moult","Understand growth and the exoskeleton.","Medium",[
  Q("What is an exuvia?",["A shed exoskeleton","A moisture gauge","A genus name","A breeding enclosure"],0,"An exuvia is the cast-off outer skeleton after moulting."),
@@ -153,16 +153,16 @@ const extra:Entry[]=[
  ])
  ].map(p=>({gameKey:"species-quiz" as const,mode:"quiz" as const,puzzle:p})),
  ...[
- burrow("leaf-matter","Leaf Matter","HUMUS","Dark, well-decomposed organic matter in soil.","Humus is extensively decomposed organic material."),
+ burrow("leaf-matter","Leaf Matter","HUMUS","The five-letter science word for well-decomposed organic matter in soil.","Humus is well-decomposed organic material. You may have seen it while learning about leaf litter."),
  burrow("shelter","Find Cover","COVER","Protection provided by leaves, bark or other sheltered surfaces.","Leaf litter and bark provide cover and microhabitats."),
  burrow("decomposers","Decomposer Clue","FUNGI","A plural term for organisms that help break down dead material.","Fungi participate in decomposition.")
  ].map(p=>({gameKey:"word-burrow" as const,mode:"burrow" as const,puzzle:p})),
  ...[
- connections("parts-and-places","Anatomy & Habitats",[
- group("Body regions",["Pereon","Pleon","Cephalon","Pleotelson"]),
- group("Body appendages",["Antennae","Uropods","Pleopods","Pereopods"]),
- group("Forest-floor materials",["Leaf litter","Decaying wood","Humus","Cork bark"]),
- group("Care equipment",["Sprayer","Hygrometer","Thermometer","Vent lid"])
+ connections("parts-and-places","Everyday Isopod Words",[
+ group("Places to hide",["Cork shelter","Log","Rock","Leaf pile"]),
+ group("Fresh food",["Carrot","Squash","Cucumber","Sweet potato"]),
+ group("Things to observe",["Movement","Feeding time","New young","Shedding"]),
+ group("Enclosure supplies",["Vent holes","Water bottle","Calcium dish","Soil mix"])
  ]),
  connections("names-and-needs","Species & Care",[
  group("Genera",["Porcellio","Oniscus","Cubaris","Armadillidium"]),
@@ -204,18 +204,18 @@ const extra:Entry[]=[
  ...[
  search("leaf-litter","Leaf Litter Basics",["LEAF","LITTER","HUMUS","DECAY","FUNGI","SOIL","BARK","MOSS"],19737,"Find forest-floor and decomposer terms."),
  search("keeper-essentials","Keeper Essentials",["MOISTURE","FEEDING","CALCIUM","VENTILATION","SUBSTRATE","SPRAYER","ENCLOSURE","HUMIDITY"],81927,"Find familiar enclosure and husbandry terms."),
- search("anatomy-terms","Anatomy Terms",["ANTENNA","PEREON","PLEON","UROPOD","PLEOPOD","EXUVIA","MANCA","MARSUPIUM"],34987,"Find scientifically defined isopod anatomy and development terms.")
+ search("anatomy-terms","Science Words",["MOLT","MANCA","GENUS","SPECIES","ANTENNA","ABDOMEN","JUVENILE","EXUVIA"],34987,"A bridge to science: words introduced in earlier quizzes.")
  ].map(p=>({gameKey:"word-search" as const,mode:"search" as const,puzzle:p}))
 ];
 const sample:Entry[]=[
  ...games.map(game=>({
  gameKey:game.key,mode:game.mode,
  puzzle:game.mode==="quiz"?quiz("sample-01",game.puzzleTitle,game.description,"Intro",game.questions||[])
- :game.mode==="burrow"?burrow("sample-01",game.puzzleTitle,"HUMUS","Dark, decomposed organic material in soil.","Humus is well-decomposed organic material.")
+ :game.mode==="burrow"?burrow("sample-01",game.puzzleTitle,"WATER","A five-letter liquid used to moisten an isopod refuge.","Water helps maintain moist areas; do not flood the enclosure.")
  :game.mode==="connections"?connections("sample-01",game.puzzleTitle,connectionGroups)
  :crossword("sample-01",game.puzzleTitle,originalCrossword)
  } as Entry)),
- {gameKey:"word-search",mode:"search",puzzle:search("genus-explorer","Genus Explorer",["CUBARIS","PORCELLIO","ARMADILLIDIUM","PORCELLIONIDES","TRICHORHINA","ONISCUS","PHILOSCIA","NAGURUS"],24681357,"Find eight isopod genera.")}
+ {gameKey:"word-search",mode:"search",puzzle:search("genus-explorer","First Finds",["LEAF","MOSS","BARK","SOIL","CORK","WATER","HIDE","FOOD"],24681357,"Start with eight familiar enclosure words.")}
 ];
 export const puzzleEntries:Entry[]=[...sample,...extra];
 export function getPuzzles(gameKey:string){return puzzleEntries.filter(e=>e.gameKey===gameKey);}
