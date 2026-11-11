@@ -66,9 +66,6 @@ export default async function OwnerToolsPage() {
           {[earlyAccess,security].filter((item):item is NonNullable<typeof item>=>Boolean(item)).map(item=><Link href={item.href} key={item.href}>
             <span className={styles.operationCopy}><strong><PodscapeLineIcon name={item.icon} /> {item.title}</strong><small>{item.description}</small></span><b aria-hidden="true">→</b>
           </Link>)}
-          <Link href="/admin/vendors">
-            <span className={styles.operationCopy}><strong><PodscapeLineIcon name="vendor" /> Vendor Desk</strong><small>Add vendors manually, publish directory entries, and review applications.</small></span><b aria-hidden="true">→</b>
-          </Link>
           <details className={styles.qa}><summary><PodscapeLineIcon name="achievement" /> Achievement banner preview <span>Owner QA</span></summary><div><p>Preview the achievement banner without changing EXP or unlocking an achievement.</p><TestAchievementButton /></div></details>
         </div>
       </section>
