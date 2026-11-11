@@ -311,3 +311,35 @@
 
 /* Make the leaderboard opt-in disclosure readable without expanding the whole card. */
 .privacyHint{grid-column:1/-1;font-size:10px;color:var(--text-secondary);line-height:1.35}
+
+/* Participation is a first-class action directly under the hero, not a buried setting. */
+.personal{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px 14px;align-items:center;border-color:color-mix(in srgb,var(--accent) 32%,var(--border));background:color-mix(in srgb,var(--accent) 4%,var(--surface))}
+.personalTitle{grid-column:1;grid-row:1}
+.personal>.consent{display:contents;margin:0}
+.personal>.consent>div{display:block;grid-column:1;grid-row:2;min-width:0}
+.personal>.consent strong{font-size:12px}
+.personal>.consent p{font-size:11px;line-height:1.4;margin:3px 0 0}
+.personal>.consent>button{grid-column:2;grid-row:1/3;min-height:44px;min-width:132px;font-size:12px;padding:10px 13px;align-self:center}
+.personal>.privacyHint{grid-column:1/-1;grid-row:auto;margin:0;font-size:10px;line-height:1.4}
+.personal>.myStanding{grid-column:1/-1;grid-row:auto}
+.joinSignIn{display:contents}
+.joinSignIn p{grid-column:1;grid-row:2;margin:0;color:var(--text-secondary);font-size:11px;line-height:1.5}
+.joinLink{grid-column:2;grid-row:1/3;align-self:center;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:10px 13px;border-radius:11px;background:var(--accent);color:var(--accent-contrast);text-decoration:none;font-size:12px;font-weight:800}
+.joinLink:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media(max-width:680px){
+ .personal{gap:8px 10px}
+ .personalTitle{grid-column:1;grid-row:1}
+ .personal>.consent>div{grid-column:1;grid-row:2}
+ .personal>.consent>button{grid-column:2;grid-row:1/3;min-width:117px;min-height:44px;width:auto;align-self:center;font-size:11px;padding:8px 10px}
+ .personal>.privacyHint{grid-column:1/-1}
+ .joinLink{min-height:44px;padding:8px 10px;font-size:11px}
+}
+@media(max-width:370px){
+ .personal{grid-template-columns:minmax(0,1fr)}
+ .personalTitle{grid-column:1}
+ .personal>.consent>div{grid-column:1;grid-row:2}
+ .personal>.consent>button{grid-column:1;grid-row:3;width:100%}
+ .personal>.privacyHint{grid-row:4}
+ .joinSignIn p{grid-column:1;grid-row:2}
+ .joinLink{grid-column:1;grid-row:3}
+}
