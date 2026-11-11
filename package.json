@@ -19,7 +19,8 @@
     "test:fun-zone-portal": "node scripts/verify-fun-zone-portal.mjs",
     "test:exchange-achievements": "node scripts/verify-pod-exchange-achievements.mjs",
     "test:fun-zone-rankings": "node scripts/verify-fun-zone-rankings.mjs",
-    "test:lifetime-exp-rankings": "node scripts/verify-lifetime-exp-rankings.mjs"
+    "test:lifetime-exp-rankings": "node scripts/verify-lifetime-exp-rankings.mjs",
+    "test:extended-achievements": "node scripts/verify-extended-achievements.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
