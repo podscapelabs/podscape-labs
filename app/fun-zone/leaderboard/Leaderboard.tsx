@@ -62,6 +62,14 @@ export default function Leaderboard(){
    <div><p className={styles.eyebrow}>PODSCAPE / FUN ZONE</p><h1>Arcade Rankings</h1><p>Verified puzzles. Real standings. Your place in the arcade.</p></div>
    <span className={styles.heroIcon} aria-hidden="true"><PodscapeLineIcon name="trophy"/></span>
   </header>
+  {error?<div role="alert" className={styles.alert}>{error} <button type="button" onClick={()=>setReload(x=>x+1)}>Try again</button></div>:null}
+  <section className={styles.personal} aria-label="Your ranking participation">
+   <div className={styles.personalTitle}><span><PodscapeLineIcon name="achievement"/></span><div><small>YOUR ARCADE</small><h2>{board?.participating?"You’re on the board":"Join Arcade Rankings"}</h2></div></div>
+   {!board&&!loading?<p>Personal rankings are temporarily unavailable.</p>:!board?.signedIn?<div className={styles.joinSignIn}><p>Sign in to join the leaderboard. Browsing stays open to everyone.</p><Link href="/account" className={styles.joinLink}>Sign in to join <span aria-hidden="true">→</span></Link></div>:
+    <><div className={styles.consent}><div><strong>{board.participating?"Public participation is on":"Get on the leaderboard"}</strong><p>{board.participating?"Your name and verified points are currently public.":"Your saved puzzle points will appear when you join."}</p></div><button type="button" disabled={updating||loading} aria-pressed={board.participating} onClick={()=>setPublic(!board.participating)} className={board.participating?styles.optedIn:styles.optedOut} aria-label={board.participating?"Leave public arcade rankings":"Join public arcade rankings"}>{updating?"Saving…":board.participating?"Leave rankings":"Join rankings"}</button></div>
+     <small className={styles.privacyHint}>{board.participating?"Participating · Visible to everyone · Leave anytime":"Private until you join · Only your display name and verified puzzle points become public"}</small>
+     {board.participating?(board.mine?<div className={styles.myStanding}><span>#{board.mine.position} · {periods.find(p=>p.id===period)?.label} rank</span><b>{format(board.mine.points)} pts</b></div>:<p>Your profile is public, but you haven&apos;t completed a ranked puzzle in this period yet.</p>):<p className={styles.helper}>Your completions are still saved privately. Ranking points remain separate from EXP and Duck Bucks. Podium achievements may award EXP.</p>}</>}
+  </section>
   <section className={styles.controls} aria-label="Ranking filters">
    <div className={styles.controlHead}><div><small>FILTER THE BOARD</small><h2>Standings</h2></div><span className={styles.utc}>UTC</span></div>
    <div className={styles.tabs} role="group" aria-label="Ranking period">{periods.map(p=><button key={p.id} type="button" aria-pressed={period===p.id} className={period===p.id?styles.active:""} onClick={()=>setPeriod(p.id)}>{p.label}</button>)}</div>
@@ -71,14 +79,6 @@ export default function Leaderboard(){
     {games.map(item=><option key={item.key} value={item.key}>{item.title}</option>)}
    </select>
    <p className={styles.helper}>{period==="daily"?"Today, starting 00:00 UTC.":period==="weekly"?"This week, starting Monday 00:00 UTC.":period==="monthly"?"This month, starting on the 1st at 00:00 UTC.":"Every verified completion since tracking began."}</p>
-  </section>
-  {error?<div role="alert" className={styles.alert}>{error} <button type="button" onClick={()=>setReload(x=>x+1)}>Try again</button></div>:null}
-  <section className={styles.personal} aria-label="Your ranking participation">
-   <div className={styles.personalTitle}><span><PodscapeLineIcon name="achievement"/></span><div><small>YOUR ARCADE</small><h2>Your standing</h2></div></div>
-   {!board&&!loading?<p>Personal rankings are temporarily unavailable.</p>:!board?.signedIn?<p>Sign in to enter the public rankings. You can still explore the leaderboard without participating.</p>:
-    <><div className={styles.consent}><div><strong>Show me on arcade rankings</strong><p>Your name and verified points appear publicly when enabled. Turn this off anytime.</p></div><button type="button" disabled={updating||loading} aria-pressed={board.participating} onClick={()=>setPublic(!board.participating)} className={board.participating?styles.optedIn:styles.optedOut} aria-label={board.participating?"Leave public arcade rankings":"Join public arcade rankings"}>{updating?"Saving…":board.participating?"Participating ✓":"Join rankings"}</button></div>
-     <small className={styles.privacyHint}>Public opt-in: your name and puzzle points are visible. You can leave anytime.</small>
-     {board.participating?(board.mine?<div className={styles.myStanding}><span>#{board.mine.position} · {periods.find(p=>p.id===period)?.label} rank</span><b>{format(board.mine.points)} pts</b></div>:<p>Your profile is public, but you haven&apos;t completed a ranked puzzle in this period yet.</p>):<p className={styles.helper}>Your completions are still saved privately. Ranking points remain separate from EXP and Duck Bucks. Podium achievements may award EXP.</p>}</>}
   </section>
   <section className={styles.standings} aria-label="Ranking standings" aria-busy={loading}>
    <div className={styles.standingsHead}><div><small>THE SCOREBOARD</small><h2>{periods.find(x=>x.id===period)?.label} leaders</h2></div><span>{loading?"Updating…":entries.length?format(entries.length)+" ranked players":"No entries"}</span></div>
