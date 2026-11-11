@@ -529,46 +529,19 @@
 .managerAttentionEmpty a:focus-visible,.managerAttentionAction:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
 
-/* Woodland: retain Manager's photographic gradient, but make it chestnut. */
-:global(html[data-theme="woodland"]) .managerHero{
- background:linear-gradient(125deg,#30231c 0%,#573b2b 55%,#85674f 100%);
+
+/* Universal Manager theme contract: photography remains; palette is provided by the environment. */
+.managerHero{
+ background:linear-gradient(125deg,var(--portal-hero-start),var(--portal-hero-end));
  color:var(--portal-hero-text);
 }
-:global(html[data-theme="woodland"]) .managerHero::after{
- background:linear-gradient(90deg,rgba(33,22,17,.88) 0%,rgba(43,29,22,.63) 46%,rgba(50,31,21,.08) 100%);
+.managerHero::after{
+ background:linear-gradient(90deg,
+ color-mix(in srgb,var(--portal-hero-start) 91%,transparent) 0%,
+ color-mix(in srgb,var(--portal-hero-start) 68%,transparent) 47%,transparent 100%);
 }
-:global(html[data-theme="woodland"]) .managerHeroContent>span{color:var(--portal-hero-soft)}
-:global(html[data-theme="woodland"]) .managerHeroContent h1{color:var(--portal-hero-text)}
-:global(html[data-theme="woodland"]) .managerHeroContent p{color:var(--portal-hero-muted)}
-:global(html[data-theme="woodland"]) .managerHeroContent>a{
- color:var(--portal-hero-text);
- border-color:color-mix(in srgb,var(--portal-hero-text) 60%,transparent);
-}
-
-
-/* Lilac: a lavender Manager hero with plum copy and deliberate contrast. */
-:global(html[data-theme="lilac"]) .managerHero{
- background:linear-gradient(125deg,#eee1f4 0%,#dbc5e9 57%,#c09ed2 100%);
- color:#33223e;
-}
-:global(html[data-theme="lilac"]) .managerHero::after{
- background:linear-gradient(90deg,rgba(244,235,249,.92) 0%,rgba(229,211,239,.72) 48%,rgba(197,165,215,.08) 100%);
-}
-:global(html[data-theme="lilac"]) .managerHeroContent>span{color:#70418b}
-:global(html[data-theme="lilac"]) .managerHeroContent h1{color:#33223e}
-:global(html[data-theme="lilac"]) .managerHeroContent p{color:#554263}
-:global(html[data-theme="lilac"]) .managerHeroContent>a{color:#4a2b5f;border-color:#8f70a3}
-
-
-/* Ember: Manager uses a warm terracotta hero and dark espresso typography. */
-:global(html[data-theme="ember"]) .managerHero{
- background:linear-gradient(125deg,#f5dfc6 0%,#edc098 58%,#dc985f 100%);
- color:#3e281d;
-}
-:global(html[data-theme="ember"]) .managerHero::after{
- background:linear-gradient(90deg,rgba(255,244,228,.94) 0%,rgba(249,225,199,.77) 47%,rgba(220,152,95,.09) 100%);
-}
-:global(html[data-theme="ember"]) .managerHeroContent>span{color:#a64c21}
-:global(html[data-theme="ember"]) .managerHeroContent h1{color:#3e281d}
-:global(html[data-theme="ember"]) .managerHeroContent p{color:#654833}
-:global(html[data-theme="ember"]) .managerHeroContent>a{color:#64351f;border-color:#ad744d}
+.managerHeroContent>span{color:var(--portal-hero-soft)}
+.managerHeroContent h1{color:var(--portal-hero-text)}
+.managerHeroContent p{color:var(--portal-hero-muted)}
+.managerHeroContent>a{color:var(--portal-hero-text);border-color:color-mix(in srgb,var(--portal-hero-text) 60%,transparent)}
+.managerHeroContent>a:focus-visible{outline:3px solid var(--focus)}
