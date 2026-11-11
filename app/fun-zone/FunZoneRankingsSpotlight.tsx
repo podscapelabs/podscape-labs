@@ -66,8 +66,7 @@ export function FunZoneRankingsSpotlight(){
  const navigate=(index:number)=>{
   const next=Math.max(0,Math.min(slides.length-1,index));
   activeRef.current=next;setActive(next);
-  const element=track.current?.children.item(next) as HTMLElement|null;
-  element?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth",inline:"start",block:"nearest"});
+  track.current?.scrollTo({left:next*(track.current.clientWidth||0),behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});
  };
  const onScroll=()=>{
   const node=track.current;if(!node||node.clientWidth===0)return;
@@ -87,7 +86,7 @@ export function FunZoneRankingsSpotlight(){
     return <article key={slide.id} className={styles.rankingsSlide} aria-label={slide.title}>
      <div className={styles.rankingsSlideTitle}>
       <span className={styles.rankingsSlideIcon}><PodscapeLineIcon name={slide.icon}/></span>
-      <div><small>{slide.eyebrow}</small><h3>{slide.title}</h3></div>
+      <div><small>{slide.eyebrow}</small><h3>{slide.title}</h3><p>{slide.description}</p></div>
       <Link href={slide.href} aria-label={"Open full "+slide.title+" leaderboard"}>Full board <span aria-hidden="true">→</span></Link>
      </div>
      {board.available&&top.length?
@@ -109,7 +108,7 @@ export function FunZoneRankingsSpotlight(){
    })}
   </div>
   <div className={styles.rankingsPager}>
-   <button type="button" aria-label="Previous rankings" disabled={active===0} onClick={()=>navigate(active-1)}><PodscapeLineIcon name="arrow-left"/></button>
+   <button type="button" aria-label="Previous rankings" disabled={active===0} onClick={()=>navigate(active-1)}><span className={styles.rankingsBackIcon}><PodscapeLineIcon name="arrow-right"/></span></button>
    <div role="group" aria-label="Choose rankings">
     {slides.map((slide,i)=><button key={slide.id} type="button" onClick={()=>navigate(i)}
      aria-label={"Show "+slide.title} aria-current={active===i?"true":undefined}/>)}
