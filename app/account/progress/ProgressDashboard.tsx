@@ -12,6 +12,17 @@ type Achievement = {
   unlockedAt?: string | null; status: "available" | "planned"; hidden?:boolean;
 };
 
+function achievementMark(key:string):PodscapeIconName{
+ if(key.startsWith("ranking_"))return "trophy";
+ if(key.startsWith("exchange_"))return "gamepad";
+ if(key.startsWith("puzzle_")||key.startsWith("secret_arcade")||key.startsWith("secret_burrow"))return "challenge";
+ if(key.startsWith("ledger_")||key.startsWith("collection_"))return "leaf";
+ if(key.startsWith("care_"))return "manager";
+ if(key.startsWith("nav_"))return "grid";
+ if(key.includes("personalized")||key.startsWith("customize_"))return "edit";
+ return "achievement";
+}
+
 const activities: { icon: PodscapeIconName; title: string; description: string; href: string }[] = [
   { icon: "leaf", title: "Explore the Ledger", description: "Discover new species", href: "/ledger" },
   { icon: "book", title: "Read a Guide", description: "Learn care essentials", href: "/field-guide" },
@@ -74,7 +85,7 @@ export default function ProgressDashboard({
       <div className={styles.achievementGrid}>
         {shown.map(a => <button type="button" key={a.key} className={styles.achievementTile} data-earned={Boolean(a.unlockedAt)} onClick={()=>setSelected(a.key)} aria-label={(a.hidden&&!a.unlockedAt?"Secret achievement":a.title) + (a.unlockedAt ? a.hidden?", previously hidden, unlocked":", unlocked" : a.status === "planned" ? ", coming later" : ", not yet unlocked") + ". View details."}>
           <span className={styles.medallion} data-earned={Boolean(a.unlockedAt)} aria-hidden="true">
-            <span className={styles.medallionRing}>{a.hidden&&!a.unlockedAt?"?":a.icon}</span>
+            <span className={styles.medallionRing}>{a.hidden&&!a.unlockedAt?"?":<PodscapeLineIcon name={achievementMark(a.key)}/>}</span>
             {!a.unlockedAt ? <span className={styles.lockMark}><PodscapeLineIcon name="lock" /></span> : null}
           </span>
           <span className={styles.tileCopy}><span className={styles.tileStatus}>{a.unlockedAt ? "✓ Unlocked" : a.status === "planned" ? "Coming later" : "Locked"}</span>{a.hidden&&a.unlockedAt?<span className={styles.previouslyHidden}><PodscapeLineIcon name="achievement" /> Previously Hidden</span>:null}
