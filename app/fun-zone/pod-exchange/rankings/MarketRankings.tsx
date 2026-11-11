@@ -110,6 +110,7 @@ export default function MarketRankings(){
      </div>)}</div>:null}
     </>}
   </section>
+  <p className={styles.achievementHint}><PodscapeLineIcon name="achievement"/> Competitive weekly checkpoints can unlock permanent Market Mogul and Sharp Investor achievements, plus a hidden surprise. At least two verified participants are required.</p>
   <div className={styles.links}><Link href="/fun-zone/pod-exchange">Trade in the Exchange</Link><Link href="/fun-zone/leaderboard">Arcade Rankings</Link><Link href="/account/progress/rankings">Lifetime EXP Rankings</Link></div>
   <details className={styles.rules}><summary><span><PodscapeLineIcon name="book"/> How market rankings work</span><PodscapeLineIcon name="arrow-down"/></summary>
    <div><p><strong>The Rich List:</strong> Duck Bucks cash plus all share holdings, repriced at the current shared five-minute market tick.</p>
