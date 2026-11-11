@@ -66,7 +66,8 @@ export function FunZoneRankingsSpotlight(){
  const navigate=(index:number)=>{
   const next=Math.max(0,Math.min(slides.length-1,index));
   activeRef.current=next;setActive(next);
-  track.current?.scrollTo({left:next*(track.current.clientWidth||0),behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});
+  const node=track.current;
+  if(node)node.scrollTo({left:next*node.clientWidth,behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});
  };
  const onScroll=()=>{
   const node=track.current;if(!node||node.clientWidth===0)return;
