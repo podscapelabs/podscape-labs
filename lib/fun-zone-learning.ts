@@ -36,8 +36,8 @@ export const FUN_ZONE_LESSONS:Record<string,readonly string[]>={
   "Start with an everyday five-letter keeper word. The clue tells you what the word describes.",
   "This word describes a place with plenty of leaves. Think about the forest floor.",
   "Think of a five-letter word for shelter from the open air.",
-  "Fungi help decompose dead organic material, alongside bacteria and other organisms.",
-  "A genus is the first word in a scientific species name, such as Porcellio in Porcellio scaber."
+  "Think of the plural five-letter word for organisms, including moulds, that help break down dead material.",
+  "Scientific species names have two parts. Think of the five-letter term for their first naming group."
  ],
  "colony-connections":[
   "Everything here is familiar: nature, enclosure tools, food and common hobby names. Find one clear group of four at a time.",
