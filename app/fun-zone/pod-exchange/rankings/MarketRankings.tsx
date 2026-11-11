@@ -7,7 +7,7 @@ import styles from "./market-rankings.module.css";
 type Kind="wealth"|"return"|"weekly";
 type Entry={name:string;value:number;profit:number;returnPct:number;weeklyPct:number|null;position:number;mine:boolean};
 type BoardSlice={rows:Entry[];mine:Entry|null;count:number};
-type Data={signedIn:boolean;participating:boolean;hideUsername:boolean;eligible:boolean;needsWallet:boolean;legacyReviewRequired:boolean;reviewStatus:string|null;reviewerNote:string|null;cycle:number;weekStart:string;weeklyReady:boolean;wealth:BoardSlice;return:BoardSlice;weekly:BoardSlice};
+type Data={signedIn:boolean;participating:boolean;hideUsername:boolean;eligible:boolean;needsWallet:boolean;auditAttempted:boolean;cycle:number;weekStart:string;weeklyReady:boolean;wealth:BoardSlice;return:BoardSlice;weekly:BoardSlice};
 const tabs:{id:Kind;title:string;description:string}[]=[
  {id:"wealth",title:"The Rich List",description:"Cash + current share value"},
  {id:"return",title:"Top Investors",description:"Return on the original 10,000 Duck Bucks"},
@@ -60,7 +60,7 @@ export default function MarketRankings(){
   {error?<div className={styles.error} role="alert">{error}<button type="button" onClick={()=>setReload(v=>v+1)}>Retry</button></div>:null}
   <section className={styles.join} aria-label="Your automatic market ranking">
    <div><small>YOUR MARKET PROFILE</small><h2>Your market standing</h2>
-    <p>Every verified cloud wallet enters the fictional rankings automatically. Choose whether to show your username.</p></div>
+    <p>Verified portfolios are ranked automatically.</p></div>
    {loading?<span className={styles.status}>Checking…</span>:
     !data?.signedIn?<Link className={styles.joinButton} href="/account">Sign in →</Link>:
     data.needsWallet?<Link className={styles.joinButton} href="/fun-zone/pod-exchange">Start trading →</Link>:
@@ -74,7 +74,7 @@ export default function MarketRankings(){
     <p className={styles.privacy}>Your fictional portfolio value and returns remain visible; only your public name is masked.</p>
    </RankingModal></div>:null}
   </section>
-  <div className={styles.helpAction}><RankingModal trigger="Rules & market achievements" title="Market rankings explained">
+  <div className={styles.helpAction}><RankingModal trigger="How rankings work" title="Market rankings explained">
   <section className={styles.rules}><div className={styles.rulesTitle}><span><PodscapeLineIcon name="book"/> How market rankings work</span></div>
    <div><p><strong>The Rich List:</strong> Duck Bucks cash plus all share holdings, repriced at the current shared five-minute market tick.</p>
     <p><strong>Top Investors:</strong> (Current portfolio value − 10,000) ÷ 10,000, expressed as a percentage. A fair starting balance matters.</p>
