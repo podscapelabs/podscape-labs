@@ -48,3 +48,11 @@
  .hintControls .tip{display:none}
  .statusText{font-size:10px;margin:5px 0 0}
 }
+
+/* Word Search gameplay states intentionally do not recolour with the theme.
+   Selection is amber, solved is green, hints have a dotted outline. */
+.cell.solved{background:var(--game-correct);color:var(--game-state-text);box-shadow:inset 0 0 0 1px #ffffff85}
+.cell.selected{background:var(--game-present);color:var(--game-state-text);outline:2px dashed var(--game-state-outline);outline-offset:-3px}
+.cell.hinted{outline:3px dotted var(--game-present);outline-offset:-2px;box-shadow:inset 0 0 0 2px var(--surface)}
+.words .done{color:var(--game-correct);font-weight:850;text-decoration:line-through;text-decoration-thickness:2px}
+.win{color:var(--game-correct)}
