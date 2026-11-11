@@ -5,6 +5,7 @@ import {
   changeCustomerPassword,
   changeAuthenticatedCustomerPassword,
   requestCustomerPasswordReset,
+  resendCustomerVerification,
   signInCustomer,
   signUpCustomer,
   updateCustomerProfile,
@@ -24,9 +25,30 @@ const formActions = {
   change: changeAuthenticatedCustomerPassword,
 };
 
+/** Separate form avoids nesting forms and works from both Pod Access and account pages. */
+function ResendVerificationForm() {
+  const [state, submit, pending] = useActionState(resendCustomerVerification, INITIAL_STATE);
+  return (
+    <form className={styles.form} action={submit} aria-label="Resend email verification">
+      <div className={styles.field}>
+        <label htmlFor="resend-verification-email">Didn't receive a verification email?</label>
+        <input id="resend-verification-email" type="email" name="email"
+          autoComplete="email" maxLength={254} placeholder="Your approved beta email" required />
+      </div>
+      {state.error ? <p className={styles.error} role="alert">{state.error}</p> : null}
+      {state.message ? <p className={styles.success} role="status">{state.message}</p> : null}
+      <button type="submit" disabled={pending} className={styles.submit}>
+        {pending ? "Requesting…" : "Resend verification email"}
+        <span aria-hidden="true">→</span>
+      </button>
+    </form>
+  );
+}
+
 export function CustomerAccountForm({ kind, initialName = "", embedded = false }: { kind: FormKind; initialName?: string; embedded?: boolean }) {
   const [state, submit, pending] = useActionState(formActions[kind], INITIAL_STATE);
   return (
+    <>
     <form className={styles.form} action={submit}>
       {kind === "sign-up" || kind === "profile" ? (
         <div className={styles.field}>
@@ -72,5 +94,7 @@ export function CustomerAccountForm({ kind, initialName = "", embedded = false }
         <p className={styles.formLinks}><a href="/account/login">← Back to sign in</a></p>
       ) : null}
     </form>
+    {(kind === "login" || kind === "sign-up") ? <ResendVerificationForm /> : null}
+    </>
   );
 }
