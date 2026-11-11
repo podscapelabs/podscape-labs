@@ -1,9 +1,9 @@
 "use client";
-import {useRef} from "react";
+import {useRef,type ReactNode} from "react";
 import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
 import styles from "./RankingModal.module.css";
 
-export function RankingModal({trigger,title,children,subtle=false}:{trigger:string;title:string;children:React.ReactNode;subtle?:boolean}){
+export function RankingModal({trigger,title,children,subtle=false}:{trigger:string;title:string;children:ReactNode;subtle?:boolean}){
  const dialog=useRef<HTMLDialogElement>(null);
  const triggerButton=useRef<HTMLButtonElement>(null);
  const close=()=>{dialog.current?.close();triggerButton.current?.focus()};
