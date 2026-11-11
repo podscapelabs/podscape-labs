@@ -64,7 +64,7 @@ export default function MarketRankings(){
    {loading?<span className={styles.status}>Checking…</span>:
     !data?.signedIn?<Link className={styles.joinButton} href="/account">Sign in →</Link>:
     data.needsWallet?<Link className={styles.joinButton} href="/fun-zone/pod-exchange">Start trading →</Link>:
-    !data.eligible?<p className={styles.eligibility}>Automatic verification checks historical trades. Only portfolios that reconcile with a fair 10,000 Duck Bucks start enter competitive standings; no manual approval or wallet reset is required.</p>:null}
+    !data.eligible?<p className={styles.eligibility}>{data.auditAttempted?"We could not reconcile this legacy wallet with its recorded trades. Your balance is safe; contact the PodScape team if your trade history is incomplete.":"Checking historical trades automatically. Your existing wallet and balance are preserved."}</p>:null}
    {data?.signedIn&&data.eligible?<div className={styles.privacyAction}><RankingModal trigger={data.hideUsername?"Username hidden · Manage":"Username visible · Manage"} title="Market ranking privacy" subtle>
     <label className={styles.namePrivacy}>
     <input type="checkbox" checked={data.hideUsername===true} disabled={updating||loading}
