@@ -171,7 +171,7 @@ export default function Leaderboard(){
      </div>)}</div>}
    </div>
    </div>
-  </details>
+  </section>
 
   <p className={styles.note}>Ranking points = 100 per unique server-verified puzzle completion. Ties share a rank. Daily, weekly and monthly boards reset by UTC calendar periods; All time persists. Only opted-in players appear. The Pod Exchange is not ranked because simulated wealth isn&apos;t a verified puzzle score.</p>
   </RankingModal></div>
