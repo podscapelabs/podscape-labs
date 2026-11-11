@@ -6,7 +6,7 @@ import styles from "./exchange.module.css";
 import {DuckBucks,DuckBuckIcon,duckBucksNumber} from "@/components/DuckBucks";
 import {PodscapeLineIcon,type PodscapeIconName} from "@/components/PodscapeLineIcon";
 import {achievementCatalog} from "@/data/achievement-catalog";
-import {STOCKS,STORAGE_KEY,MARKET_INTERVAL_MS,STARTING_BUCKS,cycleAt,defaultPortfolio,decodeSavedPortfolio,executeOrder,money,headlineAt,priceAt,sanitizePortfolio,totalValue,type Portfolio} from "@/lib/pod-exchange";
+import {STOCKS,STORAGE_KEY,MARKET_INTERVAL_MS,STARTING_BUCKS,cycleAt,defaultPortfolio,decodeSavedPortfolio,executeOrder,money,headlineAt,newsImpactAt,priceAt,tradeFee,tradeTotal,sanitizePortfolio,totalValue,type Portfolio} from "@/lib/pod-exchange";
 
 const companyMarks:Record<string,PodscapeIconName>={MOO:"leaf",PANDA:"jar",BLUE:"arrow-right",TITAN:"bin",CLOWN:"creative"};
 function CompanyMark({symbol}:{symbol:string}){return symbol==="DUCK"?<DuckBuckIcon size={25}/>:<PodscapeLineIcon name={companyMarks[symbol]||"gamepad"}/>;}
@@ -125,11 +125,15 @@ export function PodExchange(){
  const owned=portfolio.holdings[symbol]||0;
  const count=Number(quantity);
  const validCount=/^[1-9]\d{0,5}$/.test(quantity)&&Number.isSafeInteger(count);
- const total=validCount?money(price*count):0;
+ const subtotal=validCount?money(price*count):0;
+ const fee=validCount?tradeFee(subtotal):0;
+ const total=validCount?tradeTotal(price,count,side):0;
  const allowed=ready&&!pending&&now!==null&&validCount&&(side==="buy"?total<=portfolio.cash:count<=owned);
  const worth=totalValue(portfolio,cycle);
  const gain=money(worth-STARTING_BUCKS);
  const news=now===null?null:headlineAt(cycle).story;
+ const newsImpact=now===null||!news?0:newsImpactAt(news.symbol,cycle);
+ const newsAge=cycle-(now===null?cycle:headlineAt(cycle).publishedCycle);
  const timeLeft=now===null?0:MARKET_INTERVAL_MS-(now%MARKET_INTERVAL_MS);
  async function order(){
   if(!ready||pending||tradingRef.current||now===null)return;
@@ -165,7 +169,7 @@ export function PodExchange(){
     setMessage("Wallet is not connected. Try reloading your portfolio.");return;
    }
    setNow(Date.now());
-   setMessage(`${side==="buy"?"Bought":"Sold"} ${count} ${symbol} share${count===1?"":"s"} at ${duckBucksNumber(trade.unitPrice)} Duck Bucks each.`);
+   setMessage(`${side==="buy"?"Bought":"Sold"} ${count} ${symbol} share${count===1?"":"s"} at ${duckBucksNumber(trade.unitPrice)} each. Trading fee included.`);
   }catch{setMessage("Connection failed. Trade status is uncertain; reload your saved wallet before placing another order.");setReady(false)}
   finally{tradingRef.current=false;setPending(false)}
  }
@@ -181,9 +185,9 @@ export function PodExchange(){
    <div className={styles.rulesBody}>
     <p><strong>Start with 10,000 Duck Bucks.</strong> They&apos;re fictional game currency, not Pod Coins.</p>
     <p><strong>Buy shares</strong> in any of the six companies. You can sell shares you own whenever you like.</p>
-    <p><strong>Prices change every five minutes</strong> based on simulated market movement and occasional company news.</p>
+    <p><strong>Prices change every five minutes</strong> based on each company's volatility, market moods and fictional company news.</p>
     <p><strong>Grow your portfolio</strong> by trading wisely. Its value is your remaining Duck Bucks plus the current value of your shares.</p>
-    <small>Beta rules: whole shares only, no trading fees, and no real money or prizes. Your game saves on this device.</small>
+    <small>Beta rules: whole shares only, 0.5% fee per buy or sell. No real money or prizes. Signed-in wallets sync to your account.</small>
    </div>
   </details>
   <details className={styles.achievementGuide}>
@@ -200,7 +204,7 @@ export function PodExchange(){
    <div><span>Duck Bucks available</span><strong>{ready?<DuckBucks amount={portfolio.cash}/>:"—"}</strong><small>Virtual currency only</small></div>
    <div><span>Companies owned</span><strong>{STOCKS.filter(s=>(portfolio.holdings[s.symbol]||0)>0).length}</strong><small>{portfolio.trades.length} recent trades</small></div>
   </section>
-  <section className={styles.bulletin} aria-label="Market news"><span className={styles.newsLabel}>THE LEAF STREET JOURNAL</span><div><strong>{news?.headline||"Market bulletin loading…"}</strong><p>{news?.detail||"The next tiny market story is being prepared."}</p></div><b>{news?.symbol||"PODX"}</b></section>
+  <section className={styles.bulletin} aria-label="Market news"><span className={styles.newsLabel}>THE LEAF STREET JOURNAL</span><div><strong>{news?.headline||"Market bulletin loading…"}</strong><p>{news?.detail||"The next tiny market story is being prepared."}</p><small className={styles.newsEffect}>{news?`${news.symbol} · ${newsImpact>=0?"+":""}${(newsImpact*100).toFixed(1)}% news influence · ${newsAge===0?"Breaking":newsAge===1?"Cooling":"Fading"}`:"New headlines every 15 minutes"}</small></div><b>{news?.symbol||"PODX"}</b></section>
   <div className={styles.mobileSwitch}><button type="button" aria-pressed={view==="market"} onClick={()=>setView("market")}>Trade market</button><button type="button" aria-pressed={view==="wallet"} onClick={()=>setView("wallet")}>My holdings</button></div>
   <div className={`${styles.columns} ${view==="wallet"?styles.marketHiddenMobile:""}`}>
    <section aria-label="Fictional market listings">
@@ -220,7 +224,7 @@ export function PodExchange(){
      <Sparkline cycle={cycle} symbol={symbol}/><p className={styles.chartHint}>Simulated prices · Past 2 hours</p>
      <div className={styles.sideSwitch}><button type="button" aria-pressed={side==="buy"} onClick={()=>{setSide("buy");setMessage("");}}>Buy</button><button type="button" aria-pressed={side==="sell"} onClick={()=>{setSide("sell");setMessage("");}}>Sell</button></div>
      <label className={styles.quantity}>Number of shares<input type="number" inputMode="numeric" min={1} max={999999} step={1} value={quantity} onChange={e=>setQuantity(e.target.value)}/></label>
-     <div className={styles.orderDetails}><span>You own {owned}</span><span>Total {validCount?<DuckBucks amount={total}/>:"—"}</span></div>
+     <div className={styles.orderDetails}><span>You own {owned}</span><span>Trade fee (0.5%) {validCount?<DuckBucks amount={fee}/>:"—"}</span><strong>{side==="buy"?"Pay":"Receive"} {validCount?<DuckBucks amount={total}/>:"—"}</strong></div>
      <button className={styles.action} disabled={!allowed} onClick={order} type="button">{pending?"Saving trade…":side==="buy"?"Buy":"Sell"} {company.symbol} shares</button>
      {message?<p className={styles.message} role="status">{message}</p>:null}
 
