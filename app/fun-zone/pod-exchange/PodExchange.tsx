@@ -4,6 +4,7 @@ import Link from "next/link";
 import styles from "./exchange.module.css";
 import {DuckBucks,DuckBuckIcon,duckBucksNumber} from "@/components/DuckBucks";
 import {PodscapeLineIcon,type PodscapeIconName} from "@/components/PodscapeLineIcon";
+import {recordExchangeTradeAchievements} from "@/components/exchange-achievements";
 import {STOCKS,STORAGE_KEY,MARKET_INTERVAL_MS,STARTING_BUCKS,cycleAt,defaultPortfolio,executeOrder,money,headlineAt,priceAt,sanitizePortfolio,totalValue,type Portfolio} from "@/lib/pod-exchange";
 
 const companyMarks:Record<string,PodscapeIconName>={MOO:"leaf",PANDA:"jar",BLUE:"arrow-right",TITAN:"bin",CLOWN:"creative"};
@@ -58,6 +59,7 @@ export function PodExchange(){
   try{localStorage.setItem(STORAGE_KEY,JSON.stringify(result.portfolio));}
   catch{setMessage("Your device couldn't save this trade. Check browser storage permissions.");return;}
   setPortfolio(result.portfolio);
+  if(result.portfolio.trades[0])void recordExchangeTradeAchievements(result.portfolio.trades[0]);
   setNow(Date.now());
   setMessage(`${side==="buy"?"Bought":"Sold"} ${count} ${symbol} share${count===1?"":"s"} at ${duckBucksNumber(priceAt(symbol,tick))} Duck Bucks each.`);
  }
