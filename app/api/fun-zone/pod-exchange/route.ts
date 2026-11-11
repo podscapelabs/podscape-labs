@@ -60,12 +60,21 @@ export async function POST(request:Request){
     Object.entries(saved.holdings as Record<string,unknown>).some(([symbol,qty])=>!
      STOCKS.some(s=>s.symbol===symbol)||typeof qty!=="number"||!Number.isSafeInteger(qty)||qty<0||qty>1000)))
    return NextResponse.json({error:"This older beta wallet needs a manual migration review. Your local Duck Bucks and shares were not changed."},{status:400});
-  const {error}=await admin!.rpc("initialize_member_exchange_portfolio",{
+  const {data:initialized,error}=await admin!.rpc("initialize_member_exchange_portfolio",{
    p_user_id:user!.id,p_cash:saved?Number(saved.cash):STARTING_BUCKS,
    p_holdings:saved?.holdings||{},p_trades:Array.isArray(saved?.trades)?saved.trades:[]
   });
   if(error){console.error("Exchange initialization error",error.code);
    return NextResponse.json({error:"Could not sync portfolio; local data has been preserved"},{status:503})}
+  // Only a newly created, clean 10,000 Duck Buck wallet is eligible for public
+  // rankings. Existing imported beta portfolios remain intact but unverified.
+  if(initialized===true&&!saved){
+   const {error:eligibleError}=await admin!.from("member_exchange_ranking_preferences").upsert({
+    user_id:user!.id,eligible:true,verified_at:new Date().toISOString(),
+    public_enabled:false,updated_at:new Date().toISOString()
+   },{onConflict:"user_id"});
+   if(eligibleError)console.error("Exchange ranking eligibility registration failed",eligibleError.code);
+  }
   try{return NextResponse.json({...await readPortfolio(admin!,user!.id),userId:user!.id},{headers:{"Cache-Control":"no-store"}})}
   catch{return NextResponse.json({error:"Could not read synchronized portfolio"},{status:503})}
  }
