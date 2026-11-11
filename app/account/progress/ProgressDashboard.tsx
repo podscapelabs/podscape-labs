@@ -92,6 +92,12 @@ export default function ProgressDashboard({
       </div>
     </section>
 
+    <Link className={styles.lifetimeRankingLink} href="/account/progress/rankings">
+      <span className={styles.lifetimeRankingIcon}><PodscapeLineIcon name="trophy"/></span>
+      <span><strong>Lifetime EXP Rankings</strong><small>See top keepers by total EXP and level · Optional public participation</small></span>
+      <span className={styles.lifetimeRankingArrow} aria-hidden="true">→</span>
+    </Link>
+
     <nav className={styles.sectionsNav} aria-label="Progress sections">
       {([["achievements","achievement","Achievements"],["explore","leaf","Explore"],["stats","grid","Stats"]] as const).map(([key,icon,label]) =>
         <button key={key} type="button" aria-current={view === key ? "page" : undefined} onClick={() => setView(key)}><span aria-hidden="true"><PodscapeLineIcon name={icon} /></span>{label}</button>
