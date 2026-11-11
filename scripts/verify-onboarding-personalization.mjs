@@ -1,0 +1,47 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const read=p=>readFileSync(p,"utf8");
+const tour=read("components/ShortcutWelcomeTip.tsx");
+const css=read("components/ShortcutWelcomeTip.module.css");
+const presets=read("components/onboarding-presets.ts");
+const registry=read("lib/theme-registry.ts");
+const runtime=read("lib/theme-runtime.ts");
+const progress=read("app/api/progress/experience-action/route.ts");
+const widgets=read("components/HomeWidgets.tsx");
+
+const themeIds=[...registry.matchAll(/\{id:"(light|dark|woodland|lilac|ember)",title:/g)].map(m=>m[1]);
+assert.deepEqual(new Set(themeIds),new Set(["light","dark","woodland","lilac","ember"]));
+assert.match(tour,/THEMES\.map\(theme=>/,"Onboarding must use canonical theme registry");
+assert.match(presets,/type StarterAppearance = "keep" \| ThemePreference/,"Appearance types must include every registered palette");
+assert.match(tour,/appearance==="keep"/,"Keep current theme option must exist");
+assert.match(tour,/appearance==="system"/,"Device theme option must exist");
+assert.match(tour,/theme\.colors\[0\]/,"Theme selector must show colour swatches");
+assert.match(tour,/step===3\?<div className=\{styles\.setup\}>/,"Dashboard must have a dedicated step");
+assert.match(tour,/step===4\?<div className=\{styles\.setup\}>/,"Theme selector must have its own step");
+assert.match(tour,/starterChoices\.map\(choice=>/,"All original starter presets remain selectable");
+assert.match(tour,/focus===null/,"Keep current layout remains the safe default");
+assert.match(tour,/selected\.preview\.map/,"Each preset needs a real widget preview");
+assert.match(tour,/setApplyShortcuts\(e\.target\.checked\)/,"Shortcut change must remain optional");
+assert.match(tour,/if\(focus\)\{/,"Unselected starter must not overwrite layout");
+assert.match(tour,/else if\(appearance!=="keep"\)/,"Theme-only changes must remain possible");
+assert.match(tour,/chooseThemePreference\(appearance\)/,"Theme must use shared runtime");
+assert.match(runtime,/themeColorScheme\(theme\)/,"Shared theme runtime must set correct light/dark scheme");
+assert.match(presets,/if\(options\.shortcuts\)\{/,"Preset may not modify shortcuts without permission");
+assert.match(presets,/const order=\[\.\.\.new Set\(\[\.\.\.core,\.\.\.chosen\.visible/,"Chosen widgets must appear first");
+assert.match(presets,/for\(const \[key,value\] of before\)/,"Failed writes must restore prior saved preferences");
+assert.match(presets,/marketNews/,"Preset orders must include all existing optional widgets");
+assert.match(widgets,/podscape-home-widgets-v2/,"Presets should share the real Home storage key");
+assert.match(presets,/podscape-home-widgets-v2/);
+assert.match(tour,/\[visible\]/,"Scroll locking should remain tied to modal visibility, not steps");
+assert.match(tour,/stepRef\.current>=3/,"Escape should close setup without rewriting data");
+assert.match(tour,/if\(!skipped\)void recordExperienceAction/,"Skipping tutorial must not award EXP");
+assert.match(tour,/steps:\["welcome","portals","editing","layout","appearance"\]/,"New proof must include theme step");
+assert.match(progress,/welcome,portals,editing,layout,appearance/,"Server should accept new five-step proof");
+assert.match(progress,/welcome,portals,editing,layout"/,"Server must accept legacy four-step proof");
+for(const name of ["tourTop","tourBody","tourFooter","presetGrid","presetTile","presetPreview","themeGrid","themeTile","themeSwatch","themeSummary"]){
+ assert.ok(css.includes("."+name+"{"),"Missing onboarding style "+name);
+}
+assert.match(css,/overflow-y:auto/,"Only onboarding body should scroll");
+assert.match(css,/\.tourFooter\{flex:none/,"Buttons and progress must remain visible");
+assert.match(css,/max-height:calc\(100dvh - 14px\)/,"Mobile viewport should respect screen height");
+console.log("Onboarding personalization and five-theme source checks passed.");
