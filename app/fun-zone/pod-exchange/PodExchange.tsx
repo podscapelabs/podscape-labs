@@ -73,6 +73,16 @@ export function PodExchange(){
    <div className={styles.marketStatus}><span><i aria-hidden="true"/> MARKET OPEN</span><small>{now===null?"Loading market…":`Next tick ${countdown(timeLeft)}`}</small></div>
   </header>
   <p className={styles.disclaimer}><span aria-hidden="true">✳</span> A fictional market game · No real money, cash-out, Pod Coins or prizes.</p>
+  <details className={styles.rules} id="exchange-rules">
+   <summary><span><PodscapeLineIcon name="book"/> How to Play</span><span className={styles.rulesHint}>The basics <span aria-hidden="true">⌄</span></span></summary>
+   <div className={styles.rulesBody}>
+    <p><strong>Start with 10,000 Duck Bucks.</strong> They&apos;re fictional game currency, not Pod Coins.</p>
+    <p><strong>Buy shares</strong> in any of the six companies. You can sell shares you own whenever you like.</p>
+    <p><strong>Prices change every five minutes</strong> based on simulated market movement and occasional company news.</p>
+    <p><strong>Grow your portfolio</strong> by trading wisely. Its value is your remaining Duck Bucks plus the current value of your shares.</p>
+    <small>Beta rules: whole shares only, no trading fees, and no real money or prizes. Your game saves on this device.</small>
+   </div>
+  </details>
   <section className={styles.balances} aria-label="Duck Bucks portfolio">
    <div><span>Portfolio value</span><strong>{ready&&now!==null?<DuckBucks amount={worth}/>:"Loading…"}</strong><small className={gain>=0?styles.up:styles.down}>{ready&&now!==null?<><DuckBucks amount={gain} showSign/> overall</>:"Saved on this device"}</small></div>
    <div><span>Duck Bucks available</span><strong>{ready?<DuckBucks amount={portfolio.cash}/>:"—"}</strong><small>Virtual currency only</small></div>
