@@ -17,3 +17,5 @@
 .foot{display:block;font-size:10px;color:var(--muted);line-height:1.4;margin:9px 2px 0}
 .storyLink:focus-visible{outline:3px solid var(--forest);outline-offset:3px}
 @media(max-width:720px){.card{padding:13px;border-radius:16px}.head h3{font-size:21px}.storyLink{padding:12px}.storyLink strong{font-size:18px}}
+
+.marketInfluence{display:inline-block;margin:0 0 10px;font-size:10px;font-weight:800;letter-spacing:.025em;color:var(--forest)}
