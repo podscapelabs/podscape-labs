@@ -102,10 +102,10 @@ export function PodExchange(){
   <section className={styles.portfolio} aria-label="Your fictional holdings">
    <div className={styles.panelHead}><div><h2>My duck portfolio</h2><p>All saved locally on this device during beta.</p></div><button className={styles.reset} onClick={reset} type="button">Reset game</button></div>
    {STOCKS.filter(stock=>(portfolio.holdings[stock.symbol]||0)>0).length===0?
-   <div className={styles.empty}>🦆 Your duck wallet is full, but you don't own any shares yet. Select a company and make your first trade!</div>:
+   <div className={styles.empty}>🦆 Your duck wallet is full, but you don&apos;t own any shares yet. Select a company and make your first trade!</div>:
    <div className={styles.holdings}>{STOCKS.filter(stock=>(portfolio.holdings[stock.symbol]||0)>0).map(stock=><div key={stock.symbol}><span>{stock.icon} <strong>{stock.symbol}</strong> <small>× {portfolio.holdings[stock.symbol]}</small></span><strong>{duck((portfolio.holdings[stock.symbol]||0)*priceAt(stock.symbol,cycle))}</strong></div>)}</div>}
    {portfolio.trades.length>0?<details className={styles.history}><summary>Recent trades ({portfolio.trades.length})</summary>{portfolio.trades.slice(0,10).map(trade=><p key={trade.id}>{trade.side==="buy"?"Bought":"Sold"} {trade.shares} {trade.symbol} · {duck(trade.unitPrice)} each</p>)}</details>:null}
   </section>
-  <footer className={styles.footer}>🦆 Duck Bucks are imaginary, non-transferable and cannot be purchased, exchanged or redeemed. The beta market is shared mathematically, but portfolios are stored on each player's device. <Link href="/fun-zone">Back to Fun Zone →</Link></footer>
+  <footer className={styles.footer}>🦆 Duck Bucks are imaginary, non-transferable and cannot be purchased, exchanged or redeemed. The beta market is shared mathematically, but portfolios are stored on each player&apos;s device. <Link href="/fun-zone">Back to Fun Zone →</Link></footer>
  </div></main>;
 }
