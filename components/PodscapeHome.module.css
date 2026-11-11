@@ -856,3 +856,21 @@
 :global(html[data-theme="ember"]) .spotlightRail .tileVisual:has(.tilePlaceholder)::after{
  border-color:rgba(166,76,33,.26);
 }
+
+
+/* Universal home surfaces: every palette paints discovery rails, not just accents.
+   The colours below are semantic, so all five environments remain distinct. */
+:global(html) .spotlightRail .tileCopy,
+:global(html) .recentRail .recentCategoryPrimary,
+:global(html) .recentRail .recentCategoryFooter{
+ background:var(--ps-surface);
+ color:var(--ps-text);
+}
+:global(html) .spotlightRail .tileVisual:has(.tilePlaceholder){
+ background:radial-gradient(circle at 78% 16%,color-mix(in srgb,var(--forest) 20%,transparent),transparent 48%),
+ linear-gradient(130deg,var(--ps-surface-muted),var(--ps-surface-raised));
+}
+:global(html) .spotlightRail .tileVisual:has(.tilePlaceholder)::before,
+:global(html) .spotlightRail .tileVisual:has(.tilePlaceholder)::after{
+ border-color:color-mix(in srgb,var(--forest) 26%,transparent);
+}
