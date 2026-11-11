@@ -38,6 +38,15 @@ export function newsAt(cycle:number):MarketNews|null{
  // News breaks once every three cycles; all visitors see the same event.
  return cycle%3===0?NEWS[Math.floor(random(cycle+337)*NEWS.length)]:null;
 }
+/** Persistent bulletin: the latest headline remains visible through all three ticks.
+ * priceAt still uses newsAt so the actual price catalyst applies on publication only.
+ */
+export function headlineAt(cycle:number):{story:MarketNews;publishedCycle:number}{
+ const publishedCycle=cycle-((cycle%3+3)%3);
+ const story=newsAt(publishedCycle);
+ if(!story)throw Error("Missing market bulletin");
+ return {story,publishedCycle};
+}
 export function priceAt(symbol:string,cycle:number):number{
  const stock=STOCKS.find(item=>item.symbol===symbol);
  if(!stock)return 0;
