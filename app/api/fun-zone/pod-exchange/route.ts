@@ -3,7 +3,7 @@ import {customerSupabase} from "@/lib/customer-auth/server";
 import {testerAccessStatus} from "@/lib/customer-auth/access";
 import {isAdminAuthenticated} from "@/lib/admin-auth";
 import {getSupabaseAdmin} from "@/lib/supabase-admin";
-import {STOCKS,STARTING_BUCKS,cycleAt,priceAt,sanitizePortfolio,type Portfolio,type Trade} from "@/lib/pod-exchange";
+import {STOCKS,STARTING_BUCKS,cycleAt,priceAt,isValidPortfolioSnapshot,sanitizePortfolio,type Portfolio,type Trade} from "@/lib/pod-exchange";
 import {achievementCatalog} from "@/data/achievement-catalog";
 
 async function account(){
@@ -27,9 +27,11 @@ async function readPortfolio(admin:NonNullable<Awaited<ReturnType<typeof getSupa
   .select("trade_id,cycle,symbol,side,shares,unit_price")
   .eq("user_id",userId).order("created_at",{ascending:false}).limit(50);
  if(ordersError)throw ordersError;
- const portfolio=sanitizePortfolio({cash:Number(wallet.cash),holdings:wallet.holdings,trades:(orders||[]).map(item=>({
+ const snapshot={cash:Number(wallet.cash),holdings:wallet.holdings,trades:(orders||[]).map(item=>({
   id:item.trade_id,cycle:Number(item.cycle),symbol:item.symbol,side:item.side,shares:item.shares,unitPrice:Number(item.unit_price)
- }))});
+ }))};
+ if(!isValidPortfolioSnapshot(snapshot))throw new Error("Stored wallet failed validation");
+ const portfolio=sanitizePortfolio(snapshot);
  return {exists:true as const,portfolio,revision:Number(wallet.revision)};
 }
 export async function GET(){
@@ -52,7 +54,7 @@ export async function POST(request:Request){
   // clobbering any existing cloud portfolio, even under concurrent logins.
   const legacy=data.legacy;
   const saved=legacy&&typeof legacy==="object"?legacy as Record<string,unknown>:null;
-  if(saved && (!Number.isFinite(saved.cash)||typeof saved.cash!=="number"||
+  if(saved && (typeof saved.cash!=="number"||!Number.isFinite(saved.cash)||
     saved.cash<0||saved.cash>1e10||Math.round(saved.cash*100)/100!==saved.cash||
     !saved.holdings||typeof saved.holdings!=="object"||Array.isArray(saved.holdings)||
     Object.entries(saved.holdings as Record<string,unknown>).some(([symbol,qty])=>!
