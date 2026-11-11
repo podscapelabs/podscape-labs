@@ -17,6 +17,15 @@ function emailFrom(form: FormData): string {
   return stringField(form, "email").toLowerCase();
 }
 
+function validUsername(value: string): boolean {
+  return /^[A-Za-z0-9_]{3,24}$/.test(value);
+}
+
+async function usernameAvailable(db: NonNullable<Awaited<ReturnType<typeof customerSupabase>>>, username: string): Promise<boolean | null> {
+  const { data, error } = await db.rpc("is_customer_username_available", { p_username: username });
+  return error ? null : data === true;
+}
+
 function validEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
@@ -37,13 +46,17 @@ export async function signUpCustomer(_prev: CustomerFormState, form: FormData): 
   const email = emailFrom(form);
   const password = passwordFrom(form);
   const confirmation = String(form.get("confirmPassword") || "");
-  const displayName = stringField(form, "displayName", 60);
+  const displayName = stringField(form, "displayName", 24);
+  if (!validUsername(displayName)) return { error: "Choose a username of 3–24 letters, numbers or underscores. Spaces are not allowed.", message: "" };
   if (!validEmail(email)) return { error: "Enter a valid email address.", message: "" };
   if (!(await isAdminAuthenticated())) {
     const approval = await testerAccessStatus(email);
     if (approval === "unavailable") return { error: "Early Access verification is temporarily unavailable. Please try again shortly.", message: "" };
     if (approval !== "approved") return { error: "This email is not yet on the Early Access list. Ask the PodScape team to approve it first.", message: "" };
   }
+  const available = await usernameAvailable(db, displayName);
+  if (available === null) return { error: "Username availability could not be checked. Please try again.", message: "" };
+  if (!available) return { error: "That username is already taken. Please choose another.", message: "" };
   if (!validNewPassword(password)) return { error: "Use a password of 12–128 characters.", message: "" };
   if (password !== confirmation) return { error: "Your passwords do not match.", message: "" };
 
@@ -161,11 +174,20 @@ export async function updateCustomerProfile(_prev: CustomerFormState, form: Form
   if (!db) return { error: "Customer profiles are not configured yet.", message: "" };
   const { data: { user } } = await db.auth.getUser();
   if (!user) return { error: "Please sign in again.", message: "" };
-  const displayName = stringField(form, "displayName", 60);
+  const displayName = stringField(form, "displayName", 24);
+  if (!validUsername(displayName)) return { error: "Choose a username of 3–24 letters, numbers or underscores.", message: "" };
+  const {data: current, error: lookupError}=await db.from("customer_profiles").select("display_name").eq("id",user.id).maybeSingle();
+  if(lookupError||!current)return { error:"Unable to load your current username. Please try again.", message:"" };
+  if(current.display_name.toLowerCase()!==displayName.toLowerCase()){
+    const available=await usernameAvailable(db,displayName);
+    if(available===null)return {error:"Username availability could not be checked. Please try again.",message:""};
+    if(!available)return {error:"That username is already taken. Please choose another.",message:""};
+  }
   const { error } = await db.from("customer_profiles").update({ display_name: displayName }).eq("id", user.id).select("id").single();
-  if (error) return { error: "Could not save your profile. Please try again.", message: "" };
+  if (error?.code === "23505") return { error: "That username is already taken. Please choose another.", message: "" };
+  if (error) return { error: "Could not save your username. Please try again.", message: "" };
   revalidatePath("/account");
-  return { error: "", message: "Profile updated." };
+  return { error: "", message: "Username saved." };
 }
 
 export async function signOutCustomer() {
