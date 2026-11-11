@@ -14,3 +14,7 @@ export function WidgetLibraryFilter({view,onChange,added,total}:{view:WidgetLibr
   {options.map(([id,label,count])=><button key={id} type="button" aria-pressed={view===id} onClick={()=>onChange(id)}>{label}<span>{count}</span></button>)}
  </div>;
 }
+
+export function WidgetLibraryEmptyState({view}:{view:WidgetLibraryView}){
+ return <p className={styles.widgetLibraryEmpty} role="status">{view==="available"?"Everything available is already on your dashboard. Choose Added to review or remove widgets.":view==="added"?"You haven't added any optional widgets yet. Choose Available to explore them.":"No widgets in this category."}</p>;
+}
