@@ -201,7 +201,7 @@ export function PodExchange(){
    <div><p className={styles.eyebrow}><Link href="/fun-zone">Fun Zone</Link> / MARKET PARODY <span className={styles.beta}>BETA</span></p><h1>The Pod Exchange</h1><p>A little market. A lot of leaf drama.</p></div>
    <div className={styles.marketStatus}><span><i aria-hidden="true"/> MARKET OPEN</span><small>{now===null?"Loading market…":`Next tick ${countdown(timeLeft)}`}</small></div>
   </header>
-  <p className={styles.disclaimer}><PodscapeLineIcon name="gamepad"/> Fictional trading · No real money or prizes.</p>
+
   {storageMode==="error"?<div className={styles.walletAlert} role="alert"><div><strong>Saved wallet unavailable</strong><p>{storageMessage} Your existing Duck Bucks and shares have not been reset.</p></div><button type="button" onClick={()=>window.location.reload()}>Retry loading</button></div>:null}
   <section className={styles.balances} aria-label="Duck Bucks portfolio">
    <div><span>Portfolio value</span><strong>{ready&&now!==null?<DuckBucks amount={worth}/>:"Loading…"}</strong><small className={gain>=0?styles.up:styles.down}>{ready&&now!==null?<><DuckBucks amount={gain} showSign/> overall</>:"Saved on this device"}</small></div>
@@ -277,6 +277,6 @@ export function PodExchange(){
    </div>
   </details>
   </div>
-  <footer className={styles.footer}><DuckBuckIcon size={15}/> Duck Bucks are imaginary, non-transferable and cannot be purchased, exchanged or redeemed. The market runs continuously. Signed-in portfolios sync to PodScape; guest wallets stay on this device. <Link href="/fun-zone">Back to Fun Zone →</Link></footer>
+  <footer className={styles.footer}><DuckBuckIcon size={15}/> Fictional currency only · No real money or prizes. Signed-in wallets sync to PodScape; guest wallets stay on this device. <Link href="/fun-zone">Fun Zone →</Link></footer>
  </div></main>;
 }
