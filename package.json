@@ -26,7 +26,8 @@
     "test:fun-zone-rankings-spotlight": "node scripts/verify-fun-zone-rankings-spotlight.mjs",
     "test:ranking-modal-refinement": "node scripts/verify-ranking-modal-refinement.mjs",
     "test:pod-access": "node scripts/verify-pod-access.mjs",
-    "test:onboarding-personalization": "node scripts/verify-onboarding-personalization.mjs"
+    "test:onboarding-personalization": "node scripts/verify-onboarding-personalization.mjs",
+    "test:fun-zone-learning": "node scripts/verify-fun-zone-learning.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
