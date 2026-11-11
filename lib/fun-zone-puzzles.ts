@@ -248,6 +248,13 @@ const extension:Entry[]=[
   group("Taxonomic terms",["Genus","Species","Epithet","Binomial"]),
   group("Development terms",["Manca","Marsupium","Moult","Exuvia"])
  ])},
+ {gameKey:"crossword-colony",mode:"crossword",puzzle:crossword("science-crossword","The Science Trail",[
+  {answer:"MARSUPIUM",clue:"A female isopod's ventral brood pouch (9)",r:4,c:0,dir:"across"},
+  {answer:"PLEOPOD",clue:"One abdominal appendage that can bear respiratory structures (7)",r:0,c:5,dir:"down"},
+  {answer:"GENUS",clue:"The first word of a two-part species name (5)",r:0,c:3,dir:"down"},
+  {answer:"EXUVIA",clue:"A cast-off exoskeleton after moulting (6)",r:2,c:5,dir:"across"},
+  {answer:"UROPOD",clue:"One of the paired appendages toward the rear of an isopod (6)",r:6,c:0,dir:"across"}
+ ])},
  {gameKey:"word-search",mode:"search",puzzle:search("genera-field-guide","Scientific Names",["CUBARIS","PORCELLIO","ARMADILLIDIUM","PORCELLIONIDES","TRICHORHINA","ONISCUS","PHILOSCIA","NAGURUS"],4321987,"Find eight isopod genera once you are familiar with scientific naming.")}
 ];
 
