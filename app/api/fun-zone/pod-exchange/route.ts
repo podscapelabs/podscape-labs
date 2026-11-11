@@ -71,7 +71,7 @@ export async function POST(request:Request){
   if(initialized===true&&!saved){
    const {error:eligibleError}=await admin!.from("member_exchange_ranking_preferences").upsert({
     user_id:user!.id,eligible:true,verified_at:new Date().toISOString(),
-    public_enabled:false,updated_at:new Date().toISOString()
+    public_enabled:true,updated_at:new Date().toISOString()
    },{onConflict:"user_id"});
    if(eligibleError)console.error("Exchange ranking eligibility registration failed",eligibleError.code);
   }
