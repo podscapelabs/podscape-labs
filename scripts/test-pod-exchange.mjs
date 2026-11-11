@@ -22,6 +22,12 @@ assert.equal(market.tradeFee(1000),5);
 assert.equal(market.tradeTotal(100,2,"buy"),201);
 assert.equal(market.tradeTotal(100,2,"sell"),199);
 assert.equal(market.tradeFee(.01),.01);
+assert.equal(market.tradeFee(3),.02,"3 Duck Bucks has a half-cent fee rounded up");
+assert.equal(market.tradeFee(5),.03,"5 Duck Bucks has a half-cent fee rounded up");
+assert.equal(market.tradeSubtotal(19.99,137),2738.63,"Large orders must use exact integer cents");
+assert.equal(market.tradeTotal(19.99,137,"buy"),2752.32,"Buy amount includes the cent-exact trading fee");
+assert.equal(market.tradeTotal(19.99,137,"sell"),2724.94,"Sell amount subtracts the same fee");
+
 // The clock and market never restart when a browser or calendar day changes.
 for(const date of ["2026-11-10T00:00:00Z","2032-01-01T00:00:00Z","2050-06-15T13:17:00Z"]){
  const cycle=market.cycleAt(Date.parse(date));
