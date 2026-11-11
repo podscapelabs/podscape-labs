@@ -39,4 +39,29 @@ assert.match(page,/No real money, prizes or cash-out/);
 assert.match(widget,/marketLeaders\.map/,"Fun Zone widget should surface real ranked investors");
 assert.match(widget,/\/fun-zone\/pod-exchange\/rankings/);
 assert.doesNotMatch(api,/member_progress_events|member_achievements|exp_delta|pod_coins/,"Market scores must not silently mint rewards");
+
+const catalog=read("data/achievement-catalog.ts");
+const audit=read("lib/exchange-ranking-audit.ts");
+const owner=read("app/account/owner-tools/market-rankings/actions.ts");
+const ownerPage=read("app/account/owner-tools/market-rankings/page.tsx");
+const exchangeWidgetStyles=read("app/fun-zone/fun-zone-portal.module.css");
+for(const [key,exp] of [["exchange_market_mogul",150],["exchange_sharp_trader",125],["exchange_weekly_mover",100]]){
+ assert.match(catalog,new RegExp('key:"'+key+'"[^\\n]+exp:'+exp),"New market placement achievements need permanent catalogue records");
+ assert.ok(sql.includes("'"+key+"'"),"The reward RPC must allowlist "+key);
+ assert.ok(cron.includes('"'+key+'"'),"Weekly checkpoint must evaluate "+key);
+}
+assert.match(sql,/grant execute on function public.award_exchange_market_achievement\(uuid,text\) to service_role/);
+assert.match(sql,/member_progress_events/,"Market achievements need idempotent event records");
+assert.match(cron,/candidates.length>=2/,"No empty one-person achievement prizes");
+assert.match(cron,/c.returnPct>=10/,"Top Investor needs meaningful return");
+assert.match(cron,/bestWeekly>=5/,"Weekly market achievement needs meaningful growth");
+assert.match(cron,/previousWeek/,"Weekly achievement must use a real prior-week baseline");
+assert.match(sql,/member_exchange_ranking_reviews/,"Existing investors need a review queue");
+assert.match(owner,/isAdminAuthenticated/,"Only owners can review beta investors");
+assert.match(owner,/auditStoredExchangeWallet/,"Approval must reconcile trade history");
+assert.match(ownerPage,/Approve verified wallet/,"Owner Studio must show review actions");
+assert.match(audit,/priceAt\(order.symbol,cycle\)/,"Legacy orders must match deterministic historical prices");
+assert.match(audit,/STARTING_BUCKS\*100/,"Legacy cash reconciliation must start at 10,000");
+assert.match(exchangeWidgetStyles,/\.exchangeWidget>\.marketLeadersPreview/,"Mini leaderboard must remain readable across themes");
+
 console.log("Market Rankings source checks passed: privacy, server valuation, weekly baseline integrity, and integration.");
