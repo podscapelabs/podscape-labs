@@ -6,6 +6,8 @@ import {getSupabaseAdmin} from "@/lib/supabase-admin";
 import {reviewVendorProfile} from "@/app/shop/vendors/actions";
 import {vendorCountryName,vendorShippingLabel} from "@/lib/vendor-regions";
 import styles from "@/app/shop/vendors/vendors.module.css";
+import ownerStyles from "./owner-vendors.module.css";
+import {OwnerVendorForm,type OwnerListing} from "./OwnerVendorForm";
 export const dynamic="force-dynamic";
 export const metadata={title:"Vendor Applications | Owner Studio",robots:{index:false,follow:false}};
 export default async function VendorReviewDesk(){
@@ -16,10 +18,21 @@ export default async function VendorReviewDesk(){
  const vendors=data||[];
  return <main className={styles.page}><div className={styles.wrap}>
   <Link className={styles.back} href="/account/owner-tools">← Owner Studio</Link>
-  <header className={styles.hero}><p>OWNER STUDIO · VENDORS</p><h1>Vendor applications</h1><span>Review business profiles before they appear in the public directory.</span></header>
-  <div className={styles.topline}><strong>{vendors.filter(v=>v.status==="pending").length} awaiting review</strong><Link href="/shop/vendors">View public directory →</Link></div>
+  <header className={styles.hero}><p>OWNER STUDIO · VENDORS</p><h1>Vendor Desk</h1><span>Add businesses manually, publish curated listings, and review community applications.</span></header>
+  <div className={styles.topline}><strong>{vendors.filter(v=>v.user_id!==null&&v.status==="pending").length} applications awaiting review · {vendors.filter(v=>v.user_id===null).length} manually managed</strong><Link href="/shop/vendors">View public directory →</Link></div>
+  <section className={ownerStyles.desk} aria-labelledby="owner-create-vendor"><div className={ownerStyles.deskTitle}><h2 id="owner-create-vendor">Add a vendor</h2><span>Owner-managed directory listing</span></div>
+   <OwnerVendorForm/>
+  </section>
+  {vendors.some(v=>v.user_id===null)?<section className={ownerStyles.desk} aria-label="Manually managed vendors">
+   <div className={ownerStyles.deskTitle}><h2>Manage your listings</h2><span>{vendors.filter(v=>v.user_id===null).length} manual entries</span></div>
+   <div className={ownerStyles.entryList}>{vendors.filter(v=>v.user_id===null).map(v=><details key={v.id} className={ownerStyles.entry}>
+    <summary><span>{v.business_name}</span><small>{v.status==="approved"?"Published":"Draft"}</small></summary>
+    <OwnerVendorForm listing={v as OwnerListing}/>
+   </details>)}</div>
+  </section>:null}
+  <div className={ownerStyles.deskTitle}><h2>Community applications</h2><span>Separate from manually managed listings</span></div>
   {!db||error?<p className={styles.error}>Vendor data is unavailable. The setup script may not have been applied.</p>:null}
-  <div className={styles.cards}>{vendors.map(v=><article key={v.id} className={styles.card}>
+  <div className={styles.cards}>{vendors.filter(v=>v.user_id!==null).map(v=><article key={v.id} className={styles.card}>
    <div className={styles.cardHead}>
     {v.logo_path&&db?<img src={db.storage.from("vendor-logos").getPublicUrl(v.logo_path).data.publicUrl} alt={v.business_name+" logo"}/>:<span className={styles.fallback} aria-hidden="true"><PodscapeLineIcon name="vendor"/></span>}
     <div><h2>{v.business_name}</h2><small>{v.location_label||"Location not provided"}</small></div>
@@ -40,6 +53,6 @@ export default async function VendorReviewDesk(){
     </form>)}
    </div>
   </article>)}</div>
-  {!vendors.length&&!error?<p className={styles.empty}>No vendor applications yet.</p>:null}
+  {!vendors.some(v=>v.user_id!==null)&&!error?<p className={styles.empty}>No community vendor applications yet.</p>:null}
  </div></main>;
 }
