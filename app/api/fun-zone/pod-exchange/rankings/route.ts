@@ -42,21 +42,24 @@ export async function GET(){
    .select("user_id").eq("user_id",user.id).maybeSingle():{data:null,error:null};
   if(ownError)throw new Error("Unable to verify wallet status");
   const needsWallet=!!user&&!ownWallet;
-  // Previously imported wallets are verified automatically against server trade history.
-  // A failed audit never changes balances or holdings and never enters public rankings.
-  const pending=await admin.from("member_exchange_ranking_preferences")
-   .select("user_id").eq("eligible",false).is("auto_audit_attempted_at",null).order("updated_at",{ascending:true}).limit(12);
-  if(pending.error)throw new Error("Market eligibility unavailable");
-  for(const record of pending.data||[]){
-   const audit=await auditStoredExchangeWallet(record.user_id);
-   const result=await admin.from("member_exchange_ranking_preferences")
-    .update(audit.ok?{eligible:true,verified_at:new Date().toISOString(),public_enabled:true,auto_audit_attempted_at:new Date().toISOString(),updated_at:new Date().toISOString()}:{auto_audit_attempted_at:new Date().toISOString(),updated_at:new Date().toISOString()})
-    .eq("user_id",record.user_id).eq("eligible",false);
-   if(result.error)throw new Error("Automatic market verification unavailable");
+  // Audit only the signed-in account's legacy wallet once. Public leaderboard
+  // requests must never trigger expensive audits for unrelated investors.
+  if(user&&ownWallet){
+   const existing=await admin.from("member_exchange_ranking_preferences")
+    .select("eligible,auto_audit_attempted_at").eq("user_id",user.id).maybeSingle();
+   if(existing.error)throw new Error("Market eligibility unavailable");
+   if(existing.data&&!existing.data.eligible&&!existing.data.auto_audit_attempted_at){
+    const audit=await auditStoredExchangeWallet(user.id);
+    const timestamp=new Date().toISOString();
+    const result=await admin.from("member_exchange_ranking_preferences")
+     .update(audit.ok?{eligible:true,verified_at:timestamp,public_enabled:true,auto_audit_attempted_at:timestamp,updated_at:timestamp}:{auto_audit_attempted_at:timestamp,updated_at:timestamp})
+     .eq("user_id",user.id).eq("eligible",false);
+    if(result.error)throw new Error("Automatic market verification unavailable");
+   }
   }
   // Fresh fetch allows the current viewer's auto-verified wallet to appear immediately.
   const {data:current,error:currentError}=user?await admin.from("member_exchange_ranking_preferences")
-    .select("public_enabled,eligible,hide_username").eq("user_id",user.id).maybeSingle():{data:null,error:null};
+    .select("public_enabled,eligible,hide_username,auto_audit_attempted_at").eq("user_id",user.id).maybeSingle():{data:null,error:null};
   if(currentError)throw new Error("Market preferences unavailable");
   const participating=!!ownWallet&&current?.eligible===true&&current.public_enabled!==false;
   const eligible=current?.eligible===true;
@@ -95,7 +98,7 @@ export async function GET(){
   }
   const viewerId=participating?user?.id||null:null;
   return NextResponse.json({
-   signedIn:!!user,participating,hideUsername:current?.hide_username===true,eligible,needsWallet,legacyReviewRequired:!!user&&!!ownWallet&&!eligible,
+   signedIn:!!user,participating,hideUsername:current?.hide_username===true,eligible,needsWallet,auditAttempted:!!current?.auto_audit_attempted_at,
    cycle,weekStart,weeklyReady:participants.some(p=>p.weeklyPct!==null),
    wealth:standings(participants,"wealth",viewerId),
    return:standings(participants,"return",viewerId),
