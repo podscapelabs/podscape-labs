@@ -23,6 +23,21 @@ function achievementMark(key:string):PodscapeIconName{
  return "achievement";
 }
 
+type AchievementCategory="exploration"|"fun-zone"|"customization"|"care";
+const achievementCategories:{id:AchievementCategory;title:string;subtitle:string;icon:PodscapeIconName}[]=[
+ {id:"exploration",title:"Exploration & Collection",subtitle:"Species discoveries and collection milestones",icon:"leaf"},
+ {id:"fun-zone",title:"Fun Zone & Rankings",subtitle:"Puzzles, Pod Exchange, rankings and hidden arcade surprises",icon:"gamepad"},
+ {id:"customization",title:"Customization & Navigation",subtitle:"Make PodScape yours, one workspace at a time",icon:"grid"},
+ {id:"care",title:"Colony Care",subtitle:"Keeping and care milestones",icon:"manager"}
+];
+function achievementCategory(key:string):AchievementCategory{
+ if(key.startsWith("ledger_")||key.startsWith("collection_"))return "exploration";
+ if(key.startsWith("puzzle_")||key.startsWith("exchange_")||key.startsWith("ranking_")||
+    key==="secret_arcade_variety"||key==="secret_burrow_streak")return "fun-zone";
+ if(key.startsWith("care_"))return "care";
+ return "customization";
+}
+
 const activities: { icon: PodscapeIconName; title: string; description: string; href: string }[] = [
   { icon: "leaf", title: "Explore the Ledger", description: "Discover new species", href: "/ledger" },
   { icon: "book", title: "Read a Guide", description: "Learn care essentials", href: "/field-guide" },
@@ -38,11 +53,21 @@ export default function ProgressDashboard({
 }) {
   const [view, setView] = useState<"achievements" | "explore" | "stats">("achievements");
   const [filter, setFilter] = useState<"all" | "unlocked" | "locked">("all");
+  const [category, setCategory] = useState<AchievementCategory|"all">("all");
   const [selected, setSelected] = useState<string | null>(null);
   const percent = Math.max(0, Math.min(100, Math.round(100 * (exp - levelStart) / (levelEnd - levelStart))));
   const unlockedCount = achievements.filter(a => Boolean(a.unlockedAt)).length;
   const availableCount = achievements.filter(a => a.status === "available").length;
-  const shown = achievements.filter(a => filter === "all" || (filter === "unlocked" ? Boolean(a.unlockedAt) : !a.unlockedAt));
+  const shown = achievements.filter(a =>
+    (category==="all"||achievementCategory(a.key)===category)&&
+    (filter==="all"||(filter==="unlocked"?Boolean(a.unlockedAt):!a.unlockedAt))
+  );
+  const visibleGroups=achievementCategories.map(group=>({
+    ...group,
+    items:shown.filter(a=>achievementCategory(a.key)===group.id),
+    total:achievements.filter(a=>achievementCategory(a.key)===group.id&&a.status==="available").length,
+    earned:achievements.filter(a=>achievementCategory(a.key)===group.id&&Boolean(a.unlockedAt)).length
+  })).filter(group=>group.items.length>0);
   const selectedAchievement = achievements.find(a => a.key === selected);
 
   return <main className={styles.page}><div className={styles.inner}>
@@ -75,15 +100,38 @@ export default function ProgressDashboard({
 
     {view === "achievements" ? <section className={styles.achievements} aria-labelledby="achievements-title">
       <div className={styles.sectionHeading}><h2 id="achievements-title">Achievements</h2><span>{error ? "Progress unavailable" : unlockedCount + " of " + availableCount + " available unlocked"}</span></div>
+      <div className={styles.categoryPicker} role="group" aria-label="Achievement categories">
+        <button type="button" className={styles.categoryChoice} aria-pressed={category==="all"} onClick={()=>setCategory("all")}>
+          <span className={styles.categoryIcon}><PodscapeLineIcon name="achievement"/></span>
+          <span className={styles.categoryDetails}><strong>All achievements</strong><small>Every milestone in one place</small></span>
+          <span className={styles.categoryCount}>{unlockedCount} / {availableCount}</span>
+        </button>
+        {achievementCategories.map(group=>{
+          const groupAchievements=achievements.filter(a=>achievementCategory(a.key)===group.id);
+          const earned=groupAchievements.filter(a=>Boolean(a.unlockedAt)).length;
+          const available=groupAchievements.filter(a=>a.status==="available").length;
+          return <button key={group.id} type="button" className={styles.categoryChoice} aria-pressed={category===group.id} onClick={()=>setCategory(group.id)}>
+            <span className={styles.categoryIcon}><PodscapeLineIcon name={group.icon}/></span>
+            <span className={styles.categoryDetails}><strong>{group.title}</strong><small>{group.subtitle}</small></span>
+            <span className={styles.categoryCount}>{earned} / {available}</span>
+          </button>;
+        })}
+      </div>
       <div className={styles.filters} aria-label="Filter achievements">
         {([["all","All"],["unlocked","Unlocked"],["locked","Locked & upcoming"]] as const).map(([key,label]) =>
           <button key={key} type="button" aria-pressed={filter===key} onClick={()=>setFilter(key)}>{label}</button>
         )}
       </div>
       {error ? <p className={styles.notice} role="status">Achievement history is temporarily unavailable. Please check again later.</p> : null}
-      {!error&&unlockedCount===0&&filter==="all"?<FirstActionEmptyState icon="achievement" eyebrow="YOUR FIRST MILESTONE" title="Your journey starts with one discovery." description="Explore the species catalogue, try a Fun Zone game, or finish the welcome tour. Eligible actions unlock achievements when completed—nothing is awarded just for opening this page." primary={{href:"/ledger",label:"Discover species"}} secondary={{href:"/app?onboarding=1",label:"Take the welcome tour"}} compact/>:null}
-      <div className={styles.achievementGrid}>
-        {shown.map(a => <button type="button" key={a.key} className={styles.achievementTile} data-earned={Boolean(a.unlockedAt)} onClick={()=>setSelected(a.key)} aria-label={(a.hidden&&!a.unlockedAt?"Secret achievement":a.title) + (a.unlockedAt ? a.hidden?", previously hidden, unlocked":", unlocked" : a.status === "planned" ? ", coming later" : ", not yet unlocked") + ". View details."}>
+      {!error&&unlockedCount===0&&filter==="all"&&category==="all"?<FirstActionEmptyState icon="achievement" eyebrow="YOUR FIRST MILESTONE" title="Your journey starts with one discovery." description="Explore the species catalogue, try a Fun Zone game, or finish the welcome tour. Eligible actions unlock achievements when completed—nothing is awarded just for opening this page." primary={{href:"/ledger",label:"Discover species"}} secondary={{href:"/app?onboarding=1",label:"Take the welcome tour"}} compact/>:null}
+      <div className={styles.achievementSections}>
+      {visibleGroups.map(group=><div className={styles.achievementCategorySection} key={group.id}>
+        <div className={styles.categoryHeading}>
+          <div><span className={styles.categoryHeadingIcon}><PodscapeLineIcon name={group.icon}/></span><h3>{group.title}</h3></div>
+          <span>{group.earned} of {group.total} unlocked</span>
+        </div>
+        <div className={styles.achievementGrid}>
+         {group.items.map(a => <button type="button" key={a.key} className={styles.achievementTile} data-earned={Boolean(a.unlockedAt)} onClick={()=>setSelected(a.key)} aria-label={(a.hidden&&!a.unlockedAt?"Secret achievement":a.title) + (a.unlockedAt ? a.hidden?", previously hidden, unlocked":", unlocked" : a.status === "planned" ? ", coming later" : ", not yet unlocked") + ". View details."}>
           <span className={styles.medallion} data-earned={Boolean(a.unlockedAt)} aria-hidden="true">
             <span className={styles.medallionRing}>{a.hidden&&!a.unlockedAt?"?":<PodscapeLineIcon name={achievementMark(a.key)}/>}</span>
             {!a.unlockedAt ? <span className={styles.lockMark}><PodscapeLineIcon name="lock" /></span> : null}
@@ -91,9 +139,12 @@ export default function ProgressDashboard({
           <span className={styles.tileCopy}><span className={styles.tileStatus}>{a.unlockedAt ? "✓ Unlocked" : a.status === "planned" ? "Coming later" : "Locked"}</span>{a.hidden&&a.unlockedAt?<span className={styles.previouslyHidden}><PodscapeLineIcon name="achievement" /> Previously Hidden</span>:null}
             <strong>{a.hidden&&!a.unlockedAt?"Secret Achievement":a.title}</strong><span className={styles.tileDescription}>{a.hidden&&!a.unlockedAt?"A little surprise for curious keepers.":a.description}</span>
             {(a.status==="available"&&(!a.hidden||Boolean(a.unlockedAt))) ? <span className={styles.tileReward}>{a.key.startsWith("ranking_")?"Podium achievement · EXP awarded per placement":`+${a.exp} EXP${a.coins ? ` · +${a.coins} Pod Coins (legacy)` : ""}`}</span> : <span className={styles.tileRewardMuted}>{a.hidden&&!a.unlockedAt?"Secret reward": "Rewards not finalized"}</span>}</span>
-        </button>)}
+
+         </button>)}
+        </div>
+      </div>)}
       </div>
-      {!shown.length&&!error ? <div className={styles.empty} role="status"><strong>No achievements in this view yet.</strong><p>{filter==="unlocked"?"You have not unlocked a milestone yet. Try exploring the Leaf Ledger or playing a Fun Zone game.":"Try another achievement filter to see more."}</p><button type="button" onClick={()=>setFilter("all")}>Show all achievements</button></div> : null}
+      {!shown.length&&!error ? <div className={styles.empty} role="status"><strong>No achievements in this view yet.</strong><p>{filter==="unlocked"?"Nothing unlocked in this category yet. Try another category or explore a new activity.":"Try another achievement filter or category to see more."}</p><button type="button" onClick={()=>{setFilter("all");setCategory("all")}}>Show all achievements</button></div> : null}
       <p className={styles.caption}>Early-access achievements unlock automatically from verified species discoveries, collection entries, completed tutorials, customization milestones, and Fun Zone challenges. Each eligible milestone pays EXP once; puzzle milestones do not award Pod Coins.</p>
     </section> : null}
 
