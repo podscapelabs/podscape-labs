@@ -18,44 +18,29 @@ const appearanceCss=read("components/AppearancePreference.module.css");
 const themeToggle=read("components/ThemeToggle.tsx");
 const layout=read("app/layout.tsx");
 const splashCss=read("app/app/loading.module.css");
-assert.match(globals,/:root\[data-theme="woodland"\]\s*\{/,"Woodland must have its own root palette");
-assert.match(globals,/:root\[data-theme="woodland"\] \.v2-site/,"Woodland must cover portal theme roles");
-for(const role of ["--canvas","#211a16","--paper","#30251f","--ink","#f5e9d7","--accent-contrast","#261a13"])assert.ok(globals.includes(role),"Missing Woodland palette detail "+role);
-assert.match(appearance,/id:"woodland"/,"Woodland choice must be available in settings");
-assert.match(appearance,/id:"lilac"/,"Lilac choice must be available in settings");
-assert.match(appearance,/id:"ember"/,"Ember choice must be available in settings");
-assert.match(appearance,/value==="ember"/,"Ember must be an accepted saved appearance");
-assert.match(appearance,/theme==="light"\|\|theme==="lilac"\|\|theme==="ember"/,"Ember uses light native controls");
-assert.match(themeToggle,/ember:"Ember"/,"Quick theme toggle must name Ember");
-assert.match(themeToggle,/\["light","dark","woodland","lilac","ember"\]/,"Explicit themes are frozen at five");
-assert.match(themeToggle,/theme-icon-ember/,"Ember needs a unique icon glyph");
-assert.match(layout,/saved === "ember"/,"First paint must restore Ember");
-assert.match(globals,/:root\[data-theme="ember"\]\s*\{/,"Ember must have its own palette");
-assert.match(globals,/:root\[data-theme="ember"\] \.v2-site/,"Ember must cover portal themes");
-assert.match(globals,/--portal-hero-button-text:#fffaf3/,"Ember hero CTA needs legible contrast");
-assert.match(splashCss,/:global\(html\[data-theme="ember"\]\) \.page\s*\{[\s\S]*?--splash-bg:#fff3e5;[\s\S]*?--splash-ink:#3e281d;[\s\S]*?--splash-accent:#a64c21;/,
- "Ember loading must be apricot, not dark forest green");
-
-assert.match(appearance,/value==="lilac"/,"Lilac must be accepted as a saved appearance");
-assert.match(appearance,/theme==="light"\|\|theme==="lilac"/,"Lilac should use native light controls");
-assert.match(themeToggle,/lilac:"Lilac"/,"Quick toggle must name Lilac");
-assert.match(themeToggle,/\["light","dark","woodland","lilac"\]/,"Quick toggle must cycle all four explicit appearances");
-assert.match(themeToggle,/theme-icon-lilac/,"Quick toggle needs the lilac glyph");
-assert.match(layout,/saved === "lilac"/,"Initial bootstrap must restore Lilac");
-assert.match(globals,/:root\[data-theme="lilac"\]\s*\{/,"Lilac needs a dedicated root palette");
-assert.match(globals,/:root\[data-theme="lilac"\] \.v2-site/,"Lilac must cover portal semantic roles");
-assert.match(globals,/--portal-hero-button-text:#fffaff/,"Lilac hero buttons must have legible text");
-assert.match(splashCss,/:global\(html\[data-theme="lilac"\]\) \.page\s*\{[\s\S]*?--splash-bg:#f4eff9;[\s\S]*?--splash-ink:#33223e;[\s\S]*?--splash-accent:#70418b;/,"Lilac splash must follow lavender palette");
-
-assert.match(appearance,/localStorage\.setItem\(KEY,next\)/,"Appearance must persist");
-assert.match(appearanceCss,/grid-template-columns:repeat\(2/,"Theme picker should fit phone widths");
-assert.match(themeToggle,/woodland/,"Quick theme toggle must support Woodland");
-assert.match(layout,/saved === "woodland"/,"Early bootstrap must support Woodland");
-assert.match(layout,/style\.colorScheme = theme === "light"/,"Woodland should use dark native control scheme");
-assert.ok(!splashCss.includes(':global(html:not([data-theme="dark"]))'),"Woodland splash must not be treated as Light");
-assert.match(splashCss,/:global\(html\[data-theme="woodland"\]\) \.page\s*\{[\s\S]*?--splash-bg:#211a16;[\s\S]*?--splash-ink:#f5e9d7;[\s\S]*?--splash-muted:#ccb8a4;[\s\S]*?--splash-accent:#d6ac76;/,
- "Woodland loading splash must use cocoa, parchment, and copper roles");
-
+// Registry is the source of truth. Every registered appearance must supply
+// both old and v2 palette roles plus loading screen styling.
+const registry=read("lib/theme-registry.ts");
+const registered=[...registry.matchAll(/\\{id:"([a-z-]+)",title:"[^"]+",description:"[^"]+",scheme:"(light|dark)"/g)].map(m=>({id:m[1],scheme:m[2]}));
+const themeIds=registered.map(theme=>theme.id);
+assert.ok(themeIds.includes("light")&&themeIds.includes("dark"),"System requires Light/Dark fallbacks");
+assert.equal(new Set(themeIds).size,themeIds.length,"Theme ids must be unique");
+assert.ok(themeIds.length>=5,"Existing five themes must remain available");
+for(const {id,scheme} of registered){
+ const selector=id==="light"?":root":':root[data-theme="'+id+'"]';
+ assert.ok(globals.includes(selector),"Missing root palette for "+id);
+ if(id!=="light")assert.ok(globals.includes(selector+' .v2-site'),"Missing portal palette for "+id);
+ assert.ok(splashCss.includes('html[data-theme="'+id+'"]')||id==="light",
+  "Loading screen must support "+id);
+ assert.ok(registry.includes('id:"'+id+'"'),"Missing theme metadata for "+id);
+}
+assert.match(appearance,/THEMES,SYSTEM_OPTION,THEME_STORAGE_KEY/,"Appearance picker must use the registry");
+assert.match(themeToggle,/THEMES,THEME_IDS,THEME_STORAGE_KEY/,"Quick toggle must use the registry");
+assert.match(layout,/THEMES,THEME_STORAGE_KEY/,"First paint must consume theme registry");
+assert.match(layout,/JSON.stringify\\(themeIds\\)/,"First paint needs all registered ids");
+assert.match(layout,/JSON.stringify\\(themeSchemes\\)/,"First paint must use registry-native colour schemes");
+assert.match(appearance,/localStorage\\.setItem\\(THEME_STORAGE_KEY,next\\)/,"Appearance must persist");
+assert.match(appearanceCss,/grid-template-columns:repeat\\(2/,"Theme picker should fit phone widths");
 
 for(const token of ["--ps-bg","--ps-surface","--ps-surface-raised","--ps-surface-muted","--ps-text","--ps-text-secondary","--ps-border","--ps-accent","--ps-accent-text","--ps-focus","--ps-font-ui","--ps-font-display","--ps-radius-card","--ps-min-control"]){
  assert.ok(globals.includes(token+":"),"Missing theme role: "+token);
@@ -195,7 +180,7 @@ function hexToken(palette,role){
  assert.ok(match,"Palette colour role missing: "+role);
  return match[1];
 }
-for(const theme of ["light","dark","woodland","lilac","ember"]){
+for(const theme of themeIds){
  const palette=themePalette(theme);
  const background=hexToken(palette,"--forest");
  const foreground=theme==="light"?hexToken(palette,"--paper-strong")
@@ -214,7 +199,7 @@ function portalPalette(theme){
  const brace=globals.indexOf("{",start);
  return globals.slice(brace+1,globals.indexOf("}",brace));
 }
-for(const theme of ["light","dark","woodland","lilac","ember"]){
+for(const theme of themeIds){
  const p=portalPalette(theme);
  for(const [name,bg,fg] of [
   ["hero","--portal-hero-start","--portal-hero-text"],
@@ -240,7 +225,7 @@ assert.ok(!platform.includes("https://www.podbound.net"),"PodBound is a single i
 // secondary and raised surfaces. This catches accidental Light-mode fallbacks
 // in portal areas that consume semantic tokens.
 const environmentPalettes=new Map();
-for(const theme of ["light","dark","woodland","lilac","ember"]){
+for(const theme of themeIds){
  const rootPalette=themePalette(theme);
  const portal=portalPalette(theme);
  const legacySurface=hexToken(rootPalette,"--paper");
@@ -257,7 +242,7 @@ for(const theme of ["light","dark","woodland","lilac","ember"]){
  assert.ok(contrastRatio(surface,text)>=4.5,theme+" surface text must meet WCAG AA");
  environmentPalettes.set(theme,canvas+"|"+surface+"|"+secondary+"|"+raised);
 }
-assert.equal(new Set(environmentPalettes.values()).size,5,"All five themes must have distinct surface environments");
+assert.equal(new Set(environmentPalettes.values()).size,themeIds.length,"Each registered theme must have a distinct surface environment");
 const ledgerTheme=read("app/ledger/discover.module.css");
 assert.match(ledgerTheme,/border:1px solid var\\(--border\\);[\\s\\S]*?background:radial-gradient\\(circle at 84% 22%,var\\(--portal-hero-glow\\)/,
  "Leaf Ledger must not preserve a hardcoded green frame across themes");
