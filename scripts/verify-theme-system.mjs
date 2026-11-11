@@ -177,7 +177,7 @@ function portalPalette(theme){
  const selected=theme==="light"?"":themePalette(theme);
  const values=new Map();
  for(const source of [defaults,selected]){
-  for(const match of source.matchAll(/--theme-([\\w-]+)\\s*:\\s*([^;]+);/g)){
+  for(const match of source.matchAll(/--theme-([\w-]+)\s*:\s*([^;]+);/g)){
    values.set(match[1],match[2].trim());
   }
  }
