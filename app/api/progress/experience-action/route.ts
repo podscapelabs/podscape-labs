@@ -29,10 +29,12 @@ function validProof(action:Action,proof:unknown):boolean{
  const order=data.order as string[],visible=data.visible as string[];
  if(!visible.every(id=>order.includes(id)))return false;
  if(action==="home_personalized"){
-  const baseline=["greeting","hero","shortcuts","spotlight","recent","colony","games","progress","schedule","guides","community","pins"];
+  const baseline=["greeting","hero","shortcuts","spotlight","recent","colony","games","progress","schedule","guides","community","pins","marketNews"];
+  const legacy=baseline.filter(id=>id!=="marketNews");
   const defaults=["recent"];
-  return order.length===baseline.length&&baseline.every(id=>order.includes(id))&&
-   (visible.join("|")!==defaults.join("|")||order.join("|")!==baseline.join("|"));
+  const known=order.length===baseline.length?baseline:order.length===legacy.length?legacy:null;
+  if(!known||!known.every(id=>order.includes(id)))return false;
+  return visible.join("|")!==defaults.join("|")||order.join("|")!==known.join("|");
  }
  if(action==="species_personalized"){
   const defaults=["care","moisture","behaviour","habitatAdvanced","about","traits","personal","navigation"];
