@@ -74,6 +74,10 @@ export async function POST(request:Request){
  const previousPuzzleId=index>0?ordered[index-1].puzzle.id:null;
  const admin=getSupabaseAdmin();
  if(!admin)return NextResponse.json({error:"Progress is temporarily unavailable"},{status:503});
+ // Compare earned achievements around the verified completion so trigger-based
+ // hidden milestones can use the same existing toast without a second payout.
+ const {data:beforeBadges,error:beforeError}=await admin.from("member_achievements")
+  .select("achievement_key").eq("user_id",user.id);
  const {data,error}=await admin.rpc("record_member_puzzle_completion",{
   p_user_id:user.id,p_game_key:gameKey,p_puzzle_id:puzzleId,p_previous_puzzle_id:previousPuzzleId
  });
@@ -86,5 +90,21 @@ export async function POST(request:Request){
   const entry=achievementCatalog.find(item=>item.key===row.achievement_key&&item.status==="available");
   return entry?[{id:entry.key,title:entry.title,description:entry.description,exp:entry.exp,coins:0,hidden:entry.hidden===true}]:[];
  });
+ if(!beforeError){
+  const {data:afterBadges,error:afterError}=await admin.from("member_achievements")
+   .select("achievement_key").eq("user_id",user.id);
+  if(!afterError){
+   const previous=new Set((beforeBadges||[]).map(x=>x.achievement_key));
+   const announced=new Set(unlocked.map(x=>x.id));
+   for(const row of afterBadges||[]){
+    if(previous.has(row.achievement_key)||announced.has(row.achievement_key))continue;
+    const badge=achievementCatalog.find(x=>x.key===row.achievement_key&&x.status==="available");
+    if(badge){
+     unlocked.push({id:badge.key,title:badge.title,description:badge.description,exp:badge.exp,coins:0,hidden:badge.hidden===true});
+     announced.add(badge.key);
+    }
+   }
+  }
+ }
  return NextResponse.json({saved:true,unlocked});
 }
