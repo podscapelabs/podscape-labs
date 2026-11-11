@@ -25,9 +25,8 @@ const BACKUP_KEY=STORAGE_KEY+":backup";
 function saveLocalSnapshot(portfolio:Portfolio):boolean{
  try{
   const previous=localStorage.getItem(STORAGE_KEY);
-  if(previous!==null)localStorage.setItem(BACKUP_KEY,previous);
   localStorage.setItem(STORAGE_KEY,JSON.stringify(portfolio));
-  window.dispatchEvent(new Event("podscape-exchange-wallet-updated"));
+  if(previous!==null)try{localStorage.setItem(BACKUP_KEY,previous)}catch{/* Preserve active wallet even when backup storage is full. */}
   return true;
  }catch{return false}
 }
@@ -153,6 +152,7 @@ export function PodExchange(){
     }
     setPortfolio(sanitizePortfolio(data.portfolio));
     saveLocalSnapshot(data.portfolio);
+    window.dispatchEvent(new Event("podscape-exchange-wallet-updated"));
     for(const notice of data.unlocked||[])announceAchievement(notice);
    }else if(storageMode==="local"){
     if(!saveLocalSnapshot(result.portfolio)){
@@ -160,6 +160,7 @@ export function PodExchange(){
      return;
     }
     setPortfolio(result.portfolio);
+    window.dispatchEvent(new Event("podscape-exchange-wallet-updated"));
    }else{
     setMessage("Wallet is not connected. Try reloading your portfolio.");return;
    }
