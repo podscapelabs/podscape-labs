@@ -80,3 +80,8 @@
 
 .achievementHint{display:flex;gap:9px;align-items:flex-start;line-height:1.55;font-size:11px;color:var(--text-secondary);border:1px solid var(--border);border-radius:12px;padding:11px 13px;background:var(--surface);margin:0}
 .achievementHint svg{width:20px;height:20px;flex:none;color:var(--accent)}
+
+.namePrivacy{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:10px 12px;min-height:53px;border:1px solid var(--border);border-radius:11px;background:var(--surface-secondary);cursor:pointer}
+.namePrivacy input{flex:none;width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
+.namePrivacy input:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.namePrivacy span{display:grid;gap:3px;min-width:0}.namePrivacy strong{font-size:12px;color:var(--text-primary)}.namePrivacy small{font-size:10px;line-height:1.4;color:var(--text-secondary)}
