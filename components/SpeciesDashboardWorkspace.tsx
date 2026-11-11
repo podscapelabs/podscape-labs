@@ -8,7 +8,7 @@ import {confirmWorkspaceReset} from "./workspace-edit-standards";
 import {useWorkspaceEditorDialog} from "./useWorkspaceEditorDialog";
 import {speciesStorageKey} from "@/lib/ui-preferences";
 import {WidgetLibraryFilter,WidgetLibraryEmptyState,widgetMatchesView,type WidgetLibraryView} from "./WidgetLibraryFilter";
-import {portalWidgetGroups,widgetAllowed,widgetGroup,widgetPurpose} from "./workspace-widget-policy";
+import {portalWidgetGroups,widgetAllowed,widgetGroup} from "./workspace-widget-policy";
 import homeStyles from "./PodscapeHome.module.css";
 import styles from "./SpeciesProfile.module.css";
 import { PodscapeLineIcon, type PodscapeIconName } from "./PodscapeLineIcon";
