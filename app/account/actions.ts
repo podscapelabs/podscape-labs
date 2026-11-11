@@ -60,7 +60,13 @@ export async function signUpCustomer(_prev: CustomerFormState, form: FormData): 
     if (/already|registered|exists/i.test(error.message)) {
       return { error: "", message: "If that address is eligible, check your inbox for the next step." };
     }
-    return { error: "We could not complete registration. Please try again.", message: "" };
+    if (error.code === "over_email_send_rate_limit" || error.status === 429) {
+      return { error: "PodScape verification emails are temporarily at capacity. Please try again later, or contact the PodScape team. Repeated attempts will not help.", message: "" };
+    }
+    if (error.code === "email_address_not_authorized") {
+      return { error: "Verification emails are temporarily unavailable. Please contact the PodScape team.", message: "" };
+    }
+    return { error: "We could not complete registration. Please try again later or contact the PodScape team.", message: "" };
   }
   // Do not rely on unconfirmed signup sessions. Confirmation must be enabled in Supabase.
   await db.auth.signOut();
