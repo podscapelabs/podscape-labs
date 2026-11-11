@@ -4,10 +4,11 @@
 
 ## Ownership
 
-- `lib/theme-registry.ts` is the only runtime registry for theme identity, display name, swatch preview, icon, order and native colour scheme. `system` is a preference that resolves to Light or Dark.
+- `lib/theme-registry.ts` is the only registry for theme identity, display name, preview swatches, icon, order and native colour scheme. `system` is a preference resolving to Light or Dark.
+- `lib/theme-runtime.ts` owns applying themes, preference persistence, OS palette synchronization, change events and the browser theme-colour meta tag. UI controls call this shared runtime; they never duplicate theme logic.
 - `app/globals.css` contains theme colour definitions. Each theme now supplies legacy and portal roles in one root palette block. The shared `.v2-site` adapter maps all `--theme-*` portal roles without any theme-specific page declarations.
 - Shared components should use roles, **never** ask which theme is selected. Do not create new `html[data-theme="..."]` branches in page CSS.
-- `app/app/loading.module.css` takes splash colours from `--canvas`, `--ink`, `--muted` and `--forest`. The first-paint script, picker and toggle all use the registry.
+- `app/app/loading.module.css` takes splash colours from `--canvas`, `--ink`, `--muted` and `--forest`. The first-paint script uses the registry; the picker and toggle use the shared runtime.
 
 ## Required semantic roles
 
