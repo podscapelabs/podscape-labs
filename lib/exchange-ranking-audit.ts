@@ -4,9 +4,9 @@ import {STARTING_BUCKS,STOCKS,cycleAt,priceAt,tradeTotal} from "@/lib/pod-exchan
 type Order={symbol:string;side:string;shares:number;unit_price:number|string;cycle:number|string;created_at?:string};
 type Wallet={cash:number|string;holdings:Record<string,number>};
 const symbols=new Set(STOCKS.map(x=>x.symbol));
-/** A human owner must still review the request. This tests whether every
- * recorded order is compatible with a 10,000 DB starting wallet and the
- * historical deterministic market, with no negative cash or short selling.
+/** Automatic eligibility check: the saved portfolio must reconcile to its
+ * server-recorded orders and a fair 10,000 Duck Bucks starting wallet.
+ * Historical tick prices remain versioned and deterministic.
  */
 export function auditExchangeLedger(wallet:Wallet,orders:Order[]){
  if(orders.length>5000)return {ok:false,reason:"Too many orders for automatic reconciliation"};
