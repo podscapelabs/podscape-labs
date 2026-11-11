@@ -92,3 +92,11 @@
 .learningCard strong{display:block;font-size:12px;margin:0 0 4px;color:var(--text-primary)}
 .learningCard p{font-size:11px;line-height:1.5;color:var(--text-secondary);margin:0}
 @media(max-width:600px){.learningCard{padding:10px 11px;gap:8px}.learningCard>span{width:29px;height:29px}.learningCard svg{width:18px;height:18px}.learningCard p{font-size:10px}}
+
+/* One consistent progression action for every finished Fun Zone puzzle. */
+.completionNavigation{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:8px 0 21px}
+.completionNext{display:flex;flex:1 1 220px;min-height:54px;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;background:var(--accent);color:var(--accent-contrast);border-radius:13px;padding:11px 17px;font-size:14px;font-weight:800;text-decoration:none;text-align:center}
+.completionNext small{flex-basis:100%;font-size:11px;opacity:.86;font-weight:600}
+.completionBrowse{display:inline-flex;align-items:center;justify-content:center;padding:12px 15px;min-height:48px;color:var(--accent);border:1px solid var(--border);border-radius:12px;text-decoration:none;font-weight:750;font-size:12px;background:var(--surface)}
+.completionWaiting{display:block;width:100%;padding:12px 14px;background:var(--surface-secondary);border:1px solid var(--border);border-radius:12px;font-size:12px;color:var(--text-secondary)}
+@media(max-width:480px){.completionNavigation{display:grid;grid-template-columns:minmax(0,1fr);gap:9px}.completionNext{width:100%;min-height:55px}.completionBrowse{width:100%}}
