@@ -60,6 +60,26 @@ export function priceAt(symbol:string,cycle:number):number{
  return money(Math.max(1,stock.base*(1+slow+medium+noise+catalyst)));
 }
 export function defaultPortfolio():Portfolio{return {cash:STARTING_BUCKS,holdings:{},trades:[]};}
+/** Distinguish a legitimately new wallet from corrupt or unreadable saved data.
+ * Never turn a malformed existing portfolio silently into starting funds.
+ */
+export function isValidPortfolioSnapshot(value:unknown):value is Portfolio{
+ if(!value||typeof value!=="object")return false;
+ const p=value as Partial<Portfolio>;
+ if(typeof p.cash!=="number"||!Number.isFinite(p.cash)||p.cash<0||p.cash>1e10||
+    money(p.cash)!==p.cash||!p.holdings||typeof p.holdings!=="object"||Array.isArray(p.holdings))return false;
+ for(const [symbol,qty] of Object.entries(p.holdings)){
+  if(!STOCKS.some(s=>s.symbol===symbol)||!Number.isSafeInteger(qty)||qty<0||qty>1_000_000)return false;
+ }
+ return !("trades" in p)||Array.isArray(p.trades);
+}
+export function decodeSavedPortfolio(raw:string|null):{portfolio:Portfolio;isNew:boolean}{
+ if(raw===null)return {portfolio:defaultPortfolio(),isNew:true};
+ let parsed:unknown;
+ try{parsed=JSON.parse(raw)}catch{throw new Error("Your saved Duck Bucks wallet could not be read. No balance was reset.");}
+ if(!isValidPortfolioSnapshot(parsed))throw new Error("Your saved Duck Bucks wallet needs recovery. No balance was reset.");
+ return {portfolio:sanitizePortfolio(parsed),isNew:false};
+}
 export function sanitizePortfolio(value:unknown):Portfolio{
  if(!value||typeof value!=="object")return defaultPortfolio();
  const x=value as Partial<Portfolio>;
@@ -87,7 +107,7 @@ export function executeOrder(portfolio:Portfolio,symbol:string,side:"buy"|"sell"
  const price=priceAt(symbol,cycle),cost=money(shares*price);
  if(!Number.isFinite(cost)||cost<=0)return {ok:false,error:"Unable to price this trade."};
  const owned=portfolio.holdings[symbol]||0;
- if(side==="buy"&&cost>portfolio.cash)return {ok:false,error:"Not enough Pod Bucks for this trade."};
+ if(side==="buy"&&cost>portfolio.cash)return {ok:false,error:"Not enough Duck Bucks for this trade."};
  if(side==="sell"&&shares>owned)return {ok:false,error:"You don't own that many shares."};
  const cash=money(portfolio.cash+(side==="buy"?-cost:cost));
  const qty=owned+(side==="buy"?shares:-shares);
