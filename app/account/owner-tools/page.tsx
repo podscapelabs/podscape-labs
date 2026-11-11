@@ -67,7 +67,7 @@ export default async function OwnerToolsPage() {
             <span className={styles.operationCopy}><strong><PodscapeLineIcon name={item.icon} /> {item.title}</strong><small>{item.description}</small></span><b aria-hidden="true">→</b>
           </Link>)}
           <Link href="/admin/vendors">
-            <span className={styles.operationCopy}><strong><PodscapeLineIcon name="shop" /> Vendor Applications</strong><small>Review, approve, or decline community vendor directory listings.</small></span><b aria-hidden="true">→</b>
+            <span className={styles.operationCopy}><strong><PodscapeLineIcon name="vendor" /> Vendor Desk</strong><small>Add vendors manually, publish directory entries, and review applications.</small></span><b aria-hidden="true">→</b>
           </Link>
           <details className={styles.qa}><summary><PodscapeLineIcon name="achievement" /> Achievement banner preview <span>Owner QA</span></summary><div><p>Preview the achievement banner without changing EXP or unlocking an achievement.</p><TestAchievementButton /></div></details>
         </div>
