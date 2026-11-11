@@ -272,7 +272,6 @@
 .homeCanvasContentLocked{pointer-events:none;user-select:none}
 .homeCanvasContentLocked .homeBlock{margin-bottom:0}
 @media(max-width:720px){.homeCanvasToolbar{top:6px;gap:6px;padding:8px;border-radius:14px}.homeCanvasToolbar strong{font-size:.94rem}.homeCanvasToolbar small{font-size:.59rem}.homeCanvasToolbar>button{padding:6px 8px;font-size:.65rem}.homeCanvasBlockActive{border-radius:15px;padding:6px}.homeCanvasHandle{font-size:.68rem}}
-:root[data-theme="dark"] .homeCanvasToolbar>button:last-child{color:var(--forest-deep)}
 
 /* iPhone-style edit mode: gently jiggle the actual blocks; their contents stay grouped. */
 @keyframes podscapeHomeBlockJiggle{
@@ -302,7 +301,6 @@
 .homeCanvasEditing .homeCanvasBlockActive{transition:border-color 150ms ease,background-color 150ms ease,box-shadow 150ms ease}
 .homeCanvasEditing .homeCanvasDragging{position:relative;z-index:5;animation:none!important;box-shadow:0 14px 34px color-mix(in srgb,var(--forest) 22%,transparent);border-style:solid;border-color:var(--forest);background:var(--paper);transform:scale(1.012);transition:box-shadow 130ms ease,transform 130ms ease}
 .homeCanvasEditing .homeCanvasDragging .homeCanvasHandle{background:var(--forest);color:var(--paper-strong)}
-:root[data-theme="dark"] .homeCanvasEditing .homeCanvasDragging .homeCanvasHandle{color:var(--forest-deep)}
 @media(prefers-reduced-motion:reduce){
  .homeCanvasEditing .homeCanvasDragging{transform:none;transition:none}
  .homeCanvasEditing .homeCanvasBlockActive{transition:none}
@@ -314,7 +312,6 @@
 .homeCanvasToolbar>div{min-width:140px}
 .homeCanvasToolbar>button{min-height:44px;border-radius:12px;white-space:normal;line-height:1.2}
 .homeCanvasToolbar>button:last-child{background:var(--forest);border-color:var(--forest);color:var(--paper-strong)}
-:root[data-theme="dark"] .homeCanvasToolbar>button:last-child{color:var(--forest-deep)}
 .homeCanvasBlockBar{gap:8px}
 .homeCanvasHandle{overflow-wrap:anywhere;min-height:44px;text-align:left}
 .homeCanvasBlockBar>div{display:flex;gap:6px;flex:none}
@@ -322,7 +319,6 @@
 .homeCanvasBlockActive{outline-offset:2px}
 .homeCanvasDragging{box-shadow:var(--shadow-soft)}
 .homeEditorHead button{min-height:44px}
-:root[data-theme="dark"] .homeEditorHead button{color:var(--forest-deep)}
 .widgetGalleryCard{transition:border-color .16s ease,box-shadow .16s ease}
 .widgetGalleryCard:hover{border-color:var(--forest);box-shadow:var(--shadow-soft)}
 .addWidgetButton{min-height:46px}
