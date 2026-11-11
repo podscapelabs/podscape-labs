@@ -6,7 +6,6 @@ import styles from "./exchange.module.css";
 import {DuckBucks,DuckBuckIcon,duckBucksNumber} from "@/components/DuckBucks";
 import {ExchangeCompanyIcon} from "@/components/ExchangeCompanyIcon";
 import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
-import {achievementCatalog} from "@/data/achievement-catalog";
 import {STOCKS,STORAGE_KEY,MARKET_INTERVAL_MS,MARKET_V2_START_CYCLE,STARTING_BUCKS,cycleAt,marketSessionAt,sessionImpactAt,defaultPortfolio,decodeSavedPortfolio,executeOrder,money,headlineAt,newsImpactAt,priceAt,tradeFee,tradeSubtotal,tradeTotal,maxAffordableShares,sanitizePortfolio,totalValue,type Portfolio} from "@/lib/pod-exchange";
 
 function CompanyMark({symbol}:{symbol:string}){return <ExchangeCompanyIcon symbol={symbol}/>;}
@@ -266,7 +265,7 @@ export function PodExchange(){
    <span><strong>Market Rankings</strong><small>Rich List · Top Investors · Market Movers</small></span>
    <span className={styles.marketLeadersArrow} aria-hidden="true">→</span>
   </Link>
-  <div className={styles.rulesDock} aria-label="Market help and achievements">  <details className={styles.rules} id="exchange-rules">
+  <div className={styles.rulesDock} aria-label="Market help">  <details className={styles.rules} id="exchange-rules">
    <summary><span><PodscapeLineIcon name="book"/> How to Play</span><span className={styles.rulesHint}>The basics <span aria-hidden="true">⌄</span></span></summary>
    <div className={styles.rulesBody}>
     <p><strong>Start with 10,000 Duck Bucks.</strong> They&apos;re fictional game currency, not Pod Coins.</p>
@@ -274,15 +273,6 @@ export function PodExchange(){
     <p><strong>Prices change every five minutes</strong> based on market moods, news and six-hour catalysts after the market update.</p>
     <p><strong>Grow your portfolio</strong> by trading wisely. Its value is your remaining Duck Bucks plus the current value of your shares.</p>
     <small>Beta rules: whole shares only, 0.5% fee per buy or sell. No real money or prizes. Signed-in wallets sync to your account.</small>
-   </div>
-  </details>
-  <details className={styles.achievementGuide}>
-   <summary><span><PodscapeLineIcon name="trophy"/> Trading Achievements</span><span>5 to discover <span aria-hidden="true">⌄</span></span></summary>
-   <div className={styles.achievementGoals}>
-    {achievementCatalog.filter(item=>["exchange_first_trade","exchange_first_sale","exchange_five_trades","exchange_three_companies","exchange_fifteen_trades"].includes(item.key)).map(item=><div key={item.key}>
-     <span><strong>{item.title}</strong><small>{item.description}</small></span><b>+{item.exp} EXP</b>
-    </div>)}
-    <Link href="/account/progress">View your unlocked achievements →</Link>
    </div>
   </details>
   </div>
