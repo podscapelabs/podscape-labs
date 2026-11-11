@@ -25,7 +25,20 @@ for(const widget of ["featured","categories","favourites","progress","exchange"]
  assert.ok(portal.includes('"'+widget+'"'),"Missing widget "+widget);
 }
 assert.match(portal,/id\.startsWith\("game:"\)/,"Individual game pin widgets should be supported");
-assert.match(portal,/Reset your Fun Zone layout\? Favourite games and puzzle progress will stay safe/);
+assert.match(portal,/confirmWorkspaceReset\("fun-zone"\)/,"Reset must use PodScape's shared confirmation contract");
+const editingStandards=read("components/workspace-edit-standards.ts");
+const homeStyles=read("components/PodscapeHome.module.css");
+const homeWidgets=read("components/HomeWidgets.tsx");
+assert.match(editingStandards,/"fun-zone":"Reset Fun Zone/,"Shared reset message must cover Fun Zone");
+for(const sharedClass of ["addWidgetFooter","addWidgetButton","homeEditorOverlay","widgetEditor","widgetLibrary","widgetGalleryCard","widgetLibraryFooter"]){
+ assert.ok(portal.includes("homeEditStyles."+sharedClass),"Fun Zone must use Home's "+sharedClass+" class");
+ assert.ok(homeStyles.includes("."+sharedClass),"Home's "+sharedClass+" style must exist");
+}
+assert.match(homeWidgets,/WorkspaceEditBlock/,"Home should keep using the shared workspace editor");
+assert.match(portal,/onLongPress=\{\(\)=>enterCanvas\(id\)\}/,"Fun Zone should keep Home-style long-press editing");
+assert.doesNotMatch(portal,/Add Widgets & Games/,"Do not restore the separate Fun Zone add-widget CTA");
+assert.doesNotMatch(portal,/className=\{styles\.editButton\}/,"Avoid redundant Customize buttons");
+
 assert.match(page,/FunZonePortal/,"Fun Zone landing must render portal");
 assert.match(page,/member_puzzle_completions/,"Existing completion data must be preserved");
 assert.match(page,/member_progress/,"Existing EXP and coins must remain available");
