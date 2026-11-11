@@ -195,3 +195,64 @@
 .newsEffect{display:inline-block;margin-top:7px;color:var(--portal-hero-soft);font-size:10px;line-height:1.4;font-weight:750;letter-spacing:.02em}
 .orderDetails>strong{flex:1 1 100%;display:flex;justify-content:flex-end;align-items:center;gap:5px;color:var(--text-primary);font-size:12px}
 @media(max-width:720px){.newsEffect{margin-top:5px;font-size:10px}.orderDetails>strong{font-size:12px}}
+
+/* PodScape portal consistency: identical theme tokens, typography and surface proportions. */
+.page{min-height:0;background:var(--background);padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
+.header{min-width:0;padding:clamp(19px,3.2vw,27px);border-radius:20px;background:linear-gradient(112deg,var(--portal-hero-start),var(--portal-hero-end));border:1px solid color-mix(in srgb,var(--portal-hero-text) 18%,var(--portal-hero-start));color:var(--portal-hero-text);margin-bottom:13px}
+.header>div:first-child{min-width:0}
+.header .eyebrow,.header .eyebrow a{color:var(--portal-hero-soft)}
+.header .beta{color:var(--portal-hero-text);background:color-mix(in srgb,var(--portal-hero-text) 12%,transparent);border-color:color-mix(in srgb,var(--portal-hero-text) 24%,transparent)}
+.header h1{color:var(--portal-hero-text);font-size:clamp(2.1rem,5vw,3.35rem);line-height:1.07;overflow-wrap:anywhere}
+.header p:last-child{color:var(--portal-hero-muted);font-size:12px;line-height:1.5}
+.marketStatus{background:color-mix(in srgb,var(--portal-hero-text) 9%,transparent);border-color:color-mix(in srgb,var(--portal-hero-text) 25%,transparent);color:var(--portal-hero-text)}
+.marketStatus span{color:var(--portal-hero-text)}
+.marketStatus small{color:var(--portal-hero-muted)}
+.disclaimer{background:var(--surface);line-height:1.5}
+.disclaimer svg{width:18px;height:18px;color:var(--accent);flex:none}
+.balances>div,.panel,.portfolio,.rules,.achievementGuide{border-color:var(--border);background:var(--surface)}
+.balances>div{min-width:0}
+.balances strong{overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.panelHead h2{font-size:clamp(23px,2.7vw,28px)}
+.newsLabel{min-width:0}
+.bulletin{border:1px solid color-mix(in srgb,var(--portal-hero-text) 18%,var(--portal-hero-start))}
+.bulletin>b{white-space:nowrap}
+.bulletin>b svg{width:21px;height:21px}
+.stockIcon,.tradeHeading>span{color:var(--accent)}
+.stockName,.stockPrice,.holdingIdentity{min-width:0}
+.stockName small{white-space:normal;line-height:1.35}
+.holdings>div>strong{white-space:nowrap}
+.rules summary,.achievementGuide summary,.history summary{min-height:44px}
+.sideSwitch button,.mobileSwitch button{min-height:44px}
+.stock{min-height:64px}
+.action{min-height:48px}
+.footer{max-width:82ch}
+.footer a{min-height:30px}
+@media(max-width:720px){
+ .page{padding-top:11px}
+ .header{border-radius:18px;padding:18px;gap:10px;align-items:flex-start}
+ .header h1{font-size:clamp(28px,8vw,36px)}
+ .header p:last-child{font-size:12px}
+ .marketStatus{min-width:112px;border-radius:12px;padding:10px}
+ .marketStatus span{font-size:9px}
+ .marketStatus small{font-size:10px}
+ .balances strong{font-size:clamp(19px,5.5vw,25px)}
+ .balances>div:first-child strong{font-size:clamp(24px,7vw,29px)}
+ .bulletin{align-items:flex-start}
+ .bulletin>b{font-size:11px}
+ .bulletin>b svg{width:18px;height:18px}
+ .stock{min-height:64px}
+ .stockIcon{flex:none}
+ .stockPrice{margin-left:auto}
+ .mobileSwitch button{min-height:44px}
+ .panelHead h2,.portfolio .panelHead h2{font-size:24px}
+ .footer{font-size:11px}
+}
+@media(max-width:380px){
+ .header{padding:14px;gap:7px}
+ .header h1{font-size:28px}
+ .marketStatus{min-width:101px;padding:8px}
+ .stock{gap:6px}
+ .stockPrice strong{font-size:11px}
+ .stockIcon{width:31px;height:31px}
+}
+@media(prefers-reduced-motion:reduce){.stock{transition:none}}
