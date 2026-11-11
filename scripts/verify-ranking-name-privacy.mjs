@@ -20,7 +20,7 @@ for(const r of routes){
  assert.match(source,/hide_username/,"Missing database privacy column in "+r.label);
  assert.match(source,new RegExp('"'+r.alias+'"'),"Missing server-side anonymous name in "+r.label);
  assert.match(source,/hideUsername/,"Missing privacy preference from API response in "+r.label);
- assert.match(source,/typeof .*hideUsername.*===?"boolean"/,"Privacy setting should be validated as boolean in "+r.label);
+ assert.match(source,/typeof .*hideUsername.*(?:===|!==)"boolean"/,"Privacy setting should be validated as boolean in "+r.label);
  assert.match(source,/user\.id/,"Only the authenticated account may update privacy in "+r.label);
  assert.match(source,/Cache-Control.*no-store/,"Public name privacy requires no-store cache in "+r.label);
 }
