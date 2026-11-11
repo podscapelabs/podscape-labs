@@ -40,6 +40,18 @@ export default function Leaderboard(){
   }catch(e){setError(e instanceof Error?e.message:"Could not update your preference");}
   finally{setUpdating(false)}
  };
+ const selectedGame=games.find(item=>item.key===game);
+ const gameEntryGuides:Record<string,string>={
+  "crossword-colony":"Finish a Crossword Colony puzzle by solving all its clues.",
+  "colony-connections":"Complete every matching group in a Colony Connections puzzle.",
+  "word-burrow":"Find the hidden word within six guesses and finish the puzzle.",
+  "species-detective":"Finish all questions in a Species Detective challenge.",
+  "keepers-challenge":"Complete all questions in a Keeper's Challenge puzzle.",
+  "word-of-the-week":"Finish the vocabulary lesson's questions.",
+  "species-quiz":"Complete all questions in a Species Quiz puzzle.",
+  "word-search":"Find every hidden term in a Word Search puzzle."
+ };
+ const entryDescription=selectedGame?gameEntryGuides[selectedGame.key]||"Complete a puzzle in this game.":"Complete a verified puzzle in any eligible arcade game. Each unique puzzle contributes to the overall board.";
  const entries=board?.rows||[];
  const top=entries.slice(0,3);
  const others=entries.slice(3);
@@ -58,6 +70,22 @@ export default function Leaderboard(){
     {games.map(item=><option key={item.key} value={item.key}>{item.title}</option>)}
    </select>
    <p className={styles.helper}>{period==="daily"?"Today, starting 00:00 UTC.":period==="weekly"?"This week, starting Monday 00:00 UTC.":period==="monthly"?"This month, starting on the 1st at 00:00 UTC.":"Every verified completion since tracking began."}</p>
+  </section>
+  <section className={styles.entryGuide} aria-labelledby="ranking-entry-title">
+   <div className={styles.entryGuideHead}>
+    <div><small>HOW TO ENTER</small><h2 id="ranking-entry-title">{selectedGame?"Ranking in "+selectedGame.title:"Join the arcade rankings"}</h2></div>
+    <span className={styles.entryPoints}>+100 pts / puzzle</span>
+   </div>
+   <p className={styles.entryIntro}>{entryDescription}</p>
+   <ol className={styles.entrySteps}>
+    <li><span>1</span><div><strong>Sign in</strong><small>Use a verified PodScape account so your completed puzzles are saved.</small></div></li>
+    <li><span>2</span><div><strong>Complete a puzzle</strong><small>Finish a challenge and let PodScape verify the result. Only the first completion of each puzzle counts.</small></div></li>
+    <li><span>3</span><div><strong>Join rankings</strong><small>Enable public participation under Your standing. Your display name and verified points will appear on the board.</small></div></li>
+   </ol>
+   <div className={styles.entryGuideFooter}>
+    <span>Each puzzle counts in the period when it was first completed. Replays do not earn extra points or reset the date.</span>
+    <Link href={selectedGame?.href||"/fun-zone"}>{selectedGame?"Play "+selectedGame.title:"Browse ranked games"} <span aria-hidden="true">→</span></Link>
+   </div>
   </section>
   {error?<div role="alert" className={styles.alert}>{error} <button type="button" onClick={()=>setReload(x=>x+1)}>Try again</button></div>:null}
   <section className={styles.standings} aria-label="Ranking standings" aria-busy={loading}>
