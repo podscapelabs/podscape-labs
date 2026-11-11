@@ -99,7 +99,7 @@ export default function Leaderboard(){
    <summary className={styles.entryGuideHead}>
     <span className={styles.detailIcon} aria-hidden="true"><PodscapeLineIcon name="book"/></span>
     <span className={styles.detailCopy}><strong>How rankings work</strong><small>{selectedGame?selectedGame.title+" · ":""}One verified puzzle = 100 points</small></span>
-    <span className={styles.detailChevron} aria-hidden="true"><PodscapeLineIcon name="chevron-down"/></span>
+    <span className={styles.detailChevron} aria-hidden="true"><PodscapeLineIcon name="arrow-down"/></span>
    </summary>
    <div className={styles.detailBody}>
     <h2 className={styles.visuallyHidden}>How to enter arcade rankings</h2>
@@ -119,7 +119,7 @@ export default function Leaderboard(){
    <summary className={styles.rewardsTitle}>
     <span className={styles.detailIcon} aria-hidden="true"><PodscapeLineIcon name="trophy"/></span>
     <span className={styles.detailCopy}><strong>Podium rewards & achievements</strong><small>Daily +50 · Weekly +200 · Monthly +500 EXP for 1st</small></span>
-    <span className={styles.detailChevron} aria-hidden="true"><PodscapeLineIcon name="chevron-down"/></span>
+    <span className={styles.detailChevron} aria-hidden="true"><PodscapeLineIcon name="arrow-down"/></span>
    </summary>
    <div className={styles.detailBody}>
     <p className={styles.rewardRule}>Finish on the podium to earn bonus EXP when eligible ranking periods close.</p>
