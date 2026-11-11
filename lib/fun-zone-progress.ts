@@ -15,5 +15,5 @@ export async function getFunZoneProgress(gameKey:string){
 }
 export function canPlayPuzzle(gameKey:string,puzzleId:string,completed:Set<string>){
  const challenges=getPuzzles(gameKey),index=challenges.findIndex(x=>x.puzzle.id===puzzleId);
- return index>=0&&(index===0||completed.has(challenges[index-1].puzzle.id));
+ return index>=0&&(completed.has(puzzleId)||index===0||completed.has(challenges[index-1].puzzle.id));
 }
