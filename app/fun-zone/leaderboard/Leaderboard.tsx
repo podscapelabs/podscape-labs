@@ -59,7 +59,7 @@ export default function Leaderboard(){
  return <main className={styles.page}><div className={styles.wrap}>
   <Link href="/fun-zone" className={styles.back}><span aria-hidden="true">←</span> Fun Zone</Link>
   <header className={styles.hero}>
-   <div><p className={styles.eyebrow}>PODSCAPE / FUN ZONE</p><h1>Arcade Rankings</h1><p>Big bragging rights. Tiny little victories. See who's been exploring the arcade.</p></div>
+   <div><p className={styles.eyebrow}>PODSCAPE / FUN ZONE</p><h1>Arcade Rankings</h1><p>Big bragging rights. Tiny little victories. See who&apos;s been exploring the arcade.</p></div>
    <span className={styles.heroIcon} aria-hidden="true"><PodscapeLineIcon name="trophy"/></span>
   </header>
   <section className={styles.controls} aria-label="Ranking filters">
@@ -105,7 +105,7 @@ export default function Leaderboard(){
    <div className={styles.personalTitle}><span><PodscapeLineIcon name="achievement"/></span><div><small>YOUR ARCADE</small><h2>Your standing</h2></div></div>
    {!board&&!loading?<p>Personal rankings are temporarily unavailable.</p>:!board?.signedIn?<p>Sign in to enter the public rankings. You can still explore the leaderboard without participating.</p>:
     <><div className={styles.consent}><div><strong>Show me on arcade rankings</strong><p>Optional. Your PodScape display name and verified puzzle totals become public on the leaderboard. Turn this off anytime.</p></div><button type="button" disabled={updating||loading} aria-pressed={board.participating} onClick={()=>setPublic(!board.participating)} className={board.participating?styles.optedIn:styles.optedOut}>{updating?"Saving…":board.participating?"Participating ✓":"Join rankings"}</button></div>
-     {board.participating?(board.mine?<div className={styles.myStanding}><span>#{board.mine.position} this period</span><b>{format(board.mine.points)} pts</b></div>:<p>Your profile is public, but you haven't completed a ranked puzzle in this period yet.</p>):<p className={styles.helper}>Your completions are still saved privately. Ranking points remain separate from EXP and Duck Bucks. Podium achievements may award EXP.</p>}</>}
+     {board.participating?(board.mine?<div className={styles.myStanding}><span>#{board.mine.position} this period</span><b>{format(board.mine.points)} pts</b></div>:<p>Your profile is public, but you haven&apos;t completed a ranked puzzle in this period yet.</p>):<p className={styles.helper}>Your completions are still saved privately. Ranking points remain separate from EXP and Duck Bucks. Podium achievements may award EXP.</p>}</>}
   </section>
   <section className={styles.rewards} aria-label="Leaderboard achievements and EXP">
    <div className={styles.rewardsTitle}><span><PodscapeLineIcon name="trophy"/></span><div><small>ACHIEVEMENTS & EXP</small><h2>Podium rewards</h2><p>Finish on the podium, unlock permanent achievements and earn bonus EXP when rankings close.</p></div></div>
@@ -138,6 +138,6 @@ export default function Leaderboard(){
     <div><strong>More than games?</strong><p>See how your lifetime EXP and keeper level compare across all of PodScape.</p></div>
     <Link href="/account/progress/rankings">Lifetime EXP Rankings <span aria-hidden="true">→</span></Link>
   </div>
-  <p className={styles.note}>Ranking points = 100 per unique server-verified puzzle completion. Ties share a rank. Daily, weekly and monthly boards reset by UTC calendar periods; All time persists. Only opted-in players appear. The Pod Exchange is not ranked because simulated wealth isn't a verified puzzle score.</p>
+  <p className={styles.note}>Ranking points = 100 per unique server-verified puzzle completion. Ties share a rank. Daily, weekly and monthly boards reset by UTC calendar periods; All time persists. Only opted-in players appear. The Pod Exchange is not ranked because simulated wealth isn&apos;t a verified puzzle score.</p>
  </div></main>;
 }
