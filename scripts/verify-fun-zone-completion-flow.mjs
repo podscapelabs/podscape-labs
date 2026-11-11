@@ -14,6 +14,8 @@ assert.match(next,/saved==="saved"/,"Next-level navigation waits for saved progr
 assert.match(next,/Next puzzle/,"Next puzzle is the primary completion button");
 assert.match(next,/nextHref/,"Uses the next puzzle's canonical route");
 assert.match(game,/NextPuzzleAction/,"All shared game types show next challenge");
+assert.match(game,/styles\.completedGroups/,"Completed Connections results use the compact grid");
+assert.match(read("components/PlayGame.module.css"),/\.completedGroups\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/,"Compact category cards use a responsive two-column layout");
 assert.doesNotMatch(game,/New arrangement ↻|Retry word ↻/,"Successful puzzle rounds do not prioritize replay");
 assert.match(gamePage,/const next=ordered\[index\+1\]/,"General puzzles progress in catalogue order");
 assert.match(searchPage,/const next=ordered\[index\+1\]/,"Word Search progresses in catalogue order");
