@@ -1,0 +1,31 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const read=path=>readFileSync(path,"utf8");
+const schema=read("supabase/migrations/202611110002_fun_zone_rankings.sql");
+const api=read("app/api/fun-zone/rankings/route.ts");
+const ui=read("app/fun-zone/leaderboard/Leaderboard.tsx");
+const portal=read("app/fun-zone/FunZonePortal.tsx");
+const puzzle=read("app/api/progress/puzzle-complete/route.ts");
+for(const period of ["daily","weekly","monthly","all-time"]){
+ assert.ok(api.includes('"'+period+'"'),"Missing period API: "+period);
+ assert.ok(ui.includes('"'+period+'"'),"Missing period UI: "+period);
+ assert.ok(schema.includes("'"+period+"'"),"Missing period SQL: "+period);
+}
+assert.match(schema,/date_trunc\('week'/,"Weekly rankings must use a calendar week, not the last seven days");
+assert.match(schema,/at time zone 'UTC'/,"Period boundaries must use UTC");
+assert.match(schema,/join public\.fun_zone_ranking_preferences/,"Only opted-in members may appear");
+assert.match(schema,/public_enabled=true/,"Consent is required for inclusion");
+assert.match(schema,/member_puzzle_completions/,"Rankings must use verified puzzle completions");
+assert.match(schema,/rank\(\) over/,"Tied scores must share ranks");
+assert.match(schema,/grant execute on function public\.get_fun_zone_rankings.*to service_role/,"Rankings RPC must be server-only");
+assert.match(api,/getSupabaseAdmin/,"Use server-side DB access for ranking data");
+assert.match(api,/customerSupabase/,"Preference updates must authenticate users");
+assert.match(api,/user\.email_confirmed_at/,"Only verified accounts can opt in");
+assert.match(api,/validGames/,"Games must use canonical Arcade registry");
+assert.match(api,/game\.key!=="pod-exchange"/,"Unverified market wallets are excluded");
+assert.match(ui,/setPublic/,"Users must control public participation");
+assert.match(ui,/entries\.slice\(0,3\)/,"Podium must display at most three people");
+assert.match(ui,/100 per unique/,"Point attribution must be transparent");
+assert.match(portal,/\/fun-zone\/leaderboard/,"Fun Zone must link to the rankings page");
+assert.match(puzzle,/record_member_puzzle_completion/,"Existing scoring remains based on server-verified completions");
+console.log("Arcade rankings source checks passed: real completions, opt-in, UTC periods, filters, podium and existing game links.");
