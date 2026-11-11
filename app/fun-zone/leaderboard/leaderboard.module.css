@@ -349,3 +349,29 @@
 .namePrivacy input:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .namePrivacy span{display:grid;gap:3px;min-width:0}.namePrivacy strong{font-size:12px;color:var(--text-primary)}.namePrivacy small{font-size:10px;line-height:1.4;color:var(--text-secondary)}
 @media(max-width:390px){.personal>.namePrivacy{grid-row:auto}}
+
+
+/* Compact public leaderboard; everything explanatory lives in a native popup. */
+.helpAction{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-height:41px}
+.privacyAction{grid-column:1/-1;display:flex;align-items:center;justify-content:flex-start;min-width:0}
+.personal>.privacyAction{grid-column:1/-1}
+.helpAction :global(button){min-height:39px}
+.privacyAction :global(button){min-height:36px}
+.entryGuide,.rewards{display:grid;gap:12px;padding:0;border:0;border-radius:0;background:transparent;overflow:visible}
+.entryGuideHead,.rewardsTitle{padding:0;cursor:default}
+.detailBody{display:grid;gap:12px;padding:0}
+.rewardTableWrap{max-width:100%;overflow-x:auto}
+.expRankingsLink{padding:10px 13px;min-height:53px}
+.expRankingsLink p{display:none}
+.expRankingsLink a{min-height:36px;font-size:11px}
+.personal>p,.personal>.helper{grid-column:1/-1;font-size:11px;line-height:1.45;margin:0}
+@media(max-width:680px){
+ .personal{padding:11px 12px}
+ .personal>.privacyAction{grid-row:auto}
+ .expRankingsLink{flex-direction:row;align-items:center}
+ .expRankingsLink a{align-self:center;flex:none;padding:7px 9px}
+ .helpAction{min-height:36px}
+ .entryGuide,.rewards{padding:0}
+ .entrySteps{grid-template-columns:1fr}
+}
+@media(max-width:390px){.expRankingsLink{flex-wrap:wrap}.expRankingsLink a{width:100%}}
