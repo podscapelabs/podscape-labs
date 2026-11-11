@@ -73,6 +73,36 @@ export async function signUpCustomer(_prev: CustomerFormState, form: FormData): 
   return { error: "", message: "Check your inbox for your confirmation link before signing in." };
 }
 
+/** Re-send signup confirmation without bypassing the beta invitation gate. */
+export async function resendCustomerVerification(_prev: CustomerFormState, form: FormData): Promise<CustomerFormState> {
+  const db = await customerSupabase();
+  const origin = customerAuthSiteUrl();
+  if (!db || !origin) return { error: "Email verification is temporarily unavailable. Please try later.", message: "" };
+  const email = emailFrom(form);
+  if (!validEmail(email)) return { error: "Enter a valid email address.", message: "" };
+
+  // Only previously approved beta testers can request confirmation mail.
+  if (!(await isAdminAuthenticated())) {
+    const approval = await testerAccessStatus(email);
+    if (approval === "unavailable") return { error: "Early Access verification is temporarily unavailable. Please try again shortly.", message: "" };
+    if (approval !== "approved") return { error: "This email is not yet approved for Early Access. Contact the PodScape team.", message: "" };
+  }
+
+  const { error } = await db.auth.resend({
+    type: "signup",
+    email,
+    options: { emailRedirectTo: `${origin}/auth/customer-callback` },
+  });
+  if (error?.status === 429 || error?.code === "over_email_send_rate_limit") {
+    return { error: "Please wait before requesting another verification email. Supabase is limiting email requests temporarily.", message: "" };
+  }
+  if (error) {
+    // Do not expose whether a user account exists.
+    return { error: "", message: "If your account needs verification, a new confirmation email will arrive shortly. Check your spam folder too." };
+  }
+  return { error: "", message: "If your account needs verification, a new confirmation email is on its way. Check your spam folder too." };
+}
+
 export async function signInCustomer(_prev: CustomerFormState, form: FormData): Promise<CustomerFormState> {
   const db = await customerSupabase();
   if (!db) return { error: "Customer sign-in is not configured yet.", message: "" };
