@@ -166,3 +166,20 @@
 .rulesBody strong{color:var(--text-primary)}
 .rulesBody small{font-size:10px;line-height:1.5;color:var(--text-secondary)}
 .rules summary:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
+
+/* Compact, discoverable trading milestones, in the same visual family as rules. */
+.achievementGuide{border:1px solid var(--border);border-radius:13px;background:var(--surface);margin:0 0 12px;overflow:hidden}
+.achievementGuide summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 15px;cursor:pointer;min-height:45px;font-size:12px;font-weight:800}
+.achievementGuide summary::-webkit-details-marker{display:none}
+.achievementGuide summary>span:first-child{display:inline-flex;align-items:center;gap:9px}
+.achievementGuide summary svg{width:19px;height:19px;color:var(--accent)}
+.achievementGuide summary>span:last-child{color:var(--text-secondary);font-size:11px;font-weight:600}
+.achievementGuide[open] summary>span:last-child>span{display:inline-block;transform:rotate(180deg)}
+.achievementGoals{display:grid;gap:0;border-top:1px solid var(--border);padding:5px 15px 13px}
+.achievementGoals>div{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--border);padding:10px 0}
+.achievementGoals>div span{display:grid;gap:4px;min-width:0}
+.achievementGoals strong{font-size:12px}
+.achievementGoals small{font-size:11px;line-height:1.35;color:var(--text-secondary)}
+.achievementGoals b{flex:none;font-size:11px;color:var(--accent);white-space:nowrap}
+.achievementGoals>a{justify-self:start;text-decoration:none;font-size:11px;font-weight:800;color:var(--accent);margin-top:11px}
+.achievementGuide summary:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
