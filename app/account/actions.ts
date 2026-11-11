@@ -46,7 +46,7 @@ export async function signUpCustomer(_prev: CustomerFormState, form: FormData): 
   const email = emailFrom(form);
   const password = passwordFrom(form);
   const confirmation = String(form.get("confirmPassword") || "");
-  const displayName = stringField(form, "displayName", 24);
+  const displayName = String(form.get("displayName") || "").trim();
   if (!validUsername(displayName)) return { error: "Choose a username of 3–24 letters, numbers or underscores. Spaces are not allowed.", message: "" };
   if (!validEmail(email)) return { error: "Enter a valid email address.", message: "" };
   if (!(await isAdminAuthenticated())) {
@@ -174,7 +174,7 @@ export async function updateCustomerProfile(_prev: CustomerFormState, form: Form
   if (!db) return { error: "Customer profiles are not configured yet.", message: "" };
   const { data: { user } } = await db.auth.getUser();
   if (!user) return { error: "Please sign in again.", message: "" };
-  const displayName = stringField(form, "displayName", 24);
+  const displayName = String(form.get("displayName") || "").trim();
   if (!validUsername(displayName)) return { error: "Choose a username of 3–24 letters, numbers or underscores.", message: "" };
   const {data: current, error: lookupError}=await db.from("customer_profiles").select("display_name").eq("id",user.id).maybeSingle();
   if(lookupError||!current)return { error:"Unable to load your current username. Please try again.", message:"" };
