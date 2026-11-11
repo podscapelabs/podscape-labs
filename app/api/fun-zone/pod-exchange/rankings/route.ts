@@ -2,6 +2,7 @@ import {NextResponse} from "next/server";
 import {customerSupabase} from "@/lib/customer-auth/server";
 import {getSupabaseAdmin} from "@/lib/supabase-admin";
 import {STARTING_BUCKS,cycleAt,totalValue,isValidPortfolioSnapshot,type Portfolio} from "@/lib/pod-exchange";
+import {auditStoredExchangeWallet} from "@/lib/exchange-ranking-audit";
 
 export const dynamic="force-dynamic";
 const headers={"Cache-Control":"private, no-store, max-age=0"};
@@ -37,18 +38,29 @@ export async function GET(){
  const client=await customerSupabase();
  const {data:{user}}=client?await client.auth.getUser():{data:{user:null}};
  try{
-  const {data:preference,error:prefError}=user?await admin.from("member_exchange_ranking_preferences")
-   .select("public_enabled,eligible,hide_username").eq("user_id",user.id).maybeSingle():{data:null,error:null};
-  if(prefError)throw new Error("Ranking preferences unavailable");
   const {data:ownWallet,error:ownError}=user?await admin.from("member_exchange_portfolios")
    .select("user_id").eq("user_id",user.id).maybeSingle():{data:null,error:null};
   if(ownError)throw new Error("Unable to verify wallet status");
   const needsWallet=!!user&&!ownWallet;
-  const {data:review,error:reviewError}=user?await admin.from("member_exchange_ranking_reviews")
-   .select("status,reviewer_note").eq("user_id",user.id).maybeSingle():{data:null,error:null};
-  if(reviewError)throw new Error("Review status unavailable");
-  const participating=preference?.public_enabled===true&&preference.eligible===true;
-  const eligible=preference?.eligible===true;
+  // Previously imported wallets are verified automatically against server trade history.
+  // A failed audit never changes balances or holdings and never enters public rankings.
+  const pending=await admin.from("member_exchange_ranking_preferences")
+   .select("user_id").eq("eligible",false).order("updated_at",{ascending:true}).limit(12);
+  if(pending.error)throw new Error("Market eligibility unavailable");
+  for(const record of pending.data||[]){
+   const audit=await auditStoredExchangeWallet(record.user_id);
+   if(!audit.ok)continue;
+   const result=await admin.from("member_exchange_ranking_preferences")
+    .update({eligible:true,verified_at:new Date().toISOString(),public_enabled:true,updated_at:new Date().toISOString()})
+    .eq("user_id",record.user_id).eq("eligible",false);
+   if(result.error)throw new Error("Automatic market verification unavailable");
+  }
+  // Fresh fetch allows the current viewer's auto-verified wallet to appear immediately.
+  const {data:current,error:currentError}=user?await admin.from("member_exchange_ranking_preferences")
+    .select("public_enabled,eligible,hide_username").eq("user_id",user.id).maybeSingle():{data:null,error:null};
+  if(currentError)throw new Error("Market preferences unavailable");
+  const participating=!!ownWallet&&current?.eligible===true&&current.public_enabled!==false;
+  const eligible=current?.eligible===true;
   const preferences=await readAll<{user_id:string;hide_username:boolean}>(async (from,to)=>
     await admin.from("member_exchange_ranking_preferences").select("user_id,hide_username")
       .eq("public_enabled",true).eq("eligible",true).order("user_id",{ascending:true}).range(from,to)
@@ -84,7 +96,7 @@ export async function GET(){
   }
   const viewerId=participating?user?.id||null:null;
   return NextResponse.json({
-   signedIn:!!user,participating,hideUsername:preference?.hide_username===true,eligible,needsWallet,reviewStatus:review?.status||null,reviewerNote:review?.status==="declined"?review.reviewer_note:null,legacyReviewRequired:!!user&&!!ownWallet&&!eligible,
+   signedIn:!!user,participating,hideUsername:current?.hide_username===true,eligible,needsWallet,legacyReviewRequired:!!user&&!!ownWallet&&!eligible,
    cycle,weekStart,weeklyReady:participants.some(p=>p.weeklyPct!==null),
    wealth:standings(participants,"wealth",viewerId),
    return:standings(participants,"return",viewerId),
@@ -106,54 +118,16 @@ export async function POST(request:Request){
  if(authError||!user?.email_confirmed_at)return NextResponse.json({error:"Verified sign-in required"},{status:401,headers});
  let data:unknown;try{data=await request.json()}catch{return NextResponse.json({error:"Invalid request"},{status:400,headers})}
  if(!data||typeof data!=="object")return NextResponse.json({error:"Invalid request"},{status:400,headers});
- const input=data as {enabled?:unknown;action?:unknown};
- const reviewing=input.action==="requestReview";
-
- const changingPrivacy=typeof (data as {hideUsername?:unknown}).hideUsername==="boolean"&&input.enabled===undefined&&!reviewing;
- if(!reviewing&&!changingPrivacy&&typeof input.enabled!=="boolean")
-  return NextResponse.json({error:"Invalid preference"},{status:400,headers});
- const enabled=input.enabled===true;
+ const hideUsername=(data as {hideUsername?:unknown}).hideUsername;
+ if(typeof hideUsername!=="boolean")return NextResponse.json({error:"Only username privacy may be updated"},{status:400,headers});
  const admin=getSupabaseAdmin();
  if(!admin)return NextResponse.json({error:"Market ranking unavailable"},{status:503,headers});
- if(changingPrivacy){
-  const {data:existing,error:existingError}=await admin.from("member_exchange_ranking_preferences")
-   .select("user_id").eq("user_id",user.id).maybeSingle();
-  if(existingError)return NextResponse.json({error:"Market ranking privacy unavailable"},{status:503,headers});
-  if(!existing)return NextResponse.json({error:"Initialize your market wallet before changing ranking privacy"},{status:409,headers});
-  const hidden=(data as {hideUsername:boolean}).hideUsername;
-  const {error:privacyError}=await admin.from("member_exchange_ranking_preferences")
-   .update({hide_username:hidden,updated_at:new Date().toISOString()}).eq("user_id",user.id);
-  if(privacyError)return NextResponse.json({error:"Unable to save username privacy"},{status:503,headers});
-  return NextResponse.json({saved:true,hideUsername:hidden},{headers});
- }
- if(reviewing){
-  const {data:wallet,error:walletError}=await admin.from("member_exchange_portfolios")
-   .select("user_id").eq("user_id",user.id).maybeSingle();
-  if(walletError||!wallet)return NextResponse.json({error:"Open the Exchange to initialize your wallet before requesting a review"},{status:409,headers});
-  const {data:existing,error:existingError}=await admin.from("member_exchange_ranking_reviews")
-   .select("status").eq("user_id",user.id).maybeSingle();
-  if(existingError)return NextResponse.json({error:"Review queue unavailable"},{status:503,headers});
-  if(existing?.status==="pending")return NextResponse.json({requested:true,status:"pending"},{headers});
-  const {data:eligibleRecord,error:eligibleError}=await admin.from("member_exchange_ranking_preferences")
-   .select("eligible").eq("user_id",user.id).maybeSingle();
-  if(eligibleError)return NextResponse.json({error:"Eligibility unavailable"},{status:503,headers});
-  if(eligibleRecord?.eligible)return NextResponse.json({error:"Your market wallet is already eligible"},{status:409,headers});
-  const {error:requestError}=await admin.from("member_exchange_ranking_reviews").upsert({
-   user_id:user.id,status:"pending",requested_at:new Date().toISOString(),
-   reviewed_at:null,reviewer_note:""
-  },{onConflict:"user_id"});
-  if(requestError)return NextResponse.json({error:"Unable to submit review request"},{status:503,headers});
-  return NextResponse.json({requested:true,status:"pending"},{headers});
- }
- const {data:record,error}=await admin.from("member_exchange_ranking_preferences")
-  .select("eligible").eq("user_id",user.id).maybeSingle();
- if(error)return NextResponse.json({error:"Market rankings migration pending"},{status:503,headers});
- if(enabled&&!record?.eligible)return NextResponse.json({
-  error:"This wallet's starting balance needs verification before it can join public market rankings. Your Duck Bucks and shares are safe."
- },{status:403,headers});
- if(!record)return NextResponse.json({saved:true,participating:false},{headers});
- const {error:updateError}=await admin.from("member_exchange_ranking_preferences")
-  .update({public_enabled:enabled,updated_at:new Date().toISOString()}).eq("user_id",user.id);
- if(updateError)return NextResponse.json({error:"Could not save ranking preference"},{status:503,headers});
- return NextResponse.json({saved:true,participating:enabled},{headers});
+ const {data:existing,error:existingError}=await admin.from("member_exchange_ranking_preferences")
+  .select("user_id").eq("user_id",user.id).maybeSingle();
+ if(existingError)return NextResponse.json({error:"Market ranking privacy unavailable"},{status:503,headers});
+ if(!existing)return NextResponse.json({error:"Initialize your market wallet before changing ranking privacy"},{status:409,headers});
+ const {error}=await admin.from("member_exchange_ranking_preferences")
+  .update({hide_username:hideUsername,updated_at:new Date().toISOString()}).eq("user_id",user.id);
+ if(error)return NextResponse.json({error:"Unable to save username privacy"},{status:503,headers});
+ return NextResponse.json({saved:true,hideUsername},{headers});
 }
