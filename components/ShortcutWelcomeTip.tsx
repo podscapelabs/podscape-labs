@@ -115,13 +115,13 @@ export function ShortcutWelcomeTip({userId}:{userId:string|null}){
     <fieldset className={styles.layoutChoices}><legend>Start with what matters to you</legend>
      <div className={styles.presetGrid}>
       <label className={styles.presetTile} data-selected={focus===null}>
-       <input type="radio" name="podscape-starting-layout" checked={focus===null} onChange={()=>{setFocus(null);setSetupHint(false)}}/>
+       <input type="radio" name="podscape-starting-layout" checked={focus===null} onChange={()=>{setFocus(null)}}/>
        <span className={styles.presetTileIcon}><PodscapeLineIcon name="home"/></span>
        <strong>Keep current</strong>
        <small>Nothing overwritten</small>
       </label>
       {starterChoices.map(choice=><label key={choice.id} className={styles.presetTile} data-selected={focus===choice.id}>
-       <input type="radio" name="podscape-starting-layout" checked={focus===choice.id} onChange={()=>{setFocus(choice.id);setSetupHint(false)}}/>
+       <input type="radio" name="podscape-starting-layout" checked={focus===choice.id} onChange={()=>{setFocus(choice.id)}}/>
        <span className={styles.presetTileIcon}><PodscapeLineIcon name={choice.icon}/></span>
        <strong>{choice.title}</strong>
        <small>{choice.id==="balanced"?"A little of everything":choice.id==="explorer"?"Species & guides":choice.id==="keeper"?"Colonies & care":choice.id==="collector"?"Wishlist & collections":"Games & EXP"}</small>
