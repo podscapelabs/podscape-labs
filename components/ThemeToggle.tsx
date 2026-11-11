@@ -3,7 +3,8 @@
 import {useEffect,useState} from "react";
 import {MoonIcon,SunIcon} from "./Icons";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
-import {THEMES,THEME_IDS,THEME_STORAGE_KEY,isThemeId,themeColorScheme,type ThemeId,type ThemePreference} from "@/lib/theme-registry";
+import {THEMES,THEME_IDS,isThemeId,type ThemeId,type ThemePreference} from "@/lib/theme-registry";
+import {chooseThemePreference,storedThemePreference} from "@/lib/theme-runtime";
 
 export function ThemeToggle(){
  const [theme,setTheme]=useState<ThemeId|null>(null);
@@ -11,8 +12,7 @@ export function ThemeToggle(){
 
  useEffect(()=>{
   const sync=()=>{
-   const saved=localStorage.getItem(THEME_STORAGE_KEY);
-   setPreference(isThemeId(saved)?saved:"system");
+   setPreference(storedThemePreference());
    const current=document.documentElement.dataset.theme;
    setTheme(isThemeId(current)?current:"light");
   };
@@ -24,13 +24,9 @@ export function ThemeToggle(){
  function toggleTheme(){
   const current=theme||"light";
   const next=THEME_IDS[(THEME_IDS.indexOf(current)+1)%THEME_IDS.length];
-  document.documentElement.dataset.theme=next;
-  document.documentElement.dataset.themePreference=next;
-  document.documentElement.style.colorScheme=themeColorScheme(next);
-  localStorage.setItem(THEME_STORAGE_KEY,next);
+  chooseThemePreference(next);
   setTheme(next);
   setPreference(next);
-  window.dispatchEvent(new CustomEvent("podscape-theme-change",{detail:next}));
  }
  const next=THEME_IDS[(THEME_IDS.indexOf(theme||"light")+1)%THEME_IDS.length];
  const currentName=THEMES.find(t=>t.id===(theme||"light"))?.title||"Light";
