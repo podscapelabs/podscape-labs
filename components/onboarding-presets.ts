@@ -1,18 +1,20 @@
 import type {PodscapeIconName} from "./PodscapeLineIcon";
 import {homeWidgetNames} from "./workspace-widget-labels";
 import {initialHome, initialBottom, cleanPreference} from "./navigation-customization";
+import {chooseThemePreference} from "@/lib/theme-runtime";
+import {THEME_IDS, type ThemePreference} from "@/lib/theme-registry";
 
 /**
  * Starter choices are deliberately additive to PodScape's existing layouts.
  * Presets never write anything until the visitor explicitly applies one.
  */
 export type StarterFocus = "balanced" | "explorer" | "keeper" | "collector" | "play";
-export type StarterAppearance = "keep" | "light" | "dark" | "system";
+export type StarterAppearance = "keep" | ThemePreference;
 export type StarterChoice = {
  id:StarterFocus;title:string;description:string;icon:PodscapeIconName;
  visible:string[];homeShortcuts:string[];bottomShortcuts:string[];preview:{label:string;icon:PodscapeIconName}[];
 };
-export const homeWidgetOrder = ["greeting","hero","shortcuts","spotlight","recent","colony","games","progress","schedule","guides","community","pins"] as const;
+export const homeWidgetOrder = ["greeting","hero","shortcuts","spotlight","recent","colony","games","progress","schedule","guides","community","pins","marketNews"] as const;
 export const starterChoices:StarterChoice[] = [
  {id:"balanced",title:"Balanced",description:"A little of everything, with fresh discoveries first.",icon:"home",
  visible:["recent"],homeShortcuts:[...initialHome],bottomShortcuts:[...initialBottom],
@@ -40,34 +42,37 @@ export type StarterPreferenceOptions = {
  shortcuts:boolean;
 };
 
-export function applyStarterPreferences(options:StarterPreferenceOptions):boolean {
+/**
+ * Apply the selected starter as a single explicit choice. An existing layout
+ * remains untouched when focus is null. Appearance is applied only on Finish.
+ * Storage is staged before dispatching events so a failed write can roll back.
+ */
+export function applyStarterPreferences(options:StarterPreferenceOptions):boolean{
  const chosen=starterChoices.find(item=>item.id===options.focus);
- if(!chosen)return false;
- try {
-  // Preserve any existing block order; only replace visible optional widgets.
+ if(!chosen||!["keep","system",...THEME_IDS].includes(options.appearance))return false;
+ const keys=[onboardingLayoutKey,onboardingHomeNavKey,onboardingBottomNavKey,"podscape-theme"] as const;
+ const before=new Map<string,string|null>();
+ try{
+  for(const key of keys)before.set(key,localStorage.getItem(key));
   const saved=JSON.parse(localStorage.getItem(onboardingLayoutKey)||"null") as {order?:unknown;visible?:unknown}|null;
   const known=new Set<string>(homeWidgetOrder);
   const current=Array.isArray(saved?.order)?saved.order.filter((id):id is string=>typeof id==="string"&&known.has(id)):[];
   const order=[...new Set([...current,...homeWidgetOrder])];
   localStorage.setItem(onboardingLayoutKey,JSON.stringify({order,visible:chosen.visible}));
-  window.dispatchEvent(new Event("podscape-home-widgets-changed"));
   if(options.shortcuts){
    localStorage.setItem(onboardingHomeNavKey,JSON.stringify(cleanPreference(chosen.homeShortcuts,"home")));
    localStorage.setItem(onboardingBottomNavKey,JSON.stringify(cleanPreference(chosen.bottomShortcuts,"bottom")));
-   for(const area of ["home","bottom"]){
-    window.dispatchEvent(new CustomEvent("podscape-nav-updated",{detail:{area}}));
-   }
   }
-  if(options.appearance!=="keep"){
-   if(options.appearance==="system")localStorage.removeItem("podscape-theme");
-   else localStorage.setItem("podscape-theme",options.appearance);
-   const theme=options.appearance==="system"
-    ?(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):options.appearance;
-   document.documentElement.dataset.theme=theme;
-   document.documentElement.dataset.themePreference=options.appearance;
-   document.documentElement.style.colorScheme=theme;
-   window.dispatchEvent(new CustomEvent("podscape-theme-change",{detail:theme}));
+  if(options.appearance!=="keep")chooseThemePreference(options.appearance);
+ }catch{
+  for(const [key,value] of before){
+   try{if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value)}catch{}
   }
-  return true;
- }catch{return false}
+  return false;
+ }
+ window.dispatchEvent(new Event("podscape-home-widgets-changed"));
+ if(options.shortcuts){
+  for(const area of ["home","bottom"])window.dispatchEvent(new CustomEvent("podscape-nav-updated",{detail:{area}}));
+ }
+ return true;
 }
