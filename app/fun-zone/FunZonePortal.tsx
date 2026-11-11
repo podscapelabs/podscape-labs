@@ -11,16 +11,17 @@ import {portalWidgetGroups,widgetAllowed,widgetGroup,widgetPurpose} from "@/comp
 import {ARCADE_CATEGORIES,ARCADE_GAMES,ARCADE_GAME_KEYS,ARCADE_LAYOUT_KEY,GAME_FAVOURITES_KEY,categoryCounts,normaliseFavourites,type ArcadeCategory,type ArcadeGame} from "@/lib/fun-zone-arcade";
 import {FunZoneCarousel} from "./FunZoneCarousel";
 import {PodExchangeWatchlist} from "./PodExchangeWatchlist";
+import {FunZoneRankingsSpotlight} from "./FunZoneRankingsSpotlight";
 import styles from "./fun-zone-portal.module.css";
 import homeEditStyles from "@/components/PodscapeHome.module.css";
 
-type CoreWidget="featured"|"categories"|"favourites"|"progress"|"exchange";
+type CoreWidget="rankings"|"featured"|"categories"|"favourites"|"progress"|"exchange";
 type WidgetKey=CoreWidget|`game:${string}`;
 type SavedLayout={order:WidgetKey[];visible:WidgetKey[]};
-const defaultOrder:WidgetKey[]=["featured","categories","exchange","favourites","progress",...ARCADE_GAME_KEYS.map(key=>`game:${key}` as const)];
-const defaultVisible:WidgetKey[]=["featured","categories","exchange","favourites","progress"];
-const widgetNames:Record<CoreWidget,string>={featured:"Featured Games",categories:"Game Categories",favourites:"My Favourite Games",progress:"My Play Progress",exchange:"Duck Bucks Watchlist"};
-const widgetIcons:Record<CoreWidget,PodscapeIconName>={featured:"gamepad",categories:"grid",favourites:"bookmark",progress:"achievement",exchange:"gamepad"};
+const defaultOrder:WidgetKey[]=["rankings","featured","categories","exchange","favourites","progress",...ARCADE_GAME_KEYS.map(key=>`game:${key}` as const)];
+const defaultVisible:WidgetKey[]=["rankings","featured","categories","exchange","favourites","progress"];
+const widgetNames:Record<CoreWidget,string>={rankings:"Rankings Spotlight",featured:"Featured Games",categories:"Game Categories",favourites:"My Favourite Games",progress:"My Play Progress",exchange:"Duck Bucks Watchlist"};
+const widgetIcons:Record<CoreWidget,PodscapeIconName>={rankings:"trophy",featured:"gamepad",categories:"grid",favourites:"bookmark",progress:"achievement",exchange:"gamepad"};
 function label(id:WidgetKey):string{return id.startsWith("game:")?ARCADE_GAMES.find(game=>game.key===id.slice(5))?.title||id:widgetNames[id as CoreWidget];}
 function icon(id:WidgetKey):PodscapeIconName{return id.startsWith("game:")?ARCADE_GAMES.find(game=>game.key===id.slice(5))?.icon||"gamepad":widgetIcons[id as CoreWidget];}
 function readStored<T>(key:string,fallback:T):T{
@@ -31,6 +32,12 @@ function readLayout(key:string):SavedLayout{
  if(!value||!Array.isArray(value.order)||!Array.isArray(value.visible))return {order:[...defaultOrder],visible:[...defaultVisible]};
  const order=uniqueAllowed(value.order,defaultOrder);
  const visible=uniqueAllowed(value.visible,defaultOrder);
+ // Introduce Rankings Spotlight once for saved legacy layouts. After that,
+ // a user's explicit removal stays removed (the order still includes its ID).
+ if(!order.includes("rankings")){
+  return {order:["rankings",...order,...defaultOrder.filter(id=>!order.includes(id)&&id!=="rankings")],
+   visible:["rankings",...visible]};
+ }
  return {order:[...order,...defaultOrder.filter(id=>!order.includes(id))],visible};
 }
 function GameCard({game,isFavourite,onToggle,compact=false}:{game:ArcadeGame;isFavourite:boolean;onToggle:(key:string)=>void;compact?:boolean}){
@@ -105,6 +112,7 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
  const favouriteGames=favourites.flatMap(key=>{const game=ARCADE_GAMES.find(g=>g.key===key);return game?[game]:[]});
  const done=Object.values(completedByGame).reduce((sum,n)=>sum+n,0);
  const renderWidget=(id:WidgetKey)=>{
+  if(id==="rankings")return <FunZoneRankingsSpotlight/>;
   if(id==="featured")return <FunZoneCarousel signedIn={Boolean(userId)} exp={exp} coins={coins}/>;
   if(id==="categories")return <section className={styles.card} aria-label="Game categories">
    <div className={styles.blockTitle}><div><span className={styles.eyebrow}>GAME LIBRARY</span><h2>Pick a game.</h2></div><span className={styles.subtle}>{ARCADE_GAMES.length} games to explore</span></div>
@@ -147,12 +155,12 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
     <WidgetLibraryFilter view={libraryView} onChange={setLibraryView} added={defaultOrder.filter(id=>layout.visible.includes(id)).length} total={defaultOrder.length}/>
     {!defaultOrder.some(id=>widgetMatchesView(layout.visible.includes(id),libraryView))?<WidgetLibraryEmptyState view={libraryView}/>:null}
           <div className={homeEditStyles.widgetLibraryGroups}>
-     {portalWidgetGroups["fun-zone"].filter(group=>(["featured","categories","favourites","progress","exchange"] as CoreWidget[]).some(id=>widgetGroup("fun-zone",id)===group&&widgetMatchesView(layout.visible.includes(id),libraryView))).map(group=><section key={group}><h3>{group}</h3><div className={homeEditStyles.widgetGallery}>
-      {(["featured","categories","favourites","progress","exchange"] as CoreWidget[]).filter(id=>widgetGroup("fun-zone",id)===group&&widgetMatchesView(layout.visible.includes(id),libraryView)).map(id=>{
+     {portalWidgetGroups["fun-zone"].filter(group=>(["rankings","featured","categories","favourites","progress","exchange"] as CoreWidget[]).some(id=>widgetGroup("fun-zone",id)===group&&widgetMatchesView(layout.visible.includes(id),libraryView))).map(group=><section key={group}><h3>{group}</h3><div className={homeEditStyles.widgetGallery}>
+      {(["rankings","featured","categories","favourites","progress","exchange"] as CoreWidget[]).filter(id=>widgetGroup("fun-zone",id)===group&&widgetMatchesView(layout.visible.includes(id),libraryView)).map(id=>{
        const added=layout.visible.includes(id);
        return <article className={homeEditStyles.widgetGalleryCard} key={id}>
         <div className={homeEditStyles.widgetPreview} aria-hidden="true">
-         <span><PodscapeLineIcon name={icon(id)}/></span><div><strong>{label(id)}</strong><small>{id==="featured"?"Highlights & play now":id==="categories"?"Browse the game library":id==="favourites"?"Your saved games":id==="progress"?"EXP & milestones":"Duck Bucks & market prices"}</small></div><i>Wide</i>
+         <span><PodscapeLineIcon name={icon(id)}/></span><div><strong>{label(id)}</strong><small>{id==="rankings"?"Top keepers & market leaders":id==="featured"?"Highlights & play now":id==="categories"?"Browse the game library":id==="favourites"?"Your saved games":id==="progress"?"EXP & milestones":"Duck Bucks & market prices"}</small></div><i>Wide</i>
         </div>
         <div className={homeEditStyles.widgetGalleryCopy}><strong>{label(id)}</strong><p>{widgetPurpose("fun-zone",id)}</p>
          <button type="button" className={added?homeEditStyles.widgetRemove:homeEditStyles.widgetAdd} aria-pressed={added} onClick={()=>added?remove(id):add(id)}>{added?"✓ Added · Remove":"+ Add to Fun Zone"}</button>
