@@ -15,7 +15,7 @@ import {FirstActionEmptyState} from "./FirstActionEmptyState";
 import {RecentCategoryCards,type RecentGroup} from "./RecentCategoryCards";
 import {homeWidgetNames} from "./workspace-widget-labels";
 import {HomeMarketNews} from "./HomeMarketNews";
-import {WidgetLibraryFilter,widgetMatchesView,type WidgetLibraryView} from "./WidgetLibraryFilter";
+import {WidgetLibraryFilter,WidgetLibraryEmptyState,widgetMatchesView,type WidgetLibraryView} from "./WidgetLibraryFilter";
 import {portalWidgetGroups,widgetAllowed,widgetGroup,widgetPurpose} from "./workspace-widget-policy";
 
 export type HomeColony={id:string;name:string;quantity:number;speciesName:string}|null;
@@ -143,6 +143,7 @@ export function HomeWidgets({recentGroups,colony,progress,pinOptions,userId,gree
         <p>Add the widgets you love, remove the ones you don&apos;t. Changes are saved on this device.</p>
         <div className={styles.widgetLibraryActions}><span>{layout.visible.length} of {available.length} widgets added</span><button type="button" onClick={()=>{close();setCanvasEditing(true)}}>Arrange Home</button></div>
         <WidgetLibraryFilter view={libraryView} onChange={setLibraryView} added={available.filter(id=>layout.visible.includes(id)).length} total={available.length}/>
+          {!available.some(id=>widgetMatchesView(layout.visible.includes(id),libraryView))?<WidgetLibraryEmptyState view={libraryView}/>:null}
           <div className={styles.widgetLibraryGroups}>
             {groups.filter(group=>available.some(id=>widgetGroup("home",id)===group&&widgetMatchesView(layout.visible.includes(id),libraryView))).map(group=><section key={group}>
               <h3>{group}</h3>
