@@ -21,7 +21,7 @@ const splashCss=read("app/app/loading.module.css");
 // Registry is the source of truth. Every registered appearance must supply
 // both old and v2 palette roles plus loading screen styling.
 const registry=read("lib/theme-registry.ts");
-const registered=[...registry.matchAll(/\\{id:"([a-z-]+)",title:"[^"]+",description:"[^"]+",scheme:"(light|dark)"/g)].map(m=>({id:m[1],scheme:m[2]}));
+const registered=[...registry.matchAll(/\{id:"([a-z-]+)",title:"[^"]+",description:"[^"]+",scheme:"(light|dark)"/g)].map(m=>({id:m[1],scheme:m[2]}));
 const themeIds=registered.map(theme=>theme.id);
 assert.ok(themeIds.includes("light")&&themeIds.includes("dark"),"System requires Light/Dark fallbacks");
 assert.equal(new Set(themeIds).size,themeIds.length,"Theme ids must be unique");
@@ -37,10 +37,10 @@ for(const {id,scheme} of registered){
 assert.match(appearance,/THEMES,SYSTEM_OPTION,THEME_STORAGE_KEY/,"Appearance picker must use the registry");
 assert.match(themeToggle,/THEMES,THEME_IDS,THEME_STORAGE_KEY/,"Quick toggle must use the registry");
 assert.match(layout,/THEMES,THEME_STORAGE_KEY/,"First paint must consume theme registry");
-assert.match(layout,/JSON.stringify\\(themeIds\\)/,"First paint needs all registered ids");
-assert.match(layout,/JSON.stringify\\(themeSchemes\\)/,"First paint must use registry-native colour schemes");
-assert.match(appearance,/localStorage\\.setItem\\(THEME_STORAGE_KEY,next\\)/,"Appearance must persist");
-assert.match(appearanceCss,/grid-template-columns:repeat\\(2/,"Theme picker should fit phone widths");
+assert.match(layout,/JSON.stringify\(themeIds\)/,"First paint needs all registered ids");
+assert.match(layout,/JSON.stringify\(themeSchemes\)/,"First paint must use registry-native colour schemes");
+assert.match(appearance,/localStorage\.setItem\(THEME_STORAGE_KEY,next\)/,"Appearance must persist");
+assert.match(appearanceCss,/grid-template-columns:repeat\(2/,"Theme picker should fit phone widths");
 
 for(const token of ["--ps-bg","--ps-surface","--ps-surface-raised","--ps-surface-muted","--ps-text","--ps-text-secondary","--ps-border","--ps-accent","--ps-accent-text","--ps-focus","--ps-font-ui","--ps-font-display","--ps-radius-card","--ps-min-control"]){
  assert.ok(globals.includes(token+":"),"Missing theme role: "+token);
@@ -244,11 +244,11 @@ for(const theme of themeIds){
 }
 assert.equal(new Set(environmentPalettes.values()).size,themeIds.length,"Each registered theme must have a distinct surface environment");
 const ledgerTheme=read("app/ledger/discover.module.css");
-assert.match(ledgerTheme,/border:1px solid var\\(--border\\);[\\s\\S]*?background:radial-gradient\\(circle at 84% 22%,var\\(--portal-hero-glow\\)/,
+assert.match(ledgerTheme,/border:1px solid var\(--border\);[\s\S]*?background:radial-gradient\(circle at 84% 22%,var\(--portal-hero-glow\)/,
  "Leaf Ledger must not preserve a hardcoded green frame across themes");
-assert.match(ledgerTheme,/\\.heroDestinations a\\.heroDestinationActive\\{background:var\\(--portal-hero-button-bg\\)/,
+assert.match(ledgerTheme,/\.heroDestinations a\.heroDestinationActive\{background:var\(--portal-hero-button-bg\)/,
  "Ledger actions must follow each theme's portal button role");
-assert.match(home,/\\.spotlightRail \\.tileCopy,[\\s\\S]*?background:var\\(--ps-surface\\)/,
+assert.match(home,/\.spotlightRail \.tileCopy,[\s\S]*?background:var\(--ps-surface\)/,
  "Home Spotlight must inherit theme card surfaces");
 
 // Inventory only: backgrounds and gradients used for photos, flags, chart series and
