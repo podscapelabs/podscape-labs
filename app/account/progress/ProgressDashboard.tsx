@@ -17,7 +17,7 @@ function achievementMark(key:string):PodscapeIconName{
  if(key.startsWith("exchange_"))return "gamepad";
  if(key.startsWith("puzzle_")||key.startsWith("secret_arcade")||key.startsWith("secret_burrow"))return "challenge";
  if(key.startsWith("ledger_")||key.startsWith("collection_"))return "leaf";
- if(key.startsWith("care_"))return "manager";
+ if(key.startsWith("care_")||key.startsWith("keeper_"))return "manager";
  if(key.startsWith("nav_"))return "grid";
  if(key.includes("personalized")||key.startsWith("customize_"))return "edit";
  return "achievement";
@@ -34,7 +34,7 @@ function achievementCategory(key:string):AchievementCategory{
  if(key.startsWith("ledger_")||key.startsWith("collection_"))return "exploration";
  if(key.startsWith("puzzle_")||key.startsWith("exchange_")||key.startsWith("ranking_")||
     key==="secret_arcade_variety"||key==="secret_burrow_streak")return "fun-zone";
- if(key.startsWith("care_"))return "care";
+ if(key.startsWith("care_")||key.startsWith("keeper_"))return "care";
  return "customization";
 }
 
