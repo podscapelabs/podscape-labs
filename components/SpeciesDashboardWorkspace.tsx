@@ -7,6 +7,7 @@ import {recordExperienceAction} from "./experience-achievements";
 import {confirmWorkspaceReset} from "./workspace-edit-standards";
 import {useWorkspaceEditorDialog} from "./useWorkspaceEditorDialog";
 import {speciesStorageKey} from "@/lib/ui-preferences";
+import {portalWidgetGroups,widgetGroup,widgetPurpose} from "./workspace-widget-policy";
 import homeStyles from "./PodscapeHome.module.css";
 import styles from "./SpeciesProfile.module.css";
 import { PodscapeLineIcon, type PodscapeIconName } from "./PodscapeLineIcon";
@@ -107,7 +108,7 @@ export function SpeciesDashboardWorkspace({widgets,scope,preview=false}:{widgets
     <div className={homeStyles.homeEditorHead}><div><small>YOUR HOBBY, YOUR SPACE</small><h2 id="species-widget-library">Species widgets</h2></div><button type="button" onClick={()=>setLibraryOpen(false)}>Done</button></div>
     <p>Pick the information you care about. Hold any dashboard block to rearrange or remove it. Your layout carries across all species; missing facts remain hidden until researched.</p>
     <div className={homeStyles.widgetLibraryActions}><span>{visible.length} active widgets</span><button type="button" onClick={()=>{setLibraryOpen(false);enterCanvas()}}>Arrange Dashboard</button></div>
-    <div className={homeStyles.widgetLibraryGroups}><section><h3>Profile information</h3><div className={homeStyles.widgetGallery}>{speciesWidgetIds.map(id=><article key={id} className={homeStyles.widgetGalleryCard}><div className={homeStyles.widgetPreview}><span aria-hidden="true"><PodscapeLineIcon name={speciesWidgetIcons[id]} /></span><div><strong>{speciesWidgetLabels[id]}</strong><small>{descriptions[id]}</small></div></div><div className={homeStyles.widgetGalleryCopy}><strong>{speciesWidgetLabels[id]}</strong><p>{available.includes(id)?"Available for this species":"No information for this species yet — your preference still applies to others."}</p><button type="button" className={layout.visible.includes(id)?homeStyles.widgetRemove:homeStyles.widgetAdd} onClick={()=>toggle(id)}>{layout.visible.includes(id)?"✓ Added · Remove":"+ Add to Dashboard"}</button></div></article>)}</div></section></div>
+    <div className={homeStyles.widgetLibraryGroups}>{portalWidgetGroups.species.map(group=><section key={group}><h3>{group}</h3><div className={homeStyles.widgetGallery}>{speciesWidgetIds.filter(id=>widgetGroup("species",id)===group).map(id=><article key={id} className={homeStyles.widgetGalleryCard}><div className={homeStyles.widgetPreview}><span aria-hidden="true"><PodscapeLineIcon name={speciesWidgetIcons[id]} /></span><div><strong>{speciesWidgetLabels[id]}</strong><small>{widgetPurpose("species",id)}</small></div></div><div className={homeStyles.widgetGalleryCopy}><strong>{speciesWidgetLabels[id]}</strong><p>{available.includes(id)?"Available for this species":"No information for this species yet — your preference still applies to others."}</p><button type="button" className={layout.visible.includes(id)?homeStyles.widgetRemove:homeStyles.widgetAdd} onClick={()=>toggle(id)}>{layout.visible.includes(id)?"✓ Added · Remove":"+ Add to Dashboard"}</button></div></article>)}</div></section>)}</div>
     <div className={homeStyles.widgetLibraryFooter}><small>One layout for all species · Saved on this device</small><button type="button" onClick={reset}>Reset layout</button></div>
    </div>
   </div>}
