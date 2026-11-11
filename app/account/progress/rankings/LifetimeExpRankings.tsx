@@ -4,7 +4,7 @@ import Link from "next/link";
 import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
 import styles from "./lifetime-rankings.module.css";
 type Keeper={name:string;exp:number;level:number;position:number;mine:boolean};
-type Board={rows:Keeper[];mine:Keeper|null;participating:boolean;signedIn:boolean};
+type Board={rows:Keeper[];mine:Keeper|null;participating:boolean;hideUsername:boolean;signedIn:boolean};
 const format=(n:number)=>n.toLocaleString("en-CA");
 export default function LifetimeExpRankings(){
  const [board,setBoard]=useState<Board|null>(null);
@@ -33,6 +33,18 @@ export default function LifetimeExpRankings(){
   }catch(reason){setError(reason instanceof Error?reason.message:"Unable to update your preference");}
   finally{setUpdating(false);}
  };
+ const setHidden=async(hideUsername:boolean)=>{
+  if(updating)return;setUpdating(true);setError("");
+  try{
+   const response=await fetch("/api/progress/rankings",{
+    method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({hideUsername})
+   });
+   const result=await response.json();
+   if(!response.ok)throw new Error(result.error||"Could not update username privacy");
+   setReload(x=>x+1);
+  }catch(error){setError(error instanceof Error?error.message:"Could not update username privacy");}
+  finally{setUpdating(false)}
+ };
  const top=board?.rows.slice(0,3)||[];
  const others=board?.rows.slice(3)||[];
  return <main className={styles.page}><div className={styles.wrap}>
@@ -47,10 +59,15 @@ export default function LifetimeExpRankings(){
    {!board&&!loading?<p>Personal rankings are currently unavailable.</p>:
     !board?.signedIn?<div className={styles.joinSignIn}><p>Sign in to add your lifetime EXP and keeper level to the leaderboard.</p><Link href="/account" className={styles.joinLink}>Sign in to join <span aria-hidden="true">→</span></Link></div>:
     <>
-     <div className={styles.consent}><div><strong>{board.participating?"Lifetime ranking is public":"Put your keeper progress on the board"}</strong><p>{board.participating?"Your display name, keeper level and lifetime EXP are visible to visitors.":"Join with your saved lifetime EXP and keeper level. Arcade participation stays separate."}</p></div>
+     <div className={styles.consent}><div><strong>{board.participating?"Lifetime ranking is public":"Put your keeper progress on the board"}</strong><p>{board.participating?"Your level and lifetime EXP are visible; your username follows your privacy choice.":"Join with your saved lifetime EXP and keeper level. Arcade participation stays separate."}</p></div>
       <button type="button" disabled={updating||loading} aria-pressed={board.participating} onClick={()=>toggleParticipation(!board.participating)} aria-label={board.participating?"Leave public lifetime EXP rankings":"Join public lifetime EXP rankings"}>{updating?"Saving…":board.participating?"Leave rankings":"Join rankings"}</button>
      </div>
-     <small className={styles.privacyHint}>{board.participating?"Participating · Publicly visible · Leave anytime":"Private until you join · Display name, level and lifetime EXP become public"}</small>
+     <label className={styles.namePrivacy}>
+      <input type="checkbox" checked={board.hideUsername===true} disabled={updating||loading}
+       onChange={event=>setHidden(event.target.checked)}/>
+      <span><strong>Hide my username</strong><small>{board.hideUsername?"Anonymous Keeper is shown publicly; your level and EXP remain visible.":"Show Anonymous Keeper instead of your display name on the leaderboard."}</small></span>
+     </label>
+     <small className={styles.privacyHint}>{board.participating?"Participating · Your level and EXP are visible · Leave anytime":"Private until you join · Choose whether to show your username"}</small>
      {board.participating?(board.mine?<div className={styles.personalStanding}><span><strong>#{board.mine.position}</strong><small>Your lifetime placement</small></span><span><strong>Level {format(board.mine.level)}</strong><small>{format(board.mine.exp)} EXP</small></span></div>:<p>Your profile is public. Earn your first EXP to enter the board.</p>):<p>Your EXP and level remain saved privately even if you choose not to appear publicly.</p>}
     </>}
   </section>
