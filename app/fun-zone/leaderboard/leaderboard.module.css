@@ -343,3 +343,9 @@
  .joinSignIn p{grid-column:1;grid-row:2}
  .joinLink{grid-column:1;grid-row:3}
 }
+
+.namePrivacy{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:11px;background:var(--surface-secondary);border:1px solid var(--border);cursor:pointer;min-height:53px}
+.namePrivacy input{flex:none;width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
+.namePrivacy input:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.namePrivacy span{display:grid;gap:3px;min-width:0}.namePrivacy strong{font-size:12px;color:var(--text-primary)}.namePrivacy small{font-size:10px;line-height:1.4;color:var(--text-secondary)}
+@media(max-width:390px){.personal>.namePrivacy{grid-row:auto}}
