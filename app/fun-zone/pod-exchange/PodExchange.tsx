@@ -27,7 +27,7 @@ const GUEST_KEY=STORAGE_KEY+":guest";
 function guestStorageKey(){return localStorage.getItem(OWNER_KEY)?GUEST_KEY:STORAGE_KEY}
 function localWalletForAccount(userId:string):{portfolio:Portfolio;isNew:boolean}{
  const owner=localStorage.getItem(OWNER_KEY);
- if(owner&&owner!==userId)return {portfolio:defaultPortfolio(),isNew:true};
+ if(owner&&owner!==userId)return decodeSavedPortfolio(localStorage.getItem(GUEST_KEY));
  return decodeSavedPortfolio(localStorage.getItem(STORAGE_KEY));
 }
 function saveLocalSnapshot(portfolio:Portfolio,key=STORAGE_KEY):boolean{
