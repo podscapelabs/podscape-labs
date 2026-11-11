@@ -11,7 +11,7 @@ assert.doesNotMatch(exchange,/Trading Achievements|className=\{styles\.achieveme
 assert.match(exchange,/aria-label="Market help"/,"How-to-play remains available without its achievement panel");
 assert.match(exchange,/announceAchievement\(notice\)/,"Trading achievements still record silently");
 assert.match(next,/saved==="saved"/,"Next-level navigation waits for saved progress");
-assert.match(next,/Next challenge/,"Next puzzle is the primary completion button");
+assert.match(next,/Next puzzle/,"Next puzzle is the primary completion button");
 assert.match(next,/nextHref/,"Uses the next puzzle's canonical route");
 assert.match(game,/NextPuzzleAction/,"All shared game types show next challenge");
 assert.doesNotMatch(game,/New arrangement ↻|Retry word ↻/,"Successful puzzle rounds do not prioritize replay");
