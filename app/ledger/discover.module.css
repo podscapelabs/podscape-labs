@@ -159,3 +159,10 @@
 .heroDestinations a{border-color:color-mix(in srgb,var(--portal-hero-text) 36%,transparent);background:color-mix(in srgb,var(--portal-hero-start) 73%,transparent);color:var(--portal-hero-text)}
 .heroDestinations a.heroDestinationActive{background:var(--portal-hero-button-bg);color:var(--portal-hero-button-text);border-color:var(--portal-hero-button-bg)}
 .heroDestinations a:focus-visible{outline:3px solid var(--focus)}
+
+/* Featured species respects the same theme contrast roles, including photo overlays. */
+.feature{background:linear-gradient(110deg,var(--portal-hero-start),var(--portal-hero-end));color:var(--portal-hero-text)}
+.feature::after{background:linear-gradient(90deg,color-mix(in srgb,var(--portal-hero-start) 87%,transparent),transparent 85%)}
+.featureCopy small,.featureCopy p{color:var(--portal-hero-muted)}
+.featureCopy a{background:var(--portal-hero-button-bg);color:var(--portal-hero-button-text)}
+.featureFallback{color:var(--portal-hero-soft)}
