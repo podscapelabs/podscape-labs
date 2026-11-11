@@ -33,17 +33,6 @@ export default function MarketRankings(){
    .finally(()=>{if(!controller.signal.aborted)setLoading(false)});
   return ()=>controller.abort();
  },[reload]);
- async function join(enabled:boolean){
-  if(updating)return;setUpdating(true);setError("");
-  try{
-   const response=await fetch("/api/fun-zone/pod-exchange/rankings",{
-    method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({enabled})
-   });
-   const body=await response.json();if(!response.ok)throw Error(body.error||"Preference not saved");
-   setReload(v=>v+1);
-  }catch(e){setError(e instanceof Error?e.message:"Unable to update rankings")}
-  finally{setUpdating(false)}
- }
  async function setHidden(hideUsername:boolean){
   if(updating)return;setUpdating(true);setError("");
   try{
@@ -55,18 +44,6 @@ export default function MarketRankings(){
    if(!response.ok)throw Error(result.error||"Unable to save username privacy");
    setReload(v=>v+1);
   }catch(e){setError(e instanceof Error?e.message:"Unable to save username privacy")}
-  finally{setUpdating(false)}
- }
- async function requestReview(){
-  if(updating)return;setUpdating(true);setError("");
-  try{
-   const response=await fetch("/api/fun-zone/pod-exchange/rankings",{
-    method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({action:"requestReview"})
-   });
-   const body=await response.json();if(!response.ok)throw Error(body.error||"Could not request verification");
-   setReload(v=>v+1);
-  }catch(e){setError(e instanceof Error?e.message:"Unable to request verification")}
   finally{setUpdating(false)}
  }
  const selected=tabs.find(t=>t.id===kind)!;
@@ -81,34 +58,28 @@ export default function MarketRankings(){
    <span aria-hidden="true"><PodscapeLineIcon name="trophy"/></span>
   </header>
   {error?<div className={styles.error} role="alert">{error}<button type="button" onClick={()=>setReload(v=>v+1)}>Retry</button></div>:null}
-  <section className={styles.join} aria-label="Public market ranking participation">
-   <div><small>YOUR MARKET PROFILE</small><h2>{data?.participating?"You're on the board":"Join Market Rankings"}</h2>
-    <p>{data?.participating?"Your market scores are public. Username visibility is your choice. Leave anytime.":"Your cloud wallet stays private until you choose to join."}</p></div>
+  <section className={styles.join} aria-label="Your automatic market ranking">
+   <div><small>YOUR MARKET PROFILE</small><h2>Your market standing</h2>
+    <p>Every verified cloud wallet enters the fictional rankings automatically. Choose whether to show your username.</p></div>
    {loading?<span className={styles.status}>Checking…</span>:
-    !data?.signedIn?<Link className={styles.joinButton} href="/account">Sign in to join →</Link>:
+    !data?.signedIn?<Link className={styles.joinButton} href="/account">Sign in →</Link>:
     data.needsWallet?<Link className={styles.joinButton} href="/fun-zone/pod-exchange">Start trading →</Link>:
-    !data.eligible?(data.reviewStatus==="pending"?<span className={styles.status}>Review pending</span>:<button type="button" className={styles.joinButton} disabled={updating} onClick={requestReview}>{updating?"Submitting…":"Request verification"}</button>):
-    <button type="button" className={data.participating?styles.leaveButton:styles.joinButton}
-     disabled={updating} aria-pressed={data.participating}
-     onClick={()=>join(!data.participating)}>
-     {updating?"Saving…":data.participating?"Leave rankings":"Join rankings"}</button>}
+    !data.eligible?<p className={styles.eligibility}>Automatic verification checks historical trades. Only portfolios that reconcile with a fair 10,000 Duck Bucks start enter competitive standings; no manual approval or wallet reset is required.</p>:null}
    {data?.signedIn&&data.eligible?<div className={styles.privacyAction}><RankingModal trigger={data.hideUsername?"Username hidden · Manage":"Username visible · Manage"} title="Market ranking privacy" subtle>
     <label className={styles.namePrivacy}>
     <input type="checkbox" checked={data.hideUsername===true} disabled={updating||loading}
      onChange={event=>setHidden(event.target.checked)}/>
     <span><strong>Hide my username</strong><small>{data.hideUsername?"You appear as Anonymous Investor; your portfolio value and returns remain visible.":"Show Anonymous Investor instead of your display name in market standings."}</small></span>
    </label>
-    <p className={styles.privacy}>Your portfolio value and returns stay visible even when your username is hidden.</p>
+    <p className={styles.privacy}>Your fictional portfolio value and returns remain visible; only your public name is masked.</p>
    </RankingModal></div>:null}
-   {data?.needsWallet?<p className={styles.eligibility}>Open the Exchange to create your free, cloud-saved starting wallet. You can join after it is initialized.</p>:data?.legacyReviewRequired?<p className={styles.eligibility}>Existing beta wallets require owner verification before competing. Your holdings remain safe. {data.reviewStatus==="pending"?"Your request is in the owner review queue.":data.reviewStatus==="declined"?"A previous review was declined. You may request another review.":""} {data.reviewerNote?data.reviewerNote:""}</p>:
-    <p className={styles.privacy}>Independent opt-in · Your fictional portfolio value and returns become public · Username optional</p>}
   </section>
   <div className={styles.helpAction}><RankingModal trigger="Rules & market achievements" title="Market rankings explained">
   <section className={styles.rules}><div className={styles.rulesTitle}><span><PodscapeLineIcon name="book"/> How market rankings work</span></div>
    <div><p><strong>The Rich List:</strong> Duck Bucks cash plus all share holdings, repriced at the current shared five-minute market tick.</p>
     <p><strong>Top Investors:</strong> (Current portfolio value − 10,000) ÷ 10,000, expressed as a percentage. A fair starting balance matters.</p>
     <p><strong>Market Movers:</strong> Change from an immutable server-recorded Monday UTC portfolio snapshot. Snapshots are not backdated; late entrants wait for the next period.</p>
-    <p>Only eligible, opted-in cloud wallets appear. Imported beta balances require verification. No portfolio resets, no purchased currency, and no real-world rewards. Percentages may be negative.</p>
+    <p>Verified cloud wallets enter automatically. Historical beta wallets are audited against server trade records without owner approval. No portfolio resets, no purchased currency, and no real-world rewards. Percentages may be negative.</p>
    </div>
   </section>
   <p className={styles.achievementHint}><PodscapeLineIcon name="achievement"/> Competitive weekly checkpoints can unlock permanent Market Mogul and Sharp Investor achievements, plus a hidden surprise. At least two verified participants are required.</p>
@@ -129,7 +100,7 @@ export default function MarketRankings(){
    </div>:null}
    {loading?<div className={styles.empty}>Calculating fictional portfolio values…</div>:
     kind==="weekly"&&!data?.weeklyReady?<div className={styles.empty}><PodscapeLineIcon name="calendar"/><strong>Weekly trading begins with a snapshot.</strong><p>Market Movers starts after the next Monday UTC snapshot. No retroactive or user-submitted returns count.</p></div>:
-    !top.length?<div className={styles.empty}><PodscapeLineIcon name="trophy"/><strong>The podium is waiting.</strong><p>Eligible investors who opt in will appear here. Everyone starts with the same 10,000 Duck Bucks.</p></div>:
+    !top.length?<div className={styles.empty}><PodscapeLineIcon name="trophy"/><strong>The podium is waiting.</strong><p>Automatically verified investors will appear here. Everyone starts with the same 10,000 Duck Bucks.</p></div>:
     <>
      <div className={styles.podium}>{top.map((entry,index)=><article className={styles.podiumCard} key={index}>
       <span className={styles.position}>#{entry.position}</span><span className={styles.medal}><PodscapeLineIcon name="trophy"/></span>
