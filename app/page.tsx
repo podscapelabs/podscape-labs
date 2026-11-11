@@ -54,7 +54,7 @@ export default async function PodAccessPage(){
 
    <section className={styles.explore} aria-labelledby="pod-access-explore">
     <div className={styles.exploreHead}>
-     <div><p className={styles.smallEyebrow}>WHAT'S INSIDE</p><h2 id="pod-access-explore">Your little corner of the hobby.</h2></div>
+     <div><p className={styles.smallEyebrow}>EXPLORE PODSCAPE</p><h2 id="pod-access-explore">Your little corner of the hobby.</h2></div>
      <p>Already part of the beta? This is what awaits beyond Pod Access.</p>
     </div>
     <div className={styles.exploreGrid}>
