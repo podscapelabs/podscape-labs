@@ -36,6 +36,7 @@ assert.match(puzzles,/answer:\(q\.answer\+shift\)%4/,"Correct choices should rot
 assert.match(puzzles,/seenQuizPrompts\.has\(prompt\)/,"Repeated quiz questions should fail validation");
 assert.match(puzzles,/seenPuzzles\.has\(key\)/,"Identical puzzles should fail validation");
 assert.match(puzzles,/new Set\(words\)\.size!==words\.length/,"Repeated word-search entries should fail validation");
+assert.match(puzzles,/seenSearchWords\.has\(word\)/,"Word Search solutions should not repeat across levels");
 assert.match(puzzles,/new Set\(ids\)\.size!==ids\.length/,"Duplicate completion IDs should fail validation");
 assert.match(puzzles,/const levelNames=\["Starter","Familiar","Explorer","Practiced","Specialist","Expert"\]/,"Difficulty must follow a clear learning curve");
 const prompts=[...puzzles.matchAll(/\bQ\("([^"]+)"/g),...games.matchAll(/prompt:"([^"]+)"/g)].map(m=>normalize(m[1]));
