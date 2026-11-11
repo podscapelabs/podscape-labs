@@ -211,7 +211,7 @@ export function PodExchange(){
   <details className={styles.achievementGuide}>
    <summary><span><PodscapeLineIcon name="trophy"/> Trading Achievements</span><span>5 to discover <span aria-hidden="true">⌄</span></span></summary>
    <div className={styles.achievementGoals}>
-    {achievementCatalog.filter(item=>item.key.startsWith("exchange_")).map(item=><div key={item.key}>
+    {achievementCatalog.filter(item=>["exchange_first_trade","exchange_first_sale","exchange_five_trades","exchange_three_companies","exchange_fifteen_trades"].includes(item.key)).map(item=><div key={item.key}>
      <span><strong>{item.title}</strong><small>{item.description}</small></span><b>+{item.exp} EXP</b>
     </div>)}
     <Link href="/account/progress">View your unlocked achievements →</Link>
