@@ -131,11 +131,42 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
   <nav className={styles.quickLinks} aria-label="Fun Zone shortcuts"><a href="#arcade-games"><PodscapeLineIcon name="grid"/> Categories</a><a href="#arcade-favourites"><PodscapeLineIcon name="bookmark"/> My Games</a><Link href="/fun-zone/leaderboard"><PodscapeLineIcon name="trophy"/> Rankings</Link><Link href="/fun-zone/pod-exchange"><PodscapeLineIcon name="gamepad"/> Pod Exchange</Link></nav>
   {editing?<WorkspaceEditToolbar title="Arrange Fun Zone" description="Drag the handles or use arrows to reorder games and widgets." onAdd={()=>{finishCanvas();setLibraryOpen(true)}} onReset={reset} onDone={finishCanvas}/>:null}
   <div className={styles.widgets}>{active.map((id,i)=><div key={id} id={id==="categories"?"arcade-games":id==="favourites"?"arcade-favourites":undefined}><WorkspaceEditBlock id={id} scope="fun-zone" label={label(id)} index={i} count={active.length} editing={editing} dragging={dragging===id} required={false} onMove={move} onRemove={remove} begin={beginDrag} move={moveDrag} stop={stopDrag} onLongPress={()=>enterCanvas(id)}>{renderWidget(id)}</WorkspaceEditBlock></div>)}</div>
-  {hydrated&&!editing?<button className={styles.addWidget} type="button" onClick={()=>setLibraryOpen(true)}><PodscapeLineIcon name="grid"/> Add Widgets & Games</button>:null}
-  {libraryOpen?<div className={styles.overlay} onPointerDown={event=>{if(event.target===event.currentTarget)setLibraryOpen(false)}}><section className={styles.dialog} ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="arcade-widget-title"><header><div><span className={styles.eyebrow}>YOUR ARCADE · YOUR WAY</span><h2 id="arcade-widget-title">Widget Library</h2></div><button type="button" onClick={()=>setLibraryOpen(false)}>Done</button></header><p>Pin games, categories, progress, or the market watchlist. Everything saves to this device.</p><button type="button" className={styles.arrangeLink} onClick={()=>{setLibraryOpen(false);enterCanvas()}}>Arrange Fun Zone →</button>
-   <h3>Arcade widgets</h3><div className={styles.libraryGrid}>{(["featured","categories","favourites","progress","exchange"] as CoreWidget[]).map(id=><div key={id} className={styles.libraryCard}><PodscapeLineIcon name={icon(id)}/><strong>{label(id)}</strong><button type="button" aria-pressed={layout.visible.includes(id)} onClick={()=>layout.visible.includes(id)?remove(id):add(id)}>{layout.visible.includes(id)?"✓ Added · Remove":"+ Add Widget"}</button></div>)}</div>
-   <h3>Pin a game</h3><div className={styles.libraryGrid}>{ARCADE_GAMES.map(game=>{const id=`game:${game.key}` as WidgetKey;return <div key={id} className={styles.libraryCard}><PodscapeLineIcon name={game.icon}/><strong>{game.title}</strong><small>{game.category}</small><button type="button" aria-pressed={layout.visible.includes(id)} onClick={()=>layout.visible.includes(id)?remove(id):add(id)}>{layout.visible.includes(id)?"✓ Added · Remove":"+ Add Game"}</button></div>})}</div>
-  </section></div>:null}
-  <p className={styles.note}>Hold a widget to rearrange your arcade. Layouts and favourites are saved on this device.</p>
+  {hydrated&&!editing?<div className={homeEditStyles.addWidgetFooter}><button type="button" className={homeEditStyles.addWidgetButton} onClick={()=>setLibraryOpen(true)}><span aria-hidden="true">＋</span> Add Widget</button></div>:null}
+  {libraryOpen?<div className={homeEditStyles.homeEditorOverlay} onPointerDown={event=>{if(event.target===event.currentTarget)setLibraryOpen(false)}}>
+   <div className={`${homeEditStyles.widgetEditor} ${homeEditStyles.widgetLibrary}`} ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="arcade-widget-title">
+    <div className={homeEditStyles.homeEditorHead}>
+     <div><small>YOUR ARCADE, YOUR WAY</small><h2 id="arcade-widget-title">Widget Library</h2></div>
+     <button type="button" onClick={()=>setLibraryOpen(false)}>Done</button>
+    </div>
+    <p>Add games and widgets to your arcade. Your layout and favourites stay saved on this device.</p>
+    <div className={homeEditStyles.widgetLibraryActions}><span>{layout.visible.length} of {defaultOrder.length} widgets added</span><button type="button" onClick={()=>{setLibraryOpen(false);enterCanvas()}}>Arrange Fun Zone</button></div>
+    <div className={homeEditStyles.widgetLibraryGroups}>
+     <section><h3>Arcade widgets</h3><div className={homeEditStyles.widgetGallery}>
+      {(["featured","categories","favourites","progress","exchange"] as CoreWidget[]).map(id=>{
+       const added=layout.visible.includes(id);
+       return <article className={homeEditStyles.widgetGalleryCard} key={id}>
+        <div className={homeEditStyles.widgetPreview} aria-hidden="true">
+         <span><PodscapeLineIcon name={icon(id)}/></span><div><strong>{label(id)}</strong><small>{id==="featured"?"Highlights & play now":id==="categories"?"Browse the game library":id==="favourites"?"Your saved games":id==="progress"?"EXP & milestones":"Duck Bucks & market prices"}</small></div><i>Wide</i>
+        </div>
+        <div className={homeEditStyles.widgetGalleryCopy}><strong>{label(id)}</strong><p>{id==="exchange"?"Follow your fictional stock portfolio.":id==="progress"?"Keep your keeper progress close.":id==="favourites"?"Launch your favourite games quickly.":id==="categories"?"Discover games by type.":"Featured games in one swipeable card."}</p>
+         <button type="button" className={added?homeEditStyles.widgetRemove:homeEditStyles.widgetAdd} aria-pressed={added} onClick={()=>added?remove(id):add(id)}>{added?"✓ Added · Remove":"+ Add to Fun Zone"}</button>
+        </div>
+       </article>;
+      })}
+     </div></section>
+     <section><h3>Pin a game</h3><div className={homeEditStyles.widgetGallery}>
+      {ARCADE_GAMES.map(game=>{const id=`game:${game.key}` as WidgetKey;const added=layout.visible.includes(id);
+       return <article key={id} className={homeEditStyles.widgetGalleryCard}>
+        <div className={homeEditStyles.widgetPreview} aria-hidden="true"><span><PodscapeLineIcon name={game.icon}/></span><div><strong>{game.title}</strong><small>{game.category}</small></div><i>Compact</i></div>
+        <div className={homeEditStyles.widgetGalleryCopy}><strong>{game.title}</strong><p>{game.description}</p>
+         <button type="button" className={added?homeEditStyles.widgetRemove:homeEditStyles.widgetAdd} aria-pressed={added} onClick={()=>added?remove(id):add(id)}>{added?"✓ Added · Remove":"+ Add to Fun Zone"}</button>
+        </div>
+       </article>;
+      })}
+     </div></section>
+    </div>
+    <div className={homeEditStyles.widgetLibraryFooter}><small>{active.length} blocks in your Fun Zone · Saved on this device</small><button type="button" onClick={reset}>Reset layout</button></div>
+   </div>
+  </div>:null}
  </div>;
 }
