@@ -84,45 +84,21 @@ assert.match(home,/var\(--ps-surface\)/);
 assert.match(globals,/\.ps-clamp-2/);
 assert.match(globals,/\.ps-card/);
 
-// Woodland visual parity: legacy portal gradients must not remain fixed to Light/Forest.
+// Universal portal contracts: a theme is supplied as tokens, never a page-specific selector.
 const shopHome=read("app/shop/shop-home.module.css");
 const keeperHome=read("app/keeper/page.module.css");
 const homeSurface=read("components/PodscapeHome.module.css");
-for(const [path,source,checks] of [
- ["Shop",shopHome,[".hero{",".hero h1{",".hero .previewTag{",".path:nth-child(2){",".path:nth-child(3){",".path:nth-child(4){",".feature{",".feature a{"]],
- ["Manager",keeperHome,[".managerHero{",".managerHero::after{",".managerHeroContent h1{",".managerHeroContent p{"]],
- ["Home",homeSurface,[".hero{",".hero:after{",".heroButton{",".spotlightRail .tileVisual:has(.tilePlaceholder){"]]
+for(const [page,source,roles] of [
+ ["Shop",shopHome,["--portal-hero-glow","--portal-hero-start","--portal-hero-end","--portal-hero-button-bg","--portal-hero-button-text"]],
+ ["Manager",keeperHome,["--portal-hero-start","--portal-hero-end","--portal-hero-text","--portal-hero-muted"]],
+ ["Home",homeSurface,["--portal-hero-start","--portal-hero-end","--portal-hero-button-bg","--ps-surface-muted"]]
 ]){
- for(const selector of checks){
-  assert.ok(source.includes(':global(html[data-theme="woodland"]) '+selector),
-   "Missing Woodland portal override in "+path+": "+selector);
- }
+ for(const role of roles)assert.ok(source.includes("var("+role+")"),page+" is missing semantic role "+role);
+ assert.ok(!/html\[data-theme=/.test(source),page+" must not require theme-specific CSS overrides");
 }
-assert.match(shopHome,/--portal-hero-button-text/,"Shop CTA must use role-based contrast");
-assert.match(keeperHome,/--portal-hero-muted/,"Manager hero description must use Woodland contrast roles");
-assert.match(homeSurface,/--portal-hero-button-bg/,"Home hero CTA must use semantic role");
-for(const [name,source,selectors] of [
- ["Shop",shopHome,[".hero{",".hero h1{",".hero .previewTag{",".path:nth-child(2){",".path:nth-child(3){",".path:nth-child(4){",".feature{"]],
- ["Manager",keeperHome,[".managerHero{",".managerHero::after{",".managerHeroContent h1{"]],
- ["Home",homeSurface,[".hero{",".hero:after{",".heroButton{",".spotlightRail .tileVisual:has(.tilePlaceholder){"]]
-]){
- for(const selector of selectors){
-  assert.ok(source.includes(':global(html[data-theme="ember"]) '+selector),
-   "Missing Ember portal override in "+name+": "+selector);
- }
-}
-
-for(const [name,source,selectors] of [
- ["Shop",shopHome,[".hero{",".hero h1{",".hero .previewTag{",".path:nth-child(2){",".path:nth-child(3){",".path:nth-child(4){",".feature{"]],
- ["Manager",keeperHome,[".managerHero{",".managerHero::after{",".managerHeroContent h1{"]],
- ["Home",homeSurface,[".hero{",".hero:after{",".heroButton{",".spotlightRail .tileVisual:has(.tilePlaceholder){"]]
-]){
- for(const selector of selectors){
-  assert.ok(source.includes(':global(html[data-theme="lilac"]) '+selector),
-   "Missing Lilac portal override in "+name+": "+selector);
- }
-}
-
+assert.match(shopHome,/\.feature a\{background:var\(--portal-hero-button-bg\);color:var\(--portal-hero-button-text\)\}/);
+assert.match(keeperHome,/\.managerHeroContent h1\{color:var\(--portal-hero-text\)\}/);
+assert.match(homeSurface,/\.heroButton\{background:var\(--portal-hero-button-bg\);color:var\(--portal-hero-button-text\)\}/);
 
 // Legacy portal closure: no green-only guide, QR actions or stale Lab front door.
 const fieldGuide=read("app/field-guide/field-guide-home.module.css");
