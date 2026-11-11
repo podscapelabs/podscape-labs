@@ -12,7 +12,14 @@ export type PuzzleMode=Game["mode"]|"search";
 type Entry={gameKey:GameKey|"word-search";mode:PuzzleMode;puzzle:Puzzle};
 
 const Q=(prompt:string,choices:string[],answer:number,explanation:string):Question=>({prompt,choices,answer,explanation});
-const quiz=(id:string,title:string,description:string,difficulty:string,questions:Question[]):QuizPuzzle=>({id,title,description,difficulty,questions});
+// Deterministic choice rotation prevents "the first answer is always right"
+ // without changing question IDs or making the quiz non-reproducible.
+const quiz=(id:string,title:string,description:string,difficulty:string,questions:Question[]):QuizPuzzle=>({
+ id,title,description,difficulty,questions:questions.map((q,index)=>{
+  const shift=([...q.prompt].reduce((n,ch)=>(n+ch.charCodeAt(0))%97,index)%4);
+  return {...q,choices:[...q.choices.slice(4-shift),...q.choices.slice(0,4-shift)],answer:(q.answer+shift)%4};
+ })
+});
 const burrow=(id:string,title:string,answer:string,clue:string,note:string,difficulty="Intro"):BurrowPuzzle=>({id,title,description:"Guess the five-letter term using its precise clue.",difficulty,answer,clue,note});
 const group=(label:string,words:string[]):ConnectionGroup=>({label,words});
 const connections=(id:string,title:string,groups:ConnectionGroup[]):ConnectionsPuzzle=>({id,title,description:"Find four groups of four related terms.",difficulty:"Medium",groups});
@@ -140,7 +147,7 @@ const extra:Entry[]=[
  Q("Which organisms commonly work alongside detritivores in decomposition?",["Fungi and bacteria","Only birds","Only mammals","Only flowering plants"],0,"Microorganisms break down organic matter alongside larger detritivores.")
  ]),
  quiz("respiration","Living on Land","Learn why suitable microhabitats matter.","Medium",[
- Q("Which appendages bear respiratory structures in many terrestrial isopods?",["Pleopods","Antennae","Mandibles","Walking claws"],0,"Respiratory structures are associated with modified abdominal pleopods."),
+ Q("The word pleopods names appendages on an isopod’s abdomen. Where are they found?",["On the abdomen","At the antenna tips","Only inside the mouth","At the front of each eye"],0,"Pleopods are abdominal appendages. In many terrestrial isopods, specialized respiratory structures are associated with them."),
  Q("Why can humidity be important to many terrestrial isopods?",["It helps maintain suitable conditions for respiration and water balance","It replaces oxygen","It prevents every pathogen","It eliminates all temperature needs"],0,"Moisture conditions influence respiratory function and water balance."),
  Q("Why should an enclosure have appropriate ventilation?",["For gas exchange and moisture regulation","To eliminate all humidity","To prevent any food decay","To replace substrate"],0,"Ventilation helps manage gas exchange and excess condensation."),
  Q("Are moisture needs identical across all terrestrial isopods?",["No; ecology and species differ","Yes; all need complete saturation","Yes; all require total dryness","No; none require moisture"],0,"Terrestrial isopods vary in habitat preferences and tolerance.")
@@ -153,7 +160,7 @@ const extra:Entry[]=[
  ])
  ].map(p=>({gameKey:"species-quiz" as const,mode:"quiz" as const,puzzle:p})),
  ...[
- burrow("leaf-matter","Leaf Matter","HUMUS","The five-letter science word for well-decomposed organic matter in soil.","Humus is well-decomposed organic material. You may have seen it while learning about leaf litter."),
+ burrow("leaf-matter","Leaf Matter","LEAFY","Describes a forest floor with plenty of fallen leaves.","Leafy areas provide food and shelter through decaying plant matter."),
  burrow("shelter","Find Cover","COVER","Protection provided by leaves, bark or other sheltered surfaces.","Leaf litter and bark provide cover and microhabitats."),
  burrow("decomposers","Decomposer Clue","FUNGI","A plural term for organisms that help break down dead material.","Fungi participate in decomposition.")
  ].map(p=>({gameKey:"word-burrow" as const,mode:"burrow" as const,puzzle:p})),
@@ -179,12 +186,12 @@ const extra:Entry[]=[
  ].map(p=>({gameKey:"colony-connections" as const,mode:"connections" as const,puzzle:p})),
  // Crossword clues are positioned explicitly, validated when loaded.
  ...[
- crossword("anatomy-clues","Anatomy Terms",[
- {answer:"PLEON",clue:"The abdominal region of an isopod (5)",r:0,c:2,dir:"across"},
- {answer:"PEREON",clue:"The main thoracic body region (6)",r:1,c:1,dir:"down"},
- {answer:"LEAF",clue:"Fallen plant material commonly consumed by isopods (4)",r:4,c:0,dir:"across"},
- {answer:"EXUVIA",clue:"A shed exoskeleton (6)",r:2,c:1,dir:"across"},
- {answer:"ONISCUS",clue:"A genus of terrestrial isopods (7)",r:0,c:5,dir:"down"}
+ crossword("anatomy-clues","The Keeper's Kit",[
+ {answer:"CARE",clue:"Attention given to captive animals (4)",r:1,c:2,dir:"down"},
+ {answer:"CORK",clue:"Bark material often used as a hide (4)",r:0,c:4,dir:"down"},
+ {answer:"AIR",clue:"A mixture of gases exchanged through ventilation (3)",r:3,c:0,dir:"across"},
+ {answer:"REFUGE",clue:"A sheltered place (6)",r:0,c:8,dir:"down"},
+ {answer:"ENCLOSURE",clue:"A container housing a captive colony (9)",r:1,c:0,dir:"across"}
  ]),
  crossword("forest-words","The Forest Floor",[
  {answer:"MOSS",clue:"A non-vascular plant sometimes used as a moist refuge (4)",r:0,c:0,dir:"down"},
@@ -193,12 +200,12 @@ const extra:Entry[]=[
  {answer:"SOIL",clue:"Ground material that may form part of substrate (4)",r:2,c:3,dir:"down"},
  {answer:"SUBSTRATE",clue:"Material lining the floor of an enclosure (9)",r:2,c:0,dir:"across"}
  ]),
- crossword("keeper-words","The Keeper's Kit",[
- {answer:"CARE",clue:"Attention given to captive animals (4)",r:1,c:2,dir:"down"},
- {answer:"CORK",clue:"Bark material often used as a hide (4)",r:0,c:4,dir:"down"},
- {answer:"AIR",clue:"A mixture of gases exchanged through ventilation (3)",r:3,c:0,dir:"across"},
- {answer:"REFUGE",clue:"A sheltered place (6)",r:0,c:8,dir:"down"},
- {answer:"ENCLOSURE",clue:"A container housing a captive colony (9)",r:1,c:0,dir:"across"}
+ crossword("keeper-words","Anatomy Terms",[
+ {answer:"PLEON",clue:"The abdominal region of an isopod (5)",r:0,c:2,dir:"across"},
+ {answer:"PEREON",clue:"The main thoracic body region (6)",r:1,c:1,dir:"down"},
+ {answer:"LEAF",clue:"Fallen plant material commonly consumed by isopods (4)",r:4,c:0,dir:"across"},
+ {answer:"EXUVIA",clue:"A shed exoskeleton (6)",r:2,c:1,dir:"across"},
+ {answer:"ONISCUS",clue:"A genus of terrestrial isopods (7)",r:0,c:5,dir:"down"}
  ])
  ].map(p=>({gameKey:"crossword-colony" as const,mode:"crossword" as const,puzzle:p})),
  ...[
