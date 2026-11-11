@@ -9,6 +9,13 @@ const market=await import("data:text/javascript;base64,"+Buffer.from(compiled).t
 assert.equal(market.STOCKS.length,6);
 assert.equal(new Set(market.STOCKS.map(s=>s.symbol)).size,6);
 assert.equal(market.MARKET_INTERVAL_MS,300000);
+for(const cycle of [0,1,2,3,4,5,12,30000]){
+ const headline=market.headlineAt(cycle);
+ assert.ok(headline.story.headline&&headline.story.detail,"Every market tick has news");
+ assert.equal(headline.publishedCycle,cycle-cycle%3,"Headlines publish every three ticks");
+ assert.equal(headline.story,market.headlineAt(cycle-cycle%3).story,"Story persists until the next bulletin");
+}
+
 assert.equal(market.STARTING_BUCKS,10000);
 for(const t of [0,1,18,100000,1234567]){
  for(const stock of market.STOCKS){
@@ -36,6 +43,14 @@ if(!sell.ok)throw Error("sell failed");
 assert.equal(sell.portfolio.cash,10000,"same-tick round trip balances exactly");
 assert.equal(sell.portfolio.holdings.DUCK,undefined);
 assert.equal(market.sanitizePortfolio({cash:-8,holdings:{}}).cash,10000);
+const home=readFileSync(resolve("components/HomeWidgets.tsx"),"utf8");
+const homeNews=readFileSync(resolve("components/HomeMarketNews.tsx"),"utf8");
+const homeCss=readFileSync(resolve("components/HomeMarketNews.module.css"),"utf8");
+assert.ok(home.includes('if(id==="marketNews")return <HomeMarketNews/>'),"Home widget available in dashboard");
+assert.ok(home.includes('marketNews:{name:"Market News"'),"Home widget registered for add-widget library");
+assert.ok(homeNews.includes('headlineAt(cycle)'),"Home widget uses persistent canonical headlines");
+assert.ok(homeNews.includes('href="/fun-zone/pod-exchange"'),"Home news links to Exchange");
+assert.ok(homeCss.includes('var(--paper)')&&homeCss.includes('var(--forest)'),"Home news inherits themes");
 const ui=readFileSync(resolve("app/fun-zone/pod-exchange/PodExchange.tsx"),"utf8");
 const styling=readFileSync(resolve("app/fun-zone/pod-exchange/exchange.module.css"),"utf8");
 const listing=readFileSync(resolve("app/fun-zone/FunZoneLibrary.tsx"),"utf8");
@@ -46,6 +61,9 @@ assert.ok(duckIcon.includes('export function DuckBuckIcon'),"reusable outline du
 assert.ok(ui.includes('<DuckBucks amount=')&&watchlist.includes('<DuckBucks amount='),"all currency values use shared formatter");
 assert.ok(!ui.includes("🦆")&&!watchlist.includes("🦆"),"no emoji currency in Exchange or watchlist");
 assert.ok(ui.includes("Duck Bucks"),"all cash is Duck Bucks");
+assert.ok(ui.includes("headlineAt(cycle).story"),"Exchange always displays current story");
+assert.ok(ui.includes('id="exchange-rules"')&&ui.includes("How to Play"),"Exchange has collapsible rules");
+assert.ok(styling.includes(".rulesBody"),"Rules styled with theme roles");
 assert.ok(ui.includes('role="status"'),"trade confirmation is accessible");
 assert.ok(ui.includes("STORAGE_KEY"),"persist to device");
 assert.ok(listing.includes('href:"/fun-zone/pod-exchange"'),"listed in Fun Zone");
