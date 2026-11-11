@@ -100,3 +100,13 @@
 .completionBrowse{display:inline-flex;align-items:center;justify-content:center;padding:12px 15px;min-height:48px;color:var(--accent);border:1px solid var(--border);border-radius:12px;text-decoration:none;font-weight:750;font-size:12px;background:var(--surface)}
 .completionWaiting{display:block;width:100%;padding:12px 14px;background:var(--surface-secondary);border:1px solid var(--border);border-radius:12px;font-size:12px;color:var(--text-secondary)}
 @media(max-width:480px){.completionNavigation{display:grid;grid-template-columns:minmax(0,1fr);gap:9px}.completionNext{width:100%;min-height:55px}.completionBrowse{width:100%}}
+
+/* Completed Colony Connections should celebrate the win without four enormous cards. */
+.completedGroups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:6px 0 12px}
+.completedGroups .solvedGroup{margin:0;padding:10px 9px;gap:5px;min-width:0}
+.completedGroups .solvedGroup strong{font-size:clamp(15px,2.6vw,18px);line-height:1.25}
+.completedGroups .solvedGroup span{font-size:11px;line-height:1.4;overflow-wrap:anywhere}
+.compactResult{padding:13px 7px 10px}
+.compactResult h2{margin:4px 0 7px}
+.compactResult p{margin:0}
+@media(max-width:360px){.completedGroups{grid-template-columns:minmax(0,1fr)}}
