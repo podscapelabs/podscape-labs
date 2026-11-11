@@ -36,7 +36,7 @@ assert.match(page,/Join rankings/);
 assert.match(page,/Leave rankings/);
 assert.match(page,/Verification required/);
 assert.match(page,/No real money, prizes or cash-out/);
-assert.match(widget,/marketLeaders\.map/,"Fun Zone widget should surface real ranked investors");
+assert.match(read("app/fun-zone/FunZoneRankingsSpotlight.tsx"),/kind==="wealth"\?"wealth"/,"Fun Zone Rankings Spotlight should surface ranked portfolios");
 assert.match(widget,/\/fun-zone\/pod-exchange\/rankings/);
 assert.doesNotMatch(api,/member_progress_events|member_achievements|exp_delta|pod_coins/,"Market scores must not silently mint rewards");
 
@@ -62,6 +62,6 @@ assert.match(owner,/auditStoredExchangeWallet/,"Approval must reconcile trade hi
 assert.match(ownerPage,/Approve verified wallet/,"Owner Studio must show review actions");
 assert.match(audit,/priceAt\(order.symbol,cycle\)/,"Legacy orders must match deterministic historical prices");
 assert.match(audit,/STARTING_BUCKS\*100/,"Legacy cash reconciliation must start at 10,000");
-assert.match(exchangeWidgetStyles,/\.exchangeWidget>\.marketLeadersPreview/,"Mini leaderboard must remain readable across themes");
+assert.match(exchangeWidgetStyles,/\.rankingsSpotlight/,"Rankings Spotlight should use themed widget styling");
 
 console.log("Market Rankings source checks passed: privacy, server valuation, weekly baseline integrity, and integration.");
