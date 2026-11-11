@@ -6,7 +6,7 @@ import styles from "./market-rankings.module.css";
 type Kind="wealth"|"return"|"weekly";
 type Entry={name:string;value:number;profit:number;returnPct:number;weeklyPct:number|null;position:number;mine:boolean};
 type BoardSlice={rows:Entry[];mine:Entry|null;count:number};
-type Data={signedIn:boolean;participating:boolean;eligible:boolean;legacyReviewRequired:boolean;cycle:number;weekStart:string;weeklyReady:boolean;wealth:BoardSlice;return:BoardSlice;weekly:BoardSlice};
+type Data={signedIn:boolean;participating:boolean;eligible:boolean;needsWallet:boolean;legacyReviewRequired:boolean;cycle:number;weekStart:string;weeklyReady:boolean;wealth:BoardSlice;return:BoardSlice;weekly:BoardSlice};
 const tabs:{id:Kind;title:string;description:string}[]=[
  {id:"wealth",title:"The Rich List",description:"Cash + current share value"},
  {id:"return",title:"Top Investors",description:"Return on the original 10,000 Duck Bucks"},
@@ -60,12 +60,13 @@ export default function MarketRankings(){
     <p>{data?.participating?"Your display name and market scores are visible. Leave anytime.":"Your cloud wallet stays private until you choose to join."}</p></div>
    {loading?<span className={styles.status}>Checking…</span>:
     !data?.signedIn?<Link className={styles.joinButton} href="/account">Sign in to join →</Link>:
+    data.needsWallet?<Link className={styles.joinButton} href="/fun-zone/pod-exchange">Start trading →</Link>:
     !data.eligible?<span className={styles.status}>Verification required</span>:
     <button type="button" className={data.participating?styles.leaveButton:styles.joinButton}
      disabled={updating} aria-pressed={data.participating}
      onClick={()=>join(!data.participating)}>
      {updating?"Saving…":data.participating?"Leave rankings":"Join rankings"}</button>}
-   {data?.legacyReviewRequired?<p className={styles.eligibility}>Existing beta wallets cannot be ranked until their starting balances are verified. Your holdings remain safe, and you can still view the leaderboard.</p>:
+   {data?.needsWallet?<p className={styles.eligibility}>Open the Exchange to create your free, cloud-saved starting wallet. You can join after it is initialized.</p>:data?.legacyReviewRequired?<p className={styles.eligibility}>Existing beta wallets cannot be ranked until their starting balances are verified. Your holdings remain safe, and you can still view the leaderboard.</p>:
     <p className={styles.privacy}>Independent opt-in · Display name, fictional value and returns become public · No real currency</p>}
   </section>
   <section className={styles.rankings} aria-label="Market leaderboard">
