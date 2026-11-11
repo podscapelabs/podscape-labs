@@ -16,8 +16,14 @@ export default async function ProgressPage() {
   const admin = getSupabaseAdmin();
   let syncError = false;
   if (admin) {
-    const {error} = await admin.rpc("sync_member_achievements", {p_user_id:user.id});
-    if (error) { syncError = true; console.error("Achievement reconciliation failed",error.code); }
+    const [{error:legacyError},{error:extendedError}] = await Promise.all([
+      admin.rpc("sync_member_achievements",{p_user_id:user.id}),
+      admin.rpc("reconcile_member_extended_achievements",{p_user_id:user.id})
+    ]);
+    if (legacyError||extendedError) {
+      syncError = true;
+      console.error("Achievement reconciliation failed",legacyError?.code||extendedError?.code);
+    }
   } else {
     syncError = true;
   }
