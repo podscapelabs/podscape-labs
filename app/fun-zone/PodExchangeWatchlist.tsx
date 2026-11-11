@@ -4,6 +4,7 @@ import Link from "next/link";
 import {cycleAt,decodeSavedPortfolio,defaultPortfolio,priceAt,sanitizePortfolio,STOCKS,STORAGE_KEY,totalValue,type Portfolio} from "@/lib/pod-exchange";
 import styles from "./fun-zone-portal.module.css";
 import {DuckBucks,DuckBuckIcon} from "@/components/DuckBucks";
+import {ExchangeCompanyIcon} from "@/components/ExchangeCompanyIcon";
 export function PodExchangeWatchlist(){
  const [time,setTime]=useState<number|null>(null);
  const [portfolio,setPortfolio]=useState<Portfolio>(defaultPortfolio);
@@ -46,7 +47,7 @@ export function PodExchangeWatchlist(){
   <span className={styles.eyebrow}>POD EXCHANGE · BETA</span><h2><DuckBuckIcon size={27}/> Duck Bucks Watchlist</h2>
   <div className={styles.watchlistStats}>
    <span><small>Portfolio value</small><strong>{time===null||!portfolioAvailable?"Syncing…":<DuckBucks amount={totalValue(portfolio,cycle)}/>}</strong></span>
-   <span><small>DUCK · Rubber Ducky Inc.</small><strong>{time===null?"Loading…":<DuckBucks amount={price}/>}</strong><small>{time===null?"5-minute market":(gain>=0?"+":"")+gain.toFixed(2)+"% this tick"}</small></span>
+   <span><small style={{display:"flex",alignItems:"center",gap:6}}><ExchangeCompanyIcon symbol="DUCK" size={17}/> DUCK · Rubber Ducky Inc.</small><strong>{time===null?"Loading…":<DuckBucks amount={price}/>}</strong><small>{time===null?"5-minute market":(gain>=0?"+":"")+gain.toFixed(2)+"% this tick"}</small></span>
   </div>
   <div><span>{STOCKS.length} fictional companies</span><Link href="/fun-zone/pod-exchange">Open the Exchange →</Link></div>
  </section>;
