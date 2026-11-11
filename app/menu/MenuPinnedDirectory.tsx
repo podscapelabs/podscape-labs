@@ -57,7 +57,7 @@ export function MenuPinnedDirectory({isOwner=false}:{isOwner?:boolean}){
    return <section key={group} className={styles.menuGroup} aria-label={group}>
     <h2>{group}</h2>
     <nav className={pins.list} aria-label={group+" destinations"}>
-     {choices.map(item=><MenuItem key={item.id} item={item} pinned={ids.includes(item.id)} onToggle={()=>toggle(item.id)}/>)}
+     {choices.map(item=><MenuItem key={item.id} item={item} pinned={ids.includes(item.id)} onToggle={()=>toggle(item.id)} pinLimitReached={pinLimitReached}/>)}
     </nav>
    </section>;
   })}
