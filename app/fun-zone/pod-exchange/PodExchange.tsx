@@ -2,7 +2,7 @@
 import {useEffect,useMemo,useState} from "react";
 import Link from "next/link";
 import styles from "./exchange.module.css";
-import {STOCKS,NEWS,STORAGE_KEY,MARKET_INTERVAL_MS,STARTING_BUCKS,cycleAt,defaultPortfolio,executeOrder,money,newsAt,priceAt,sanitizePortfolio,totalValue,type Portfolio} from "@/lib/pod-exchange";
+import {STOCKS,STORAGE_KEY,MARKET_INTERVAL_MS,STARTING_BUCKS,cycleAt,defaultPortfolio,executeOrder,money,newsAt,priceAt,sanitizePortfolio,totalValue,type Portfolio} from "@/lib/pod-exchange";
 
 const duck=(n:number)=>"🦆 "+n.toLocaleString("en-CA",{minimumFractionDigits:2,maximumFractionDigits:2});
 const change=(n:number)=>(n>=0?"+":"")+n.toFixed(2)+"%";
