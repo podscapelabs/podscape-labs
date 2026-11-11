@@ -14,6 +14,7 @@ const format=(n:number)=>n.toLocaleString("en-CA");
 export default function Leaderboard(){
  const [period,setPeriod]=useState<Period>("weekly");
  const [game,setGame]=useState("all");
+ useEffect(()=>{const requested=new URLSearchParams(window.location.search).get("game");if(requested&&games.some(item=>item.key===requested))setGame(requested);},[]);
  const [board,setBoard]=useState<Board|null>(null);
  const [loading,setLoading]=useState(true);
  const [error,setError]=useState("");
