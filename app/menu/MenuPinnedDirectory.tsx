@@ -14,14 +14,14 @@ function readPins(allowedIds:Set<string>):string[]{
   return Array.isArray(saved)?[...new Set(saved.filter((id):id is string=>typeof id==="string"&&allowedIds.has(id)))].slice(0,12):[];
  }catch{return []}
 }
-function MenuItem({item,pinned,onToggle}:{item:NavChoice;pinned:boolean;onToggle:()=>void}){
+function MenuItem({item,pinned,onToggle,pinLimitReached=false}:{item:NavChoice;pinned:boolean;onToggle:()=>void;pinLimitReached?:boolean}){
  return <div className={pins.item}>
   <Link className={pins.destination} href={item.href}>
    <i><PodscapeLineIcon name={item.icon}/></i>
    <span><strong>{item.label}{item.planned?<em className={styles.menuPlanned}>Planned</em>:null}</strong><small>{item.description}</small></span>
    <b aria-hidden="true">›</b>
   </Link>
-  {!item.planned?<button type="button" className={pins.pinButton} onClick={onToggle} aria-pressed={pinned} aria-label={pinned?`Unpin ${item.label} from top`:`Pin ${item.label} to top`} title={pinned?"Unpin from top":"Pin to top"}>
+  {!item.planned?<button type="button" className={pins.pinButton} onClick={onToggle} disabled={!pinned&&pinLimitReached} aria-pressed={pinned} aria-label={pinned?`Unpin ${item.label} from top`:`Pin ${item.label} to top`} title={pinned?"Unpin from top":pinLimitReached?"Maximum of 12 pinned destinations":"Pin to top"}>
    <svg viewBox="0 0 24 24" fill={pinned?"currentColor":"none"} stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m9 3 6 0-1 5 4 4v2H6v-2l4-4-1-5Z"/><path d="M12 14v7"/></svg>
   </button>:null}
  </div>;
@@ -44,13 +44,15 @@ export function MenuPinnedDirectory({isOwner=false}:{isOwner?:boolean}){
   try{localStorage.setItem(storageKey,JSON.stringify(next))}catch{}
  };
  const pinned=ids.map(id=>available.find(item=>item.id===id)).filter((item):item is NavChoice=>Boolean(item));
+ const pinnedIds=new Set(pinned.map(item=>item.id));
+ const pinLimitReached=pinned.length>=12;
  return <>
   {ready&&pinned.length?<section className={styles.menuGroup} aria-label="Pinned destinations">
-   <div className={pins.groupHeading}><h2>Pinned to top</h2><span>{pinned.length} of 12</span></div>
-   <nav className={pins.list} aria-label="Your pinned destinations">{pinned.map(item=><MenuItem key={item.id} item={item} pinned onToggle={()=>toggle(item.id)}/>)}</nav>
+   <div className={pins.groupHeading}><h2>Pinned to top</h2><span>{pinned.length} / 12</span></div>
+   <nav className={pins.list} aria-label="Your pinned destinations">{pinned.map(item=><MenuItem key={item.id} item={item} pinned onToggle={()=>toggle(item.id)} pinLimitReached={pinLimitReached}/>)}</nav>
   </section>:null}
   {navigationGroups.map(group=>{
-   const choices=visibleChoices.filter(item=>item.group===group&&item.id!=="menu");
+   const choices=visibleChoices.filter(item=>item.group===group&&item.id!=="menu"&&!pinnedIds.has(item.id));
    if(!choices.length)return null;
    return <section key={group} className={styles.menuGroup} aria-label={group}>
     <h2>{group}</h2>
