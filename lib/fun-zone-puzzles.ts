@@ -81,8 +81,8 @@ function validateCrossword(clues:CrosswordClue[]){
 const extra:Entry[]=[
  ...[
  quiz("field-marks","Patterns & Identification","Identify familiar, commonly kept morphs.","Intro",[
- Q("Which isopod has a striped appearance that inspires its common name?",["Armadillidium maculatum (Zebra)","Porcellio hoffmannseggi (Titan)","Cubaris sp. ‘Rubber Ducky’","Porcellionides pruinosus (Powder Blue)"],0,"Zebra isopods are Armadillidium maculatum, often showing prominent pale longitudinal stripes."),
- Q("The hobby name 'Dairy Cow' describes which feature?",["Black-and-white patches","Bright blue legs","An elongated tail","A yellow head"],0,"This hobby morph is recognizable by contrasting black-and-white markings."),
+ Q("Which familiar hobby morph has a warm orange, powdery appearance?",["Powder Orange","Rubber Ducky","Clown","Dairy Cow"],0,"Powder Orange is a colour morph commonly associated with Porcellionides pruinosus."),
+ Q("What makes a colour morph recognizable within a species?",["Consistent appearance differences such as markings","A completely different number of legs","A different taxonomic order","An enclosure with extra bark"],0,"Morphs can show recognizable appearance differences, but remain members of the same species."),
  Q("Which species is commonly called the Clown isopod?",["Armadillidium klugii","Oniscus asellus","Porcellio dilatatus","Armadillidium gestroi"],0,"Armadillidium klugii is sold under the hobby name Clown."),
  Q("What should you use alongside colour when identifying unfamiliar isopods?",["Body shape and reliable taxonomic characters","Only the seller's photograph","Only the substrate colour","Only enclosure temperature"],0,"Colour varies across individuals and morphs; identification should consider morphology and reliable references.")
  ]),
@@ -94,8 +94,8 @@ const extra:Entry[]=[
  ]),
  quiz("compare-the-keepers","Species Comparisons","Compare common hobby species without relying only on colour.","Medium",[
  Q("Which of these isopods is especially well known for its large adult size?",["Porcellio hoffmannseggi","Trichorhina tomentosa","Cubaris sp. ‘Papaya’","Porcellionides pruinosus"],0,"Porcellio hoffmannseggi is among the larger terrestrial isopods commonly maintained in captivity."),
- Q("Which species is the Zebra isopod?",["Armadillidium maculatum","Armadillidium klugii","Oniscus asellus","Porcellio laevis"],0,"Armadillidium maculatum is widely known as the Zebra isopod."),
- Q("Which commonly kept isopod is often sold as Powder Orange?",["Porcellionides pruinosus","Porcellio dilatatus","Armadillidium gestroi","Oniscus asellus"],0,"Powder Orange is a common hobby morph of Porcellionides pruinosus."),
+ Q("Which scientific species is often sold as Giant Canyon?",["Porcellio dilatatus","Armadillidium klugii","Oniscus asellus","Porcellio laevis"],0,"Porcellio dilatatus is a relatively large-bodied species commonly sold as Giant Canyon."),
+ Q("Which pair are two colour morphs often associated with the same species?",["Powder Blue and Powder Orange","Zebra and Giant Canyon","Clown and Titan","Rubber Ducky and Dairy Cow"],0,"Powder Blue and Powder Orange are both common hobby morphs associated with Porcellionides pruinosus."),
  Q("How should a keeper interpret hobby names such as 'Titan' or 'Clown'?",["As informal names to verify against scientific identification","As formal taxonomic ranks","As always indicating a new species","As universal evidence of origin"],0,"Hobby names are useful labels but do not replace careful species-level identification.")
  ])
  ].map(p=>({gameKey:"species-detective" as const,mode:"quiz" as const,puzzle:p})),
@@ -173,7 +173,7 @@ const extra:Entry[]=[
  ]),
  connections("names-and-needs","Species & Care",[
  group("Genera",["Porcellio","Oniscus","Cubaris","Armadillidium"]),
- group("Common hobby names",["Dairy Cow","Powder Blue","Rubber Ducky","Clown"]),
+ group("Common hobby names",["Penguin","Papaya","Giant Canyon","Magic Potion"]),
  group("Care concepts",["Moist refuge","Ventilation","Moisture gradient","Calcium source"]),
  group("Food materials",["Decaying leaves","Vegetable scraps","Fish food","Rotten wood"])
  ]),
