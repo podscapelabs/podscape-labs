@@ -31,5 +31,17 @@ jobs:
         run: pnpm run check:theme-system
       - name: Verify PodScape shared design system
         run: node scripts/verify-design-system.mjs
+      - name: Verify Arcade and market automatic rankings
+        run: |
+          node scripts/verify-fun-zone-rankings.mjs
+          node scripts/verify-lifetime-exp-rankings.mjs
+          node scripts/verify-market-rankings.mjs
+          node scripts/verify-ranking-name-privacy.mjs
+          node scripts/verify-ranking-modal-refinement.mjs
+          node scripts/verify-fun-zone-rankings-spotlight.mjs
+      - name: Verify safe signups and puzzle progression
+        run: |
+          node scripts/verify-unique-usernames.mjs
+          node scripts/verify-fun-zone-completion-flow.mjs
       - name: Build Next.js without deploying
         run: pnpm run build
