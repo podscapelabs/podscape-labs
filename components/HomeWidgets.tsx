@@ -15,6 +15,7 @@ import {FirstActionEmptyState} from "./FirstActionEmptyState";
 import {RecentCategoryCards,type RecentGroup} from "./RecentCategoryCards";
 import {homeWidgetNames} from "./workspace-widget-labels";
 import {HomeMarketNews} from "./HomeMarketNews";
+import {portalWidgetGroups,widgetGroup,widgetPurpose} from "./workspace-widget-policy";
 
 export type HomeColony={id:string;name:string;quantity:number;speciesName:string}|null;
 export type HomeProgress={level:number;exp:number}|null;
@@ -38,7 +39,7 @@ const definitions:Record<WidgetId,WidgetDef>={
   pins:{name:homeWidgetNames.pins,description:"Your saved species, games and colonies in one place.",icon:"bookmark",group:"Discovery",preview:"Pinned species · Games · Colonies",size:"wide"}
 };
 const available=Object.keys(definitions) as WidgetId[];
-const groups:WidgetGroup[]=["Discovery","My Keeper Tools","Play & Community"];
+const groups=portalWidgetGroups.home;
 const storageKey="podscape-home-widgets-v2";
 const legacyKey="podscape-home-widgets-v1";
 const defaultOrder:BlockId[]=["greeting","hero","shortcuts","spotlight","recent","colony","games","progress","schedule","guides","community","pins","marketNews"];
@@ -143,7 +144,7 @@ export function HomeWidgets({recentGroups,colony,progress,pinOptions,userId,gree
             {groups.map(group=><section key={group}>
               <h3>{group}</h3>
               <div className={styles.widgetGallery}>
-                {available.filter(id=>definitions[id].group===group).map(id=>{
+                {available.filter(id=>widgetGroup("home",id)===group).map(id=>{
                   const widget=definitions[id],added=layout.visible.includes(id);
                   return <article key={id} className={styles.widgetGalleryCard}>
                     <div className={styles.widgetPreview} aria-hidden="true">
@@ -152,7 +153,7 @@ export function HomeWidgets({recentGroups,colony,progress,pinOptions,userId,gree
                       <i>{widget.size==="wide"?"Wide":"Compact"}</i>
                     </div>
                     <div className={styles.widgetGalleryCopy}>
-                      <strong>{widget.name}</strong><p>{widget.description}</p>
+                      <strong>{widget.name}</strong><p>{widgetPurpose("home",id)}</p>
                       <button type="button" className={added?styles.widgetRemove:styles.widgetAdd} onClick={()=>added?remove(id):add(id)} aria-label={added?`Remove ${widget.name} from Home`:`Add ${widget.name} to Home`}>{added?"✓ Added · Remove":"+ Add to Home"}</button>
                     </div>
                   </article>;
