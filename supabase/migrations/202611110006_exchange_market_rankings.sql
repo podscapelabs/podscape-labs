@@ -76,3 +76,38 @@ end;
 $$;
 revoke all on function public.review_member_exchange_ranking_request(uuid,boolean,text) from public,anon,authenticated;
 grant execute on function public.review_member_exchange_ranking_request(uuid,boolean,text) to service_role;
+
+-- Permanent market-placement achievements: service-awarded once at the weekly
+-- checkpoint only. This function never trusts a client-supplied EXP amount.
+create or replace function public.award_exchange_market_achievement(
+ p_user_id uuid,p_achievement_key text
+) returns boolean language plpgsql security definer set search_path=''
+as $$
+declare v_exp integer;
+begin
+ v_exp:=case p_achievement_key
+  when 'exchange_market_mogul' then 150
+  when 'exchange_sharp_trader' then 125
+  when 'exchange_weekly_mover' then 100
+  else null end;
+ if v_exp is null or p_user_id is null then raise exception 'Invalid market achievement'; end if;
+ if not exists(select 1 from public.member_exchange_ranking_preferences
+   where user_id=p_user_id and eligible and public_enabled)
+ then raise exception 'Investor is not publicly eligible'; end if;
+ insert into public.member_achievements(user_id,achievement_key)
+ values(p_user_id,p_achievement_key) on conflict do nothing;
+ if not found then return false; end if;
+ insert into public.member_progress_events(user_id,event_key,source,exp_delta,coin_delta)
+ values(p_user_id,'achievement:'||p_achievement_key,'achievement',v_exp,0)
+ on conflict do nothing;
+ if found then
+  insert into public.member_progress(user_id,total_exp,pod_coins)
+  values(p_user_id,v_exp,0)
+  on conflict(user_id) do update
+   set total_exp=public.member_progress.total_exp+excluded.total_exp,updated_at=now();
+ end if;
+ return true;
+end;
+$$;
+revoke all on function public.award_exchange_market_achievement(uuid,text) from public,anon,authenticated;
+grant execute on function public.award_exchange_market_achievement(uuid,text) to service_role;
