@@ -11,6 +11,7 @@ type MarketBoard={rows:Player[];mine:Player|null;count:number};
 type Market={wealth:MarketBoard;return:MarketBoard;weekly:MarketBoard;participating:boolean;weeklyReady:boolean};
 type Kind="arcade"|"lifetime"|"wealth"|"returns"|"movers";
 type Slide={id:Kind;title:string;eyebrow:string;description:string;href:string;icon:PodscapeIconName};
+const tabNames:Record<Kind,string>={arcade:"Arcade",lifetime:"EXP",wealth:"Rich List",returns:"Investors",movers:"Movers"};
 const slides:Slide[]=[
  {id:"arcade",title:"Arcade Leaders",eyebrow:"WEEKLY · VERIFIED PUZZLES",description:"The top puzzle solvers this week",href:"/fun-zone/leaderboard",icon:"trophy"},
  {id:"lifetime",title:"Lifetime EXP",eyebrow:"ALL-TIME · KEEPER LEVELS",description:"PodScape's most experienced keepers",href:"/account/progress/rankings",icon:"achievement"},
@@ -110,9 +111,9 @@ export function FunZoneRankingsSpotlight(){
   </div>
   <div className={styles.rankingsPager}>
    <button type="button" aria-label="Previous rankings" disabled={active===0} onClick={()=>navigate(active-1)}><span className={styles.rankingsBackIcon}><PodscapeLineIcon name="arrow-right"/></span></button>
-   <div role="group" aria-label="Choose rankings">
+   <div className={styles.rankingsPagerTabs} role="group" aria-label="Choose rankings">
     {slides.map((slide,i)=><button key={slide.id} type="button" onClick={()=>navigate(i)}
-     aria-label={"Show "+slide.title} aria-current={active===i?"true":undefined}/>)}
+     aria-label={"Show "+slide.title} aria-current={active===i?"true":undefined}>{tabNames[slide.id]}</button>)}
    </div>
    <button type="button" aria-label="Next rankings" disabled={active===slides.length-1} onClick={()=>navigate(active+1)}><PodscapeLineIcon name="arrow-right"/></button>
   </div>
