@@ -14,18 +14,21 @@ export function PodExchangeWatchlist(){
    try{
     const response=await fetch("/api/fun-zone/pod-exchange",{cache:"no-store"});
     if(response.ok){
-     const data=await response.json() as {exists:boolean;portfolio:Portfolio|null};
+     const data=await response.json() as {exists:boolean;portfolio:Portfolio|null;userId?:string};
      if(!mounted)return;
      if(data.exists&&data.portfolio){
       setPortfolio(sanitizePortfolio(data.portfolio));setPortfolioAvailable(true);return;
      }
-     // A brand-new account can still have an existing local beta wallet
-     // waiting to be migrated by the Exchange on its first visit.
+     // Do not show another account's cached wallet while initializing.
+     const owner=localStorage.getItem(STORAGE_KEY+":cloud-owner");
+     if(owner&&owner!==data.userId){setPortfolioAvailable(false);return;}
+     // A brand-new account may have an unclaimed beta wallet.
     }else if(response.status!==401){
      // Unknown server status must never be presented as a new 10,000 wallet.
      if(mounted)setPortfolioAvailable(false);return;
     }
-    const saved=decodeSavedPortfolio(localStorage.getItem(STORAGE_KEY));
+    const key=response.status===401&&localStorage.getItem(STORAGE_KEY+":cloud-owner")?STORAGE_KEY+":guest":STORAGE_KEY;
+    const saved=decodeSavedPortfolio(localStorage.getItem(key));
     if(mounted){setPortfolio(saved.portfolio);setPortfolioAvailable(true)}
    }catch{if(mounted)setPortfolioAvailable(false)}
   };
