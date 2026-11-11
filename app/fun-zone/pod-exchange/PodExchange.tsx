@@ -265,7 +265,8 @@ export function PodExchange(){
    <span><strong>Market Rankings</strong><small>Rich List · Top Investors · Market Movers</small></span>
    <span className={styles.marketLeadersArrow} aria-hidden="true">→</span>
   </Link>
-  <div className={styles.rulesDock} aria-label="Market help">  <details className={styles.rules} id="exchange-rules">
+  <div className={styles.rulesDock} aria-label="Market help">
+   <details className={styles.rules} id="exchange-rules">
    <summary><span><PodscapeLineIcon name="book"/> How to Play</span><span className={styles.rulesHint}>The basics <span aria-hidden="true">⌄</span></span></summary>
    <div className={styles.rulesBody}>
     <p><strong>Start with 10,000 Duck Bucks.</strong> They&apos;re fictional game currency, not Pod Coins.</p>
