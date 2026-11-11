@@ -34,7 +34,7 @@ assert.match(page,/Top Investors/);
 assert.match(page,/Market Movers/);
 assert.doesNotMatch(page,/Join rankings/,"Market has no manual join action");
 assert.doesNotMatch(page,/Leave rankings/,"Market has no leave action");
-assert.match(page,/Automatic verification checks historical trades/);
+assert.match(page,/Checking historical trades automatically/);
 assert.match(page,/No real money, prizes or cash-out/);
 assert.match(read("app/fun-zone/FunZoneRankingsSpotlight.tsx"),/kind==="wealth"\?"wealth"/,"Fun Zone Rankings Spotlight should surface ranked portfolios");
 assert.match(widget,/\/fun-zone\/pod-exchange\/rankings/);
