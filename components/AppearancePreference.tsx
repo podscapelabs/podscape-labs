@@ -1,46 +1,32 @@
 "use client";
 import {useEffect,useState} from "react";
 import styles from "./AppearancePreference.module.css";
+import {THEMES,SYSTEM_OPTION,THEME_STORAGE_KEY,isThemePreference,resolveTheme,themeColorScheme,type ThemePreference} from "@/lib/theme-registry";
 
-type Appearance="light"|"dark"|"woodland"|"lilac"|"ember"|"system";
-const KEY="podscape-theme";
-function isAppearance(value:string|null):value is Appearance{
- return value==="light"||value==="dark"||value==="woodland"||value==="lilac"||value==="ember"||value==="system";
-}
-function resolve(mode:Appearance):"light"|"dark"|"woodland"|"lilac"|"ember"{
- return mode==="system"?(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):mode;
-}
-function apply(mode:Appearance){
- const theme=resolve(mode);
+function apply(mode:ThemePreference){
+ const theme=resolveTheme(mode,window.matchMedia("(prefers-color-scheme: dark)").matches);
  document.documentElement.dataset.theme=theme;
  document.documentElement.dataset.themePreference=mode;
- document.documentElement.style.colorScheme=theme==="light"||theme==="lilac"||theme==="ember"?"light":"dark";
+ document.documentElement.style.colorScheme=themeColorScheme(theme);
  window.dispatchEvent(new CustomEvent("podscape-theme-change",{detail:theme}));
 }
-const options=[
- {id:"light",title:"Light",description:"Warm parchment",colors:["#EEE8D8","#F8F4E8","#173D2B"]},
- {id:"dark",title:"Dark",description:"Deep forest",colors:["#12231A","#172B20","#B8C88F"]},
- {id:"woodland",title:"Woodland",description:"Cocoa & chestnut",colors:["#211A16","#30251F","#D6AC76"]},
- {id:"lilac",title:"Lilac",description:"Lavender & plum",colors:["#F5F0FA","#E9DEF2","#7A4C91"]},
- {id:"ember",title:"Ember",description:"Apricot & terracotta",colors:["#FFF3E5","#F3D5B4","#B85D29"]},
- {id:"system",title:"System",description:"Match your device",colors:["#EEE8D8","#172B20","#B8C88F"]}
-] as const;
+const options=[...THEMES,SYSTEM_OPTION];
 export function AppearancePreference(){
- const [mode,setMode]=useState<Appearance>("system");
+ const [mode,setMode]=useState<ThemePreference>("system");
  useEffect(()=>{
-  const stored=localStorage.getItem(KEY);
-  const initial:Appearance=isAppearance(stored)?stored:"system";
+  const stored=localStorage.getItem(THEME_STORAGE_KEY);
+  const initial:ThemePreference=isThemePreference(stored)?stored:"system";
   setMode(initial);apply(initial);
   const media=window.matchMedia("(prefers-color-scheme: dark)");
-  const sync=()=>{if(!localStorage.getItem(KEY)||localStorage.getItem(KEY)==="system")apply("system");};
-  const onChange=()=>{const saved=localStorage.getItem(KEY);setMode(isAppearance(saved)?saved:"system");};
+  const sync=()=>{if(!localStorage.getItem(THEME_STORAGE_KEY)||localStorage.getItem(THEME_STORAGE_KEY)==="system")apply("system");};
+  const onChange=()=>{const saved=localStorage.getItem(THEME_STORAGE_KEY);setMode(isThemePreference(saved)?saved:"system");};
   media.addEventListener("change",sync);
   window.addEventListener("podscape-theme-change",onChange);
   return ()=>{media.removeEventListener("change",sync);window.removeEventListener("podscape-theme-change",onChange);};
  },[]);
- function choose(next:Appearance){
-  if(next==="system")localStorage.removeItem(KEY);
-  else localStorage.setItem(KEY,next);
+ function choose(next:ThemePreference){
+  if(next==="system")localStorage.removeItem(THEME_STORAGE_KEY);
+  else localStorage.setItem(THEME_STORAGE_KEY,next);
   setMode(next);apply(next);
  }
  return <div className={styles.wrapper}>
