@@ -9,7 +9,7 @@ import styles from "@/app/shop/vendors/vendors.module.css";
 import ownerStyles from "./owner-vendors.module.css";
 import {OwnerVendorForm,type OwnerListing} from "./OwnerVendorForm";
 export const dynamic="force-dynamic";
-export const metadata={title:"Vendor Applications | Owner Studio",robots:{index:false,follow:false}};
+export const metadata={title:"Vendor Desk | Owner Studio",robots:{index:false,follow:false}};
 export default async function VendorReviewDesk(){
  if(!(await isAdminAuthenticated()))redirect("/admin");
  const db=getSupabaseAdmin();
