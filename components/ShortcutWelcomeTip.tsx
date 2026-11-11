@@ -26,6 +26,8 @@ export function ShortcutWelcomeTip({userId}:{userId:string|null}){
  const [appearance,setAppearance]=useState<StarterAppearance>("keep");
  const [applyShortcuts,setApplyShortcuts]=useState(true);
  const [notice,setNotice]=useState("");
+ const stepRef=useRef(step);
+ stepRef.current=step;
  const modalRef=useRef<HTMLElement|null>(null);
  const opener=useRef<HTMLElement|null>(null);
  const storageKey=userId?"podscape-onboarding-v2:"+userId:"";
@@ -74,7 +76,7 @@ export function ShortcutWelcomeTip({userId}:{userId:string|null}){
   document.body.style.overflow="hidden";
   requestAnimationFrame(()=>modalRef.current?.querySelector<HTMLElement>("button")?.focus());
   const onKey=(event:KeyboardEvent)=>{
-   if(event.key==="Escape"){event.preventDefault();if(step>=3)dismiss();else skip();}
+   if(event.key==="Escape"){event.preventDefault();if(stepRef.current>=3)dismiss();else skip();}
    if(event.key!=="Tab")return;
    const fields=Array.from(modalRef.current?.querySelectorAll<HTMLElement>("button:not([disabled]),input:not([disabled]),select:not([disabled])")||[]);
    if(!fields.length)return;
@@ -84,7 +86,7 @@ export function ShortcutWelcomeTip({userId}:{userId:string|null}){
   };
   document.addEventListener("keydown",onKey);
   return ()=>{document.body.style.overflow=previous;document.removeEventListener("keydown",onKey);};
- },[visible,step]);
+ },[visible]);
  if(!visible)return null;
  const current=steps[step];
  const selected=starterChoices.find(choice=>choice.id===focus);
