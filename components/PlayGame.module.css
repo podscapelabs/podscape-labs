@@ -41,3 +41,45 @@
 
 /* Game screens no longer use ornamental botanical pseudo-icons. */
 .hero:after{content:none;display:none}
+
+/* Fun Zone feedback contract: colour and a second visual signal distinguish
+   exact, misplaced and absent letters regardless of appearance theme. */
+.guessRow>span,.letterKeyboard span{position:relative}
+.guessRow>span[data-result="correct"],.letterKeyboard span[data-result="correct"]{
+ background:var(--game-correct);border:2px solid var(--game-correct);color:var(--game-state-text);opacity:1;
+}
+.guessRow>span[data-result="present"],.letterKeyboard span[data-result="present"]{
+ background:var(--game-present);border:2px dashed var(--game-present);color:var(--game-state-text);opacity:1;
+}
+.guessRow>span[data-result="absent"],.letterKeyboard span[data-result="absent"]{
+ background:var(--game-absent);border:2px solid var(--game-absent);color:var(--game-state-text);opacity:1;
+}
+.guessRow>span[data-result="correct"]::after,.guessRow>span[data-result="present"]::after,
+.guessRow>span[data-result="absent"]::after{position:absolute;bottom:1px;right:4px;font-size:10px;line-height:1;font-weight:800}
+.guessRow>span[data-result="correct"]::after{content:"✓"}
+.guessRow>span[data-result="present"]::after{content:"●"}
+.guessRow>span[data-result="absent"]::after{content:"×"}
+.letterKeyboard span[data-result="correct"]::after,.letterKeyboard span[data-result="present"]::after,
+.letterKeyboard span[data-result="absent"]::after{position:absolute;right:2px;bottom:0;font-size:8px;line-height:1}
+.letterKeyboard span[data-result="correct"]::after{content:"✓"}
+.letterKeyboard span[data-result="present"]::after{content:"●"}
+.letterKeyboard span[data-result="absent"]::after{content:"×"}
+.guessRow>span[data-result="correct"]{box-shadow:inset 0 0 0 2px #ffffff55}
+.guessRow>span[data-result="present"]{box-shadow:inset 0 0 0 2px #ffffff55}
+.footnote{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.gameLegendItem{display:inline-flex;align-items:center;gap:5px;font-size:12px}
+.gameLegendSwatch{width:18px;height:18px;display:inline-grid;place-items:center;border-radius:4px;font-size:11px;font-weight:800;color:var(--game-state-text)}
+.gameLegendSwatch[data-result="correct"]{background:var(--game-correct)}
+.gameLegendSwatch[data-result="present"]{background:var(--game-present)}
+.gameLegendSwatch[data-result="absent"]{background:var(--game-absent)}
+.options button[data-result="correct"],.clues input[data-correct="true"]{border:2px solid var(--game-correct);background:color-mix(in srgb,var(--game-correct) 16%,var(--surface));color:var(--text-primary)}
+.options button[data-result="incorrect"]{border:2px solid var(--game-incorrect);background:color-mix(in srgb,var(--game-incorrect) 13%,var(--surface));color:var(--text-primary)}
+.connectionGrid button[aria-pressed="true"]{background:var(--game-present);border-color:var(--game-present);color:var(--game-state-text);box-shadow:inset 0 0 0 2px #ffffff70}
+.solvedGroup{border:2px solid var(--game-correct);background:color-mix(in srgb,var(--game-correct) 13%,var(--surface))}
+.solvedGroup strong::before{content:"✓ ";color:var(--game-correct)}
+.crosswordCell[data-conflict="true"]{border:2px dashed var(--game-incorrect);background:color-mix(in srgb,var(--game-incorrect) 20%,var(--surface))}
+.crosswordCell[data-conflict="true"]::after{content:"!";position:absolute;right:1px;bottom:0;font-size:10px;color:var(--game-incorrect);font-weight:900}
+.errorText{border-left-color:var(--game-incorrect)}
+@media(forced-colors:active){
+ .guessRow>span[data-result],.letterKeyboard span[data-result],.connectionGrid button[aria-pressed="true"]{forced-color-adjust:auto;border:2px solid CanvasText}
+}
