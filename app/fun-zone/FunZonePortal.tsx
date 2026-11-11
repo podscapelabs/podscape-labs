@@ -14,8 +14,8 @@ import homeEditStyles from "@/components/PodscapeHome.module.css";
 type CoreWidget="featured"|"categories"|"favourites"|"progress"|"exchange";
 type WidgetKey=CoreWidget|`game:${string}`;
 type SavedLayout={order:WidgetKey[];visible:WidgetKey[]};
-const defaultOrder:WidgetKey[]=["featured","categories","favourites","progress","exchange",...ARCADE_GAME_KEYS.map(key=>`game:${key}` as const)];
-const defaultVisible:WidgetKey[]=["featured","categories","favourites","progress"];
+const defaultOrder:WidgetKey[]=["featured","categories","exchange","favourites","progress",...ARCADE_GAME_KEYS.map(key=>`game:${key}` as const)];
+const defaultVisible:WidgetKey[]=["featured","categories","exchange","favourites","progress"];
 const widgetNames:Record<CoreWidget,string>={featured:"Featured Games",categories:"Game Categories",favourites:"My Favourite Games",progress:"My Play Progress",exchange:"Duck Bucks Watchlist"};
 const widgetIcons:Record<CoreWidget,PodscapeIconName>={featured:"gamepad",categories:"grid",favourites:"bookmark",progress:"achievement",exchange:"gamepad"};
 function label(id:WidgetKey):string{return id.startsWith("game:")?ARCADE_GAMES.find(game=>game.key===id.slice(5))?.title||id:widgetNames[id as CoreWidget];}
@@ -40,7 +40,7 @@ function GameCard({game,isFavourite,onToggle,compact=false}:{game:ArcadeGame;isF
   </div>
   <div className={styles.gameActions}>
    <button type="button" onClick={()=>onToggle(game.key)} aria-label={isFavourite?`Remove ${game.title} from favourites`:`Add ${game.title} to favourites`} aria-pressed={isFavourite} title={isFavourite?"Remove favourite":"Add favourite"}>{isFavourite?"♥":"♡"}</button>
-   <Link href={game.href} aria-label={`Play ${game.title}`}>→</Link>
+   <Link href={game.href} aria-label={`Play ${game.title}`} title={`Play ${game.title}`}>→</Link>
   </div>
  </article>;
 }
@@ -103,13 +103,13 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
  const renderWidget=(id:WidgetKey)=>{
   if(id==="featured")return <FunZoneCarousel signedIn={Boolean(userId)} exp={exp} coins={coins}/>;
   if(id==="categories")return <section className={styles.card} aria-label="Game categories">
-   <div className={styles.blockTitle}><div><span className={styles.eyebrow}>GAME LIBRARY</span><h2>Choose your adventure.</h2></div><span className={styles.subtle}>{ARCADE_GAMES.length} games</span></div>
+   <div className={styles.blockTitle}><div><span className={styles.eyebrow}>GAME LIBRARY</span><h2>Pick a game.</h2></div><span className={styles.subtle}>{ARCADE_GAMES.length} games to explore</span></div>
    <div className={styles.categoryGrid}>{ARCADE_CATEGORIES.map(item=><button key={item} type="button" aria-pressed={category===item} onClick={()=>setCategory(item)}>
     <span className={styles.categoryIcon}><PodscapeLineIcon name={item==="Word Games"?"letters":item==="Puzzles & Logic"?"connections":item==="Trivia & Knowledge"?"quiz":item==="Simulations"?"gamepad":"podbound"}/></span>
     <strong>{item}</strong><small>{categoryCounts[item]} {categoryCounts[item]===1?"game":"games"}</small>
    </button>)}</div>
    <div className={styles.categoryListing}><div className={styles.categoryHeading}><h3>{category}</h3><span>{categoryCounts[category]} available</span></div>
-    {ARCADE_GAMES.filter(game=>game.category===category).length?ARCADE_GAMES.filter(game=>game.category===category).map(game=><GameCard key={game.key} game={game} isFavourite={favourites.includes(game.key)} onToggle={toggleFavourite}/>):<p className={styles.empty}>More games are coming to this category.</p>}
+    {ARCADE_GAMES.filter(game=>game.category===category).length?<div className={styles.categoryGames}>{ARCADE_GAMES.filter(game=>game.category===category).map(game=><GameCard key={game.key} game={game} isFavourite={favourites.includes(game.key)} onToggle={toggleFavourite}/>)}</div>:<p className={styles.empty}>More games are coming to this category.</p>}
    </div>
   </section>;
   if(id==="favourites")return <section className={styles.card} aria-label="Your favourite games"><div className={styles.blockTitle}><div><span className={styles.eyebrow}>YOUR ARCADE</span><h2>My Favourite Games</h2></div><span className={styles.subtle}>{favouriteGames.length} saved</span></div>
