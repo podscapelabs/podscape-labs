@@ -91,3 +91,9 @@
  .dialog{padding:14px}.dialog h2{font-size:27px}
 }
 @media(max-width:375px){.categoryGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.quickLinks a{font-size:9px}}
+
+.watchlistStats{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:14px 0 17px}
+.watchlistStats>span{display:flex;flex-direction:column;gap:5px;min-width:0;padding:11px 12px;border-radius:12px;border:1px solid color-mix(in srgb,var(--portal-hero-text) 27%,transparent);background:color-mix(in srgb,var(--portal-hero-text) 8%,transparent)}
+.watchlistStats small{font-size:10px;color:var(--portal-hero-muted)}
+.watchlistStats strong{font-size:clamp(17px,3.7vw,23px);font-weight:800;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+@media(max-width:390px){.watchlistStats{grid-template-columns:1fr}}
