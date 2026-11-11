@@ -23,17 +23,6 @@ export default function LifetimeExpRankings(){
    .finally(()=>{if(!controller.signal.aborted)setLoading(false)});
   return ()=>controller.abort();
  },[reload]);
- const toggleParticipation=async(enabled:boolean)=>{
-  if(updating)return;
-  setUpdating(true);setError("");
-  try{
-   const response=await fetch("/api/progress/rankings",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({enabled})});
-   const result=await response.json();
-   if(!response.ok)throw new Error(result.error||"Preference not saved");
-   setReload(previous=>previous+1);
-  }catch(reason){setError(reason instanceof Error?reason.message:"Unable to update your preference");}
-  finally{setUpdating(false);}
- };
  const setHidden=async(hideUsername:boolean)=>{
   if(updating)return;setUpdating(true);setError("");
   try{
@@ -56,23 +45,20 @@ export default function LifetimeExpRankings(){
   </header>
   {error?<div role="alert" className={styles.alert}><span>{error}</span><button type="button" onClick={()=>setReload(v=>v+1)}>Retry</button></div>:null}
   <section className={styles.personal} aria-label="Your leaderboard visibility">
-   <div className={styles.sectionHead}><div><small>YOUR KEEPER PROFILE</small><h2>{board?.participating?"You’re ranked":"Join Lifetime Rankings"}</h2></div><PodscapeLineIcon name="achievement"/></div>
+   <div className={styles.sectionHead}><div><small>YOUR KEEPER PROFILE</small><h2>Your lifetime standing</h2></div><PodscapeLineIcon name="achievement"/></div>
    {!board&&!loading?<p>Personal rankings are currently unavailable.</p>:
-    !board?.signedIn?<div className={styles.joinSignIn}><p>Sign in to add your lifetime EXP and keeper level to the leaderboard.</p><Link href="/account" className={styles.joinLink}>Sign in to join <span aria-hidden="true">→</span></Link></div>:
+    !board?.signedIn?<div className={styles.joinSignIn}><p>Sign in to see your lifetime EXP and level ranked automatically.</p><Link href="/account" className={styles.joinLink}>Sign in <span aria-hidden="true">→</span></Link></div>:
     <>
-     <div className={styles.consent}><div><strong>{board.participating?"Lifetime ranking is public":"Put your keeper progress on the board"}</strong><p>{board.participating?"Your level and lifetime EXP are visible; your username follows your privacy choice.":"Join with your saved lifetime EXP and keeper level. Arcade participation stays separate."}</p></div>
-      <button type="button" disabled={updating||loading} aria-pressed={board.participating} onClick={()=>toggleParticipation(!board.participating)} aria-label={board.participating?"Leave public lifetime EXP rankings":"Join public lifetime EXP rankings"}>{updating?"Saving…":board.participating?"Leave rankings":"Join rankings"}</button>
-     </div>
      <div className={styles.privacyAction}><RankingModal trigger={board.hideUsername?"Username hidden · Manage":"Username visible · Manage"} title="Lifetime ranking privacy" subtle>
       <label className={styles.namePrivacy}>
       <input type="checkbox" checked={board.hideUsername===true} disabled={updating||loading}
        onChange={event=>setHidden(event.target.checked)}/>
       <span><strong>Hide my username</strong><small>{board.hideUsername?"Anonymous Keeper is shown publicly; your level and EXP remain visible.":"Show Anonymous Keeper instead of your display name on the leaderboard."}</small></span>
      </label>
-     <small className={styles.privacyHint}>{board.participating?"Participating · Your level and EXP are visible · Leave anytime":"Private until you join · Choose whether to show your username"}</small>
+     <small className={styles.privacyHint}>Your level and EXP are ranked automatically · Username privacy is optional</small>
       <p className={styles.note}>Hiding your name does not hide your EXP, keeper level or leaderboard placement.</p>
      </RankingModal></div>
-     {board.participating?(board.mine?<div className={styles.personalStanding}><span><strong>#{board.mine.position}</strong><small>Your lifetime placement</small></span><span><strong>Level {format(board.mine.level)}</strong><small>{format(board.mine.exp)} EXP</small></span></div>:<p>Your profile is public. Earn your first EXP to enter the board.</p>):<p>Your EXP and level remain saved privately even if you choose not to appear publicly.</p>}
+     {board.mine?<div className={styles.personalStanding}><span><strong>#{board.mine.position}</strong><small>Your lifetime placement</small></span><span><strong>Level {format(board.mine.level)}</strong><small>{format(board.mine.exp)} EXP</small></span></div>:<p>Your profile is public. Earn your first EXP to enter the board.</p>}
     </>}
   </section>
   <div className={styles.helpAction}><RankingModal trigger="How lifetime rankings work" title="Keeper rankings explained">
@@ -86,12 +72,12 @@ export default function LifetimeExpRankings(){
    <div><small>COMING LATER</small><h2>Molt & Prestige</h2><p>Reach new progression milestones, earn a prestige emblem and begin a new leveling journey. Lifetime EXP rankings will remain distinct from future Molt cycles; no reset is active now.</p></div>
   </section>
 
-  <p className={styles.note}>Rankings use recorded lifetime EXP, not Pod Coins or spending alone. Tied totals share a rank. Only members who choose to participate are displayed. There are no extra rewards just for appearing on this leaderboard.</p>
+  <p className={styles.note}>Rankings use recorded lifetime EXP, not Pod Coins or spending alone. Tied totals share a rank. Earned EXP is ranked automatically; usernames can be anonymized. There are no extra rewards just for appearing on this leaderboard.</p>
   </RankingModal></div>
   <section className={styles.board} aria-label="Lifetime EXP standings" aria-busy={loading}>
    <div className={styles.sectionHead}><div><small>THE KEEPER BOARD</small><h2>All-time standings</h2></div><span>{loading?"Updating…":(board?.rows.length||0)+" ranked keepers"}</span></div>
    {loading?<p className={styles.empty}>Loading verified keeper progress…</p>:
-    !top.length?<div className={styles.empty}><PodscapeLineIcon name="trophy"/><h3>The podium is waiting.</h3><p>When members opt in, their earned EXP and keeper levels will appear here. Nothing is added automatically.</p></div>:
+    !top.length?<div className={styles.empty}><PodscapeLineIcon name="trophy"/><h3>The podium is waiting.</h3><p>As members earn EXP, their keeper levels appear automatically.</p></div>:
     <>
      <div className={styles.podium}>{top.map((keeper,index)=><article key={index} className={styles.podiumCard}>
       <span className={styles.place}>#{keeper.position}</span>
