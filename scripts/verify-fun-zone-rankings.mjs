@@ -18,8 +18,8 @@ for(const period of ["daily","weekly","monthly","all-time"]){
 }
 assert.match(schema,/date_trunc\('week'/,"Weekly rankings must use a calendar week, not the last seven days");
 assert.match(schema,/at time zone 'UTC'/,"Period boundaries must use UTC");
-assert.match(schema,/join public\.fun_zone_ranking_preferences/,"Only opted-in members may appear");
-assert.match(schema,/public_enabled=true/,"Consent is required for inclusion");
+assert.match(read("supabase/migrations/202611110008_automatic_rankings_and_legacy_wallet_audits.sql"),/left join public\.fun_zone_ranking_preferences/,"All verified players rank automatically");
+assert.match(api,/const enabled=preference\?\.public_enabled!==false/,"New accounts are ranked automatically");
 assert.match(schema,/member_puzzle_completions/,"Rankings must use verified puzzle completions");
 assert.match(schema,/rank\(\) over/,"Tied scores must share ranks");
 assert.match(schema,/grant execute on function public\.get_fun_zone_rankings.*to service_role/,"Rankings RPC must be server-only");
@@ -28,8 +28,8 @@ assert.match(api,/customerSupabase/,"Preference updates must authenticate users"
 assert.match(api,/user\.email_confirmed_at/,"Only verified accounts can opt in");
 assert.match(api,/validGames/,"Games must use canonical Arcade registry");
 assert.match(api,/game\.key!=="pod-exchange"/,"Unverified market wallets are excluded");
-assert.match(ui,/setPublic/,"Users must control public participation");
-assert.match(ui,/HOW TO ENTER/,"Leaderboard must explain how participation works");
+assert.doesNotMatch(ui,/setPublic|Join rankings|Leave rankings/,"Join and Leave controls removed");
+assert.match(ui,/See your rank/,"Leaderboard explains automatic participation");
 assert.match(ui,/gameEntryGuides/,"Each selected game needs an explanation of its completion criteria");
 assert.match(ui,/selectedGame\?\.href/,"Game-specific ranking guidance must link to the actual game");
 assert.match(ui,/first completion of each puzzle counts/,"Replays must not be presented as repeat scoring opportunities");
