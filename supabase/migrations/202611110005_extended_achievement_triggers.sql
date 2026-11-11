@@ -6,11 +6,14 @@ as $$
 declare
  v_collection bigint; v_enclosures bigint; v_care bigint; v_care_days bigint;
  v_games bigint; v_puzzles bigint; v_play_days bigint; v_burrow bigint;
+ v_lifetime_exp bigint;
  v_rule record; v_awarded integer:=0;
 begin
  if p_user_id is null then raise exception 'Missing member'; end if;
  perform 1 from auth.users where id=p_user_id for update;
  if not found then raise exception 'Unknown member'; end if;
+ select coalesce((select total_exp from public.member_progress where user_id=p_user_id),0)
+  into v_lifetime_exp;
  select count(*) into v_collection from public.member_species_collection where user_id=p_user_id;
  select count(*) into v_enclosures from public.keeper_enclosures where user_id=p_user_id;
  select count(*),count(distinct (created_at at time zone 'UTC')::date)
@@ -23,6 +26,9 @@ begin
 
  for v_rule in
   select * from (values
+    ('level_ten',50,v_lifetime_exp>=8100),
+    ('level_twenty_five',150,v_lifetime_exp>=57600),
+    ('level_fifty',300,v_lifetime_exp>=240100),
     ('collection_twenty_five_species',175, v_collection>=25),
     ('keeper_first_enclosure',15, v_enclosures>=1),
     ('keeper_five_enclosures',60, v_enclosures>=5),
@@ -81,6 +87,24 @@ create trigger member_collection_extended_achievements after insert on public.me
 drop trigger if exists member_puzzle_extended_achievements on public.member_puzzle_completions;
 create trigger member_puzzle_extended_achievements after insert on public.member_puzzle_completions
  for each row execute function public.record_extended_achievement_from_insert();
+
+-- Every EXP change can reach a new keeper level. Guard recursion when a milestone awards EXP.
+create or replace function public.record_level_achievement_from_progress()
+returns trigger language plpgsql security definer set search_path=''
+as $
+begin
+ if pg_trigger_depth()>1 then return new; end if;
+ if tg_op='INSERT' or new.total_exp>old.total_exp then
+  perform public.reconcile_member_extended_achievements(new.user_id);
+ end if;
+ return new;
+end;
+$;
+revoke all on function public.record_level_achievement_from_progress() from public,anon,authenticated;
+drop trigger if exists member_progress_level_achievements on public.member_progress;
+create trigger member_progress_level_achievements
+ after insert or update of total_exp on public.member_progress
+ for each row execute function public.record_level_achievement_from_progress();
 
 comment on function public.reconcile_member_extended_achievements(uuid) is
  'Reconciles one-time achievements from keeper enclosures, care, collected species and verified puzzle completions; idempotent EXP events; callable only by service role.';
