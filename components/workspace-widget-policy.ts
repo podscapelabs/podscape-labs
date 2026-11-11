@@ -41,6 +41,7 @@ export const widgetPlacement={
   navigation:{group:"My Species",purpose:"Continue exploring the catalogue",placement:"optional"}
  },
  "fun-zone":{
+  rankings:{group:"My Arcade",purpose:"Swipe through Arcade, Lifetime EXP and three market leaderboards at a glance",placement:"optional"},
   featured:{group:"Discover Games",purpose:"Featured games and quick launches",placement:"optional"},
   categories:{group:"Discover Games",purpose:"Browse available games by type",placement:"optional"},
   favourites:{group:"My Arcade",purpose:"Launch saved favourite games",placement:"optional"},
