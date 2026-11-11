@@ -87,8 +87,13 @@ function Burrow({puzzle,onComplete}:{puzzle:BurrowPuzzle;onComplete:Completion})
    <input id="burrow-guess" value={entry} onChange={e=>setEntry(e.target.value.replace(/[^a-z]/gi,"").slice(0,5).toUpperCase())} maxLength={5} autoComplete="off" autoCapitalize="characters" spellCheck={false} placeholder="5 letters" aria-describedby="burrow-help"/>
    <button type="submit" disabled={entry.length!==5}>Guess →</button>
   </form>}
-  <div className={styles.letterKeyboard} aria-label="Letter clues">{["QWERTYUIOP","ASDFGHJKL","ZXCVBNM"].map(row=><div key={row}>{[...row].map(letter=><span key={letter} data-result={keyboard.get(letter)||""}>{letter}</span>)}</div>)}</div>
-  <p className={styles.footnote} id="burrow-help">Green: correct spot · Sage: in word, wrong spot · Gray: not in word. Repeated letters count only when present in the answer.</p>
+  <div className={styles.letterKeyboard} aria-label="Letter clues">{["QWERTYUIOP","ASDFGHJKL","ZXCVBNM"].map(row=><div key={row}>{[...row].map(letter=><span key={letter} data-result={keyboard.get(letter)||""} aria-label={`${letter}: ${keyboard.get(letter)==="correct"?"correct position":keyboard.get(letter)==="present"?"in word, wrong position":keyboard.get(letter)==="absent"?"not in word":"unused"}`}>{letter}</span>)}</div>)}</div>
+  <div className={styles.footnote} id="burrow-help" aria-label="Letter feedback legend">
+   <span className={styles.gameLegendItem}><span aria-hidden="true" className={styles.gameLegendSwatch} data-result="correct">✓</span>Green: correct position</span>
+   <span className={styles.gameLegendItem}><span aria-hidden="true" className={styles.gameLegendSwatch} data-result="present">●</span>Amber: in the word, wrong position</span>
+   <span className={styles.gameLegendItem}><span aria-hidden="true" className={styles.gameLegendSwatch} data-result="absent">×</span>Slate: not in the word</span>
+   <small>Letter feedback is identical in all themes. Repeated letters count only when present in the answer.</small>
+  </div>
  </div>;
 }
 function Crossword({puzzle,onComplete}:{puzzle:CrosswordPuzzle;onComplete:Completion}){
