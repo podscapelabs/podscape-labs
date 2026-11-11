@@ -40,6 +40,11 @@ assert.match(policy,/rankings:\{group:"My Arcade"/,"Widget placement policy must
 assert.match(css,/scroll-snap-type:x mandatory/,"Support native touchscreen swipe");
 assert.match(css,/-webkit-overflow-scrolling:touch/,"Support iOS momentum swipe");
 assert.match(css,/@media\(max-width:390px\)/,"Very narrow mobile layouts should be considered");
+assert.match(css,/\.portal\{display:grid;grid-template-columns:minmax\(0,1fr\)/,"Portal grid must not inherit wide child intrinsic width");
+assert.match(css,/\.rankingsSpotlight\{[^\n]*width:100%;max-width:100%;box-sizing:border-box;overflow:hidden/,"Spotlight must stay within mobile viewport");
+assert.match(css,/\.rankingsSlide\{[^\n]*max-width:100%;box-sizing:border-box/,"Slides must stay inside the swipe track");
+assert.match(css,/\.rankingsPager\{min-width:0;width:100%;max-width:100%;overflow:hidden/,"Rankings tabs must scroll internally rather than overflow the page");
+assert.match(css,/\.rankingsSlideTitle\{display:grid;grid-template-columns:32px minmax\(0,1fr\)/,"Mobile heading and full board link must reflow");
 const iconNames=[...carousel.matchAll(/<PodscapeLineIcon name="([^"]+)"/g)].map(m=>m[1]);
 for(const name of iconNames)assert.ok(icons.includes('"'+name+'"'),"Unsupported PodScape icon: "+name);
 console.log("Fun Zone Rankings Spotlight source checks passed.");
