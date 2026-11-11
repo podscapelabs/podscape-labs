@@ -3,22 +3,18 @@
 import {useEffect,useState} from "react";
 import {MoonIcon,SunIcon} from "./Icons";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
-
-type Theme="light"|"dark"|"woodland"|"lilac"|"ember";
-type ThemePreference=Theme|"system";
-const order:Theme[]=["light","dark","woodland","lilac","ember"];
-const names:Record<Theme,string>={light:"Light",dark:"Dark",woodland:"Woodland",lilac:"Lilac",ember:"Ember"};
+import {THEMES,THEME_IDS,THEME_STORAGE_KEY,isThemeId,themeColorScheme,type ThemeId,type ThemePreference} from "@/lib/theme-registry";
 
 export function ThemeToggle(){
- const [theme,setTheme]=useState<Theme|null>(null);
+ const [theme,setTheme]=useState<ThemeId|null>(null);
  const [preference,setPreference]=useState<ThemePreference>("system");
 
  useEffect(()=>{
   const sync=()=>{
-   const saved=localStorage.getItem("podscape-theme");
-   setPreference(saved==="light"||saved==="dark"||saved==="woodland"||saved==="lilac"||saved==="ember"?saved:"system");
+   const saved=localStorage.getItem(THEME_STORAGE_KEY);
+   setPreference(isThemeId(saved)?saved:"system");
    const current=document.documentElement.dataset.theme;
-   setTheme(current==="dark"||current==="woodland"||current==="lilac"||current==="ember"?current:"light");
+   setTheme(isThemeId(current)?current:"light");
   };
   sync();
   window.addEventListener("podscape-theme-change",sync);
@@ -27,19 +23,21 @@ export function ThemeToggle(){
 
  function toggleTheme(){
   const current=theme||"light";
-  const next=order[(order.indexOf(current)+1)%order.length];
+  const next=THEME_IDS[(THEME_IDS.indexOf(current)+1)%THEME_IDS.length];
   document.documentElement.dataset.theme=next;
   document.documentElement.dataset.themePreference=next;
-  document.documentElement.style.colorScheme=next==="light"||next==="lilac"||next==="ember"?"light":"dark";
-  localStorage.setItem("podscape-theme",next);
+  document.documentElement.style.colorScheme=themeColorScheme(next);
+  localStorage.setItem(THEME_STORAGE_KEY,next);
   setTheme(next);
   setPreference(next);
   window.dispatchEvent(new CustomEvent("podscape-theme-change",{detail:next}));
  }
- const next=order[(order.indexOf(theme||"light")+1)%order.length];
+ const next=THEME_IDS[(THEME_IDS.indexOf(theme||"light")+1)%THEME_IDS.length];
+ const currentName=THEMES.find(t=>t.id===(theme||"light"))?.title||"Light";
+ const nextName=THEMES.find(t=>t.id===next)?.title||"Light";
  return <button className="theme-toggle" type="button" onClick={toggleTheme}
-  aria-label={`${preference==="system"?"Following device appearance. ":""}Switch to ${names[next]} theme`}
-  title={`Current: ${names[theme||"light"]} · Switch to ${names[next]}`}>
+  aria-label={`${preference==="system"?"Following device appearance. ":""}Switch to ${nextName} theme`}
+  title={`Current: ${currentName} · Switch to ${nextName}`}>
    <span className="theme-icon theme-icon-sun"><SunIcon/></span>
    <span className="theme-icon theme-icon-moon"><MoonIcon/></span>
    <span className="theme-icon theme-icon-woodland"><PodscapeLineIcon name="leaf"/></span>
