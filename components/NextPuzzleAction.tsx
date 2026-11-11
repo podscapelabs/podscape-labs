@@ -11,7 +11,7 @@ export function NextPuzzleAction({completed,saved,nextHref,nextTitle,libraryHref
  if(!completed)return null;
  const ready=saved==="saved";
  return <div className={styles.completionNavigation} aria-label="Continue playing">
-  {ready&&nextHref?<Link className={styles.completionNext} href={nextHref}>Next challenge <span aria-hidden="true">→</span><small>{nextTitle}</small></Link>:
+  {ready&&nextHref?<Link className={styles.completionNext} href={nextHref}>Next puzzle <span aria-hidden="true">→</span><small>{nextTitle}</small></Link>:
    ready?<Link className={styles.completionNext} href={libraryHref}>Explore more puzzles <span aria-hidden="true">→</span></Link>:
    <span className={styles.completionWaiting} role="status">{saved==="unavailable"?"Save your result to unlock the next challenge.":"Saving your progress to unlock the next challenge…"}</span>}
   {ready?<Link href={libraryHref} className={styles.completionBrowse}>All puzzles</Link>:null}
