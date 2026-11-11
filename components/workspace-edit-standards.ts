@@ -5,10 +5,11 @@ export const EDIT_CLICK_SUPPRESS_MS = 1100;
 
 /** Confirmation text uses consistent, user-friendly boundaries and never implies data deletion. */
 export function confirmWorkspaceReset(
- area:"home"|"manager"|"species"|"home-shortcuts"|"manager-shortcuts"|"bottom-navigation"
+ area:"home"|"fun-zone"|"manager"|"species"|"home-shortcuts"|"manager-shortcuts"|"bottom-navigation"
 ):boolean {
  const messages:Record<typeof area,string>={
   home:"Reset Home to its default layout? Optional widgets and their arrangement will change. Your colonies, favorites and account data stay safe.",
+  "fun-zone":"Reset Fun Zone to its default layout? Your favourite games, puzzle completions and account progress will stay safe.",
   manager:"Reset Manager to its default dashboard and Quick Tools? Your colonies, care history and saved records will not be deleted.",
   species:"Reset the Species Dashboard layout for all species? Your collection and species information will stay safe.",
   "home-shortcuts":"Reset your Home shortcuts to their defaults? This won't change the rest of your dashboard or delete any data.",
