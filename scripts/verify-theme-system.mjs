@@ -40,7 +40,7 @@ for(const {id,scheme} of registered){
  assert.ok(registry.includes('id:"'+id+'"'),"Missing theme metadata for "+id);
 }
 assert.match(appearance,/THEMES,SYSTEM_OPTION,THEME_STORAGE_KEY/,"Appearance picker must use the registry");
-assert.match(themeToggle,/THEMES,THEME_IDS,THEME_STORAGE_KEY/,"Quick toggle must use the registry");
+assert.match(themeToggle,/THEMES,THEME_IDS,isThemeId/,"Quick toggle must use the registry");
 assert.match(layout,/THEMES,THEME_STORAGE_KEY/,"First paint must consume theme registry");
 assert.match(layout,/JSON.stringify\(themeIds\)/,"First paint needs all registered ids");
 assert.match(layout,/JSON.stringify\(themeSchemes\)/,"First paint must use registry-native colour schemes");
