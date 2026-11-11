@@ -1,5 +1,5 @@
 "use client";
-import {useEffect,useMemo,useState} from "react";
+import {useEffect,useMemo,useRef,useState} from "react";
 import Link from "next/link";
 import styles from "./exchange.module.css";
 import {DuckBucks,DuckBuckIcon,duckBucksNumber} from "@/components/DuckBucks";
@@ -23,6 +23,7 @@ export function PodExchange(){
  const [quantity,setQuantity]=useState("1");
  const [message,setMessage]=useState("");
  const [view,setView]=useState<"market"|"wallet">("market");
+ const tradeRef=useRef<HTMLElement|null>(null);
  useEffect(()=>{
   try{const saved=localStorage.getItem(STORAGE_KEY);if(saved)setPortfolio(sanitizePortfolio(JSON.parse(saved)));}catch{/* Ignore invalid local storage */}
   setReady(true);setNow(Date.now());
@@ -42,7 +43,7 @@ export function PodExchange(){
  const validCount=/^[1-9]\d{0,5}$/.test(quantity)&&Number.isSafeInteger(count);
  const total=validCount?money(price*count):0;
  const allowed=ready&&now!==null&&validCount&&(side==="buy"?total<=portfolio.cash:count<=owned);
- const worth=now===null?STARTING_BUCKS:totalValue(portfolio,cycle);
+ const worth=totalValue(portfolio,cycle);
  const gain=money(worth-STARTING_BUCKS);
  const news=now===null?null:newsAt(cycle);
  const timeLeft=now===null?0:MARKET_INTERVAL_MS-(now%MARKET_INTERVAL_MS);
@@ -54,6 +55,7 @@ export function PodExchange(){
   try{localStorage.setItem(STORAGE_KEY,JSON.stringify(result.portfolio));}
   catch{setMessage("Your device couldn't save this trade. Check browser storage permissions.");return;}
   setPortfolio(result.portfolio);
+  setNow(Date.now());
   setMessage(`${side==="buy"?"Bought":"Sold"} ${count} ${symbol} share${count===1?"":"s"} at ${duckBucksNumber(priceAt(symbol,tick))} Duck Bucks each.`);
  }
  function reset(){
@@ -67,27 +69,27 @@ export function PodExchange(){
    <div><p className={styles.eyebrow}><Link href="/fun-zone">Fun Zone</Link> / MARKET PARODY <span className={styles.beta}>BETA</span></p><h1>The Pod Exchange</h1><p>Where tiny creatures make big moves. 📈</p></div>
    <div className={styles.marketStatus}><span><i aria-hidden="true"/> MARKET OPEN</span><small>{now===null?"Loading market…":`Next tick ${countdown(timeLeft)}`}</small></div>
   </header>
-  <p className={styles.disclaimer}>🎲 A silly simulation only. Duck Bucks, companies and prices are fictional. No Pod Coins, real money, prizes or cash-out.</p>
+  <p className={styles.disclaimer}><span aria-hidden="true">✳</span> A fictional market game · No real money, cash-out, Pod Coins or prizes.</p>
   <section className={styles.balances} aria-label="Duck Bucks portfolio">
    <div><span>Portfolio value</span><strong>{ready&&now!==null?<DuckBucks amount={worth}/>:"Loading…"}</strong><small className={gain>=0?styles.up:styles.down}>{ready&&now!==null?<><DuckBucks amount={gain} showSign/> overall</>:"Saved on this device"}</small></div>
-   <div><span>Duck Bucks available</span><strong>{ready?<DuckBucks amount={portfolio.cash}/>:"—"}</strong><small>Starting wallet <DuckBucks amount={STARTING_BUCKS}/></small></div>
+   <div><span>Duck Bucks available</span><strong>{ready?<DuckBucks amount={portfolio.cash}/>:"—"}</strong><small>Virtual currency only</small></div>
    <div><span>Companies owned</span><strong>{STOCKS.filter(s=>(portfolio.holdings[s.symbol]||0)>0).length}</strong><small>{portfolio.trades.length} recent trades</small></div>
   </section>
   <section className={styles.bulletin} aria-label="Market news"><span className={styles.newsLabel}>THE LEAF STREET JOURNAL</span><div><strong>{news?.headline||"The tiny markets are buzzing"}</strong><p>{news?.detail||"Traders dig through the leaf litter looking for opportunity."}</p></div><b>{news?.symbol||"PODX"}</b></section>
-  <div className={styles.mobileSwitch}><button type="button" aria-pressed={view==="market"} onClick={()=>setView("market")}>Market</button><button type="button" aria-pressed={view==="wallet"} onClick={()=>setView("wallet")}>My portfolio</button></div>
-  <div className={styles.columns}>
-   <section className={view==="wallet"?styles.hideMobile:undefined} aria-label="Fictional market listings">
+  <div className={styles.mobileSwitch}><button type="button" aria-pressed={view==="market"} onClick={()=>setView("market")}>Trade market</button><button type="button" aria-pressed={view==="wallet"} onClick={()=>setView("wallet")}>My holdings</button></div>
+  <div className={`${styles.columns} ${view==="wallet"?styles.marketHiddenMobile:""}`}>
+   <section aria-label="Fictional market listings">
     <div className={styles.panel}><div className={styles.panelHead}><div><h2>Market watch</h2><p>Six companies. Endless leaf drama.</p></div><small>5-minute ticks</small></div>
      <div className={styles.list}>{STOCKS.map(stock=>{
       const current=priceAt(stock.symbol,cycle),prior=priceAt(stock.symbol,cycle-1),delta=(current/prior-1)*100;
-      return <button type="button" key={stock.symbol} aria-pressed={symbol===stock.symbol} className={styles.stock} onClick={()=>{setSymbol(stock.symbol);setMessage("");setView("market");}}>
+      return <button type="button" key={stock.symbol} aria-pressed={symbol===stock.symbol} className={styles.stock} onClick={()=>{setSymbol(stock.symbol);setMessage("");setView("market");if(window.matchMedia("(max-width:720px)").matches)requestAnimationFrame(()=>tradeRef.current?.scrollIntoView({behavior:"smooth",block:"start"}));}}>
        <span className={styles.stockIcon} aria-hidden="true">{stock.icon}</span><span className={styles.stockName}><strong>{stock.name}</strong><small>{stock.symbol} · {stock.sector}</small></span>
        <span className={styles.stockPrice}><strong><DuckBucks amount={current}/></strong><small className={delta>=0?styles.up:styles.down}>{change(delta)}</small></span>
       </button>;
      })}</div>
     </div>
    </section>
-   <section className={view==="wallet"?styles.hideMobile:undefined} aria-label="Trading desk">
+   <section ref={tradeRef} className={styles.tradeSection} aria-label="Trading desk">
     <div className={styles.panel}><div className={styles.tradeHeading}><span aria-hidden="true">{company.icon}</span><div><small>{company.symbol} / {company.sector}</small><h2>{company.name}</h2><p>{company.summary}</p></div></div>
      <div className={styles.quote}><strong><DuckBucks amount={price}/></strong><span className={movement>=0?styles.up:styles.down}>{change(movement)} this tick</span></div>
      <Sparkline cycle={cycle} symbol={symbol}/><p className={styles.chartHint}>Simulated prices · Past 2 hours</p>
@@ -99,7 +101,7 @@ export function PodExchange(){
     </div>
    </section>
   </div>
-  <section className={styles.portfolio} aria-label="Your fictional holdings">
+  <section className={`${styles.portfolio} ${view==="market"?styles.holdingsHiddenMobile:""}`} aria-label="Your fictional holdings">
    <div className={styles.panelHead}><div><h2>My duck portfolio</h2><p>All saved locally on this device during beta.</p></div><button className={styles.reset} onClick={reset} type="button">Reset game</button></div>
    {STOCKS.filter(stock=>(portfolio.holdings[stock.symbol]||0)>0).length===0?
    <div className={styles.empty}><DuckBuckIcon size={22}/> Your duck wallet is full, but you don&apos;t own any shares yet. Select a company and make your first trade!</div>:
