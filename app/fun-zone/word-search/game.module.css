@@ -60,3 +60,9 @@
 .stateLegend{font-size:11px;line-height:1.45;color:var(--text-secondary);margin:9px 0 3px}
 .stateLegend strong{color:var(--text-primary)}
 @media(max-width:720px){.stateLegend{font-size:10px;margin:5px 0 3px}}
+
+/* Match the learning cue used by other Fun Zone game modes. */
+.learningNote{display:grid;gap:4px;margin:10px 0 14px;padding:11px 13px;border:1px solid color-mix(in srgb,var(--accent) 28%,var(--border));border-radius:12px;background:color-mix(in srgb,var(--accent) 5%,var(--surface))}
+.learningNote strong{font-size:12px;color:var(--text-primary)}
+.learningNote p{font-size:11px;line-height:1.45;color:var(--text-secondary);margin:0}
+@media(max-width:600px){.learningNote{padding:10px}.learningNote p{font-size:10px}}
