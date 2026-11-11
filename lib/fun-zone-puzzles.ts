@@ -28,7 +28,7 @@ const search=(id:string,title:string,words:string[],seed:number,description="Fin
 // Connected mini-crosswords: every run of two or more adjacent letters
 // must match exactly one clued entry. This catches ghost words like CHIDE.
 const originalCrossword:CrosswordClue[]=crosswordClues.map((c,i)=>({
- ...c,...(i===3?{answer:"HUMUS",clue:"Dark, well-decomposed organic material in soil (5)"}:{}),
+ ...c,...(i===3?{answer:"HOLES",clue:"Small openings that help air flow through an enclosure (5)"}:{}),
  ...([
   {r:6,c:0,dir:"across"},{r:0,c:5,dir:"down"},
   {r:3,c:1,dir:"down"},{r:3,c:1,dir:"across"},
@@ -292,7 +292,7 @@ for(const e of puzzleEntries){
 // Reject cloned rounds and verbatim repeated questions in a game. Teaching
 // one term through different games is deliberate spaced reinforcement.
 const seenPuzzles=new Set<string>();
-const seenQuizPrompts=new Map<string,Set<string>>();
+const seenQuizPrompts=new Set<string>();
 const normalize=(value:string)=>value.toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
 for(const entry of puzzleEntries){
  const {puzzle,mode,gameKey}=entry;
@@ -300,12 +300,10 @@ for(const entry of puzzleEntries){
  if(mode==="quiz"){
   const questions=(puzzle as QuizPuzzle).questions;
   fingerprint=questions.map(q=>normalize(q.prompt)).sort().join("|");
-  let seen=seenQuizPrompts.get(gameKey);
-  if(!seen){seen=new Set();seenQuizPrompts.set(gameKey,seen);}
   for(const question of questions){
    const prompt=normalize(question.prompt);
-   if(seen.has(prompt))throw new Error("Duplicate question in "+gameKey+": "+prompt);
-   seen.add(prompt);
+   if(seenQuizPrompts.has(prompt))throw new Error("Repeated quiz question across Fun Zone: "+prompt);
+   seenQuizPrompts.add(prompt);
    if(new Set(question.choices.map(normalize)).size!==4)throw new Error("Duplicate answer choices in "+gameKey);
   }
  }else if(mode==="connections"){
