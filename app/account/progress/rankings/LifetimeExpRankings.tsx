@@ -41,11 +41,23 @@ export default function LifetimeExpRankings(){
    <div><p className={styles.eyebrow}>PODSCAPE / MY PROGRESS</p><h1>Lifetime EXP Rankings</h1><p>Every discovery, achievement and adventure adds to your keeper journey. See where you stand across PodScape.</p></div>
    <span className={styles.heroIcon} aria-hidden="true"><PodscapeLineIcon name="trophy"/></span>
   </header>
+  {error?<div role="alert" className={styles.alert}><span>{error}</span><button type="button" onClick={()=>setReload(v=>v+1)}>Retry</button></div>:null}
+  <section className={styles.personal} aria-label="Your leaderboard visibility">
+   <div className={styles.sectionHead}><div><small>YOUR KEEPER PROFILE</small><h2>{board?.participating?"You’re ranked":"Join Lifetime Rankings"}</h2></div><PodscapeLineIcon name="achievement"/></div>
+   {!board&&!loading?<p>Personal rankings are currently unavailable.</p>:
+    !board?.signedIn?<div className={styles.joinSignIn}><p>Sign in to add your lifetime EXP and keeper level to the leaderboard.</p><Link href="/account" className={styles.joinLink}>Sign in to join <span aria-hidden="true">→</span></Link></div>:
+    <>
+     <div className={styles.consent}><div><strong>{board.participating?"Lifetime ranking is public":"Put your keeper progress on the board"}</strong><p>{board.participating?"Your display name, keeper level and lifetime EXP are visible to visitors.":"Join with your saved lifetime EXP and keeper level. Arcade participation stays separate."}</p></div>
+      <button type="button" disabled={updating||loading} aria-pressed={board.participating} onClick={()=>toggleParticipation(!board.participating)} aria-label={board.participating?"Leave public lifetime EXP rankings":"Join public lifetime EXP rankings"}>{updating?"Saving…":board.participating?"Leave rankings":"Join rankings"}</button>
+     </div>
+     <small className={styles.privacyHint}>{board.participating?"Participating · Publicly visible · Leave anytime":"Private until you join · Display name, level and lifetime EXP become public"}</small>
+     {board.participating?(board.mine?<div className={styles.personalStanding}><span><strong>#{board.mine.position}</strong><small>Your lifetime placement</small></span><span><strong>Level {format(board.mine.level)}</strong><small>{format(board.mine.exp)} EXP</small></span></div>:<p>Your profile is public. Earn your first EXP to enter the board.</p>):<p>Your EXP and level remain saved privately even if you choose not to appear publicly.</p>}
+    </>}
+  </section>
   <div className={styles.explainer}>
    <div><span className={styles.statIcon}><PodscapeLineIcon name="achievement"/></span><div><strong>Lifetime EXP</strong><small>Ranked by total earned experience, across every eligible PodScape activity.</small></div></div>
    <div><span className={styles.statIcon}><PodscapeLineIcon name="leaf"/></span><div><strong>Keeper level</strong><small>Displayed alongside EXP using the same level system as My Progress.</small></div></div>
   </div>
-  {error?<div role="alert" className={styles.alert}><span>{error}</span><button type="button" onClick={()=>setReload(v=>v+1)}>Retry</button></div>:null}
   <section className={styles.board} aria-label="Lifetime EXP standings" aria-busy={loading}>
    <div className={styles.sectionHead}><div><small>THE KEEPER BOARD</small><h2>All-time standings</h2></div><span>{loading?"Updating…":(board?.rows.length||0)+" ranked keepers"}</span></div>
    {loading?<p className={styles.empty}>Loading verified keeper progress…</p>:
@@ -60,17 +72,6 @@ export default function LifetimeExpRankings(){
      {others.length?<div className={styles.list}>{others.map((keeper,index)=><div key={index} className={keeper.mine?styles.myRow:styles.row}>
       <strong className={styles.position}>#{keeper.position}</strong><div className={styles.person}><strong>{keeper.name}{keeper.mine?" · You":""}</strong><small>Level {format(keeper.level)}</small></div><b>{format(keeper.exp)} EXP</b>
      </div>)}</div>:null}
-    </>}
-  </section>
-  <section className={styles.personal} aria-label="Your leaderboard visibility">
-   <div className={styles.sectionHead}><div><small>YOUR JOURNEY</small><h2>Your standing</h2></div><PodscapeLineIcon name="achievement"/></div>
-   {!board&&!loading?<p>Personal rankings are currently unavailable.</p>:
-    !board?.signedIn?<p>Sign in to choose whether to appear in Lifetime EXP Rankings. The board remains viewable without joining.</p>:
-    <>
-     <div className={styles.consent}><div><strong>Show my progress on the leaderboard</strong><p>Optional. Your display name, keeper level and lifetime EXP are visible to other visitors. This is separate from your Fun Zone ranking preference.</p></div>
-      <button type="button" disabled={updating||loading} aria-pressed={board.participating} onClick={()=>toggleParticipation(!board.participating)}>{updating?"Saving…":board.participating?"Participating ✓":"Join rankings"}</button>
-     </div>
-     {board.participating?(board.mine?<div className={styles.personalStanding}><span><strong>#{board.mine.position}</strong><small>Your lifetime placement</small></span><span><strong>Level {format(board.mine.level)}</strong><small>{format(board.mine.exp)} EXP</small></span></div>:<p>Your profile is public. Earn your first EXP to enter the board.</p>):<p>Your EXP and level remain saved privately even if you choose not to appear publicly.</p>}
     </>}
   </section>
   <section className={styles.future}>
