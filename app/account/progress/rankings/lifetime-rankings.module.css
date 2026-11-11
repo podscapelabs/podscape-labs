@@ -101,3 +101,11 @@
 .namePrivacy input:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .namePrivacy span{display:grid;gap:3px;min-width:0}.namePrivacy strong{font-size:12px;color:var(--text-primary)}.namePrivacy small{font-size:10px;color:var(--text-secondary);line-height:1.4}
 @media(max-width:390px){.personal>.namePrivacy{grid-row:auto}}
+
+
+/* Rank and participation first; progression education lives in a popup. */
+.helpAction{display:flex;justify-content:flex-end;align-items:center;min-height:38px}
+.privacyAction{grid-column:1/-1;display:flex;justify-content:flex-start;min-width:0}
+.personal>.privacyAction{grid-column:1/-1}
+.personal>p{grid-column:1/-1;font-size:11px;color:var(--text-secondary);margin:0}
+@media(max-width:680px){.personal{padding:12px}.personal>.privacyAction{grid-row:auto}}
