@@ -19,7 +19,7 @@ assert.match(exchange,/eligible:true/,"Fresh wallets become eligible on successf
 assert.match(api,/totalValue\(portfolio,cycle\)/,"Current wealth must be server-calculated");
 assert.match(api,/priceAt|totalValue/,"Market prices must not arrive from the client");
 assert.match(api,/public_enabled",true\)\.eq\("eligible",true\)/,"Public standings exclude ineligible and non-opted accounts");
-assert.match(api,/record\?\.eligible/,"Participation requires qualification");
+assert.match(api,/auditStoredExchangeWallet/,"Legacy market eligibility must be verified server-side");
 assert.match(api,/profit\/STARTING_BUCKS\*100/,"Percentage return must be relative to original capital");
 assert.match(api,/baseline!==undefined/,"Weekly growth requires a real stored baseline");
 assert.match(api,/if\(previous===undefined\|\|metric\(entry\)!==previous\)/,"Ties must share rank");
@@ -32,9 +32,9 @@ assert.ok(vercel.crons.some(c=>c.path==="/api/cron/exchange-market-rankings"&&c.
 assert.match(page,/The Rich List/);
 assert.match(page,/Top Investors/);
 assert.match(page,/Market Movers/);
-assert.match(page,/Join rankings/);
-assert.match(page,/Leave rankings/);
-assert.match(page,/Verification required/);
+assert.doesNotMatch(page,/Join rankings/,"Market has no manual join action");
+assert.doesNotMatch(page,/Leave rankings/,"Market has no leave action");
+assert.match(page,/Automatic verification checks historical trades/);
 assert.match(page,/No real money, prizes or cash-out/);
 assert.match(read("app/fun-zone/FunZoneRankingsSpotlight.tsx"),/kind==="wealth"\?"wealth"/,"Fun Zone Rankings Spotlight should surface ranked portfolios");
 assert.match(widget,/\/fun-zone\/pod-exchange\/rankings/);
@@ -42,8 +42,6 @@ assert.doesNotMatch(api,/member_progress_events|member_achievements|exp_delta|po
 
 const catalog=read("data/achievement-catalog.ts");
 const audit=read("lib/exchange-ranking-audit.ts");
-const owner=read("app/account/owner-tools/market-rankings/actions.ts");
-const ownerPage=read("app/account/owner-tools/market-rankings/page.tsx");
 const exchangeWidgetStyles=read("app/fun-zone/fun-zone-portal.module.css");
 for(const [key,exp] of [["exchange_market_mogul",150],["exchange_sharp_trader",125],["exchange_weekly_mover",100]]){
  assert.match(catalog,new RegExp('key:"'+key+'"[^\\n]+exp:'+exp),"New market placement achievements need permanent catalogue records");
@@ -56,10 +54,8 @@ assert.match(cron,/candidates.length>=2/,"No empty one-person achievement prizes
 assert.match(cron,/c.returnPct>=10/,"Top Investor needs meaningful return");
 assert.match(cron,/bestWeekly>=5/,"Weekly market achievement needs meaningful growth");
 assert.match(cron,/previousWeek/,"Weekly achievement must use a real prior-week baseline");
-assert.match(sql,/member_exchange_ranking_reviews/,"Existing investors need a review queue");
-assert.match(owner,/isAdminAuthenticated/,"Only owners can review beta investors");
-assert.match(owner,/auditStoredExchangeWallet/,"Approval must reconcile trade history");
-assert.match(ownerPage,/Approve verified wallet/,"Owner Studio must show review actions");
+assert.match(api,/auditStoredExchangeWallet/,"Automatic audits replace owner review requests");
+assert.doesNotMatch(api,/requestReview/,"No manual approval endpoint");
 assert.match(audit,/priceAt\(order.symbol,cycle\)/,"Legacy orders must match deterministic historical prices");
 assert.match(audit,/STARTING_BUCKS\*100/,"Legacy cash reconciliation must start at 10,000");
 assert.match(exchangeWidgetStyles,/\.rankingsSpotlight/,"Rankings Spotlight should use themed widget styling");
