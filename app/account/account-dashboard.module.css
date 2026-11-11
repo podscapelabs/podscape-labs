@@ -186,10 +186,7 @@
 @media(prefers-reduced-motion:reduce){.accountActions>a{transition:none}}
 
 /* Account level actions must remain legible in every named theme. */
-.accountSummaryTop a.accountLevel,
+.accountSummaryTop a.accountLevel{background:var(--ps-accent);color:var(--ps-accent-text)}
 .accountSummaryTop a.accountLevel:hover,
 .accountSummaryTop a.accountLevel:focus-visible,
-.accountSummaryTop a.accountLevel strong{
- background:var(--ps-accent);
- color:var(--ps-accent-text);
-}
+.accountSummaryTop a.accountLevel strong{color:var(--ps-accent-text)}
