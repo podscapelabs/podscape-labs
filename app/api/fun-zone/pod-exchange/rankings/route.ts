@@ -45,13 +45,12 @@ export async function GET(){
   // Previously imported wallets are verified automatically against server trade history.
   // A failed audit never changes balances or holdings and never enters public rankings.
   const pending=await admin.from("member_exchange_ranking_preferences")
-   .select("user_id").eq("eligible",false).order("updated_at",{ascending:true}).limit(12);
+   .select("user_id").eq("eligible",false).is("auto_audit_attempted_at",null).order("updated_at",{ascending:true}).limit(12);
   if(pending.error)throw new Error("Market eligibility unavailable");
   for(const record of pending.data||[]){
    const audit=await auditStoredExchangeWallet(record.user_id);
-   if(!audit.ok)continue;
    const result=await admin.from("member_exchange_ranking_preferences")
-    .update({eligible:true,verified_at:new Date().toISOString(),public_enabled:true,updated_at:new Date().toISOString()})
+    .update(audit.ok?{eligible:true,verified_at:new Date().toISOString(),public_enabled:true,auto_audit_attempted_at:new Date().toISOString(),updated_at:new Date().toISOString()}:{auto_audit_attempted_at:new Date().toISOString(),updated_at:new Date().toISOString()})
     .eq("user_id",record.user_id).eq("eligible",false);
    if(result.error)throw new Error("Automatic market verification unavailable");
   }
