@@ -55,7 +55,7 @@ export const navigation = [
   { label: "Explore", href: "/explore" },
   { label: "Leaf Ledger", href: "/ledger" },
   { label: "My Collection", href: "/ledger/my-collection" },
-  { label: "PodBound", href: "https://www.podbound.net" },
+  { label: "PodBound", href: "/podbound" },
   { label: "Field Guide", href: "/field-guide" },
   { label: "Fun Zone", href: "/fun-zone" },
   { label: "Creative Network", href: "/explore#creative-network" },
