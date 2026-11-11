@@ -4,7 +4,7 @@ import Link from "next/link";
 import styles from "./exchange.module.css";
 import {DuckBucks,DuckBuckIcon,duckBucksNumber} from "@/components/DuckBucks";
 import {PodscapeLineIcon,type PodscapeIconName} from "@/components/PodscapeLineIcon";
-import {STOCKS,STORAGE_KEY,MARKET_INTERVAL_MS,STARTING_BUCKS,cycleAt,defaultPortfolio,executeOrder,money,newsAt,priceAt,sanitizePortfolio,totalValue,type Portfolio} from "@/lib/pod-exchange";
+import {STOCKS,STORAGE_KEY,MARKET_INTERVAL_MS,STARTING_BUCKS,cycleAt,defaultPortfolio,executeOrder,money,headlineAt,priceAt,sanitizePortfolio,totalValue,type Portfolio} from "@/lib/pod-exchange";
 
 const companyMarks:Record<string,PodscapeIconName>={MOO:"leaf",PANDA:"jar",BLUE:"arrow-right",TITAN:"bin",CLOWN:"creative"};
 function CompanyMark({symbol}:{symbol:string}){return symbol==="DUCK"?<DuckBuckIcon size={25}/>:<PodscapeLineIcon name={companyMarks[symbol]||"gamepad"}/>;}
@@ -48,7 +48,7 @@ export function PodExchange(){
  const allowed=ready&&now!==null&&validCount&&(side==="buy"?total<=portfolio.cash:count<=owned);
  const worth=totalValue(portfolio,cycle);
  const gain=money(worth-STARTING_BUCKS);
- const news=now===null?null:newsAt(cycle);
+ const news=now===null?null:headlineAt(cycle).story;
  const timeLeft=now===null?0:MARKET_INTERVAL_MS-(now%MARKET_INTERVAL_MS);
  function order(){
   if(!ready||now===null)return;
@@ -88,7 +88,7 @@ export function PodExchange(){
    <div><span>Duck Bucks available</span><strong>{ready?<DuckBucks amount={portfolio.cash}/>:"—"}</strong><small>Virtual currency only</small></div>
    <div><span>Companies owned</span><strong>{STOCKS.filter(s=>(portfolio.holdings[s.symbol]||0)>0).length}</strong><small>{portfolio.trades.length} recent trades</small></div>
   </section>
-  <section className={styles.bulletin} aria-label="Market news"><span className={styles.newsLabel}>THE LEAF STREET JOURNAL</span><div><strong>{news?.headline||"The tiny markets are buzzing"}</strong><p>{news?.detail||"Traders dig through the leaf litter looking for opportunity."}</p></div><b>{news?.symbol||"PODX"}</b></section>
+  <section className={styles.bulletin} aria-label="Market news"><span className={styles.newsLabel}>THE LEAF STREET JOURNAL</span><div><strong>{news?.headline||"Market bulletin loading…"}</strong><p>{news?.detail||"The next tiny market story is being prepared."}</p></div><b>{news?.symbol||"PODX"}</b></section>
   <div className={styles.mobileSwitch}><button type="button" aria-pressed={view==="market"} onClick={()=>setView("market")}>Trade market</button><button type="button" aria-pressed={view==="wallet"} onClick={()=>setView("wallet")}>My holdings</button></div>
   <div className={`${styles.columns} ${view==="wallet"?styles.marketHiddenMobile:""}`}>
    <section aria-label="Fictional market listings">
