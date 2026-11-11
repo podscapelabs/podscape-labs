@@ -5,6 +5,7 @@ import {PodscapeLineIcon,type PodscapeIconName} from "@/components/PodscapeLineI
 import {WorkspaceEditBlock,WorkspaceEditToolbar,useWorkspaceDrag} from "@/components/WorkspaceEditCanvas";
 import {dropBlock,moveBlock,uniqueAllowed,visibleBlocks} from "@/components/workspace-layout";
 import {useWorkspaceEditorDialog} from "@/components/useWorkspaceEditorDialog";
+import {confirmWorkspaceReset} from "@/components/workspace-edit-standards";
 import {ARCADE_CATEGORIES,ARCADE_GAMES,ARCADE_GAME_KEYS,ARCADE_LAYOUT_KEY,GAME_FAVOURITES_KEY,categoryCounts,normaliseFavourites,type ArcadeCategory,type ArcadeGame} from "@/lib/fun-zone-arcade";
 import {FunZoneCarousel} from "./FunZoneCarousel";
 import {PodExchangeWatchlist} from "./PodExchangeWatchlist";
@@ -91,7 +92,7 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
  const add=(id:WidgetKey)=>saveLayout({order:layout.order.includes(id)?layout.order:[...layout.order,id],visible:[...layout.visible.filter(x=>x!==id),id]});
  const remove=(id:WidgetKey)=>saveLayout({...layout,visible:layout.visible.filter(x=>x!==id)});
  const reset=()=>{
-  if(!window.confirm("Reset your Fun Zone layout? Favourite games and puzzle progress will stay safe."))return;
+  if(!confirmWorkspaceReset("fun-zone"))return;
   stopDrag();saveLayout({order:[...defaultOrder],visible:[...defaultVisible]});
  };
  const active=visibleBlocks(layout.order,layout.visible);
