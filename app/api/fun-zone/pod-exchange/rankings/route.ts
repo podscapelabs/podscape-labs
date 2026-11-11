@@ -44,6 +44,9 @@ export async function GET(){
    .select("user_id").eq("user_id",user.id).maybeSingle():{data:null,error:null};
   if(ownError)throw new Error("Unable to verify wallet status");
   const needsWallet=!!user&&!ownWallet;
+  const {data:review,error:reviewError}=user?await admin.from("member_exchange_ranking_reviews")
+   .select("status,reviewer_note").eq("user_id",user.id).maybeSingle():{data:null,error:null};
+  if(reviewError)throw new Error("Review status unavailable");
   const participating=preference?.public_enabled===true&&preference.eligible===true;
   const eligible=preference?.eligible===true;
   const preferences=await readAll<{user_id:string}>(async (from,to)=>
@@ -79,7 +82,7 @@ export async function GET(){
   }
   const viewerId=participating?user?.id||null:null;
   return NextResponse.json({
-   signedIn:!!user,participating,eligible,needsWallet,legacyReviewRequired:!!user&&!!ownWallet&&!eligible,
+   signedIn:!!user,participating,eligible,needsWallet,reviewStatus:review?.status||null,reviewerNote:review?.status==="declined"?review.reviewer_note:null,legacyReviewRequired:!!user&&!!ownWallet&&!eligible,
    cycle,weekStart,weeklyReady:participants.some(p=>p.weeklyPct!==null),
    wealth:standings(participants,"wealth",viewerId),
    return:standings(participants,"return",viewerId),
@@ -100,11 +103,33 @@ export async function POST(request:Request){
  const {data:{user},error:authError}=await client.auth.getUser();
  if(authError||!user?.email_confirmed_at)return NextResponse.json({error:"Verified sign-in required"},{status:401,headers});
  let data:unknown;try{data=await request.json()}catch{return NextResponse.json({error:"Invalid request"},{status:400,headers})}
- if(!data||typeof data!=="object"||typeof (data as {enabled?:unknown}).enabled!=="boolean")
+ if(!data||typeof data!=="object")return NextResponse.json({error:"Invalid request"},{status:400,headers});
+ const input=data as {enabled?:unknown;action?:unknown};
+ const reviewing=input.action==="requestReview";
+ if(!reviewing&&typeof input.enabled!=="boolean")
   return NextResponse.json({error:"Invalid preference"},{status:400,headers});
- const enabled=(data as {enabled:boolean}).enabled;
+ const enabled=input.enabled===true;
  const admin=getSupabaseAdmin();
  if(!admin)return NextResponse.json({error:"Market ranking unavailable"},{status:503,headers});
+ if(reviewing){
+  const {data:wallet,error:walletError}=await admin.from("member_exchange_portfolios")
+   .select("user_id").eq("user_id",user.id).maybeSingle();
+  if(walletError||!wallet)return NextResponse.json({error:"Open the Exchange to initialize your wallet before requesting a review"},{status:409,headers});
+  const {data:existing,error:existingError}=await admin.from("member_exchange_ranking_reviews")
+   .select("status").eq("user_id",user.id).maybeSingle();
+  if(existingError)return NextResponse.json({error:"Review queue unavailable"},{status:503,headers});
+  if(existing?.status==="pending")return NextResponse.json({requested:true,status:"pending"},{headers});
+  const {data:eligibleRecord,error:eligibleError}=await admin.from("member_exchange_ranking_preferences")
+   .select("eligible").eq("user_id",user.id).maybeSingle();
+  if(eligibleError)return NextResponse.json({error:"Eligibility unavailable"},{status:503,headers});
+  if(eligibleRecord?.eligible)return NextResponse.json({error:"Your market wallet is already eligible"},{status:409,headers});
+  const {error:requestError}=await admin.from("member_exchange_ranking_reviews").upsert({
+   user_id:user.id,status:"pending",requested_at:new Date().toISOString(),
+   reviewed_at:null,reviewer_note:""
+  },{onConflict:"user_id"});
+  if(requestError)return NextResponse.json({error:"Unable to submit review request"},{status:503,headers});
+  return NextResponse.json({requested:true,status:"pending"},{headers});
+ }
  const {data:record,error}=await admin.from("member_exchange_ranking_preferences")
   .select("eligible").eq("user_id",user.id).maybeSingle();
  if(error)return NextResponse.json({error:"Market rankings migration pending"},{status:503,headers});
