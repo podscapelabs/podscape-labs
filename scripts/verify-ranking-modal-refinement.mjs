@@ -6,7 +6,7 @@ const css=read("components/RankingModal.module.css");
 const cases=[
  {label:"Arcade",path:"app/fun-zone/leaderboard/Leaderboard.tsx",rules:"Rules, rewards & achievements",privacy:"Ranking name privacy",board:"styles.standings",score:"styles.rewardTable",join:"Hide my username"},
  {label:"Lifetime EXP",path:"app/account/progress/rankings/LifetimeExpRankings.tsx",rules:"How lifetime rankings work",privacy:"Lifetime ranking privacy",board:"styles.board",score:"styles.explainer",join:"Hide my username"},
- {label:"Market",path:"app/fun-zone/pod-exchange/rankings/MarketRankings.tsx",rules:"Rules & market achievements",privacy:"Market ranking privacy",board:"styles.rankings",score:"styles.achievementHint",join:"Hide my username"}
+ {label:"Market",path:"app/fun-zone/pod-exchange/rankings/MarketRankings.tsx",rules:"How rankings work",privacy:"Market ranking privacy",board:"styles.rankings",score:"styles.achievementHint",join:"Hide my username"}
 ];
 assert.match(modal,/<dialog ref=\{dialog\}/,"Use native dialog for focus and Escape handling");
 assert.match(modal,/showModal\(\)/,"Dialog must be interactive");
