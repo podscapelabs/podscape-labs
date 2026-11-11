@@ -28,8 +28,8 @@ export async function POST(request:Request){
   trade.id.length<12||trade.id.length>150||!/^\d+:(DUCK|MOO|PANDA|BLUE|TITAN|CLOWN):(buy|sell):\d+:[a-z0-9]+$/.test(trade.id)||
   typeof trade.symbol!=="string"||!STOCKS.some(s=>s.symbol===trade.symbol)||
   (trade.side!=="buy"&&trade.side!=="sell")||
-  !Number.isSafeInteger(trade.shares)||Number(trade.shares)<1||Number(trade.shares)>1_000_000||
-  !Number.isSafeInteger(trade.cycle)||typeof trade.unitPrice!=="number")
+  typeof trade.shares!=="number"||!Number.isSafeInteger(trade.shares)||trade.shares<1||trade.shares>1_000_000||
+  typeof trade.cycle!=="number"||!Number.isSafeInteger(trade.cycle)||typeof trade.unitPrice!=="number")
   return NextResponse.json({error:"Invalid trade details"},{status:400});
  const cycle=Number(trade.cycle);
  const submitted=trade.id.split(":");
