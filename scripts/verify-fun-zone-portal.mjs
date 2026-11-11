@@ -8,6 +8,7 @@ const page=read("app/fun-zone/page.tsx");
 const styles=read("app/fun-zone/fun-zone-portal.module.css");
 const game=read("app/fun-zone/pod-exchange/page.tsx");
 const gameUi=read("app/fun-zone/pod-exchange/PodExchange.tsx");
+const watchlist=read("app/fun-zone/PodExchangeWatchlist.tsx");
 for(const category of ["Word Games","Puzzles & Logic","Trivia & Knowledge","Simulations","PodBound"]){
  assert.ok(registry.includes('"'+category+'"'),"Missing category: "+category);
 }
@@ -32,4 +33,8 @@ assert.match(styles,/var\(--portal-hero-start\)/,"Use theme environment hero tok
 assert.match(styles,/var\(--surface\)/,"Use semantic surfaces");
 assert.match(game,/PodExchange/,"Exchange route must remain available");
 assert.match(gameUi,/Duck Bucks/,"Exchange must use Duck Bucks");
+assert.match(portal,/PodExchangeWatchlist/,"Portal must render the actual watchlist widget");
+assert.match(watchlist,/totalValue\\(portfolio,cycle\\)/,"Watchlist must show saved portfolio value");
+assert.match(watchlist,/priceAt\\("DUCK",cycle\\)/,"Watchlist must show DUCK ticker");
+assert.match(watchlist,/STORAGE_KEY/,"Watchlist must share exchange wallet storage");
 console.log("Fun Zone portal source checks passed: categories, editable widgets, saved favourites, theme roles, existing progress, and Duck Bucks route.");
