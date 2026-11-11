@@ -98,6 +98,8 @@ declare
  wallet record;
  owned integer;
  total_cost numeric(16,2);
+ fee numeric(16,2);
+ net_total numeric(16,2);
  next_cash numeric(16,2);
  next_holdings jsonb;
  next_quantity integer;
@@ -126,11 +128,13 @@ begin
  end if;
  owned:=coalesce((wallet.holdings->>p_symbol)::integer,0);
  total_cost:=round(p_price*p_shares,2);
- if p_side='buy' and total_cost>wallet.cash then raise exception 'Insufficient Duck Bucks'; end if;
+ fee:=greatest(0.01,round(total_cost*0.005,2));
+ net_total:=total_cost+case when p_side='buy' then fee else -fee end;
+ if p_side='buy' and net_total>wallet.cash then raise exception 'Insufficient Duck Bucks'; end if;
  if p_side='sell' and p_shares>owned then raise exception 'Not enough shares'; end if;
  next_quantity:=owned+case when p_side='buy' then p_shares else -p_shares end;
  if next_quantity>1000000 then raise exception 'Share limit reached'; end if;
- next_cash:=wallet.cash+case when p_side='buy' then -total_cost else total_cost end;
+ next_cash:=wallet.cash+case when p_side='buy' then -net_total else net_total end;
  next_holdings:=case when next_quantity=0 then wallet.holdings-p_symbol
   else jsonb_set(wallet.holdings,array[p_symbol],to_jsonb(next_quantity),true) end;
  update public.member_exchange_portfolios
