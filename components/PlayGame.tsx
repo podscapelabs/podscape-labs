@@ -6,7 +6,6 @@ import type {Puzzle,QuizPuzzle,ConnectionsPuzzle,BurrowPuzzle,CrosswordPuzzle} f
 import {usePuzzleCompletion,PuzzleSaveStatus} from "./usePuzzleCompletion";
 import {scoreWordGuess} from "@/lib/fun-zone-logic";
 import styles from "./PlayGame.module.css";
-import {WorkspaceLinks} from "./PodscapeWorkspaceUI";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
 import {NextPuzzleAction} from "./NextPuzzleAction";
 
@@ -157,6 +156,6 @@ export function PlayGame({game,challenge,learningNote,nextHref,nextTitle}:{game:
     <Quiz puzzle={challenge.puzzle as QuizPuzzle} onComplete={onComplete}/>}
   <PuzzleSaveStatus status={saved} retry={retry}/>
   <NextPuzzleAction completed={finished} saved={saved} nextHref={nextHref} nextTitle={nextTitle} libraryHref={`/fun-zone/${game.key}`}/>
-  <WorkspaceLinks items={[{href:`/fun-zone/${game.key}`,label:`More ${game.title}`},{href:"/fun-zone",label:"All games"},{href:"/ledger",label:"Leaf Ledger"}]}/>
+
  </div></main>;
 }
