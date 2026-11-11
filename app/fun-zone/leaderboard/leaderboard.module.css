@@ -283,3 +283,28 @@
  .rewardMilestones{grid-template-columns:1fr}
 }
 @media(prefers-reduced-motion:reduce){.detailChevron svg{transition:none}}
+
+/* When the rankings are young, don't strand a single member in a thin podium column. */
+.soloPodium{grid-template-columns:minmax(0,1fr)}
+.duoPodium{grid-template-columns:repeat(2,minmax(0,1fr))}
+.soloPodium .podiumCard{
+ display:grid;
+ grid-template-columns:30px 34px minmax(0,1fr) auto;
+ grid-template-rows:auto auto;
+ align-items:center;
+ justify-items:start;
+ gap:3px 9px;
+ text-align:left;
+}
+.soloPodium .place{grid-column:1;grid-row:1/3}
+.soloPodium .medal{grid-column:2;grid-row:1/3}
+.soloPodium .podiumCard>strong{grid-column:3;grid-row:1}
+.soloPodium .podiumCard>b{grid-column:4;grid-row:1/3}
+.soloPodium .podiumCard>span:last-child{grid-column:3;grid-row:2}
+@media(max-width:680px){
+ .soloPodium .podiumCard{padding:10px;grid-template-columns:25px 30px minmax(0,1fr) auto;gap:2px 8px}
+ .soloPodium .place{font-size:12px}
+ .soloPodium .podiumCard>strong{font-size:12px}
+ .soloPodium .podiumCard>b{font-size:16px}
+ .soloPodium .podiumCard>span:last-child{font-size:10px}
+}
