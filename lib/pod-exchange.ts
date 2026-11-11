@@ -34,6 +34,41 @@ export const NEWS:MarketNews[]=[
  {symbol:"CLOWN",effect:.09,headline:"CLOWN sells out its world burrow tour",detail:"The comedy industry is delighted."}
 ];
 export const cycleAt=(ms:number)=>Math.floor(ms/MARKET_INTERVAL_MS);
+/** Market 2.0 activates at a fixed UTC boundary so all historical prices and
+ * server-replayed trades before the launch stay exactly reproducible.
+ * Do not move the boundary after trading begins in the new market.
+ */
+export const MARKET_V2_START_CYCLE=Math.floor(Date.parse("2026-11-20T00:00:00Z")/MARKET_INTERVAL_MS);
+export const MARKET_SESSION_TICKS=72; // Six hours, four market sessions per UTC day.
+export type MarketSession={title:string;detail:string;startCycle:number;endCycle:number;featured:string;direction:1|-1;intensity:number};
+const MARKET_EVENTS=[
+ {title:"The Great Moss Rush",detail:"Demand for premium habitats is heating up.",featured:"DUCK",direction:1 as const},
+ {title:"The Cork Shortage",detail:"Supply disruption puts the cork trade under pressure.",featured:"TITAN",direction:-1 as const},
+ {title:"Manca Mania",detail:"A colony boom shakes up the food sector.",featured:"MOO",direction:1 as const},
+ {title:"Leaf Delivery Chaos",detail:"Shipping trouble rattles the fastest carriers.",featured:"BLUE",direction:-1 as const},
+ {title:"The Burrow Boom",detail:"Investors are chasing tiny new properties.",featured:"PANDA",direction:1 as const},
+ {title:"Comedy Crash",detail:"A disastrous tour sends entertainment shares tumbling.",featured:"CLOWN",direction:-1 as const},
+ {title:"Luxury Moss Bust",detail:"The moss bubble faces a sharp correction.",featured:"DUCK",direction:-1 as const},
+ {title:"Cork Gold Rush",detail:"A surprise quarry discovery sparks speculation.",featured:"TITAN",direction:1 as const},
+ {title:"Leaf Estate Slump",detail:"Demand for miniature property suddenly cools.",featured:"PANDA",direction:-1 as const},
+ {title:"Express Delivery Surge",detail:"New contracts send courier demand soaring.",featured:"BLUE",direction:1 as const}
+];
+export function marketSessionAt(cycle:number):MarketSession{
+ const session=Math.floor(cycle/MARKET_SESSION_TICKS);
+ const index=Math.floor(random(session*347+119)*MARKET_EVENTS.length);
+ const event=MARKET_EVENTS[index];
+ return {...event,startCycle:session*MARKET_SESSION_TICKS,endCycle:(session+1)*MARKET_SESSION_TICKS,
+  intensity:.14+random(session*67+503)*.11};
+}
+/** A six-hour catalyst rises and fades instead of resetting the market at each boundary. */
+export function sessionImpactAt(symbol:string,cycle:number):number{
+ if(cycle<MARKET_V2_START_CYCLE)return 0;
+ const event=marketSessionAt(cycle);
+ if(event.featured!==symbol)return 0;
+ const progress=(cycle-event.startCycle)/MARKET_SESSION_TICKS;
+ return event.direction*event.intensity*Math.sin(Math.PI*progress)**2;
+}
+
 export const money=(value:number)=>Math.round((value+Number.EPSILON)*100)/100;
 function random(seed:number){let n=(seed|0)^0x9e3779b9;n=Math.imul(n^(n>>>16),0x21f0aaad);n=Math.imul(n^(n>>>15),0x735a2d97);return ((n^(n>>>15))>>>0)/4294967296;}
 /** One shuffled deck of twelve stories every three hours, reshuffled forever.
@@ -94,7 +129,7 @@ export function newsImpactAt(symbol:string,cycle:number):number{
  const {story,publishedCycle}=headlineAt(cycle);
  if(story.symbol!==symbol)return 0;
  const age=cycle-publishedCycle;
- return story.effect*([1,.62,.3][age]??0);
+ return story.effect*(cycle>=MARKET_V2_START_CYCLE?1.35:1)*([1,.62,.3][age]??0);
 }
 /** No runaway compounding or predictable fixed-period sine-wave profit. */
 export function priceAt(symbol:string,cycle:number):number{
@@ -102,10 +137,11 @@ export function priceAt(symbol:string,cycle:number):number{
  if(!stock||!Number.isSafeInteger(cycle))return 0;
  const index=STOCKS.findIndex(item=>item.symbol===symbol)+1;
  // Company character stays distinct; all movement is mathematically bounded.
- const regime=marketMood(index,cycle)*stock.volatility;
- const shortTerm=priceNoise(index,cycle)*stock.volatility;
- const seasonal=Math.sin(cycle/113+index*3.7)*.028*stock.volatility;
- const impact=newsImpactAt(symbol,cycle);
+ const modern=cycle>=MARKET_V2_START_CYCLE;
+ const regime=marketMood(index,cycle)*stock.volatility*(modern?1.45:1);
+ const shortTerm=priceNoise(index,cycle)*stock.volatility*(modern?1.8:1);
+ const seasonal=Math.sin(cycle/113+index*3.7)*.028*stock.volatility*(modern?1.25:1);
+ const impact=newsImpactAt(symbol,cycle)+sessionImpactAt(symbol,cycle);
  const raw=stock.base*(1+regime+shortTerm+seasonal+impact);
  return money(Math.min(stock.base*1.6,Math.max(stock.base*.55,raw)));
 }
