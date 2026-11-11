@@ -31,6 +31,6 @@ for(const path of pages){
  assert.match(source,/disabled=\{updating\|\|loading\}/,"Toggle must disable during persistence in "+path);
  assert.match(source,/JSON\.stringify\(\{hideUsername\}\)/,"Toggle should save independently of participation in "+path);
 }
-assert.match(read("app/api/fun-zone/rankings/route.ts"),/reward_opted_in_at:enabled/,"Arcade rewards must retain their existing opt-in workflow");
+assert.match(read("supabase/migrations/202611110008_automatic_rankings_and_legacy_wallet_audits.sql"),/reward_opted_in_at/,"Automatic Arcade ranking rewards require a recorded start");
 assert.match(read("app/api/fun-zone/pod-exchange/rankings/route.ts"),/hiddenIds\.has\(wallet\.user_id\)/,"Market names must be masked before leaderboard JSON");
 console.log("Ranking name privacy checks passed for Arcade, Lifetime EXP and Market Rankings.");
