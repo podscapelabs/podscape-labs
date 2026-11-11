@@ -50,7 +50,7 @@ for(const stock of market.STOCKS){
   assert.equal(p,market.priceAt(stock.symbol,tick),"Same UTC tick returns identical price");
  }
 }
-for(const start of [0,3,30000,200000]){
+for(const start of [0,3,30000,200001]){
  const headline=market.headlineAt(start).story;
  assert.ok(Math.abs(market.newsImpactAt(headline.symbol,start)-headline.effect)<1e-10);
  assert.ok(Math.abs(market.newsImpactAt(headline.symbol,start+1)-headline.effect*.62)<1e-10);
