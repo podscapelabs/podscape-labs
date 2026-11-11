@@ -15,7 +15,7 @@ const games: {key:string;title:string;detail:string;category:Exclude<Category,"A
   ready:true,href:"/fun-zone/"+game.key
  })),
  {key:"word-search",title:"Word Search",detail:"Find hidden hobby terms.",category:"Word",ready:true,href:"/fun-zone/word-search"},
- {key:"pod-exchange",title:"The Pod Exchange 🦆",detail:"Trade fictional stocks with Duck Bucks.",category:"Simulation",ready:true,href:"/fun-zone/pod-exchange"}
+ {key:"pod-exchange",title:"The Pod Exchange",detail:"Trade fictional stocks with Duck Bucks.",category:"Simulation",ready:true,href:"/fun-zone/pod-exchange"}
 ];
 const categories:Category[] = ["All","Daily","Word","Knowledge","Logic","Simulation"];
 export function FunZoneLibrary({completedByGame={},trackingAvailable=false}:{completedByGame?:Record<string,number>;trackingAvailable?:boolean}){
