@@ -143,3 +143,11 @@
  .history{padding:11px 14px 14px}
  .footer{font-size:10px}
 }
+
+/* Company marks follow the canonical PodScape line icon system. */
+.stockIcon svg{display:block;width:23px;height:23px}
+.tradeHeading>span svg{width:31px;height:31px}
+.holdingIdentity{display:inline-flex;align-items:center;gap:8px}
+.holdingIcon{display:inline-grid;place-items:center;color:var(--accent)}
+.holdingIcon svg{width:21px;height:21px}
+@media(max-width:720px){.stockIcon svg{width:21px;height:21px}.tradeHeading>span svg{width:27px;height:27px}.holdingIcon svg{width:19px;height:19px}}
