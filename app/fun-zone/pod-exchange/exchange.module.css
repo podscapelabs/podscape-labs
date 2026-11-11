@@ -190,3 +190,8 @@
 .walletAlert p{font-size:11px;line-height:1.45;color:var(--text-secondary);margin:5px 0 0}
 .walletAlert button{flex:none;min-height:40px;padding:9px 12px;background:var(--accent);color:var(--accent-contrast);font-size:11px;font-weight:800;border:0;border-radius:10px;cursor:pointer}
 @media(max-width:720px){.walletAlert{align-items:stretch;flex-direction:column;gap:9px}.walletAlert button{align-self:flex-start}}
+
+/* Mechanics clarity: explain the changing bulletin and show net order value. */
+.newsEffect{display:inline-block;margin-top:7px;color:var(--portal-hero-soft);font-size:10px;line-height:1.4;font-weight:750;letter-spacing:.02em}
+.orderDetails>strong{flex:1 1 100%;display:flex;justify-content:flex-end;align-items:center;gap:5px;color:var(--text-primary);font-size:12px}
+@media(max-width:720px){.newsEffect{margin-top:5px;font-size:10px}.orderDetails>strong{font-size:12px}}
