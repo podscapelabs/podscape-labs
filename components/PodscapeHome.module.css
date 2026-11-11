@@ -868,3 +868,5 @@
  .widgetLibraryGroups>section{margin-bottom:13px}
 }
 @media(max-width:370px){.widgetLibraryFilter button{gap:3px;font-size:.65rem}.widgetGalleryCopy button{min-width:96px;max-width:104px}}
+
+.widgetLibraryEmpty{margin:0 0 12px;padding:12px 14px;border:1px dashed var(--line);border-radius:12px;background:var(--paper-strong);color:var(--muted);font-size:.76rem;line-height:1.55}
