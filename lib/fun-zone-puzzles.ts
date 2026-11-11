@@ -300,6 +300,7 @@ for(const e of puzzleEntries){
 // one term through different games is deliberate spaced reinforcement.
 const seenPuzzles=new Set<string>();
 const seenQuizPrompts=new Set<string>();
+const seenSearchWords=new Set<string>();
 const normalize=(value:string)=>value.toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
 for(const entry of puzzleEntries){
  const {puzzle,mode,gameKey}=entry;
@@ -321,6 +322,7 @@ for(const entry of puzzleEntries){
   const words=(puzzle as SearchPuzzle).words.map(normalize);
   fingerprint=words.slice().sort().join("|");
   if(new Set(words).size!==words.length)throw new Error("Repeated search word in "+gameKey);
+  for(const word of words){if(seenSearchWords.has(word))throw new Error("Recycled word-search solution: "+word);seenSearchWords.add(word);}
  }else if(mode==="burrow"){
   fingerprint=(puzzle as BurrowPuzzle).answer.toLowerCase();
  }else{
