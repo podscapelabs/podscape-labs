@@ -81,7 +81,15 @@ export function FunZoneRankingsSpotlight(){
  const onScroll=()=>{
   const node=track.current;if(!node||node.clientWidth===0)return;
   const index=Math.max(0,Math.min(slides.length-1,Math.round(node.scrollLeft/node.clientWidth)));
-  if(index!==activeRef.current){activeRef.current=index;setActive(index);}
+  if(index!==activeRef.current){
+   activeRef.current=index;setActive(index);
+   const strip=tabs.current;
+   const tab=strip?.children.item(index) as HTMLElement|null;
+   if(strip&&tab){
+    const left=strip.scrollLeft+tab.getBoundingClientRect().left-strip.getBoundingClientRect().left-(strip.clientWidth-tab.clientWidth)/2;
+    strip.scrollTo({left,behavior:"smooth"});
+   }
+  }
  };
  return <section className={styles.rankingsSpotlight} aria-label="Rankings Spotlight, swipe to see different leaderboards">
   <div className={styles.rankingsSpotlightHead}>
