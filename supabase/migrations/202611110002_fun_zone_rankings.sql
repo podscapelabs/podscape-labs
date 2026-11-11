@@ -20,7 +20,7 @@ returns table (
  display_name text,
  completed_count bigint,
  ranking_points bigint,
- position bigint,
+ rank_position bigint,
  is_viewer boolean
 )
 language plpgsql stable security invoker
