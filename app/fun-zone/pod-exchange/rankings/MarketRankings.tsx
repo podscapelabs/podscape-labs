@@ -2,6 +2,7 @@
 import {useEffect,useState} from "react";
 import Link from "next/link";
 import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
+import {RankingModal} from "@/components/RankingModal";
 import styles from "./market-rankings.module.css";
 type Kind="wealth"|"return"|"weekly";
 type Entry={name:string;value:number;profit:number;returnPct:number;weeklyPct:number|null;position:number;mine:boolean};
@@ -91,14 +92,28 @@ export default function MarketRankings(){
      disabled={updating} aria-pressed={data.participating}
      onClick={()=>join(!data.participating)}>
      {updating?"Saving…":data.participating?"Leave rankings":"Join rankings"}</button>}
-   {data?.signedIn&&data.eligible?<label className={styles.namePrivacy}>
+   {data?.signedIn&&data.eligible?<div className={styles.privacyAction}><RankingModal trigger={data.hideUsername?"Username hidden · Manage":"Username visible · Manage"} title="Market ranking privacy" subtle>
+    <label className={styles.namePrivacy}>
     <input type="checkbox" checked={data.hideUsername===true} disabled={updating||loading}
      onChange={event=>setHidden(event.target.checked)}/>
     <span><strong>Hide my username</strong><small>{data.hideUsername?"You appear as Anonymous Investor; your portfolio value and returns remain visible.":"Show Anonymous Investor instead of your display name in market standings."}</small></span>
-   </label>:null}
+   </label>
+    <p className={styles.privacy}>Your portfolio value and returns stay visible even when your username is hidden.</p>
+   </RankingModal></div>:null}
    {data?.needsWallet?<p className={styles.eligibility}>Open the Exchange to create your free, cloud-saved starting wallet. You can join after it is initialized.</p>:data?.legacyReviewRequired?<p className={styles.eligibility}>Existing beta wallets require owner verification before competing. Your holdings remain safe. {data.reviewStatus==="pending"?"Your request is in the owner review queue.":data.reviewStatus==="declined"?"A previous review was declined. You may request another review.":""} {data.reviewerNote?data.reviewerNote:""}</p>:
     <p className={styles.privacy}>Independent opt-in · Your fictional portfolio value and returns become public · Username optional</p>}
   </section>
+  <div className={styles.helpAction}><RankingModal trigger="Rules & market achievements" title="Market rankings explained">
+  <section className={styles.rules}><div className={styles.rulesTitle}><span><PodscapeLineIcon name="book"/> How market rankings work</span></div>
+   <div><p><strong>The Rich List:</strong> Duck Bucks cash plus all share holdings, repriced at the current shared five-minute market tick.</p>
+    <p><strong>Top Investors:</strong> (Current portfolio value − 10,000) ÷ 10,000, expressed as a percentage. A fair starting balance matters.</p>
+    <p><strong>Market Movers:</strong> Change from an immutable server-recorded Monday UTC portfolio snapshot. Snapshots are not backdated; late entrants wait for the next period.</p>
+    <p>Only eligible, opted-in cloud wallets appear. Imported beta balances require verification. No portfolio resets, no purchased currency, and no real-world rewards. Percentages may be negative.</p>
+   </div>
+  </section>
+  <p className={styles.achievementHint}><PodscapeLineIcon name="achievement"/> Competitive weekly checkpoints can unlock permanent Market Mogul and Sharp Investor achievements, plus a hidden surprise. At least two verified participants are required.</p>
+
+  </RankingModal></div>
   <section className={styles.rankings} aria-label="Market leaderboard">
    <div className={styles.tabBar} role="group" aria-label="Ranking type">
     {tabs.map(tab=><button key={tab.id} type="button" aria-pressed={kind===tab.id}
@@ -128,14 +143,7 @@ export default function MarketRankings(){
      </div>)}</div>:null}
     </>}
   </section>
-  <p className={styles.achievementHint}><PodscapeLineIcon name="achievement"/> Competitive weekly checkpoints can unlock permanent Market Mogul and Sharp Investor achievements, plus a hidden surprise. At least two verified participants are required.</p>
   <div className={styles.links}><Link href="/fun-zone/pod-exchange">Trade in the Exchange</Link><Link href="/fun-zone/leaderboard">Arcade Rankings</Link><Link href="/account/progress/rankings">Lifetime EXP Rankings</Link></div>
-  <details className={styles.rules}><summary><span><PodscapeLineIcon name="book"/> How market rankings work</span><PodscapeLineIcon name="arrow-down"/></summary>
-   <div><p><strong>The Rich List:</strong> Duck Bucks cash plus all share holdings, repriced at the current shared five-minute market tick.</p>
-    <p><strong>Top Investors:</strong> (Current portfolio value − 10,000) ÷ 10,000, expressed as a percentage. A fair starting balance matters.</p>
-    <p><strong>Market Movers:</strong> Change from an immutable server-recorded Monday UTC portfolio snapshot. Snapshots are not backdated; late entrants wait for the next period.</p>
-    <p>Only eligible, opted-in cloud wallets appear. Imported beta balances require verification. No portfolio resets, no purchased currency, and no real-world rewards. Percentages may be negative.</p>
-   </div>
-  </details>
+
  </div></main>;
 }
