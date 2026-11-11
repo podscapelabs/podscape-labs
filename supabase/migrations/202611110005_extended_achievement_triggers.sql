@@ -91,15 +91,34 @@ create trigger member_puzzle_extended_achievements after insert on public.member
 -- Every EXP change can reach a new keeper level. Guard recursion when a milestone awards EXP.
 create or replace function public.record_level_achievement_from_progress()
 returns trigger language plpgsql security definer set search_path=''
-as $
+as $$
+declare v_rule record;
 begin
  if pg_trigger_depth()>1 then return new; end if;
- if tg_op='INSERT' or new.total_exp>old.total_exp then
-  perform public.reconcile_member_extended_achievements(new.user_id);
+ if tg_op='UPDATE' then
+  if new.total_exp<=old.total_exp then return new; end if;
  end if;
+ for v_rule in select * from (values
+   ('level_ten',8100,50),
+   ('level_twenty_five',57600,150),
+   ('level_fifty',240100,300)
+ ) as rules(achievement_key,min_exp,exp_amount)
+ loop
+  if new.total_exp<v_rule.min_exp then continue; end if;
+  insert into public.member_achievements(user_id,achievement_key)
+   values(new.user_id,v_rule.achievement_key) on conflict do nothing;
+  if not found then continue; end if;
+  insert into public.member_progress_events(user_id,event_key,source,exp_delta,coin_delta)
+   values(new.user_id,'achievement:'||v_rule.achievement_key,'achievement',v_rule.exp_amount,0)
+   on conflict do nothing;
+  if found then
+   update public.member_progress set total_exp=total_exp+v_rule.exp_amount,updated_at=now()
+    where user_id=new.user_id;
+  end if;
+ end loop;
  return new;
 end;
-$;
+$$;
 revoke all on function public.record_level_achievement_from_progress() from public,anon,authenticated;
 drop trigger if exists member_progress_level_achievements on public.member_progress;
 create trigger member_progress_level_achievements
