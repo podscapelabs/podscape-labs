@@ -2,6 +2,7 @@
 import {useEffect,useState} from "react";
 import Link from "next/link";
 import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
+import {RankingModal} from "@/components/RankingModal";
 import styles from "./lifetime-rankings.module.css";
 type Keeper={name:string;exp:number;level:number;position:number;mine:boolean};
 type Board={rows:Keeper[];mine:Keeper|null;participating:boolean;hideUsername:boolean;signedIn:boolean};
@@ -62,19 +63,31 @@ export default function LifetimeExpRankings(){
      <div className={styles.consent}><div><strong>{board.participating?"Lifetime ranking is public":"Put your keeper progress on the board"}</strong><p>{board.participating?"Your level and lifetime EXP are visible; your username follows your privacy choice.":"Join with your saved lifetime EXP and keeper level. Arcade participation stays separate."}</p></div>
       <button type="button" disabled={updating||loading} aria-pressed={board.participating} onClick={()=>toggleParticipation(!board.participating)} aria-label={board.participating?"Leave public lifetime EXP rankings":"Join public lifetime EXP rankings"}>{updating?"Saving…":board.participating?"Leave rankings":"Join rankings"}</button>
      </div>
-     <label className={styles.namePrivacy}>
+     <div className={styles.privacyAction}><RankingModal trigger={board.hideUsername?"Username hidden · Manage":"Username visible · Manage"} title="Lifetime ranking privacy" subtle>
+      <label className={styles.namePrivacy}>
       <input type="checkbox" checked={board.hideUsername===true} disabled={updating||loading}
        onChange={event=>setHidden(event.target.checked)}/>
       <span><strong>Hide my username</strong><small>{board.hideUsername?"Anonymous Keeper is shown publicly; your level and EXP remain visible.":"Show Anonymous Keeper instead of your display name on the leaderboard."}</small></span>
      </label>
      <small className={styles.privacyHint}>{board.participating?"Participating · Your level and EXP are visible · Leave anytime":"Private until you join · Choose whether to show your username"}</small>
+      <p className={styles.note}>Hiding your name does not hide your EXP, keeper level or leaderboard placement.</p>
+     </RankingModal></div>
      {board.participating?(board.mine?<div className={styles.personalStanding}><span><strong>#{board.mine.position}</strong><small>Your lifetime placement</small></span><span><strong>Level {format(board.mine.level)}</strong><small>{format(board.mine.exp)} EXP</small></span></div>:<p>Your profile is public. Earn your first EXP to enter the board.</p>):<p>Your EXP and level remain saved privately even if you choose not to appear publicly.</p>}
     </>}
   </section>
+  <div className={styles.helpAction}><RankingModal trigger="How lifetime rankings work" title="Keeper rankings explained">
   <div className={styles.explainer}>
    <div><span className={styles.statIcon}><PodscapeLineIcon name="achievement"/></span><div><strong>Lifetime EXP</strong><small>Ranked by total earned experience, across every eligible PodScape activity.</small></div></div>
    <div><span className={styles.statIcon}><PodscapeLineIcon name="leaf"/></span><div><strong>Keeper level</strong><small>Displayed alongside EXP using the same level system as My Progress.</small></div></div>
   </div>
+
+  <section className={styles.future}>
+   <span className={styles.futureIcon} aria-hidden="true"><PodscapeLineIcon name="leaf"/></span>
+   <div><small>COMING LATER</small><h2>Molt & Prestige</h2><p>Reach new progression milestones, earn a prestige emblem and begin a new leveling journey. Lifetime EXP rankings will remain distinct from future Molt cycles; no reset is active now.</p></div>
+  </section>
+
+  <p className={styles.note}>Rankings use recorded lifetime EXP, not Pod Coins or spending alone. Tied totals share a rank. Only members who choose to participate are displayed. There are no extra rewards just for appearing on this leaderboard.</p>
+  </RankingModal></div>
   <section className={styles.board} aria-label="Lifetime EXP standings" aria-busy={loading}>
    <div className={styles.sectionHead}><div><small>THE KEEPER BOARD</small><h2>All-time standings</h2></div><span>{loading?"Updating…":(board?.rows.length||0)+" ranked keepers"}</span></div>
    {loading?<p className={styles.empty}>Loading verified keeper progress…</p>:
@@ -91,11 +104,7 @@ export default function LifetimeExpRankings(){
      </div>)}</div>:null}
     </>}
   </section>
-  <section className={styles.future}>
-   <span className={styles.futureIcon} aria-hidden="true"><PodscapeLineIcon name="leaf"/></span>
-   <div><small>COMING LATER</small><h2>Molt & Prestige</h2><p>Reach new progression milestones, earn a prestige emblem and begin a new leveling journey. Lifetime EXP rankings will remain distinct from future Molt cycles; no reset is active now.</p></div>
-  </section>
   <div className={styles.links}><Link href="/account/progress">View My Progress</Link><Link href="/fun-zone/leaderboard">Arcade Rankings</Link></div>
-  <p className={styles.note}>Rankings use recorded lifetime EXP, not Pod Coins or spending alone. Tied totals share a rank. Only members who choose to participate are displayed. There are no extra rewards just for appearing on this leaderboard.</p>
+
  </div></main>;
 }
