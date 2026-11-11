@@ -66,14 +66,14 @@ export async function POST(request:Request){
   });
   if(error){console.error("Exchange initialization error",error.code);
    return NextResponse.json({error:"Could not sync portfolio; local data has been preserved"},{status:503})}
-  // Only a newly created, clean 10,000 Duck Buck wallet is eligible for public
-  // rankings. Existing imported beta portfolios remain intact but unverified.
-  if(initialized===true&&!saved){
+  // Every cloud wallet gets a ranking record. Legacy wallets are audited
+  // automatically against server trade history before competitive inclusion.
+  if(initialized===true){
    const {error:eligibleError}=await admin!.from("member_exchange_ranking_preferences").upsert({
-    user_id:user!.id,eligible:true,verified_at:new Date().toISOString(),
-    public_enabled:true,updated_at:new Date().toISOString()
-   },{onConflict:"user_id"});
-   if(eligibleError)console.error("Exchange ranking eligibility registration failed",eligibleError.code);
+    user_id:user!.id,eligible:!saved,verified_at:saved?null:new Date().toISOString(),
+    public_enabled:true,hide_username:false,updated_at:new Date().toISOString()
+   },{onConflict:"user_id",ignoreDuplicates:true});
+   if(eligibleError)console.error("Exchange ranking registration failed",eligibleError.code);
   }
   try{return NextResponse.json({...await readPortfolio(admin!,user!.id),userId:user!.id},{headers:{"Cache-Control":"no-store"}})}
   catch{return NextResponse.json({error:"Could not read synchronized portfolio"},{status:503})}
