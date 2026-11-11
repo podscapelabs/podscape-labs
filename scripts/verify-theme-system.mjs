@@ -44,7 +44,11 @@ assert.match(themeToggle,/THEMES,THEME_IDS,THEME_STORAGE_KEY/,"Quick toggle must
 assert.match(layout,/THEMES,THEME_STORAGE_KEY/,"First paint must consume theme registry");
 assert.match(layout,/JSON.stringify\(themeIds\)/,"First paint needs all registered ids");
 assert.match(layout,/JSON.stringify\(themeSchemes\)/,"First paint must use registry-native colour schemes");
-assert.match(appearance,/localStorage\.setItem\(THEME_STORAGE_KEY,next\)/,"Appearance must persist");
+assert.match(appearance,/chooseThemePreference\(next\)/,"Appearance must use centralized theme persistence");
+const themeRuntime=read("lib/theme-runtime.ts");
+assert.match(themeRuntime,/localStorage\.setItem\(THEME_STORAGE_KEY,mode\)/,"Theme preferences must persist centrally");
+assert.match(themeRuntime,/meta\[name="theme-color"\]/,"Browser chrome must follow chosen theme");
+assert.match(themeToggle,/chooseThemePreference\(next\)/,"Quick toggle must use centralized theme runtime");
 assert.match(appearanceCss,/grid-template-columns:repeat\(2/,"Theme picker should fit phone widths");
 
 for(const token of ["--ps-bg","--ps-surface","--ps-surface-raised","--ps-surface-muted","--ps-text","--ps-text-secondary","--ps-border","--ps-accent","--ps-accent-text","--ps-focus","--ps-font-ui","--ps-font-display","--ps-radius-card","--ps-min-control"]){
