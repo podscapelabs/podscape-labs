@@ -38,3 +38,9 @@
 .empty p{margin:7px 0;color:var(--muted);line-height:1.5}
 .empty button{min-height:43px;padding:8px 14px;border:1px solid var(--forest);border-radius:10px;background:var(--paper);color:var(--forest);font:inherit;font-weight:800;cursor:pointer}
 .exploreIcon svg{height:28px;width:28px}
+
+
+/* Unified achievement seals: use the same clean PodScape linework across themes. */
+.medallionRing{display:grid;place-items:center}
+.medallionRing svg{width:35px;height:35px;stroke-width:1.75}
+@media(max-width:760px){.medallionRing svg{width:28px;height:28px}}
