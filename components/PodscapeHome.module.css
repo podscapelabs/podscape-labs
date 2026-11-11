@@ -781,6 +781,23 @@
 }
 
 
+/* MarketingSite Home does not use PlatformShell's .v2-site wrapper.
+   Bridge canonical root theme values here so hero/spotlight never become transparent.
+   All five palettes (and future registered themes) inherit these roles automatically. */
+.site{
+ --portal-hero-start:var(--theme-portal-hero-start);
+ --portal-hero-end:var(--theme-portal-hero-end);
+ --portal-hero-glow:var(--theme-portal-hero-glow);
+ --portal-hero-text:var(--theme-portal-hero-text);
+ --portal-hero-muted:var(--theme-portal-hero-muted);
+ --portal-hero-soft:var(--theme-portal-hero-soft);
+ --portal-hero-button-bg:var(--theme-portal-hero-button-bg);
+ --portal-hero-button-text:var(--theme-portal-hero-button-text);
+}
+.hero{
+ border:1px solid color-mix(in srgb,var(--portal-hero-text) 18%,var(--portal-hero-start));
+}
+
 /* Universal Home: each theme supplies the atmosphere and all cards consume shared roles. */
 .homeCanvasToolbar>button:last-child,
 .homeCanvasEditing .homeCanvasDragging .homeCanvasHandle,
