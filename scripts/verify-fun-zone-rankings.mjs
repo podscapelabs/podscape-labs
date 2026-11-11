@@ -24,6 +24,12 @@ assert.match(api,/user\.email_confirmed_at/,"Only verified accounts can opt in")
 assert.match(api,/validGames/,"Games must use canonical Arcade registry");
 assert.match(api,/game\.key!=="pod-exchange"/,"Unverified market wallets are excluded");
 assert.match(ui,/setPublic/,"Users must control public participation");
+assert.match(ui,/HOW TO ENTER/,"Leaderboard must explain how participation works");
+assert.match(ui,/gameEntryGuides/,"Each selected game needs an explanation of its completion criteria");
+assert.match(ui,/selectedGame\?\.href/,"Game-specific ranking guidance must link to the actual game");
+assert.match(ui,/first completion of each puzzle counts/,"Replays must not be presented as repeat scoring opportunities");
+assert.match(ui,/Each puzzle counts in the period when it was first completed/,"Ranking date handling must be transparent");
+
 assert.match(ui,/entries\.slice\(0,3\)/,"Podium must display at most three people");
 assert.match(ui,/100 per unique/,"Point attribution must be transparent");
 assert.match(portal,/\/fun-zone\/leaderboard/,"Fun Zone must link to the rankings page");
