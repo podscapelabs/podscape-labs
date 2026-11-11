@@ -20,13 +20,21 @@ function Sparkline({symbol,cycle}:{symbol:string;cycle:number}){
  return <svg className={styles.chart} viewBox="0 0 300 88" preserveAspectRatio="none" role="img" aria-label={`${symbol} price movement over the last two hours, ${rising?"up":"down"}`}><line x1="0" x2="300" y1="79" y2="79" stroke="currentColor" strokeOpacity=".17"/><polyline points={path} fill="none" stroke={rising?"var(--game-correct)":"var(--game-incorrect)"} strokeWidth="2.8" vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round"/></svg>;
 }
 type StorageMode="loading"|"cloud"|"local"|"error";
-type CloudState={exists:boolean;portfolio:Portfolio|null;unlocked?:AchievementNotice[];duplicate?:boolean};
+type CloudState={exists:boolean;portfolio:Portfolio|null;userId?:string;unlocked?:AchievementNotice[];duplicate?:boolean};
 const BACKUP_KEY=STORAGE_KEY+":backup";
-function saveLocalSnapshot(portfolio:Portfolio):boolean{
+const OWNER_KEY=STORAGE_KEY+":cloud-owner";
+const GUEST_KEY=STORAGE_KEY+":guest";
+function guestStorageKey(){return localStorage.getItem(OWNER_KEY)?GUEST_KEY:STORAGE_KEY}
+function localWalletForAccount(userId:string):{portfolio:Portfolio;isNew:boolean}{
+ const owner=localStorage.getItem(OWNER_KEY);
+ if(owner&&owner!==userId)return {portfolio:defaultPortfolio(),isNew:true};
+ return decodeSavedPortfolio(localStorage.getItem(STORAGE_KEY));
+}
+function saveLocalSnapshot(portfolio:Portfolio,key=STORAGE_KEY):boolean{
  try{
-  const previous=localStorage.getItem(STORAGE_KEY);
-  localStorage.setItem(STORAGE_KEY,JSON.stringify(portfolio));
-  if(previous!==null)try{localStorage.setItem(BACKUP_KEY,previous)}catch{/* Preserve active wallet even when backup storage is full. */}
+  const previous=localStorage.getItem(key);
+  localStorage.setItem(key,JSON.stringify(portfolio));
+  if(previous!==null)try{localStorage.setItem(key===STORAGE_KEY?BACKUP_KEY:key+":backup",previous)}catch{/* Preserve active wallet even when backup storage is full. */}
   return true;
  }catch{return false}
 }
@@ -56,7 +64,8 @@ export function PodExchange(){
     if(response.ok){
      const state=await response.json() as CloudState;
      if(!state.exists||!state.portfolio)return;
-     update(sanitizePortfolio(state.portfolio));saveLocalSnapshot(state.portfolio);
+     update(sanitizePortfolio(state.portfolio));
+     if(state.userId){saveLocalSnapshot(state.portfolio);localStorage.setItem(OWNER_KEY,state.userId)}
     }
    }catch{/* Never overwrite the currently loaded wallet on a failed refresh. */}
   };
@@ -66,13 +75,13 @@ export function PodExchange(){
     if(!live)return;
     if(response.status===401){
      // Guests retain the old local-only beta experience without account sync.
-     const saved=decodeSavedPortfolio(localStorage.getItem(STORAGE_KEY));
-     if(saved.isNew && !saveLocalSnapshot(saved.portfolio))throw new Error("Local storage is blocked, so trading cannot be saved safely.");
+     const saved=decodeSavedPortfolio(localStorage.getItem(guestStorageKey()));
+     if(saved.isNew && !saveLocalSnapshot(saved.portfolio,guestStorageKey()))throw new Error("Local storage is blocked, so trading cannot be saved safely.");
      update(saved.portfolio);applyMode("local");setStorageMessage("Saved on this device · Sign in for cloud sync");
     }else if(response.ok){
      let state=await response.json() as CloudState;
      if(!state.exists){
-      const saved=decodeSavedPortfolio(localStorage.getItem(STORAGE_KEY));
+      const saved=localWalletForAccount(state.userId||"");
       const initialize=await fetch("/api/fun-zone/pod-exchange",{
        method:"POST",headers:{"Content-Type":"application/json"},
        body:JSON.stringify({action:"initialize",legacy:saved.isNew?null:saved.portfolio})
@@ -98,8 +107,8 @@ export function PodExchange(){
   const interval=window.setInterval(()=>setNow(Date.now()),1000);
   const refresh=()=>{if(modeRef.current==="cloud"&&document.visibilityState==="visible")void syncFromServer();};
   const onStorage=(event:StorageEvent)=>{
-   if(event.key!==STORAGE_KEY)return;
-   if(modeRef.current==="local"){
+   if(event.key!==STORAGE_KEY&&event.key!==GUEST_KEY)return;
+   if(modeRef.current==="local"&&event.key===guestStorageKey()){
     try{update(decodeSavedPortfolio(event.newValue).portfolio)}
     catch(error){setStorageMessage(error instanceof Error?error.message:"Saved wallet unavailable");setReady(false);applyMode("error")}
    }else refresh();
@@ -156,10 +165,11 @@ export function PodExchange(){
     }
     setPortfolio(sanitizePortfolio(data.portfolio));
     saveLocalSnapshot(data.portfolio);
+    if(data.userId)localStorage.setItem(OWNER_KEY,data.userId);
     window.dispatchEvent(new Event("podscape-exchange-wallet-updated"));
     for(const notice of data.unlocked||[])announceAchievement(notice);
    }else if(storageMode==="local"){
-    if(!saveLocalSnapshot(result.portfolio)){
+    if(!saveLocalSnapshot(result.portfolio,guestStorageKey())){
      setMessage("Unable to save this trade. Your previous wallet has been preserved.");
      return;
     }
