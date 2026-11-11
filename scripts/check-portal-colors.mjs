@@ -26,8 +26,8 @@ const registry=read("lib/theme-registry.ts");
 const themeIds=[...registry.matchAll(/\{id:"([a-z-]+)",title:/g)].map(match=>match[1]);
 assert.ok(themeIds.length>=5,"Five PodScape environments must be registered.");
 const rootBlock=theme=>{
- const selector=theme==="light"?":root {":':root[data-theme="'+theme+'"]{';
- const position=global.indexOf(selector);
+ const selector=theme==="light"?":root {":':root[data-theme="'+theme+'"]';
+ const position=theme==="light"?global.indexOf(selector):Math.max(global.indexOf(selector+"{"),global.indexOf(selector+" {"));
  assert(position>=0,"Missing theme definition: "+theme);
  const open=global.indexOf("{",position);
  return global.slice(open+1,global.indexOf("}",open));
