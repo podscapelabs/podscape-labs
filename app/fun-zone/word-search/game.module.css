@@ -56,3 +56,7 @@
 .cell.hinted{outline:3px dotted var(--game-present);outline-offset:-2px;box-shadow:inset 0 0 0 2px var(--surface)}
 .words .done{color:var(--game-correct);font-weight:850;text-decoration:line-through;text-decoration-thickness:2px}
 .win{color:var(--game-correct)}
+
+.stateLegend{font-size:11px;line-height:1.45;color:var(--text-secondary);margin:9px 0 3px}
+.stateLegend strong{color:var(--text-primary)}
+@media(max-width:720px){.stateLegend{font-size:10px;margin:5px 0 3px}}
