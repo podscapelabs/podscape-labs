@@ -7,7 +7,7 @@ const form=read("components/CustomerAccountForm.tsx");
 const account=read("app/account/page.tsx");
 assert.match(migration,/create unique index if not exists customer_profiles_unique_username_ci/,"Use an actual database unique constraint");
 assert.match(migration,/lower\(btrim\(display_name\)\)/,"Reject case and whitespace variants");
-assert.match(migration,/not valid/,"Preserve existing beta account names for later cleanup");
+assert.match(migration,/before insert or update of display_name/,"Validate changed names without breaking legacy profile updates");
 assert.match(migration,/create or replace function public.create_customer_profile/,"Check account creation at database level");
 assert.match(migration,/grant execute on function public.is_customer_username_available\(text\) to anon,authenticated/,"Allow signup username availability check");
 assert.match(actions,/await usernameAvailable\(db, displayName\)/,"Check signup before sending email");
