@@ -16,7 +16,7 @@ returns table (
  display_name text,
  lifetime_exp bigint,
  keeper_level integer,
- position bigint,
+ rank_position bigint,
  is_viewer boolean
 )
 language sql stable security invoker set search_path=public
