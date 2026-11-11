@@ -93,7 +93,7 @@ export function FunZoneRankingsSpotlight(){
  };
  return <section className={styles.rankingsSpotlight} aria-label="Rankings Spotlight, swipe to see different leaderboards">
   <div className={styles.rankingsSpotlightHead}>
-   <div><span className={styles.eyebrow}>THE COMMUNITY · AT A GLANCE</span><h2>Rankings Spotlight</h2><p>Five standings, one swipe. See who's leading across PodScape.</p></div>
+   <div><span className={styles.eyebrow}>THE COMMUNITY · AT A GLANCE</span><h2>Rankings Spotlight</h2><p>Five standings, one swipe. See the leaders across PodScape.</p></div>
    <span className={styles.rankingsIndex}>{active+1} / {slides.length}</span>
   </div>
   <div className={styles.rankingsViewport} ref={track} onScroll={onScroll} tabIndex={0} aria-label="Swipeable ranking cards" onKeyDown={event=>{if(event.key==="ArrowRight"){event.preventDefault();navigate(active+1)}else if(event.key==="ArrowLeft"){event.preventDefault();navigate(active-1)}}}>
