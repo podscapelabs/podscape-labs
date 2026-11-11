@@ -19,7 +19,7 @@ const gameModule=load("lib/fun-zone-games.ts");
 const catalog=load("lib/fun-zone-puzzles.ts",{"./fun-zone-games":gameModule});
 const logic=load("lib/fun-zone-logic.ts");
 const entries=catalog.puzzleEntries;
-assert.equal(entries.length,32,"Exactly 32 curated puzzles must exist");
+assert.equal(entries.length,40,"Exactly 40 curated puzzles must exist");
 assert.equal(catalog.gameKeys.length,8,"Eight game libraries must exist");
 
 const expectedModes=new Map(gameModule.games.map(g=>[g.key,g.mode]));
@@ -28,7 +28,7 @@ const usedIds=new Set();
 let questionCount=0;
 for(const gameKey of catalog.gameKeys){
  const challenges=catalog.getPuzzles(gameKey);
- assert.equal(challenges.length,4,`Expected 4 puzzles for ${gameKey}`);
+ assert.equal(challenges.length,5,`Expected 5 progressive puzzles for ${gameKey}`);
  assert.equal(challenges[0].puzzle.id,gameKey==="word-search"?"genus-explorer":"sample-01");
  challenges.forEach(({mode,puzzle},i)=>{
   assert.equal(mode,expectedModes.get(gameKey),`Wrong mode for ${gameKey}`);
@@ -36,7 +36,7 @@ for(const gameKey of catalog.gameKeys){
   assert.ok(!usedIds.has(key),"Duplicate puzzle ID "+key);
   usedIds.add(key);
   assert.ok(puzzle.title.length>=4&&puzzle.description.length>=12,"Missing copy "+key);
-  assert.ok(["Intro","Medium","Easy"].includes(puzzle.difficulty),"Unexpected difficulty "+key);
+  assert.equal(puzzle.difficulty,`Level ${i+1} · ${["Starter","Familiar","Explorer","Practiced","Specialist"][i]}`,"Unexpected difficulty order "+key);
   if(mode==="quiz"){
    assert.ok(puzzle.questions.length>=4,"Not enough questions "+key);
    questionCount+=puzzle.questions.length;
@@ -107,8 +107,24 @@ for(const gameKey of catalog.gameKeys){
   }
  });
 }
-assert.equal(usedIds.size,32);
+assert.equal(usedIds.size,40);
 assert.ok(questionCount>=70,"Expected deep, varied quiz banks");
+
+
+// The learning progression starts with familiar content, not a surprise taxonomy test.
+const wordSearch=catalog.getPuzzles("word-search");
+assert.equal(wordSearch[0].puzzle.title,"First Finds");
+assert.ok(wordSearch[0].puzzle.words.every(word=>!["ARMADILLIDIUM","PORCELLIONIDES"].includes(word)));
+assert.equal(wordSearch[4].puzzle.title,"Scientific Names");
+const firstBurrow=catalog.getPuzzles("word-burrow");
+assert.equal(firstBurrow[0].puzzle.answer,"WATER");
+assert.equal(firstBurrow[4].puzzle.answer,"GENUS");
+const firstConnections=catalog.getPuzzles("colony-connections");
+assert.ok(firstConnections[0].puzzle.groups.every(g=>!g.words.includes("Pereon")&&!g.words.includes("Pleopods")));
+assert.ok(firstConnections[4].puzzle.groups.some(g=>g.words.includes("Pereon")));
+const expertCrossword=catalog.getPuzzles("crossword-colony")[4].puzzle;
+assert.equal(expertCrossword.title,"The Science Trail");
+assert.ok(expertCrossword.clues.some(c=>c.answer==="MARSUPIUM"));
 
 // Repeated letters must never be over-counted.
 assert.equal(JSON.stringify(logic.scoreWordGuess("PAPAL","APPLE")),JSON.stringify(["present","present","correct","absent","present"]));
