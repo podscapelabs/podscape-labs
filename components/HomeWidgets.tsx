@@ -14,6 +14,7 @@ import {useWorkspaceEditorDialog} from "./useWorkspaceEditorDialog";
 import {FirstActionEmptyState} from "./FirstActionEmptyState";
 import {RecentCategoryCards,type RecentGroup} from "./RecentCategoryCards";
 import {homeWidgetNames} from "./workspace-widget-labels";
+import {HomeMarketNews} from "./HomeMarketNews";
 
 export type HomeColony={id:string;name:string;quantity:number;speciesName:string}|null;
 export type HomeProgress={level:number;exp:number}|null;
@@ -22,7 +23,7 @@ type BlockId=CoreId|WidgetId;
 const coreIds:CoreId[]=["greeting","hero","shortcuts","spotlight"];
 const coreLabels:Record<CoreId,string>={greeting:"Welcome",hero:"Featured Discovery",shortcuts:"Quick Tools",spotlight:"PodScape Spotlight"};
 const isCore=(id:BlockId):id is CoreId=>coreIds.includes(id as CoreId);
-type WidgetId="recent"|"colony"|"games"|"progress"|"schedule"|"guides"|"community"|"pins";
+type WidgetId="recent"|"colony"|"games"|"progress"|"schedule"|"guides"|"community"|"pins"|"marketNews";
 type WidgetGroup="Discovery"|"My Keeper Tools"|"Play & Community";
 type WidgetDef={name:string;description:string;icon:PodscapeIconName;group:WidgetGroup;preview:string;size:"wide"|"compact"};
 const definitions:Record<WidgetId,WidgetDef>={
@@ -31,6 +32,7 @@ const definitions:Record<WidgetId,WidgetDef>={
   colony:{name:homeWidgetNames.colony,description:"Quick access to your most recently updated enclosure.",icon:"jar",group:"My Keeper Tools",preview:"Colony · Species · Recorded count",size:"compact"},
   progress:{name:homeWidgetNames.progress,description:"View your level and earned EXP at a glance.",icon:"achievement",group:"My Keeper Tools",preview:"Keeper level · Earned EXP",size:"compact"},
   schedule:{name:homeWidgetNames.schedule,description:"One-tap access to the existing Manager care schedule.",icon:"calendar",group:"My Keeper Tools",preview:"Open your care schedule",size:"compact"},
+  marketNews:{name:"Market News",description:"Latest fictional headlines from The Pod Exchange, with a direct link to trade.",icon:"news",group:"Play & Community",preview:"The Leaf Street Journal · Latest headlines",size:"compact"},
   games:{name:homeWidgetNames.games,description:"Get straight into your Fun Zone activities.",icon:"gamepad",group:"Play & Community",preview:"Puzzles · Quizzes · Word games",size:"compact"},
   community:{name:homeWidgetNames.community,description:"Find your way back to the keeper community.",icon:"community",group:"Play & Community",preview:"Keepers · Creators · Updates",size:"compact"},
   pins:{name:homeWidgetNames.pins,description:"Your saved species, games and colonies in one place.",icon:"bookmark",group:"Discovery",preview:"Pinned species · Games · Colonies",size:"wide"}
@@ -39,7 +41,7 @@ const available=Object.keys(definitions) as WidgetId[];
 const groups:WidgetGroup[]=["Discovery","My Keeper Tools","Play & Community"];
 const storageKey="podscape-home-widgets-v2";
 const legacyKey="podscape-home-widgets-v1";
-const defaultOrder:BlockId[]=["greeting","hero","shortcuts","spotlight","recent","colony","games","progress","schedule","guides","community","pins"];
+const defaultOrder:BlockId[]=["greeting","hero","shortcuts","spotlight","recent","colony","games","progress","schedule","guides","community","pins","marketNews"];
 const defaultVisible:WidgetId[]=["recent"];
 type Layout={order:BlockId[];visible:WidgetId[]};
 
@@ -186,6 +188,7 @@ export function HomeWidgets({recentGroups,colony,progress,pinOptions,userId,gree
         {recentGroups.length?<RecentCategoryCards groups={recentGroups}/>:<FirstActionEmptyState icon="news" eyebrow={definitions.recent.name.toUpperCase()} title="There’s more to explore." description="New updates will appear here when published. In the meantime, discover species and keeper resources across PodScape." primary={{href:"/ledger",label:"Explore species"}} secondary={{href:"/field-guide",label:"Read guides"}} compact/>}
       </section>;
       if(id==="colony")return compact(id,"jar",definitions.colony.name.toUpperCase(),colony?colony.name:"Your colonies, close at hand",colony?`${colony.speciesName} · ${colony.quantity} recorded`:"Add a colony in Manager to get a quick link here.",colony?"/keeper/"+colony.id:"/keeper/new",colony?"Open colony":"Add first colony");
+      if(id==="marketNews")return <HomeMarketNews/>;
       if(id==="games")return compact(id,"creative",definitions.games.name.toUpperCase(),"A little playtime?","Word games, puzzles and quizzes whenever you need a break.","/fun-zone","Play now");
       if(id==="progress")return compact(id,"achievement",definitions.progress.name.toUpperCase(),progress?`Level ${progress.level} Keeper`:"Your keeper journey",progress?`${progress.exp.toLocaleString("en-CA")} EXP earned so far.`:"Sign in to start tracking milestones.",progress?"/account/progress":"/account","View progress");
       if(id==="schedule")return compact(id,"calendar",definitions.schedule.name.toUpperCase(),"Keep your colonies on track","Open your existing Manager care schedule to see and organize care activities.","/keeper/schedule","View schedule");
