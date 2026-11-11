@@ -31,3 +31,16 @@ comment on table public.member_exchange_ranking_preferences is
  'Opt-in fictional market leaderboard. eligible is only granted for a clean server-initialized 10000 Duck Buck wallet; legacy imports need review.';
 comment on table public.member_exchange_weekly_snapshots is
  'Immutable weekly market value baselines computed server-side after the Monday UTC boundary. Weekly return is available only after a recorded snapshot.';
+
+-- Existing beta portfolios may request human review without resetting balances.
+create table if not exists public.member_exchange_ranking_reviews (
+ user_id uuid primary key references auth.users(id) on delete cascade,
+ status text not null default 'pending' check (status in ('pending','approved','declined')),
+ requested_at timestamptz not null default now(),
+ reviewed_at timestamptz,
+ reviewer_note text not null default '' check (char_length(reviewer_note)<=500)
+);
+alter table public.member_exchange_ranking_reviews enable row level security;
+revoke all on public.member_exchange_ranking_reviews from anon, authenticated;
+comment on table public.member_exchange_ranking_reviews is
+ 'Manual market ranking eligibility review for pre-existing or imported beta wallets; does not mutate cash or holdings.';
