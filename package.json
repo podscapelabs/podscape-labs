@@ -16,7 +16,8 @@
     "test:account-isolation:staging": "node scripts/test-account-isolation-staging.mjs",
     "check:theme-system": "node scripts/verify-theme-system.mjs",
     "test:pod-exchange": "node scripts/test-pod-exchange.mjs",
-    "test:fun-zone-portal": "node scripts/verify-fun-zone-portal.mjs"
+    "test:fun-zone-portal": "node scripts/verify-fun-zone-portal.mjs",
+    "test:exchange-achievements": "node scripts/verify-pod-exchange-achievements.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
