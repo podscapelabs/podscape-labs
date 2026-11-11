@@ -1,8 +1,8 @@
 .page{
-  --splash-bg:#12231a;
-  --splash-ink:#f2f2e8;
-  --splash-muted:#aebdae;
-  --splash-accent:#b8c88f;
+  --splash-bg:var(--canvas);
+  --splash-ink:var(--ink);
+  --splash-muted:var(--muted);
+  --splash-accent:var(--forest);
   position:relative;
   isolation:isolate;
   display:grid;
@@ -17,30 +17,8 @@
   text-align:center;
   font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
-:global(html[data-theme="light"]) .page{
-  --splash-bg:#eee8d8;
-  --splash-ink:#193126;
-  --splash-muted:#637464;
-  --splash-accent:#496b48;
-}
-:global(html[data-theme="woodland"]) .page{
-  --splash-bg:#211a16;
-  --splash-ink:#f5e9d7;
-  --splash-muted:#ccb8a4;
-  --splash-accent:#d6ac76;
-}
-:global(html[data-theme="lilac"]) .page{
-  --splash-bg:#f4eff9;
-  --splash-ink:#33223e;
-  --splash-muted:#695a72;
-  --splash-accent:#70418b;
-}
-:global(html[data-theme="ember"]) .page{
-  --splash-bg:#fff3e5;
-  --splash-ink:#3e281d;
-  --splash-muted:#705a4e;
-  --splash-accent:#a64c21;
-}
+/* Every appearance inherits the same semantic splash roles automatically.
+   System resolves to a named theme before first paint. */
 .ambient{
   position:absolute;
   inset:0;
