@@ -17,9 +17,9 @@ export async function GET(){
  const records=(Array.isArray(data)?data:[]).map(row=>({
   name:String(row.display_name||"PodScape Keeper").slice(0,80),
   exp:Number(row.lifetime_exp||0),level:Number(row.keeper_level||1),
-  position:Number(row.position||0),mine:participating&&row.user_id===user?.id
+  position:Number(row.rank_position||0),mine:participating&&row.user_id===user?.id
  }));
- return NextResponse.json({rows:records.filter(row=>row.position<=50),mine:records.find(row=>row.mine)||null,
+ return NextResponse.json({rows:records.filter(row=>row.rank_position<=50),mine:records.find(row=>row.mine)||null,
   participating,signedIn:!!user},{headers});
 }
 export async function POST(request:Request){
