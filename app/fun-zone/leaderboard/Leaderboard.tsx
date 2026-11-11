@@ -61,7 +61,7 @@ export default function Leaderboard(){
   </section>
   {error?<div role="alert" className={styles.alert}>{error} <button type="button" onClick={()=>setReload(x=>x+1)}>Try again</button></div>:null}
   <section className={styles.standings} aria-label="Ranking standings" aria-busy={loading}>
-   <div className={styles.standingsHead}><div><small>THE SCOREBOARD</small><h2>{periods.find(x=>x.id===period)?.label} leaders</h2></div><span>{loading?"Updating…":entries.length? "Top "+Math.min(50,entries.length)+" shown":"No entries"}</span></div>
+   <div className={styles.standingsHead}><div><small>THE SCOREBOARD</small><h2>{periods.find(x=>x.id===period)?.label} leaders</h2></div><span>{loading?"Updating…":entries.length?format(entries.length)+" ranked players":"No entries"}</span></div>
    {loading?<p className={styles.empty}>Loading verified arcade results…</p>:
     !entries.length?<div className={styles.empty}><PodscapeLineIcon name="trophy"/><h3>First place is waiting.</h3><p>No players have opted in with verified completions for this selection yet. Be the first to put your name on the board.</p><Link href="/fun-zone">Explore games →</Link></div>:
     <>
