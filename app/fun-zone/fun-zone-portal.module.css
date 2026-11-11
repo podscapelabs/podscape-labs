@@ -97,3 +97,7 @@
 .watchlistStats small{font-size:10px;color:var(--portal-hero-muted)}
 .watchlistStats strong{font-size:clamp(17px,3.7vw,23px);font-weight:800;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 @media(max-width:390px){.watchlistStats{grid-template-columns:1fr}}
+
+/* The Duck Bucks icon is a vector outline, not an emoji; scale it with text in cards. */
+.exchangeWidget h2 svg{display:inline-block;vertical-align:-.17em;margin-right:.12em;flex:none}
+.watchlistStats strong svg{vertical-align:middle;flex:none}
