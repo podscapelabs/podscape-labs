@@ -9,6 +9,14 @@ const market=await import("data:text/javascript;base64,"+Buffer.from(compiled).t
 assert.equal(market.STOCKS.length,6);
 assert.equal(new Set(market.STOCKS.map(s=>s.symbol)).size,6);
 assert.equal(market.MARKET_INTERVAL_MS,300000);
+for(let block=100;block<112;block++){
+ const stories=Array.from({length:market.NEWS.length},(_,i)=>market.newsAt((block*market.NEWS.length+i)*3));
+ assert.equal(new Set(stories.map(story=>story.headline)).size,market.NEWS.length,
+  "A story deck must have no duplicate headlines");
+ const previous=market.newsAt((block*market.NEWS.length-1)*3);
+ assert.notEqual(stories[0].headline,previous.headline,"Adjacent bulletin decks must not repeat a story");
+}
+
 assert.equal(market.TRADE_FEE_RATE,.005);
 assert.equal(market.tradeFee(1000),5);
 assert.equal(market.tradeTotal(100,2,"buy"),201);
