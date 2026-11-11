@@ -15,6 +15,7 @@ import {FirstActionEmptyState} from "./FirstActionEmptyState";
 import {RecentCategoryCards,type RecentGroup} from "./RecentCategoryCards";
 import {homeWidgetNames} from "./workspace-widget-labels";
 import {HomeMarketNews} from "./HomeMarketNews";
+import {WidgetLibraryFilter,widgetMatchesView,type WidgetLibraryView} from "./WidgetLibraryFilter";
 import {portalWidgetGroups,widgetAllowed,widgetGroup,widgetPurpose} from "./workspace-widget-policy";
 
 export type HomeColony={id:string;name:string;quantity:number;speciesName:string}|null;
@@ -61,6 +62,7 @@ function readLayout():Layout{
 export function HomeWidgets({recentGroups,colony,progress,pinOptions,userId,greeting,hero,shortcuts,spotlight}:{recentGroups:RecentGroup[];colony:HomeColony;progress:HomeProgress;pinOptions:PinOption[];userId:string|null;greeting:ReactNode;hero:ReactNode;shortcuts:ReactNode;spotlight:ReactNode}){
   const [layout,setLayout]=useState<Layout>({order:defaultOrder,visible:defaultVisible});
   const [editing,setEditing]=useState(false);
+  const [libraryView,setLibraryView]=useState<WidgetLibraryView>("available");
   const [canvasEditing,setCanvasEditing]=useState(false);
   const [pins,setPins]=useState<HomePin[]>([]);
   const [hydrated,setHydrated]=useState(false);
@@ -140,11 +142,12 @@ export function HomeWidgets({recentGroups,colony,progress,pinOptions,userId,gree
         </div>
         <p>Add the widgets you love, remove the ones you don&apos;t. Changes are saved on this device.</p>
         <div className={styles.widgetLibraryActions}><span>{layout.visible.length} of {available.length} widgets added</span><button type="button" onClick={()=>{close();setCanvasEditing(true)}}>Arrange Home</button></div>
+        <WidgetLibraryFilter view={libraryView} onChange={setLibraryView} added={available.filter(id=>layout.visible.includes(id)).length} total={available.length}/>
           <div className={styles.widgetLibraryGroups}>
-            {groups.map(group=><section key={group}>
+            {groups.filter(group=>available.some(id=>widgetGroup("home",id)===group&&widgetMatchesView(layout.visible.includes(id),libraryView))).map(group=><section key={group}>
               <h3>{group}</h3>
               <div className={styles.widgetGallery}>
-                {available.filter(id=>widgetGroup("home",id)===group).map(id=>{
+                {available.filter(id=>widgetGroup("home",id)===group&&widgetMatchesView(layout.visible.includes(id),libraryView)).map(id=>{
                   const widget=definitions[id],added=layout.visible.includes(id);
                   return <article key={id} className={styles.widgetGalleryCard}>
                     <div className={styles.widgetPreview} aria-hidden="true">
