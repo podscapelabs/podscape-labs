@@ -1,33 +1,24 @@
 "use client";
 import {useEffect,useState} from "react";
 import styles from "./AppearancePreference.module.css";
-import {THEMES,SYSTEM_OPTION,THEME_STORAGE_KEY,isThemePreference,resolveTheme,themeColorScheme,type ThemePreference} from "@/lib/theme-registry";
+import {THEMES,SYSTEM_OPTION,THEME_STORAGE_KEY,type ThemePreference} from "@/lib/theme-registry";
+import {applyThemePreference,storedThemePreference,chooseThemePreference} from "@/lib/theme-runtime";
 
-function apply(mode:ThemePreference){
- const theme=resolveTheme(mode,window.matchMedia("(prefers-color-scheme: dark)").matches);
- document.documentElement.dataset.theme=theme;
- document.documentElement.dataset.themePreference=mode;
- document.documentElement.style.colorScheme=themeColorScheme(theme);
- window.dispatchEvent(new CustomEvent("podscape-theme-change",{detail:theme}));
-}
 const options=[...THEMES,SYSTEM_OPTION];
 export function AppearancePreference(){
  const [mode,setMode]=useState<ThemePreference>("system");
  useEffect(()=>{
-  const stored=localStorage.getItem(THEME_STORAGE_KEY);
-  const initial:ThemePreference=isThemePreference(stored)?stored:"system";
-  setMode(initial);apply(initial);
+  const initial=storedThemePreference();
+  setMode(initial);applyThemePreference(initial);
   const media=window.matchMedia("(prefers-color-scheme: dark)");
-  const sync=()=>{if(!localStorage.getItem(THEME_STORAGE_KEY)||localStorage.getItem(THEME_STORAGE_KEY)==="system")apply("system");};
-  const onChange=()=>{const saved=localStorage.getItem(THEME_STORAGE_KEY);setMode(isThemePreference(saved)?saved:"system");};
+  const sync=()=>{if(!localStorage.getItem(THEME_STORAGE_KEY)||localStorage.getItem(THEME_STORAGE_KEY)==="system")applyThemePreference("system");};
+  const onChange=()=>setMode(storedThemePreference());
   media.addEventListener("change",sync);
   window.addEventListener("podscape-theme-change",onChange);
   return ()=>{media.removeEventListener("change",sync);window.removeEventListener("podscape-theme-change",onChange);};
  },[]);
  function choose(next:ThemePreference){
-  if(next==="system")localStorage.removeItem(THEME_STORAGE_KEY);
-  else localStorage.setItem(THEME_STORAGE_KEY,next);
-  setMode(next);apply(next);
+  setMode(next);chooseThemePreference(next);
  }
  return <div className={styles.wrapper}>
   <p className={styles.heading}>Appearance</p>
