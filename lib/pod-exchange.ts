@@ -84,6 +84,6 @@ export function executeOrder(portfolio:Portfolio,symbol:string,side:"buy"|"sell"
  const qty=owned+(side==="buy"?shares:-shares);
  const holdings={...portfolio.holdings};
  if(qty===0)delete holdings[symbol];else holdings[symbol]=qty;
- const trade:Trade={id:cycle+":"+symbol+":"+side+":"+portfolio.trades.length,cycle,symbol,side,shares,unitPrice:price};
+ const trade:Trade={id:cycle+":"+symbol+":"+side+":"+Date.now()+":"+Math.random().toString(36).slice(2,8),cycle,symbol,side,shares,unitPrice:price};
  return {ok:true,portfolio:{cash,holdings,trades:[trade,...portfolio.trades].slice(0,50)}};
 }
