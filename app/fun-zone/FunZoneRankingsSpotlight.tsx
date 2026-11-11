@@ -48,6 +48,7 @@ export function FunZoneRankingsSpotlight(){
  const [active,setActive]=useState(0);
  const [data,setData]=useState<State>({attempted:false});
  const track=useRef<HTMLDivElement>(null);
+ const tabs=useRef<HTMLDivElement>(null);
  const activeRef=useRef(0);
  useEffect(()=>{
   let live=true;
@@ -68,7 +69,14 @@ export function FunZoneRankingsSpotlight(){
   const next=Math.max(0,Math.min(slides.length-1,index));
   activeRef.current=next;setActive(next);
   const node=track.current;
-  if(node)node.scrollTo({left:next*node.clientWidth,behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});
+  const motion=window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth";
+  if(node)node.scrollTo({left:next*node.clientWidth,behavior:motion});
+  const strip=tabs.current;
+  const tab=strip?.children.item(next) as HTMLElement|null;
+  if(strip&&tab){
+   const left=strip.scrollLeft+tab.getBoundingClientRect().left-strip.getBoundingClientRect().left-(strip.clientWidth-tab.clientWidth)/2;
+   strip.scrollTo({left,behavior:motion});
+  }
  };
  const onScroll=()=>{
   const node=track.current;if(!node||node.clientWidth===0)return;
@@ -111,7 +119,7 @@ export function FunZoneRankingsSpotlight(){
   </div>
   <div className={styles.rankingsPager}>
    <button type="button" aria-label="Previous rankings" disabled={active===0} onClick={()=>navigate(active-1)}><span className={styles.rankingsBackIcon}><PodscapeLineIcon name="arrow-right"/></span></button>
-   <div className={styles.rankingsPagerTabs} role="group" aria-label="Choose rankings">
+   <div className={styles.rankingsPagerTabs} ref={tabs} role="group" aria-label="Choose rankings">
     {slides.map((slide,i)=><button key={slide.id} type="button" onClick={()=>navigate(i)}
      aria-label={"Show "+slide.title} aria-current={active===i?"true":undefined}>{tabNames[slide.id]}</button>)}
    </div>
