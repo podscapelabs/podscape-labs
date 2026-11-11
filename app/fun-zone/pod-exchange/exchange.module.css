@@ -167,23 +167,6 @@
 .rulesBody small{font-size:10px;line-height:1.5;color:var(--text-secondary)}
 .rules summary:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
 
-/* Compact, discoverable trading milestones, in the same visual family as rules. */
-.achievementGuide{border:1px solid var(--border);border-radius:13px;background:var(--surface);margin:0 0 12px;overflow:hidden}
-.achievementGuide summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 15px;cursor:pointer;min-height:45px;font-size:12px;font-weight:800}
-.achievementGuide summary::-webkit-details-marker{display:none}
-.achievementGuide summary>span:first-child{display:inline-flex;align-items:center;gap:9px}
-.achievementGuide summary svg{width:19px;height:19px;color:var(--accent)}
-.achievementGuide summary>span:last-child{color:var(--text-secondary);font-size:11px;font-weight:600}
-.achievementGuide[open] summary>span:last-child>span{display:inline-block;transform:rotate(180deg)}
-.achievementGoals{display:grid;gap:0;border-top:1px solid var(--border);padding:5px 15px 13px}
-.achievementGoals>div{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--border);padding:10px 0}
-.achievementGoals>div span{display:grid;gap:4px;min-width:0}
-.achievementGoals strong{font-size:12px}
-.achievementGoals small{font-size:11px;line-height:1.35;color:var(--text-secondary)}
-.achievementGoals b{flex:none;font-size:11px;color:var(--accent);white-space:nowrap}
-.achievementGoals>a{justify-self:start;text-decoration:none;font-size:11px;font-weight:800;color:var(--accent);margin-top:11px}
-.achievementGuide summary:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
-
 /* Saving must fail visibly, never pretending a fresh wallet replaced old data. */
 .walletAlert{display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:13px;background:var(--surface);padding:12px 15px;margin-bottom:12px}
 .walletAlert strong{display:block;font-size:13px}
@@ -209,7 +192,7 @@
 .marketStatus small{color:var(--portal-hero-muted)}
 .disclaimer{background:var(--surface);line-height:1.5}
 .disclaimer svg{width:18px;height:18px;color:var(--accent);flex:none}
-.balances>div,.panel,.portfolio,.rules,.achievementGuide{border-color:var(--border);background:var(--surface)}
+.balances>div,.panel,.portfolio,.rules{border-color:var(--border);background:var(--surface)}
 .balances>div{min-width:0}
 .balances strong{overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
 .panelHead h2{font-size:clamp(23px,2.7vw,28px)}
@@ -287,7 +270,7 @@
 .quickTrade button:disabled{opacity:.45;cursor:not-allowed}
 .quickTrade span{color:var(--text-secondary);font-size:10px;text-align:right}
 .rulesDock{display:grid;gap:0;margin-top:14px}
-.rulesDock .rules,.rulesDock .achievementGuide{margin-bottom:8px}
+.rulesDock .rules{margin-bottom:8px}
 @media(max-width:720px){
  .marketAgenda{grid-template-columns:minmax(0,1fr)}
  .agendaNow,.agendaNext{padding:12px 14px;gap:5px;border-radius:13px}
