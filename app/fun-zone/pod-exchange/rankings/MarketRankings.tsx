@@ -6,7 +6,7 @@ import styles from "./market-rankings.module.css";
 type Kind="wealth"|"return"|"weekly";
 type Entry={name:string;value:number;profit:number;returnPct:number;weeklyPct:number|null;position:number;mine:boolean};
 type BoardSlice={rows:Entry[];mine:Entry|null;count:number};
-type Data={signedIn:boolean;participating:boolean;eligible:boolean;needsWallet:boolean;legacyReviewRequired:boolean;reviewStatus:string|null;reviewerNote:string|null;cycle:number;weekStart:string;weeklyReady:boolean;wealth:BoardSlice;return:BoardSlice;weekly:BoardSlice};
+type Data={signedIn:boolean;participating:boolean;hideUsername:boolean;eligible:boolean;needsWallet:boolean;legacyReviewRequired:boolean;reviewStatus:string|null;reviewerNote:string|null;cycle:number;weekStart:string;weeklyReady:boolean;wealth:BoardSlice;return:BoardSlice;weekly:BoardSlice};
 const tabs:{id:Kind;title:string;description:string}[]=[
  {id:"wealth",title:"The Rich List",description:"Cash + current share value"},
  {id:"return",title:"Top Investors",description:"Return on the original 10,000 Duck Bucks"},
@@ -43,6 +43,19 @@ export default function MarketRankings(){
   }catch(e){setError(e instanceof Error?e.message:"Unable to update rankings")}
   finally{setUpdating(false)}
  }
+ async function setHidden(hideUsername:boolean){
+  if(updating)return;setUpdating(true);setError("");
+  try{
+   const response=await fetch("/api/fun-zone/pod-exchange/rankings",{
+    method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({hideUsername})
+   });
+   const result=await response.json();
+   if(!response.ok)throw Error(result.error||"Unable to save username privacy");
+   setReload(v=>v+1);
+  }catch(e){setError(e instanceof Error?e.message:"Unable to save username privacy")}
+  finally{setUpdating(false)}
+ }
  async function requestReview(){
   if(updating)return;setUpdating(true);setError("");
   try{
@@ -69,7 +82,7 @@ export default function MarketRankings(){
   {error?<div className={styles.error} role="alert">{error}<button type="button" onClick={()=>setReload(v=>v+1)}>Retry</button></div>:null}
   <section className={styles.join} aria-label="Public market ranking participation">
    <div><small>YOUR MARKET PROFILE</small><h2>{data?.participating?"You're on the board":"Join Market Rankings"}</h2>
-    <p>{data?.participating?"Your display name and market scores are visible. Leave anytime.":"Your cloud wallet stays private until you choose to join."}</p></div>
+    <p>{data?.participating?"Your market scores are public. Username visibility is your choice. Leave anytime.":"Your cloud wallet stays private until you choose to join."}</p></div>
    {loading?<span className={styles.status}>Checking…</span>:
     !data?.signedIn?<Link className={styles.joinButton} href="/account">Sign in to join →</Link>:
     data.needsWallet?<Link className={styles.joinButton} href="/fun-zone/pod-exchange">Start trading →</Link>:
@@ -78,8 +91,13 @@ export default function MarketRankings(){
      disabled={updating} aria-pressed={data.participating}
      onClick={()=>join(!data.participating)}>
      {updating?"Saving…":data.participating?"Leave rankings":"Join rankings"}</button>}
+   {data?.signedIn&&data.eligible?<label className={styles.namePrivacy}>
+    <input type="checkbox" checked={data.hideUsername===true} disabled={updating||loading}
+     onChange={event=>setHidden(event.target.checked)}/>
+    <span><strong>Hide my username</strong><small>{data.hideUsername?"You appear as Anonymous Investor; your portfolio value and returns remain visible.":"Show Anonymous Investor instead of your display name in market standings."}</small></span>
+   </label>:null}
    {data?.needsWallet?<p className={styles.eligibility}>Open the Exchange to create your free, cloud-saved starting wallet. You can join after it is initialized.</p>:data?.legacyReviewRequired?<p className={styles.eligibility}>Existing beta wallets require owner verification before competing. Your holdings remain safe. {data.reviewStatus==="pending"?"Your request is in the owner review queue.":data.reviewStatus==="declined"?"A previous review was declined. You may request another review.":""} {data.reviewerNote?data.reviewerNote:""}</p>:
-    <p className={styles.privacy}>Independent opt-in · Display name, fictional value and returns become public · No real currency</p>}
+    <p className={styles.privacy}>Independent opt-in · Your fictional portfolio value and returns become public · Username optional</p>}
   </section>
   <section className={styles.rankings} aria-label="Market leaderboard">
    <div className={styles.tabBar} role="group" aria-label="Ranking type">
