@@ -5,6 +5,7 @@ import Link from "next/link";
 import styles from "./exchange.module.css";
 import {DuckBucks,DuckBuckIcon,duckBucksNumber} from "@/components/DuckBucks";
 import {ExchangeCompanyIcon} from "@/components/ExchangeCompanyIcon";
+import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
 import {achievementCatalog} from "@/data/achievement-catalog";
 import {STOCKS,STORAGE_KEY,MARKET_INTERVAL_MS,STARTING_BUCKS,cycleAt,defaultPortfolio,decodeSavedPortfolio,executeOrder,money,headlineAt,newsImpactAt,priceAt,tradeFee,tradeSubtotal,tradeTotal,sanitizePortfolio,totalValue,type Portfolio} from "@/lib/pod-exchange";
 
