@@ -6,7 +6,7 @@ import {WorkspaceEditBlock,WorkspaceEditToolbar,useWorkspaceDrag} from "@/compon
 import {dropBlock,moveBlock,uniqueAllowed,visibleBlocks} from "@/components/workspace-layout";
 import {useWorkspaceEditorDialog} from "@/components/useWorkspaceEditorDialog";
 import {confirmWorkspaceReset} from "@/components/workspace-edit-standards";
-import {portalWidgetGroups,widgetGroup,widgetPurpose} from "@/components/workspace-widget-policy";
+import {portalWidgetGroups,widgetAllowed,widgetGroup,widgetPurpose} from "@/components/workspace-widget-policy";
 import {ARCADE_CATEGORIES,ARCADE_GAMES,ARCADE_GAME_KEYS,ARCADE_LAYOUT_KEY,GAME_FAVOURITES_KEY,categoryCounts,normaliseFavourites,type ArcadeCategory,type ArcadeGame} from "@/lib/fun-zone-arcade";
 import {FunZoneCarousel} from "./FunZoneCarousel";
 import {PodExchangeWatchlist} from "./PodExchangeWatchlist";
