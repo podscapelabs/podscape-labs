@@ -5,6 +5,7 @@ import styles from "./exchange.module.css";
 import {DuckBucks,DuckBuckIcon,duckBucksNumber} from "@/components/DuckBucks";
 import {PodscapeLineIcon,type PodscapeIconName} from "@/components/PodscapeLineIcon";
 import {recordExchangeTradeAchievements} from "@/components/exchange-achievements";
+import {achievementCatalog} from "@/data/achievement-catalog";
 import {STOCKS,STORAGE_KEY,MARKET_INTERVAL_MS,STARTING_BUCKS,cycleAt,defaultPortfolio,executeOrder,money,headlineAt,priceAt,sanitizePortfolio,totalValue,type Portfolio} from "@/lib/pod-exchange";
 
 const companyMarks:Record<string,PodscapeIconName>={MOO:"leaf",PANDA:"jar",BLUE:"arrow-right",TITAN:"bin",CLOWN:"creative"};
@@ -83,6 +84,15 @@ export function PodExchange(){
     <p><strong>Prices change every five minutes</strong> based on simulated market movement and occasional company news.</p>
     <p><strong>Grow your portfolio</strong> by trading wisely. Its value is your remaining Duck Bucks plus the current value of your shares.</p>
     <small>Beta rules: whole shares only, no trading fees, and no real money or prizes. Your game saves on this device.</small>
+   </div>
+  </details>
+  <details className={styles.achievementGuide}>
+   <summary><span><PodscapeLineIcon name="trophy"/> Trading Achievements</span><span>5 to discover <span aria-hidden="true">⌄</span></span></summary>
+   <div className={styles.achievementGoals}>
+    {achievementCatalog.filter(item=>item.key.startsWith("exchange_")).map(item=><div key={item.key}>
+     <span><strong>{item.title}</strong><small>{item.description}</small></span><b>+{item.exp} EXP</b>
+    </div>)}
+    <Link href="/account/progress">View your unlocked achievements →</Link>
    </div>
   </details>
   <section className={styles.balances} aria-label="Duck Bucks portfolio">
