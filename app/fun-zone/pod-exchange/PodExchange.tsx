@@ -202,12 +202,7 @@ export function PodExchange(){
    <div><p className={styles.eyebrow}><Link href="/fun-zone">Fun Zone</Link> / MARKET PARODY <span className={styles.beta}>BETA</span></p><h1>The Pod Exchange</h1><p>A little market. A lot of leaf drama.</p></div>
    <div className={styles.marketStatus}><span><i aria-hidden="true"/> MARKET OPEN</span><small>{now===null?"Loading market…":`Next tick ${countdown(timeLeft)}`}</small></div>
   </header>
-  <p className={styles.disclaimer}><PodscapeLineIcon name="gamepad"/> A fictional market game · No real money, cash-out, Pod Coins or prizes.</p>
-  <Link href="/fun-zone/pod-exchange/rankings" className={styles.marketLeadersLink}>
-   <span className={styles.marketLeadersIcon}><PodscapeLineIcon name="trophy"/></span>
-   <span><strong>Market Rankings</strong><small>The Rich List · Top Investors · Weekly Market Movers</small></span>
-   <span className={styles.marketLeadersArrow} aria-hidden="true">→</span>
-  </Link>
+  <p className={styles.disclaimer}><PodscapeLineIcon name="gamepad"/> Fictional trading · No real money or prizes.</p>
   {storageMode==="error"?<div className={styles.walletAlert} role="alert"><div><strong>Saved wallet unavailable</strong><p>{storageMessage} Your existing Duck Bucks and shares have not been reset.</p></div><button type="button" onClick={()=>window.location.reload()}>Retry loading</button></div>:null}
   <section className={styles.balances} aria-label="Duck Bucks portfolio">
    <div><span>Portfolio value</span><strong>{ready&&now!==null?<DuckBucks amount={worth}/>:"Loading…"}</strong><small className={gain>=0?styles.up:styles.down}>{ready&&now!==null?<><DuckBucks amount={gain} showSign/> overall</>:"Saved on this device"}</small></div>
@@ -266,6 +261,11 @@ export function PodExchange(){
    <div className={styles.holdings}>{STOCKS.filter(stock=>(portfolio.holdings[stock.symbol]||0)>0).map(stock=><div key={stock.symbol}><span className={styles.holdingIdentity}><span className={styles.holdingIcon}><CompanyMark symbol={stock.symbol}/></span><strong>{stock.symbol}</strong> <small>× {portfolio.holdings[stock.symbol]}</small></span><strong><DuckBucks amount={(portfolio.holdings[stock.symbol]||0)*priceAt(stock.symbol,cycle)}/></strong></div>)}</div>}
    {portfolio.trades.length>0?<details className={styles.history}><summary>Recent trades ({portfolio.trades.length})</summary>{portfolio.trades.slice(0,10).map(trade=><p key={trade.id}>{trade.side==="buy"?"Bought":"Sold"} {trade.shares} {trade.symbol} · <DuckBucks amount={trade.unitPrice}/> each</p>)}</details>:null}
   </section>
+  <Link href="/fun-zone/pod-exchange/rankings" className={styles.marketLeadersLink}>
+   <span className={styles.marketLeadersIcon}><PodscapeLineIcon name="trophy"/></span>
+   <span><strong>Market Rankings</strong><small>Rich List · Top Investors · Market Movers</small></span>
+   <span className={styles.marketLeadersArrow} aria-hidden="true">→</span>
+  </Link>
   <div className={styles.rulesDock} aria-label="Market help and achievements">  <details className={styles.rules} id="exchange-rules">
    <summary><span><PodscapeLineIcon name="book"/> How to Play</span><span className={styles.rulesHint}>The basics <span aria-hidden="true">⌄</span></span></summary>
    <div className={styles.rulesBody}>
