@@ -202,11 +202,48 @@ const extra:Entry[]=[
  ])
  ].map(p=>({gameKey:"crossword-colony" as const,mode:"crossword" as const,puzzle:p})),
  ...[
- search("leaf-litter","Leaf Litter Basics",["LEAF","LITTER","HUMUS","DECAY","FUNGI","SOIL","BARK","MOSS"],19737,"Find forest-floor and decomposer terms."),
+ search("leaf-litter","Life in the Litter",["LITTER","DEBRIS","COMPOST","DETRITUS","FUNGI","MICROBES","HUMUS","DECAY"],19737,"Discover words for what happens to fallen plant material as it decomposes."),
  search("keeper-essentials","Keeper Essentials",["MOISTURE","FEEDING","CALCIUM","VENTILATION","SUBSTRATE","SPRAYER","ENCLOSURE","HUMIDITY"],81927,"Find familiar enclosure and husbandry terms."),
  search("anatomy-terms","Science Words",["MOLT","MANCA","GENUS","SPECIES","ANTENNA","ABDOMEN","JUVENILE","EXUVIA"],34987,"A bridge to science: words introduced in earlier quizzes.")
  ].map(p=>({gameKey:"word-search" as const,mode:"search" as const,puzzle:p}))
 ];
+// Fifth stages are new IDs appended after all existing IDs. Historical
+// completion rows stay valid; established puzzle order is never reshuffled.
+const extension:Entry[]=[
+ {gameKey:"species-detective",mode:"quiz",puzzle:quiz("field-notes","Scientific Field Notes","Distinguish species, morphs and genus names using clues.", "Expert",[
+  Q("A label reads Porcellio scaber. Which word tells you the genus?",["Porcellio","scaber","Both names mean a morph","Neither name"],0,"Porcellio is the genus; scaber is the specific epithet. The two words form the species name."),
+  Q("Two isopods share a colour but look structurally different. What is most useful next?",["Compare diagnostic body features and published references","Assume they are the same species","Choose the largest one as the adult","Name both after their colour"],0,"Colours may be shared across taxa. Reliable structural characters and references are more useful."),
+  Q("Which is an informal hobby name rather than a binomial scientific name?",["Titan","Porcellio hoffmannseggi","Oniscus asellus","Armadillidium maculatum"],0,"Titan is a hobby nickname. The species name Porcellio hoffmannseggi provides a more specific identification."),
+  Q("What does sp. indicate in a label such as Cubaris sp.?",["The exact species is unspecified","The animal is a subspecies","The colour is confirmed","The animal is an adult"],0,"sp. marks an unspecified species within a genus. It should not be treated as a confirmed species-level name.")
+ ])},
+ {gameKey:"keepers-challenge",mode:"quiz",puzzle:quiz("colony-casebook","The Colony Casebook","Make careful decisions when several conditions interact.","Expert",[
+  Q("A new colony clusters under one damp hide while the rest of the substrate is dry. Your first step?",["Check the species and moisture gradient before adjusting","Flood everything immediately","Remove the only refuge","Stop ventilating altogether"],0,"Clustering can signal that the rest of the enclosure is unsuitable; verify the species' requirements and measured conditions."),
+  Q("An enclosure smells stagnant and stays saturated after misting. Which pairing deserves review?",["Ventilation and watering frequency","The pattern of isopods and the brand of bark","Only calcium colour","The label font"],0,"Prolonged saturation and poor airflow can harm suitable microhabitats. Correct the underlying husbandry conditions."),
+  Q("A colony stops breeding after several changes. What is the soundest investigation?",["Review records and change one variable at a time","Switch all food and substrate daily","Assume every adult is infertile","Ignore temperature and moisture"],0,"Stable conditions and careful observations let keepers isolate potential causes."),
+  Q("A species is described as cave-associated. What does that imply for its care?",["Investigate its ecology before making assumptions","Keep it completely submerged","Never provide a dry refuge","Use one universal setup for all cave species"],0,"Cave ecology can suggest protected microclimates, but captive requirements must be verified for each species.")
+ ])},
+ {gameKey:"word-of-the-week",mode:"quiz",puzzle:quiz("science-vocabulary","Science Vocabulary","Connect new anatomy and taxonomy words to their meanings.","Expert",[
+  Q("The pereon is the main thoracic region. What is the pleon?",["The abdominal region","The genus name","The outer leaf covering","A calcium source"],0,"The pleon is the abdominal region, while the pereon is the thoracic trunk."),
+  Q("What is a uropod?",["A paired appendage toward the rear","The soil surface","A species of moss","The whole brood pouch"],0,"Uropods are posterior appendages that may help distinguish some taxa."),
+  Q("What does conglobation describe?",["Rolling the body into a ball","Shedding only one antenna","Eating decomposed leaves","Brooding offspring"],0,"Conglobation is defensive rolling into a ball, seen in certain isopod lineages."),
+  Q("A scientific name has two parts. What is the specific epithet?",["Its second word","Its first word","A care category","An informal nickname"],0,"In a name such as Porcellio scaber, scaber is the specific epithet.")
+ ])},
+ {gameKey:"species-quiz",mode:"quiz",puzzle:quiz("the-science-bench","The Science Bench","Put your new biology vocabulary to work.","Expert",[
+  Q("Which body appendages support respiratory structures in many terrestrial isopods?",["Pleopods","Antenna tips","Walking claws","Mandibles only"],0,"Many terrestrial isopods have respiratory structures associated with abdominal pleopods."),
+  Q("Which term refers to the brood pouch carried by a female?",["Marsupium","Uropod","Pleon","Exuvia"],0,"The marsupium is the ventral brood pouch where developing young are carried."),
+  Q("What does detritivore describe?",["An animal feeding on dead organic matter","A species that eats only live prey","A completely aquatic group","An adult stage of isopod"],0,"Detritivores contribute to decomposing organic material and nutrient cycling."),
+  Q("What does an exuvia represent?",["A shed exoskeleton","A genus of isopod","A type of substrate","A breathing appendage"],0,"Exuvia is the cast-off exoskeleton left after moulting.")
+ ])},
+ {gameKey:"word-burrow",mode:"burrow",puzzle:burrow("genus-clue","The First Name","GENUS","The first word in a two-part scientific species name.","Genus groups related species. For example, Porcellio is the genus in Porcellio scaber.","Expert")},
+ {gameKey:"colony-connections",mode:"connections",puzzle:connections("scientific-sorting","The Science Sorting Bench",[
+  group("Body regions",["Pereon","Pleon","Cephalon","Pleotelson"]),
+  group("Body appendages",["Antennae","Uropods","Pleopods","Pereopods"]),
+  group("Taxonomic terms",["Genus","Species","Epithet","Binomial"]),
+  group("Development terms",["Manca","Marsupium","Moult","Exuvia"])
+ ])},
+ {gameKey:"word-search",mode:"search",puzzle:search("genera-field-guide","Scientific Names",["CUBARIS","PORCELLIO","ARMADILLIDIUM","PORCELLIONIDES","TRICHORHINA","ONISCUS","PHILOSCIA","NAGURUS"],4321987,"Find eight isopod genera once you are familiar with scientific naming.")}
+];
+
 const sample:Entry[]=[
  ...games.map(game=>({
  gameKey:game.key,mode:game.mode,
@@ -217,7 +254,14 @@ const sample:Entry[]=[
  } as Entry)),
  {gameKey:"word-search",mode:"search",puzzle:search("genus-explorer","First Finds",["LEAF","MOSS","BARK","SOIL","CORK","WATER","HIDE","FOOD"],24681357,"Start with eight familiar enclosure words.")}
 ];
-export const puzzleEntries:Entry[]=[...sample,...extra];
+const baseEntries:Entry[]=[...sample,...extra,...extension];
+const levelNames=["Starter","Familiar","Explorer","Practiced","Specialist","Expert"];
+// The level is defined by the server-owned sequence, never by an arbitrary
+// label in an individual puzzle bank. Existing IDs keep their order.
+export const puzzleEntries:Entry[]=baseEntries.map(entry=>{
+ const level=baseEntries.filter(other=>other.gameKey===entry.gameKey).findIndex(other=>other.puzzle.id===entry.puzzle.id);
+ return {...entry,puzzle:{...entry.puzzle,difficulty:"Level "+(level+1)+" · "+(levelNames[level]||"Mastery")}};
+});
 export function getPuzzles(gameKey:string){return puzzleEntries.filter(e=>e.gameKey===gameKey);}
 export function getPuzzle(gameKey:string,puzzleId:string){return puzzleEntries.find(e=>e.gameKey===gameKey&&e.puzzle.id===puzzleId);}
 export const gameKeys=[...games.map(g=>g.key),"word-search"] as const;
@@ -238,4 +282,9 @@ for(const e of puzzleEntries){
   if(p.words.length!==8||p.words.some(w=>!/^[A-Z]+$/.test(w)||w.length>p.size))throw new Error("Invalid search "+e.puzzle.id);
  }
 }
-for(const key of gameKeys)if(getPuzzles(key).length!==4)throw new Error("Expected 4 puzzles in "+key);
+for(const key of gameKeys){
+ const count=getPuzzles(key).length;
+ if(count<4||count>10)throw new Error("Invalid progression length in "+key+": "+count);
+ const ids=getPuzzles(key).map(e=>e.puzzle.id);
+ if(new Set(ids).size!==ids.length)throw new Error("Duplicate puzzle ID in "+key);
+}
