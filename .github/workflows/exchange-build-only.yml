@@ -25,5 +25,11 @@ jobs:
         run: pnpm run test:pod-exchange
       - name: Verify Exchange achievements
         run: pnpm run test:exchange-achievements
+      - name: Verify Fun Zone portal customization
+        run: pnpm run test:fun-zone-portal
+      - name: Verify theme system and responsive roles
+        run: pnpm run check:theme-system
+      - name: Verify PodScape shared design system
+        run: node scripts/verify-design-system.mjs
       - name: Build Next.js without deploying
         run: pnpm run build
