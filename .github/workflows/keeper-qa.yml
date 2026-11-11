@@ -5,6 +5,7 @@ on:
       - codex/unified-home-manager-customization
       - codex/ledger-navigation-optimization
       - codex/podscape-unified-release-20261109
+      - codex/pod-exchange-playable-beta-20261110
   pull_request:
   workflow_dispatch:
 permissions:
@@ -35,6 +36,12 @@ jobs:
         run: node scripts/verify-ledger.mjs
       - name: Fun Zone regression checks
         run: pnpm run test:fun-zone
+      - name: Pod Exchange mechanics and long-running market checks
+        run: pnpm run test:pod-exchange
+      - name: Pod Exchange achievement and atomic-wallet checks
+        run: pnpm run test:exchange-achievements
+      - name: Fun Zone portal widget and shared editor checks
+        run: pnpm run test:fun-zone-portal
       - name: Onboarding and customization achievement checks
         run: node scripts/verify-experience-achievements.mjs
       - name: Cross-device UI preference and RLS regression checks
