@@ -31,7 +31,7 @@ function ResendVerificationForm() {
   return (
     <form className={styles.form} action={submit} aria-label="Resend email verification">
       <div className={styles.field}>
-        <label htmlFor="resend-verification-email">Didn't receive a verification email?</label>
+        <label htmlFor="resend-verification-email">Didn&apos;t receive a verification email?</label>
         <input id="resend-verification-email" type="email" name="email"
           autoComplete="email" maxLength={254} placeholder="Your approved beta email" required />
       </div>
