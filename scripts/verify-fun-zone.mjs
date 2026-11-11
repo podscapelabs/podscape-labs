@@ -114,6 +114,56 @@ assert.ok(questionCount>=70,"Expected deep, varied quiz banks");
 assert.equal(JSON.stringify(logic.scoreWordGuess("PAPAL","APPLE")),JSON.stringify(["present","present","correct","absent","present"]));
 assert.equal(JSON.stringify(logic.scoreWordGuess("HUMUS","HUMUS")),JSON.stringify(["correct","correct","correct","correct","correct"]));
 
+
+// Every word-based game must share stable feedback meanings, independent
+// of visual theme palettes. Verify contrast and non-colour indicators.
+const feedbackTokens=source("app/globals.css");
+const gameUi=source("components/PlayGame.module.css");
+const gameLogicUi=source("components/PlayGame.tsx");
+const wordSearchUi=source("app/fun-zone/word-search/game.module.css");
+const wordSearchLogic=source("app/fun-zone/word-search/GenusWordSearch.tsx");
+const gameColors={};
+for(const role of ["correct","present","absent","incorrect","state-text"]){
+ const token="--game-"+role;
+ const match=feedbackTokens.match(new RegExp(token+"\\s*:\\s*(#[0-9a-fA-F]{6})\\s*;"));
+ assert.ok(match,"Missing theme-independent word game token "+token);
+ gameColors[role]=match[1];
+}
+function gameLuminance(hex){
+ const channels=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255);
+ const mapped=channels.map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);
+ return mapped[0]*.2126+mapped[1]*.7152+mapped[2]*.0722;
+}
+function gameContrast(a,b){
+ const x=gameLuminance(a),y=gameLuminance(b);
+ return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);
+}
+for(const role of ["correct","present","absent","incorrect"]){
+ assert.ok(gameContrast(gameColors[role],gameColors["state-text"])>=4.5,
+  "Game state text contrast fails AA for "+role);
+}
+for(const state of ["correct","present","absent"]){
+ assert.ok(gameUi.includes('.guessRow>span[data-result="'+state+'"]'),"Missing Burrow tile state "+state);
+ assert.ok(gameUi.includes('.letterKeyboard span[data-result="'+state+'"]'),"Missing keyboard state "+state);
+ assert.ok(gameUi.includes('.gameLegendSwatch[data-result="'+state+'"]'),"Missing visible legend "+state);
+}
+for(const marker of ['content:"✓"','content:"●"','content:"×"']){
+ assert.ok(gameUi.includes(marker),"Word tiles need a non-colour symbol "+marker);
+}
+assert.match(gameLogicUi,/Green: correct position/);
+assert.match(gameLogicUi,/Amber: in the word, wrong position/);
+assert.match(gameLogicUi,/Slate: not in the word/);
+assert.match(gameLogicUi,/in word, wrong position/,"Word Burrow key needs accessible feedback");
+assert.match(gameUi,/\.options button\[data-result="correct"\]/,"Quizzes need clear correct answer feedback");
+assert.match(gameUi,/\.options button\[data-result="incorrect"\]/,"Quizzes need clear incorrect answer feedback");
+assert.match(gameUi,/\.connectionGrid button\[aria-pressed="true"\]/,"Connections must distinguish selected words");
+assert.match(gameUi,/\.solvedGroup strong::before/,"Connections solved groups need a success symbol");
+assert.match(gameUi,/\.crosswordCell\[data-conflict="true"\]::after/,"Crossword conflicts need a symbol");
+for(const selector of [".cell.solved",".cell.selected",".cell.hinted",".words .done"]){
+ assert.ok(wordSearchUi.includes(selector),"Word Search feedback must have a distinct state: "+selector);
+}
+assert.ok(wordSearchLogic.includes('", found word"'),"Word Search cells must announce solved status");
+
 const migration=source("supabase/migrations/20261109190000_fun_zone_puzzle_achievements.sql");
 assert.match(migration,/primary key\(user_id,game_key,puzzle_id\)/);
 assert.match(migration,/p_previous_puzzle_id/);
