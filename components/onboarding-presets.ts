@@ -57,7 +57,10 @@ export function applyStarterPreferences(options:StarterPreferenceOptions):boolea
   const saved=JSON.parse(localStorage.getItem(onboardingLayoutKey)||"null") as {order?:unknown;visible?:unknown}|null;
   const known=new Set<string>(homeWidgetOrder);
   const current=Array.isArray(saved?.order)?saved.order.filter((id):id is string=>typeof id==="string"&&known.has(id)):[];
-  const order=[...new Set([...current,...homeWidgetOrder])];
+  // A chosen starter is a deliberate reorder of the optional widgets; core
+  // greeting/hero/shortcuts/spotlight stay in their established positions.
+  const core=["greeting","hero","shortcuts","spotlight"];
+  const order=[...new Set([...core,...chosen.visible,...current,...homeWidgetOrder])];
   localStorage.setItem(onboardingLayoutKey,JSON.stringify({order,visible:chosen.visible}));
   if(options.shortcuts){
    localStorage.setItem(onboardingHomeNavKey,JSON.stringify(cleanPreference(chosen.homeShortcuts,"home")));
