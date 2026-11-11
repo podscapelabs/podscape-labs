@@ -40,6 +40,10 @@ export async function GET(){
   const {data:preference,error:prefError}=user?await admin.from("member_exchange_ranking_preferences")
    .select("public_enabled,eligible").eq("user_id",user.id).maybeSingle():{data:null,error:null};
   if(prefError)throw new Error("Ranking preferences unavailable");
+  const {data:ownWallet,error:ownError}=user?await admin.from("member_exchange_portfolios")
+   .select("user_id").eq("user_id",user.id).maybeSingle():{data:null,error:null};
+  if(ownError)throw new Error("Unable to verify wallet status");
+  const needsWallet=!!user&&!ownWallet;
   const participating=preference?.public_enabled===true&&preference.eligible===true;
   const eligible=preference?.eligible===true;
   const preferences=await readAll<{user_id:string}>(async (from,to)=>
@@ -75,7 +79,7 @@ export async function GET(){
   }
   const viewerId=participating?user?.id||null:null;
   return NextResponse.json({
-   signedIn:!!user,participating,eligible,legacyReviewRequired:!!user&&!eligible,
+   signedIn:!!user,participating,eligible,needsWallet,legacyReviewRequired:!!user&&!!ownWallet&&!eligible,
    cycle,weekStart,weeklyReady:participants.some(p=>p.weeklyPct!==null),
    wealth:standings(participants,"wealth",viewerId),
    return:standings(participants,"return",viewerId),
