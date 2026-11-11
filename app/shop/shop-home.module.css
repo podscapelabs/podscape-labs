@@ -81,88 +81,24 @@
 .feature:after{content:none}
 
 
-/* Woodland: override legacy light-only Shop colors using the theme palette. */
-:global(html[data-theme="woodland"]) .hero{
- background:
-  radial-gradient(ellipse at 94% 12%,color-mix(in srgb,var(--clay) 17%,transparent),transparent 45%),
-  radial-gradient(ellipse at 80% 90%,color-mix(in srgb,var(--amber) 12%,transparent),transparent 46%),
-  linear-gradient(125deg,var(--surface-raised),var(--surface));
+
+/* Universal Shop theme contract — no per-theme selectors or fixed palette. */
+.hero{
+ background:radial-gradient(ellipse at 92% 15%,color-mix(in srgb,var(--portal-hero-glow) 30%,transparent),transparent 48%),
+ linear-gradient(125deg,var(--surface-raised),var(--surface));
  color:var(--text-primary);
 }
-:global(html[data-theme="woodland"]) .eyebrow{color:var(--accent)}
-:global(html[data-theme="woodland"]) .hero h1{color:var(--text-primary)}
-:global(html[data-theme="woodland"]) .hero p:last-child,
-:global(html[data-theme="woodland"]) .heroCopy>p:not(.eyebrow){color:var(--text-secondary)}
-:global(html[data-theme="woodland"]) .hero .previewTag{
- border-color:var(--border-strong);
- background:color-mix(in srgb,var(--accent) 10%,var(--surface-raised));
- color:var(--text-primary);
-}
-:global(html[data-theme="woodland"]) .path:nth-child(2){background:color-mix(in srgb,var(--amber) 9%,var(--surface))}
-:global(html[data-theme="woodland"]) .path:nth-child(3){background:color-mix(in srgb,var(--clay) 10%,var(--surface))}
-:global(html[data-theme="woodland"]) .path:nth-child(4){background:color-mix(in srgb,var(--moss) 12%,var(--surface))}
-:global(html[data-theme="woodland"]) .feature{
- background:
-  radial-gradient(circle at 90% 25%,color-mix(in srgb,var(--clay) 22%,transparent),transparent 48%),
-  linear-gradient(120deg,var(--portal-hero-start),var(--portal-hero-end));
+.eyebrow{color:var(--accent)}
+.hero h1{color:var(--text-primary)}
+.hero p:last-child,.heroCopy>p:not(.eyebrow){color:var(--text-secondary)}
+.hero .previewTag{border-color:var(--border-strong);background:color-mix(in srgb,var(--accent) 10%,var(--surface-raised));color:var(--text-primary)}
+.path:nth-child(2){background:color-mix(in srgb,var(--amber) 9%,var(--surface))}
+.path:nth-child(3){background:color-mix(in srgb,var(--clay) 10%,var(--surface))}
+.path:nth-child(4){background:color-mix(in srgb,var(--moss) 12%,var(--surface))}
+.feature{
+ background:radial-gradient(circle at 90% 25%,color-mix(in srgb,var(--portal-hero-glow) 22%,transparent),transparent 48%),
+ linear-gradient(120deg,var(--portal-hero-start),var(--portal-hero-end));
  color:var(--portal-hero-text);
 }
-:global(html[data-theme="woodland"]) .feature a{
- background:var(--portal-hero-button-bg);
- color:var(--portal-hero-button-text);
-}
-:global(html[data-theme="woodland"]) .searchSubmit{
- color:var(--accent-contrast);
-}
-
-
-/* Lilac: lavender Shop portal, no leftovers from the green-only light palette. */
-:global(html[data-theme="lilac"]) .hero{
- background:
-  radial-gradient(ellipse at 90% 12%,color-mix(in srgb,var(--moss) 25%,transparent),transparent 45%),
-  linear-gradient(125deg,#f1e5f5,#d7bde5);
- color:#33223e;
-}
-:global(html[data-theme="lilac"]) .eyebrow{color:#70418b}
-:global(html[data-theme="lilac"]) .hero h1{color:#33223e}
-:global(html[data-theme="lilac"]) .hero p:last-child,
-:global(html[data-theme="lilac"]) .heroCopy>p:not(.eyebrow){color:#554263}
-:global(html[data-theme="lilac"]) .hero .previewTag{
- border-color:#b99bc8;background:#fffaffad;color:#4a2b5f;
-}
-:global(html[data-theme="lilac"]) .path:nth-child(2){background:color-mix(in srgb,#cebbdf 23%,var(--surface))}
-:global(html[data-theme="lilac"]) .path:nth-child(3){background:color-mix(in srgb,#e2b9d7 25%,var(--surface))}
-:global(html[data-theme="lilac"]) .path:nth-child(4){background:color-mix(in srgb,#bea6d7 23%,var(--surface))}
-:global(html[data-theme="lilac"]) .feature{
- background:radial-gradient(circle at 90% 23%,#e7d3f3,transparent 52%),
- linear-gradient(125deg,#70418b,#9b75ae);
- color:#fffaff;
-}
-:global(html[data-theme="lilac"]) .feature a{background:#fffaff;color:#4a2b5f}
-:global(html[data-theme="lilac"]) .searchSubmit{color:var(--accent-contrast)}
-
-
-/* Ember: warm Shop surfaces without the legacy green-cream hero. */
-:global(html[data-theme="ember"]) .hero{
- background:
-  radial-gradient(ellipse at 92% 14%,rgba(237,153,75,.24),transparent 46%),
-  linear-gradient(125deg,#f9e7d2,#ebbc91);
- color:#3e281d;
-}
-:global(html[data-theme="ember"]) .eyebrow{color:#a64c21}
-:global(html[data-theme="ember"]) .hero h1{color:#3e281d}
-:global(html[data-theme="ember"]) .hero p:last-child,
-:global(html[data-theme="ember"]) .heroCopy>p:not(.eyebrow){color:#654833}
-:global(html[data-theme="ember"]) .hero .previewTag{
- border-color:#c7926d;background:#fffaf3a8;color:#64351f;
-}
-:global(html[data-theme="ember"]) .path:nth-child(2){background:color-mix(in srgb,#f0c8a0 30%,var(--surface))}
-:global(html[data-theme="ember"]) .path:nth-child(3){background:color-mix(in srgb,#e2a57c 23%,var(--surface))}
-:global(html[data-theme="ember"]) .path:nth-child(4){background:color-mix(in srgb,#dcb985 27%,var(--surface))}
-:global(html[data-theme="ember"]) .feature{
- background:radial-gradient(circle at 90% 23%,#d88b50,transparent 53%),
- linear-gradient(125deg,#703b23,#a8562b);
- color:#fffaf3;
-}
-:global(html[data-theme="ember"]) .feature a{background:#fffaf3;color:#64351f}
-:global(html[data-theme="ember"]) .searchSubmit{color:var(--accent-contrast)}
+.feature a{background:var(--portal-hero-button-bg);color:var(--portal-hero-button-text)}
+.searchSubmit{color:var(--accent-contrast)}
