@@ -85,3 +85,32 @@
 }
 @media(max-width:350px){.hero h1{font-size:31px}.heroIcon{display:none}.tabs button{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.tabs button{transition:none}}
+
+/* Ranked-game entry criteria share the standard PodScape surface/card hierarchy. */
+.entryGuide{padding:clamp(15px,3vw,23px);background:var(--surface);border:1px solid var(--border);border-radius:19px;min-width:0}
+.entryGuideHead{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.entryGuideHead small{font-size:10px;font-weight:850;letter-spacing:.15em;color:var(--accent)}
+.entryGuideHead h2{font:500 clamp(23px,3vw,31px)/1.14 var(--display);margin:6px 0 0;overflow-wrap:anywhere}
+.entryPoints{flex:none;padding:9px 11px;border:1px solid var(--border);border-radius:99px;background:var(--surface-secondary);color:var(--accent);font-size:11px;font-weight:800}
+.entryIntro{margin:13px 0 15px;color:var(--text-secondary);font-size:13px;line-height:1.55}
+.entrySteps{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.entrySteps li{display:flex;align-items:flex-start;gap:9px;padding:13px 10px;min-width:0;border:1px solid var(--border);border-radius:13px;background:var(--surface-secondary)}
+.entrySteps li>span{display:grid;place-items:center;flex:0 0 27px;height:27px;border-radius:50%;color:var(--accent);background:var(--surface);font-size:12px;font-weight:850}
+.entrySteps li>div{display:grid;gap:5px;min-width:0}
+.entrySteps strong{font-size:12px}
+.entrySteps small{font-size:11px;color:var(--text-secondary);line-height:1.45}
+.entryGuideFooter{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}
+.entryGuideFooter>span{font-size:11px;color:var(--text-secondary);line-height:1.45;max-width:52ch}
+.entryGuideFooter>a{display:inline-flex;align-items:center;justify-content:center;gap:7px;flex:none;min-height:44px;padding:10px 13px;border-radius:11px;background:var(--accent);color:var(--accent-contrast);font-size:12px;font-weight:800;text-decoration:none;text-align:center}
+.entryGuideFooter>a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media(max-width:680px){
+ .entryGuide{padding:15px;border-radius:17px}
+ .entryGuideHead{align-items:flex-start}
+ .entryGuideHead h2{font-size:25px}
+ .entryPoints{padding:7px 8px;font-size:10px}
+ .entrySteps{grid-template-columns:1fr;gap:7px}
+ .entrySteps li{padding:9px 10px;align-items:center}
+ .entrySteps li>span{flex-basis:25px;height:25px}
+ .entryGuideFooter{flex-direction:column;align-items:stretch}
+ .entryGuideFooter>a{width:100%}
+}
