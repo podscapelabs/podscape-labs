@@ -1,0 +1,29 @@
+name: Pod Exchange build-only verification
+on:
+  push:
+    branches:
+      - codex/pod-exchange-playable-beta-20261110
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Set up pnpm
+        run: corepack enable && corepack prepare pnpm@10.14.0 --activate
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Check TypeScript
+        run: pnpm run typecheck
+      - name: Verify Pod Exchange mechanics
+        run: pnpm run test:pod-exchange
+      - name: Verify Exchange achievements
+        run: pnpm run test:exchange-achievements
+      - name: Build Next.js without deploying
+        run: pnpm run build
