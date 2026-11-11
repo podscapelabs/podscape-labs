@@ -101,22 +101,6 @@ export default function Leaderboard(){
    </select>
    <p className={styles.helper}>{period==="daily"?"Today, starting 00:00 UTC.":period==="weekly"?"This week, starting Monday 00:00 UTC.":period==="monthly"?"This month, starting on the 1st at 00:00 UTC.":"Every verified completion since tracking began."}</p>
   </section>
-  <section className={styles.standings} aria-label="Ranking standings" aria-busy={loading}>
-   <div className={styles.standingsHead}><div><small>THE SCOREBOARD</small><h2>{periods.find(x=>x.id===period)?.label} leaders</h2></div><span>{loading?"Updating…":entries.length?format(entries.length)+" ranked players":"No entries"}</span></div>
-   {loading?<p className={styles.empty}>Loading verified arcade results…</p>:
-    !entries.length?<div className={styles.empty}><PodscapeLineIcon name="trophy"/><h3>First place is waiting.</h3><p>No players have opted in with verified completions for this selection yet. Be the first to put your name on the board.</p><Link href="/fun-zone">Explore games →</Link></div>:
-    <>
-     <div className={`${styles.podium} ${top.length===1?styles.soloPodium:top.length===2?styles.duoPodium:""}`}>{top.map((entry,i)=><article key={entry.position+"-"+entry.name+"-"+i} className={styles.podiumCard} aria-label={"Position "+entry.position}>
-      <span className={styles.place}>#{entry.position}</span><span className={styles.medal} aria-hidden="true"><PodscapeLineIcon name="trophy"/></span>
-      <strong>{entry.name}{entry.mine?" · You":""}</strong><b>{format(entry.points)} <small>pts</small></b><span>{entry.completions} verified {entry.completions===1?"puzzle":"puzzles"}</span>
-     </article>)}</div>
-     {others.length?<div className={styles.list}>{others.map((entry,i)=><div key={entry.position+"-"+entry.name+"-"+i} className={entry.mine?styles.myRow:styles.row}><span className={styles.rank}>#{entry.position}</span><div><strong>{entry.name}{entry.mine?" · You":""}</strong><small>{entry.completions} completed</small></div><b>{format(entry.points)} pts</b></div>)}</div>:null}
-    </>}
-  </section>
-  <div className={styles.expRankingsLink}>
-    <div><strong>More than games?</strong><p>See how your lifetime EXP and keeper level compare across all of PodScape.</p></div>
-    <Link href="/account/progress/rankings">Lifetime EXP Rankings <span aria-hidden="true">→</span></Link>
-  </div>
   <div className={styles.helpAction}><RankingModal trigger="Rules, rewards & achievements" title="Arcade Rankings guide">
   <section className={styles.entryGuide}>
    <div className={styles.entryGuideHead}>
@@ -175,5 +159,22 @@ export default function Leaderboard(){
 
   <p className={styles.note}>Ranking points = 100 per unique server-verified puzzle completion. Ties share a rank. Daily, weekly and monthly boards reset by UTC calendar periods; All time persists. Only opted-in players appear. The Pod Exchange is not ranked because simulated wealth isn&apos;t a verified puzzle score.</p>
   </RankingModal></div>
+  <section className={styles.standings} aria-label="Ranking standings" aria-busy={loading}>
+   <div className={styles.standingsHead}><div><small>THE SCOREBOARD</small><h2>{periods.find(x=>x.id===period)?.label} leaders</h2></div><span>{loading?"Updating…":entries.length?format(entries.length)+" ranked players":"No entries"}</span></div>
+   {loading?<p className={styles.empty}>Loading verified arcade results…</p>:
+    !entries.length?<div className={styles.empty}><PodscapeLineIcon name="trophy"/><h3>First place is waiting.</h3><p>No players have opted in with verified completions for this selection yet. Be the first to put your name on the board.</p><Link href="/fun-zone">Explore games →</Link></div>:
+    <>
+     <div className={`${styles.podium} ${top.length===1?styles.soloPodium:top.length===2?styles.duoPodium:""}`}>{top.map((entry,i)=><article key={entry.position+"-"+entry.name+"-"+i} className={styles.podiumCard} aria-label={"Position "+entry.position}>
+      <span className={styles.place}>#{entry.position}</span><span className={styles.medal} aria-hidden="true"><PodscapeLineIcon name="trophy"/></span>
+      <strong>{entry.name}{entry.mine?" · You":""}</strong><b>{format(entry.points)} <small>pts</small></b><span>{entry.completions} verified {entry.completions===1?"puzzle":"puzzles"}</span>
+     </article>)}</div>
+     {others.length?<div className={styles.list}>{others.map((entry,i)=><div key={entry.position+"-"+entry.name+"-"+i} className={entry.mine?styles.myRow:styles.row}><span className={styles.rank}>#{entry.position}</span><div><strong>{entry.name}{entry.mine?" · You":""}</strong><small>{entry.completions} completed</small></div><b>{format(entry.points)} pts</b></div>)}</div>:null}
+    </>}
+  </section>
+  <div className={styles.expRankingsLink}>
+    <div><strong>More than games?</strong><p>See how your lifetime EXP and keeper level compare across all of PodScape.</p></div>
+    <Link href="/account/progress/rankings">Lifetime EXP Rankings <span aria-hidden="true">→</span></Link>
+  </div>
+
  </div></main>;
 }
