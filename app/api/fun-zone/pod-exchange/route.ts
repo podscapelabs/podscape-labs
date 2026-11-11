@@ -54,7 +54,7 @@ export async function POST(request:Request){
   // clobbering any existing cloud portfolio, even under concurrent logins.
   const legacy=data.legacy;
   const saved=legacy&&typeof legacy==="object"?legacy as Record<string,unknown>:null;
-  if(saved && (typeof saved.cash!=="number"||!Number.isFinite(saved.cash)||
+  if(saved && (!isValidPortfolioSnapshot(saved)||typeof saved.cash!=="number"||!Number.isFinite(saved.cash)||
     saved.cash<0||saved.cash>1e10||Math.round(saved.cash*100)/100!==saved.cash||
     !saved.holdings||typeof saved.holdings!=="object"||Array.isArray(saved.holdings)||
     Object.entries(saved.holdings as Record<string,unknown>).some(([symbol,qty])=>!
@@ -62,7 +62,7 @@ export async function POST(request:Request){
    return NextResponse.json({error:"Existing device wallet could not be validated; it has not been overwritten"},{status:400});
   const {error}=await admin!.rpc("initialize_member_exchange_portfolio",{
    p_user_id:user!.id,p_cash:saved?Number(saved.cash):STARTING_BUCKS,
-   p_holdings:saved?.holdings||{}
+   p_holdings:saved?.holdings||{},p_trades:Array.isArray(saved?.trades)?saved.trades:[]
   });
   if(error){console.error("Exchange initialization error",error.code);
    return NextResponse.json({error:"Could not sync portfolio; local data has been preserved"},{status:503})}
