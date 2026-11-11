@@ -239,6 +239,6 @@
 @media(max-width:390px){
  .quickLinks a{font-size:10px;padding:9px 3px}
  .gameIcon{flex-basis:34px;height:34px}
- .gameActions button,.gameActions a{width:40px;height:40px;min-width:40px;min-height:40px}
+ .gameActions button,.gameActions a{width:44px;height:44px;min-width:44px;min-height:44px}
  .categoryGames .gameCard{gap:6px}
 }
