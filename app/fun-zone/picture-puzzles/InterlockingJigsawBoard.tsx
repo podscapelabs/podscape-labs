@@ -3,7 +3,7 @@ import {useCallback,useEffect,useId,useMemo,useRef,useState} from "react";
 import styles from "./picture-puzzles.module.css";
 
 type PiecePosition={x:number;y:number;placed:boolean};
-type Props={userId:string;id:string;imageUrl:string;imageAlt:string;size:number;onProgress?:(placed:number,total:number)=>void;onComplete?:(proof:{placed:number[];moves:number})=>void;onReset?:()=>void};
+type Props={userId:string;id:string;imageUrl:string;imageAlt:string;size:number;previewMode?:boolean;onProgress?:(placed:number,total:number)=>void;onComplete?:(proof:{placed:number[];moves:number})=>void;onReset?:()=>void};
 const WIDTH=600,BOARD=480,BOARD_X=60,BOARD_Y=35,TRAY_Y=595;
 function seedSign(n:number){return ((n*37+17)%7)%2===0?1:-1;}
 function pathForPiece(r:number,c:number,size:number){
@@ -42,7 +42,7 @@ function isValidPositions(value:unknown,size:number):value is PiecePosition[]{
   return p.x>=0&&p.x<=WIDTH-unit&&p.y>=0&&p.y<=TRAY_Y+Math.ceil(size*size/(size===3?3:4))*unit*1.38+35-unit;
  });
 }
-export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,size,onProgress,onComplete,onReset}:Props){
+export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,size,previewMode=false,onProgress,onComplete,onReset}:Props){
  const count=size*size,unit=BOARD/size,cols=size===3?3:4,rows=Math.ceil(count/cols);
  const height=TRAY_Y+rows*unit*1.38+35,root=useRef<SVGSVGElement>(null);
  const uid=useId().replace(/:/g,"");
@@ -50,6 +50,7 @@ export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,size,onProg
  const [ready,setReady]=useState(false);
  const [moves,setMoves]=useState(0);
  const [active,setActive]=useState<number|null>(null);
+ const [lastSnapped,setLastSnapped]=useState<number|null>(null);
  const completionSent=useRef(false);
  const drag=useRef<{index:number;pointerId:number;clientX:number;clientY:number;originX:number;originY:number;changed:boolean}|null>(null);
  // Keep the first server and client renders deterministic to avoid hydration errors.
@@ -58,19 +59,20 @@ export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,size,onProg
  const outline=useMemo(()=>Array.from({length:count},(_,i)=>pathForPiece(Math.floor(i/size),i%size,size)),[count,size]);
  const order=useMemo(()=>[...Array.from({length:count},(_,i)=>i).filter(i=>i!==active),...(active===null?[]:[active])],[count,active]);
  useEffect(()=>{
+  if(previewMode){setPositions(newPositions(size));setReady(true);return;}
   try{const raw=localStorage.getItem(key);let restored=false;if(raw){const saved=JSON.parse(raw) as {positions:unknown;moves:number};if(isValidPositions(saved.positions,size)){setPositions(saved.positions);setMoves(Number.isSafeInteger(saved.moves)&&saved.moves>=0?saved.moves:0);restored=true;}}if(!restored)setPositions(newPositions(size));}catch{setPositions(newPositions(size));/* Local storage is optional */}
   setReady(true);
- },[key,size]);
- useEffect(()=>{if(!ready)return;try{localStorage.setItem(key,JSON.stringify({positions,moves}));}catch{/* Local storage is optional */}},[key,ready,positions,moves]);
+ },[key,size,previewMode]);
+ useEffect(()=>{if(!ready||previewMode)return;try{localStorage.setItem(key,JSON.stringify({positions,moves}));}catch{/* Local storage is optional */}},[key,ready,positions,moves,previewMode]);
  useEffect(()=>{onProgress?.(solved,count);},[solved,count,onProgress]);
  useEffect(()=>{if(ready&&solved===count&&!completionSent.current){completionSent.current=true;onComplete?.({placed:Array.from({length:count},(_,i)=>i),moves});}},[ready,solved,count,moves,onComplete]);
- const startOver=useCallback(()=>{completionSent.current=false;setPositions(newPositions(size));setMoves(0);setActive(null);drag.current=null;onReset?.();},[size,onReset]);
+ const startOver=useCallback(()=>{completionSent.current=false;setPositions(newPositions(size));setMoves(0);setActive(null);setLastSnapped(null);drag.current=null;onReset?.();},[size,onReset]);
  const target=(index:number)=>({x:BOARD_X+(index%size)*unit,y:BOARD_Y+Math.floor(index/size)*unit});
  function trySnap(index:number,x:number,y:number){
   const to=target(index);
   const near=Math.hypot(x-to.x,y-to.y)<unit*.42;
   setPositions(prev=>prev.map((p,i)=>i===index?(near?{...to,placed:true}:{...p,x,y}):p));
-  if(near)setMoves(n=>n+1);
+  if(near){setMoves(n=>n+1);setLastSnapped(index);}
   setActive(null);
  }
  function down(event:React.PointerEvent<SVGGElement>,index:number){
@@ -104,6 +106,7 @@ export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,size,onProg
  }
  return <div className={styles.jigsawShell}>
   <div className={styles.jigsawStatus}><strong>{solved} / {count} pieces placed</strong><span>{moves} snapped pieces</span></div>
+  <div className={styles.snapAnnouncement} role="status" aria-live="polite">{lastSnapped!==null?`Piece ${lastSnapped+1} locked in!`:""}</div>
   <p className={styles.helper}>Drag interlocking pieces from the tray onto their matching positions. Pieces snap into place when close enough. On a keyboard, use arrow keys to move a focused piece and Enter to snap it.</p>
   <div className={styles.jigsawCanvas}>
    <svg ref={root} viewBox={`0 0 ${WIDTH} ${height}`} xmlns="http://www.w3.org/2000/svg" role="group" aria-label={"Interactive jigsaw of "+imageAlt} className={styles.jigsawSvg}>
@@ -112,7 +115,7 @@ export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,size,onProg
     <text x="18" y="570" fill="var(--text-secondary)" fontSize="19" fontWeight="700">YOUR PIECES</text>
     {order.map(i=>{
      const p=positions[i],to=target(i),tx=p.x-to.x,ty=p.y-to.y;
-     return <g key={i} transform={`translate(${tx} ${ty})`} role="button" tabIndex={p.placed?-1:0} aria-label={`Jigsaw piece ${i+1} of ${count}${p.placed?", placed":""}`} aria-disabled={p.placed} onPointerDown={e=>down(e,i)} onPointerMove={move} onPointerUp={up} onPointerCancel={()=>{drag.current=null;setActive(null);}} onKeyDown={e=>keyboard(e,i)} className={p.placed?styles.jigsawPlaced:styles.jigsawPiece}>
+     return <g key={i} transform={`translate(${tx} ${ty})`} role="button" tabIndex={p.placed?-1:0} aria-label={`Jigsaw piece ${i+1} of ${count}${p.placed?", placed":""}`} aria-disabled={p.placed} onPointerDown={e=>down(e,i)} onPointerMove={move} onPointerUp={up} onPointerCancel={()=>{drag.current=null;setActive(null);}} onKeyDown={e=>keyboard(e,i)} className={p.placed?(i===lastSnapped?styles.jigsawJustPlaced:styles.jigsawPlaced):styles.jigsawPiece}>
       <g clipPath={`url(#${uid}-p-${i})`}>
        <image href={imageUrl} x={BOARD_X} y={BOARD_Y} width={BOARD} height={BOARD} preserveAspectRatio="xMidYMid slice" pointerEvents="none"/>
        <path d={outline[i]} fill="transparent" stroke="none"/>
@@ -123,9 +126,9 @@ export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,size,onProg
     })}
    </svg>
   </div>
-  {solved===count?<p className={styles.win} role="status">Jigsaw complete! Every piece has found its place. 🧩</p>:null}
+  {solved===count?<div className={styles.victory} role="status"><span aria-hidden="true">✦ 🧩 ✦</span><h2>Picture complete!</h2><p>You placed all {count} pieces with {moves} successful snaps.</p><div className={styles.victoryArt} role="img" aria-label={imageAlt} style={{backgroundImage:`url("${imageUrl}")`}}/>{previewMode?<small>Preview only · No EXP or progress recorded</small>:<small>Your completed puzzle is ready to save to your collection of achievements.</small>}</div>:null}
   <div className={styles.controls}><button type="button" onClick={startOver}>Shuffle pieces again</button></div>
   <details className={styles.jigsawReference}><summary>View original artwork</summary><div className={styles.fullImage} role="img" aria-label={imageAlt} style={{backgroundImage:`url("${imageUrl}")`}}/></details>
-  <p className={styles.note}>The board starts blank: build the picture by fitting its interlocking pieces together. Progress is saved on this device.</p>
+  <p className={styles.note}>The board starts blank: build the picture by fitting its interlocking pieces together. {previewMode?"Preview only: nothing is saved.":"Progress is saved on this device."}</p>
  </div>;
 }
