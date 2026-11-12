@@ -173,3 +173,36 @@
 .organismTabs button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--accent-contrast)}
 .organismTabs button:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 @media(max-width:600px){.organismTabs{gap:5px;padding-bottom:9px}.organismTabs button{padding:9px 14px;min-height:43px}}
+
+
+/* Catalogue refinement: one compact toolbar replaces three stacked actions. */
+.catalogueToolbar{display:flex;align-items:center;gap:8px;min-width:0;margin:0 0 9px}
+.catalogueToolbar .organismTabs{flex:1 1 auto;min-width:0;gap:6px;padding:0;overflow-x:auto;scrollbar-width:none}
+.catalogueToolbar .organismTabs::-webkit-scrollbar{display:none}
+.catalogueToolbar .organismTabs button{padding:9px 13px;min-height:40px;font-size:11px;white-space:nowrap}
+.catalogueToolbar .catalogueFilterButton{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:8px 13px;flex:none;border:1px solid var(--border-strong);border-radius:999px;background:var(--surface);color:var(--text-primary);font-size:11px;font-weight:800}
+.catalogueToolbar .catalogueFilterButton[aria-expanded=true]{background:var(--surface-secondary);border-color:var(--accent);color:var(--accent)}
+.catalogueToolbar .catalogueFilterButton svg{width:17px;height:17px;flex:none;color:var(--accent)}
+.filterCount{width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.content :global(.v2-filter-bar){margin:0!important;gap:0!important;padding:0!important}
+.content :global(.v2-filter-bar) .collapsibleFilters{width:100%;margin:0 0 9px;padding:12px;border:1px solid var(--border);border-radius:14px;background:var(--surface-raised);gap:8px}
+.content :global(.v2-filter-bar) .collapsibleFilters[hidden]{display:none!important}
+.content :global(.v2-results-meta){margin:3px 0 11px}
+.content :global(.v2-results-meta) :global(.requestEntry){padding:0;margin:0}
+.content :global(.v2-results-meta) :global(.requestEntry button){min-height:34px;padding:6px 10px;font-size:11px;border-radius:999px;color:var(--accent)}
+.content :global(.v2-results-meta) :global(.requestEntry button):focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+@media(max-width:720px){
+ .catalogueToolbar{gap:6px;margin-bottom:5px}
+ .catalogueToolbar .organismTabs{gap:5px}
+ .catalogueToolbar .organismTabs button{min-height:39px;padding:8px 10px;font-size:10px}
+ .catalogueToolbar .catalogueFilterButton{min-height:39px;padding:8px 10px}
+ .content :global(.v2-filter-bar) .collapsibleFilters{grid-template-columns:1fr 1fr;gap:7px;padding:9px}
+ .content :global(.v2-filter-bar) .collapsibleFilters>label:last-child{grid-column:1/-1}
+ .content :global(.v2-results-meta){gap:5px}
+ .content :global(.v2-results-meta) :global(.requestEntry button){font-size:10px;padding:6px 8px}
+}
+@media(max-width:375px){
+ .catalogueToolbar .organismTabs button{padding:8px 8px;font-size:9px}
+ .catalogueToolbar .catalogueFilterButton span:not(.filterCount){display:none}
+ .catalogueToolbar .catalogueFilterButton{width:40px;padding:8px}
+}
