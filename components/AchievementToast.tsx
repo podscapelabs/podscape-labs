@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import styles from "./AchievementToast.module.css";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
 
-export type AchievementNotice = { id: string; title: string; description: string; exp: number; coins?: number; hidden?:boolean };
+export type AchievementNotice = { id: string; title: string; description: string; exp: number; hidden?:boolean };
 const EVENT = "podscape:achievement-unlocked";
 
 export function announceAchievement(notice: AchievementNotice) {
