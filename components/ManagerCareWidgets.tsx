@@ -1,5 +1,6 @@
 "use client";
 import {managerWidgetNames} from "./workspace-widget-labels";
+import {ManagerInlineCare} from "./ManagerInlineCare";
 
 import {useEffect,useState} from "react";
 import Link from "next/link";
@@ -44,7 +45,7 @@ export function ManagerCareOverview({bins}:{bins:ManagerBin[]}){
    :!loaded?<p className={styles.managerModuleEmpty}>Loading saved schedules…</p>
    :due.length?<div className={styles.managerAttention}>
      <div className={styles.managerAttentionCount}><strong>{due.length}</strong><span>{due.length===1?"bin needs attention":"bins need attention"}</span></div>
-     <div className={styles.managerModuleList}>{due.slice(0,3).map(bin=><Link key={bin.id} href={"/keeper/"+bin.id}><span><strong>{bin.name}</strong><small>{bin.species}</small></span><em>{dueLabel(bin.days)}</em></Link>)}</div>
+     <div className={styles.managerModuleList}>{due.slice(0,3).map(bin=><div className={styles.managerDueRow} key={bin.id}><Link href={"/keeper/"+bin.id}><span><strong>{bin.name}</strong><small>{bin.species} · {dueLabel(bin.days)}</small></span></Link><ManagerInlineCare binId={bin.id} binName={bin.name} compact/></div>)}</div>
      <Link className={styles.managerAttentionAction} href="/keeper/schedule">Open care schedule →</Link>
     </div>
    :<div className={styles.managerAttentionEmpty}><strong>{configured>0?"All scheduled care is up to date":"Your care schedule is ready to set up"}</strong><p>{configured>0?"Nothing is currently due.":"Build your own care routine, at your pace."}</p><Link href="/keeper/schedule">{configured>0?"View care schedule →":"Set up schedules →"}</Link></div>}
