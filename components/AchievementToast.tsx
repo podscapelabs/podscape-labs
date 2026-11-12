@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import styles from "./AchievementToast.module.css";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
 
-export type AchievementNotice = { id: string; title: string; description: string; exp: number; coins: number; hidden?:boolean };
+export type AchievementNotice = { id: string; title: string; description: string; exp: number; coins?: number; hidden?:boolean };
 const EVENT = "podscape:achievement-unlocked";
 
 export function announceAchievement(notice: AchievementNotice) {
@@ -37,7 +37,7 @@ export function AchievementToast() {
       <div className={styles.eyebrow}>{current.hidden?"Hidden Achievement Discovered!":"Achievement unlocked!"}</div>
       <strong>{current.title}</strong>
       <div className={styles.description}>{current.description}</div>
-      <div className={styles.rewards}>+{current.exp} EXP{current.coins>0?<><span aria-hidden="true">·</span> +{current.coins} Pod Coins</>:null}</div>
+      <div className={styles.rewards}>+{current.exp} EXP</div>
       <Link className={styles.link} href="/account/progress" onClick={dismiss}>View achievements →</Link>
     </div>
     <button className={styles.close} type="button" aria-label="Dismiss achievement" onClick={dismiss}>×</button>
