@@ -119,3 +119,12 @@ A public cron every minute is not currently configured; the existing 24/7 market
 ## Release rule
 
 The 2.0 cutover is a **deliberate future UTC boundary** chosen at production release time, never hard-coded to an already past date. Production remains on the old engine until then. A market engine is not approved just because its chart looks entertaining.
+
+## Stage 1 implementation checkpoint (code only)
+
+- Changed Monday ranking snapshot logic to the same one-minute arcade clock used by live rankings; no existing weekly snapshot rows edited.
+- Added 10m / 30m / 1h / 24h chart range controls using the existing deterministic quote history; these are not yet persisted V3 history snapshots.
+- Corrected stale five-minute descriptions in Fun Zone watchlist and exchange ranking help text.
+- Updated the existing Pod Exchange regression script to assert the new chart controls.
+- Market engine, six symbols, wallet schema, trading RPC, news schedule and saved player data remain unchanged.
+- The staged chart and cron compatibility code is **not deployed or build-verified**.
