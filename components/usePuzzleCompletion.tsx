@@ -28,7 +28,8 @@ export function usePuzzleCompletion(gameKey:string,puzzleId:string){
    setFailedProof(null);setSaved("saved");router.refresh();
   }catch{completedRef.current=false;setFailedProof(proof);setSaved("unavailable");}
  },[gameKey,puzzleId,router]);
- return {saved,earnedExp,record,retry:failedProof===null?null:()=>record(failedProof)};
+ const clearAwardDisplay=useCallback(()=>setEarnedExp(previous=>previous===null?null:0),[]);
+ return {saved,earnedExp,record,clearAwardDisplay,retry:failedProof===null?null:()=>record(failedProof)};
 }
 export function PuzzleSaveStatus({status,retry}:{status:PuzzleSaveState;retry?:null|(()=>void)}){
  return <p role="status" aria-live="polite" style={{minHeight:"1.5em",fontSize:12,lineHeight:1.5,color:"var(--text-secondary)"}}>
