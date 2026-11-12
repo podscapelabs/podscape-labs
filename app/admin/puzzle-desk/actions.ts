@@ -12,11 +12,12 @@ function fields(form:FormData){
  const description=String(form.get("description")||"").trim();
  const image_alt=String(form.get("image_alt")||"").trim();
  const learning_note=String(form.get("learning_note")||"").trim();
+ const artist_credit=String(form.get("artist_credit")||"").trim();
  const puzzle_type=String(form.get("puzzle_type")||"jigsaw");
  const difficulty=String(form.get("difficulty")||"easy");
  const level=Number(form.get("level")||1);
- if(title.length<3||title.length>90||description.length>240||image_alt.length<3||image_alt.length>180||learning_note.length>300||!Object.prototype.hasOwnProperty.call(PUZZLE_TYPES,puzzle_type)||!Object.prototype.hasOwnProperty.call(DIFFICULTIES,difficulty)||!Number.isInteger(level)||level<1||level>LEVEL_NAMES.length)return null;
- return {title,description,image_alt,learning_note,puzzle_type,difficulty,level};
+ if(title.length<3||title.length>90||description.length>240||image_alt.length<3||image_alt.length>180||learning_note.length>300||artist_credit.length<2||artist_credit.length>120||!Object.prototype.hasOwnProperty.call(PUZZLE_TYPES,puzzle_type)||!Object.prototype.hasOwnProperty.call(DIFFICULTIES,difficulty)||!Number.isInteger(level)||level<1||level>LEVEL_NAMES.length)return null;
+ return {title,description,image_alt,learning_note,artist_credit,puzzle_type,difficulty,level};
 }
 function refresh(id?:string){revalidatePath(desk);revalidatePath("/fun-zone/picture-puzzles");if(id)revalidatePath("/fun-zone/picture-puzzles/"+id);}
 export async function createPicturePuzzle(form:FormData){
@@ -61,6 +62,9 @@ export async function setPicturePuzzleStatus(form:FormData){
  const id=String(form.get("id")||""),status=String(form.get("status")||"");
  if(!/^[0-9a-f-]{36}$/i.test(id)||!["draft","published"].includes(status))redirect(desk+"?error=invalid");
  const db=getWritableSupabaseAdmin();if(!db)redirect(desk+"?error=storage");
+ const {data:puzzle,error:lookupError}=await db.from("picture_puzzles").select("artist_credit").eq("id",id).maybeSingle();
+ if(lookupError||!puzzle)redirect(desk+"?error=database");
+ if(status==="published"&&(!puzzle.artist_credit||puzzle.artist_credit.trim().length<2))redirect(desk+"?error=artist-credit");
  const {error}=await db.from("picture_puzzles").update({status}).eq("id",id);
  if(error)redirect(desk+"?error=database");
  refresh(id);redirect(desk+"?saved="+status);
