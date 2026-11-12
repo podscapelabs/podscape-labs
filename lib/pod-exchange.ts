@@ -75,7 +75,7 @@ export function sessionImpactAt(symbol:string,cycle:number):number{
  if(!isArcadeCycle(cycle)&&cycle<MARKET_V2_START_CYCLE)return 0;
  const event=marketSessionAt(cycle);
  if(event.featured!==symbol)return 0;
- const progress=(cycle-event.startCycle)/MARKET_SESSION_TICKS;
+ const progress=(cycle-event.startCycle)/(event.endCycle-event.startCycle);
  if(progress<=0||progress>=1)return 0;
  return event.direction*event.intensity*Math.sin(Math.PI*progress)**2;
 }
