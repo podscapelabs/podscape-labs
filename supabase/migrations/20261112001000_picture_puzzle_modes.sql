@@ -9,7 +9,7 @@ do $$ begin
   alter table public.picture_puzzles add constraint picture_puzzles_puzzle_type_check check(puzzle_type in ('jigsaw','sliding'));
  end if;
  if not exists(select 1 from pg_constraint where conname='picture_puzzles_level_check') then
-  alter table public.picture_puzzles add constraint picture_puzzles_level_check check(level between 1 and 20);
+  alter table public.picture_puzzles add constraint picture_puzzles_level_check check(level between 1 and 6);
  end if;
 end $$;
 create index if not exists picture_puzzles_level_idx on public.picture_puzzles(status,puzzle_type,level,created_at);
