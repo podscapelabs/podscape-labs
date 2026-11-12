@@ -45,7 +45,7 @@ export function CollectionButton({ speciesId, speciesName, initialCollected, sig
   const toggle = () => {
     if (pending) return;
     // Removing a saved species also removes its keeper details, so guard the smaller control against accidental taps.
-    if (collected && !window.confirm(`Remove ${speciesName} from My Collection? Your saved keeper details for this species will also be deleted.`)) return;
+    if (collected && !window.confirm(`Remove ${speciesName} from My Collection?\n\nThis deletes the saved species bookmark and its species-level notes. Bins, including archived bins, must be removed separately first; PodScape will block this action if any bin records exist.\n\nContinue?`)) return;
     setError("");
     startTransition(async () => {
       try {
