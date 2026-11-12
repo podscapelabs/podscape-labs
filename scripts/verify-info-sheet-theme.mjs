@@ -30,6 +30,24 @@ assert.match(exchange,/className=\{styles\.agendaFoot\}/,"Market event widget is
 assert.doesNotMatch(exchange,/className=\{styles\.agendaNext\}/,"Remove redundant second event card");
 assert.match(exchangeCss,/\.rulesShortcut/,"Exchange rules remain accessible");
 assert.doesNotMatch(exchangeCss,/\.rulesBody\{/,"Old accordion rules CSS is removed");
+// Portal-specific colour leaks that previously survived general theme checks.
+const ledger=read("app/ledger/discover.module.css");
+const manager=read("components/ManagerColonies.module.css");
+const collection=read("app/keeper/collection/page.module.css");
+const shop=read("app/shop/shop-home.module.css");
+const species=read("components/SpeciesProfile.module.css");
+const scanner=read("components/KeeperScanner.module.css");
+assert.match(ledger,/\.heroShade\{[^}]*var\(--portal-hero-start\)/,"Ledger hero overlay must inherit current theme");
+assert.match(ledger,/\.heroSearch\{[\s\S]*?background:var\(--surface\)/,"Ledger search must use a theme surface");
+assert.doesNotMatch(ledger,/#[0-9a-f]{3,8}\b/i,"Ledger page must not force an old green/cream palette");
+assert.match(manager,/\.card\{background:var\(--surface\)/,"Manager colony cards must match the selected theme");
+assert.doesNotMatch(manager,/#[0-9a-f]{3,8}\b/i,"Manager colony cards should not force a dark forest on every theme");
+assert.match(collection,/\.page\{[^}]*background:var\(--background\)/,"Collection page must inherit semantic background");
+assert.doesNotMatch(collection,/#[0-9a-f]{3,8}\b/i,"Old collection colour literals are obsolete");
+assert.match(shop,/\.hero\{[\s\S]*?var\(--portal-hero-glow\)/,"Shop hero must follow shared palette");
+assert.doesNotMatch(shop,/#[0-9a-f]{3,8}\b/i,"Remove dead fixed-green Shop colours");
+assert.match(species,/\.researchDialog::backdrop\{background:color-mix\(in srgb,var\(--ps-bg/,"Research dialog must use current theme overlay");
+assert.match(scanner,/\.binHero\{[^}]*var\(--portal-hero-start\)/,"Keeper scanner result hero must follow theme");
 const styles=[];
 function walk(dir){
  for(const item of readdirSync(dir,{withFileTypes:true})){
