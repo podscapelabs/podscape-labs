@@ -34,6 +34,6 @@ export default async function PicturePuzzlePage({params}:{params:Promise<{id:str
  return <PlatformShell><main className={styles.page}><div className={styles.wrap}>
   <Link className={styles.back} href="/fun-zone/picture-puzzles">← All picture puzzles</Link>
   {puzzle.status!=="published"?<p className={styles.empty}>OWNER PREVIEW · This draft is not visible to players.</p>:null}
-  <PicturePuzzleBoard userId={user?.id||"owner-preview"} id={puzzle.id} title={puzzle.title} description={puzzle.description} imageAlt={puzzle.image_alt} learningNote={puzzle.learning_note} imageUrl={url} difficulty={puzzle.difficulty} puzzleType={puzzle.puzzle_type} level={puzzle.level} rewardsEnabled={puzzle.status==="published"} nextHref={nextHref}/>
+  <PicturePuzzleBoard userId={user?.id||"owner-preview"} id={puzzle.id} title={puzzle.title} description={puzzle.description} imageAlt={puzzle.image_alt} learningNote={puzzle.learning_note} artistCredit={puzzle.artist_credit} imageUrl={url} difficulty={puzzle.difficulty} puzzleType={puzzle.puzzle_type} level={puzzle.level} rewardsEnabled={puzzle.status==="published"} nextHref={nextHref}/>
  </div></main></PlatformShell>;
 }
