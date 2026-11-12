@@ -3,7 +3,6 @@
 import { useEffect,useState } from "react";
 import {binDisplayName} from "@/lib/bin-identity";
 import {speciesMatchesCollectionView} from "@/lib/collection-views";
-import {useRouter} from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
@@ -35,14 +34,12 @@ export function ManagerColonies({ records, bins, allBins=bins, collectedIds, int
   const [filtersOpen,setFiltersOpen]=useState(false);
   const [care, setCare] = useState("all");
   const [sort, setSort] = useState("recent");
-  const router=useRouter();
   const view=savedView?"saved":archivedView?"archived":"active";
   const storageKey="podscape-colony-browser:"+scope+":"+view;
   const [memoryReady,setMemoryReady]=useState(false);
   useEffect(()=>{
     try{
-      const last=sessionStorage.getItem("podscape-colony-view:"+scope);
-      if(!explicitView&&last&&["active","saved","archived"].includes(last)&&last!==view){router.replace("/keeper/collection?view="+last);return;}
+      // Route decides the collection view. A remembered previous tab must never redirect users away from active bins.
       sessionStorage.setItem("podscape-colony-view:"+scope,view);
       const raw=sessionStorage.getItem(storageKey),saved=raw?JSON.parse(raw):null;
       if(saved&&typeof saved==="object"){
