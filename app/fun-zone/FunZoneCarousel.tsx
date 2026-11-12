@@ -9,8 +9,7 @@ const slides = [
  {eyebrow:"FEATURED · LOGIC",key:"colony-connections",title:"Colony Connections",description:"Sixteen isopod terms. Four hidden connections. Can you find them all?",href:"/fun-zone/colony-connections",action:"Play now →",status:"Ready to play"},
  {eyebrow:"FEATURED · QUIZ",key:"species-detective",title:"Species Detective",description:"Put your species knowledge to the test with clues and identification puzzles.",href:"/fun-zone/species-detective",action:"Play now →",status:"Ready to play"}
 ] as const;
-export function FunZoneCarousel({signedIn,exp,coins}:{signedIn:boolean;exp:number;coins:number}){
- void signedIn; void exp; void coins;
+export function FunZoneCarousel(){
  const [slide,setSlide]=useState(0);
  const current=slides[slide];
  return <section className={styles.carousel} aria-label="Fun Zone featured puzzles">
