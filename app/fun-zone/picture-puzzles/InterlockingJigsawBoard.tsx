@@ -3,7 +3,7 @@ import {useCallback,useEffect,useId,useMemo,useRef,useState} from "react";
 import styles from "./picture-puzzles.module.css";
 
 type PiecePosition={x:number;y:number;placed:boolean};
-type Props={userId:string;id:string;imageUrl:string;imageAlt:string;size:number;onProgress?:(placed:number,total:number)=>void;onComplete?:(proof:{placed:number[];moves:number})=>void};
+type Props={userId:string;id:string;imageUrl:string;imageAlt:string;size:number;onProgress?:(placed:number,total:number)=>void;onComplete?:(proof:{placed:number[];moves:number})=>void;onReset?:()=>void};
 const WIDTH=600,BOARD=480,BOARD_X=60,BOARD_Y=35,TRAY_Y=595;
 function seedSign(n:number){return ((n*37+17)%7)%2===0?1:-1;}
 function pathForPiece(r:number,c:number,size:number){
@@ -37,7 +37,7 @@ function newPositions(size:number,randomize=true):PiecePosition[]{
 function isValidPositions(value:unknown,size:number):value is PiecePosition[]{
  return Array.isArray(value)&&value.length===size*size&&value.every(p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&Math.abs(p.x)<5000&&Math.abs(p.y)<5000&&typeof p.placed==="boolean");
 }
-export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,size,onProgress,onComplete}:Props){
+export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,size,onProgress,onComplete,onReset}:Props){
  const count=size*size,unit=BOARD/size,cols=size===3?3:4,rows=Math.ceil(count/cols);
  const height=TRAY_Y+rows*unit*1.38+35,root=useRef<SVGSVGElement>(null);
  const uid=useId().replace(/:/g,"");
@@ -60,7 +60,7 @@ export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,size,onProg
  useEffect(()=>{if(!ready)return;try{localStorage.setItem(key,JSON.stringify({positions,moves}));}catch{/* Local storage is optional */}},[key,ready,positions,moves]);
  useEffect(()=>{onProgress?.(solved,count);},[solved,count,onProgress]);
  useEffect(()=>{if(ready&&solved===count&&!completionSent.current){completionSent.current=true;onComplete?.({placed:Array.from({length:count},(_,i)=>i),moves});}},[ready,solved,count,moves,onComplete]);
- const startOver=useCallback(()=>{completionSent.current=false;setPositions(newPositions(size));setMoves(0);setActive(null);drag.current=null;},[size]);
+ const startOver=useCallback(()=>{completionSent.current=false;setPositions(newPositions(size));setMoves(0);setActive(null);drag.current=null;onReset?.();},[size,onReset]);
  const target=(index:number)=>({x:BOARD_X+(index%size)*unit,y:BOARD_Y+Math.floor(index/size)*unit});
  function trySnap(index:number,x:number,y:number){
   const to=target(index);
@@ -82,12 +82,12 @@ export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,size,onProg
   const scale=WIDTH/root.current.getBoundingClientRect().width;
   const dx=(event.clientX-d.clientX)*scale,dy=(event.clientY-d.clientY)*scale;
   if(Math.abs(dx)+Math.abs(dy)>5)d.changed=true;
-  setPositions(prev=>prev.map((p,i)=>i===d.index?{...p,x:d.originX+dx,y:d.originY+dy}:p));
+  setPositions(prev=>prev.map((p,i)=>i===d.index?{...p,x:Math.max(0,Math.min(WIDTH-unit,d.originX+dx)),y:Math.max(0,Math.min(height-unit,d.originY+dy))}:p));
  }
  function up(event:React.PointerEvent<SVGGElement>){
   const d=drag.current;if(!d||d.pointerId!==event.pointerId||!root.current)return;
   const scale=WIDTH/root.current.getBoundingClientRect().width;
-  const x=d.originX+(event.clientX-d.clientX)*scale,y=d.originY+(event.clientY-d.clientY)*scale;
+  const x=Math.max(0,Math.min(WIDTH-unit,d.originX+(event.clientX-d.clientX)*scale)),y=Math.max(0,Math.min(height-unit,d.originY+(event.clientY-d.clientY)*scale));
   drag.current=null;
   if(d.changed)trySnap(d.index,x,y);else setActive(d.index);
  }
@@ -95,7 +95,7 @@ export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,size,onProg
   if(positions[index].placed)return;
   const delta=event.shiftKey?24:12;
   const movement:Record<string,[number,number]>={ArrowUp:[0,-delta],ArrowDown:[0,delta],ArrowLeft:[-delta,0],ArrowRight:[delta,0]};
-  if(movement[event.key]){event.preventDefault();const [dx,dy]=movement[event.key];setPositions(prev=>prev.map((p,i)=>i===index?{...p,x:p.x+dx,y:p.y+dy}:p));setActive(index);}
+  if(movement[event.key]){event.preventDefault();const [dx,dy]=movement[event.key];setPositions(prev=>prev.map((p,i)=>i===index?{...p,x:Math.max(0,Math.min(WIDTH-unit,p.x+dx)),y:Math.max(0,Math.min(height-unit,p.y+dy))}:p));setActive(index);}
   else if(event.key==="Enter"||event.key===" "){event.preventDefault();trySnap(index,positions[index].x,positions[index].y);}
  }
  return <div className={styles.jigsawShell}>
