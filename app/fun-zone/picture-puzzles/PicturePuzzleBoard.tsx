@@ -82,8 +82,6 @@ function SlidingPuzzleBoard({userId,id,title,description,imageAlt,learningNote,a
  }
  return <section className={styles.game}>
   <div className={styles.gameHeading}><div><span>{PUZZLE_TYPES[puzzleType].toUpperCase()} · {levelLabel(level)} · {DIFFICULTIES[difficulty].label}</span><h1>{title}</h1><p>{description||"Put the picture back together."}</p></div><div className={styles.moveCount}><strong>{moves}</strong><small>moves</small></div></div>
-  {artistCredit?<p className={styles.artistCredit}>Original artwork by <strong>{artistCredit}</strong></p>:null}
-  {learningNote?<p className={styles.lesson}><strong>Before you play:</strong> {learningNote}</p>:null}
   <div className={styles.gameLayout}><div>
    <div className={styles.board} style={{gridTemplateColumns:`repeat(${size},minmax(0,1fr))`}} role="group" aria-label={title+" "+PUZZLE_TYPES[puzzleType]+" puzzle"}>
     {tiles.map((tile,index)=>{
@@ -91,7 +89,7 @@ function SlidingPuzzleBoard({userId,id,title,description,imageAlt,learningNote,a
      return <button type="button" key={index} disabled={!started||finished||blank} onClick={()=>select(index)} className={styles.tile} data-selected={false} data-blank={blank} aria-label={blank?`Empty space at position ${index+1}`:`Piece ${tile+1}, position ${index+1}, tap to slide if adjacent`} aria-pressed={false} style={blank?undefined:{backgroundImage:`url("${imageUrl}")`,backgroundSize:`${size*100}% ${size*100}%`,backgroundPosition:`${(tile%size)*100/(size-1)}% ${Math.floor(tile/size)*100/(size-1)}%`}}/>;
     })}
    </div>
-   {finished?<div className={styles.victory} role="status"><span aria-hidden="true">✦ 🧩 ✦</span><h2>Picture complete!</h2><p>You solved the sliding puzzle in {moves} moves.</p><div className={styles.victoryArt} role="img" aria-label={imageAlt} style={{backgroundImage:`url("${imageUrl}")`}}/>{previewMode?<small>Preview only · No progress or EXP recorded</small>:null}</div>:null}
+   {finished?<div className={styles.victory} role="status"><span aria-hidden="true">✦ 🧩 ✦</span><h2>Picture complete!</h2><p className={styles.victoryTitle}>{title}</p><p>You solved the sliding puzzle in {moves} moves.</p><div className={styles.victoryArt} role="img" aria-label={imageAlt} style={{backgroundImage:`url("${imageUrl}")`}}/>{learningNote?<div className={styles.victoryDiscovery}><strong>Did you know?</strong><p>{learningNote}</p></div>:null}{artistCredit?<p className={styles.victoryCredit}>Original artwork by <strong>{artistCredit}</strong></p>:null}{previewMode?<small>Preview only · No EXP or progress recorded</small>:<small>Achievement EXP is awarded once for newly unlocked milestones.</small>}</div>:null}
    {finished&&rewardsEnabled?<PuzzleSaveStatus status={saved} retry={retry}/>:null}
    {finished&&saved==="saved"&&nextHref?<a className={styles.nextPuzzle} href={nextHref}>Next picture puzzle →</a>:null}
    {!started?<button type="button" className={styles.primary} onClick={start}>Shuffle & start puzzle</button>:<div className={styles.controls}><button type="button" className={styles.primary} onClick={start}>Start a new shuffle</button><button type="button" onClick={()=>setShowReference(v=>!v)} aria-pressed={showReference}>{showReference?"Hide image":"View image"}</button></div>}
@@ -104,8 +102,6 @@ export function PicturePuzzleBoard(props:{userId:string;id:string;title:string;d
  if(props.puzzleType==="sliding")return <SlidingPuzzleBoard {...props}/>;
  return <section className={styles.game}>
   <div className={styles.gameHeading}><div><span>JIGSAW · {levelLabel(props.level)} · {DIFFICULTIES[props.difficulty].label}</span><h1>{props.title}</h1><p>{props.description||"Build this picture, one interlocking piece at a time."}</p></div></div>
-  {props.artistCredit?<p className={styles.artistCredit}>Original artwork by <strong>{props.artistCredit}</strong></p>:null}
-  {props.learningNote?<p className={styles.lesson}><strong>Before you play:</strong> {props.learningNote}</p>:null}
   <RewardedJigsaw {...props}/>
  </section>;
 }
@@ -116,7 +112,7 @@ function RewardedJigsaw(props:{userId:string;id:string;title:string;description:
  const onReset=useCallback(()=>setSolved(false),[]);
  const onComplete=useCallback((proof:{placed:number[];moves:number})=>{setSolved(true);if(props.rewardsEnabled)void record(proof);},[record,props.rewardsEnabled]);
  return <>
-  <InterlockingJigsawBoard key={props.id+props.difficulty} previewMode={props.previewMode} userId={props.userId} id={props.id} imageUrl={props.imageUrl} imageAlt={props.imageAlt||props.title} size={DIFFICULTIES[props.difficulty].columns} onComplete={onComplete} onReset={onReset}/>
+  <InterlockingJigsawBoard key={props.id+props.difficulty} previewMode={props.previewMode} userId={props.userId} id={props.id} imageUrl={props.imageUrl} imageAlt={props.imageAlt||props.title} title={props.title} learningNote={props.learningNote} artistCredit={props.artistCredit} size={DIFFICULTIES[props.difficulty].columns} onComplete={onComplete} onReset={onReset}/>
   {solved&&props.rewardsEnabled?<PuzzleSaveStatus status={saved} retry={retry}/>:null}
   {solved&&saved==="saved"&&props.nextHref?<a className={styles.nextPuzzle} href={props.nextHref}>Next picture puzzle →</a>:null}
  </>;
