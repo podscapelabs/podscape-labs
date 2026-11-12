@@ -1,4 +1,5 @@
-import {NextRequest,NextResponse} from "next/server";
+import {after,NextRequest,NextResponse} from "next/server";
+import {catchUpPublishedPsxV3History} from "@/lib/psx-v3-history-server";
 import {getPsxLiveMarket,isChartRange} from "@/lib/psx-v3-market-server";
 
 export const runtime="nodejs";
@@ -10,6 +11,10 @@ export async function GET(request:NextRequest){
  if(!isChartRange(range))return NextResponse.json({error:"Invalid chart range"},{status:400,headers});
  try{
   const snapshot=await getPsxLiveMarket(range);
+  if(snapshot.mode==="v3")after(async()=>{
+   try{await catchUpPublishedPsxV3History(Date.now(),30)}
+   catch(error){console.error("PSX published-history catch-up failed",error instanceof Error?error.name:"unknown")}
+  });
   return NextResponse.json(snapshot,{headers});
  }catch(error){
   console.error("PSX market quote error",error instanceof Error?error.name:"unknown");
