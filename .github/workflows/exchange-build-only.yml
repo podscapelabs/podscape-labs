@@ -21,8 +21,18 @@ jobs:
         run: corepack enable && corepack prepare pnpm@10.14.0 --activate
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Lint combined release
+        run: pnpm run lint
       - name: Check TypeScript
         run: pnpm run typecheck
+      - name: Verify Manager 2.0 and Ledger workflows
+        run: |
+          node scripts/verify-manager-workspaces.mjs
+          node scripts/verify-collection-ledger-flow.mjs
+          node scripts/verify-ledger.mjs
+          node scripts/verify-ui-preferences.mjs
+          node scripts/verify-design-system.mjs
+          node scripts/verify-release-readiness.mjs
       - name: Verify Pod Exchange mechanics
         run: pnpm run test:pod-exchange
       - name: Simulate PSX V3 and verify persistence safety
