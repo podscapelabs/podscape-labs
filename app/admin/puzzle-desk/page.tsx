@@ -26,7 +26,7 @@ export default async function PuzzleDesk({searchParams}:{searchParams:Promise<{s
   {params.saved?<p role="status" className={styles.notice}>Puzzle {params.saved==="updated"?"updated":params.saved==="draft"?"saved as draft":params.saved+" successfully"}.</p>:null}
   {params.error?<p role="alert" className={styles.alert}>Could not save. Check required fields, image format, storage bucket, and database migrations.</p>:null}
   {puzzles===null?<p role="alert" className={styles.alert}>Puzzle storage is not ready. Apply the picture-puzzles migrations first.</p>:null}
-  <section className={styles.card}><div className={styles.heading}><span>CREATE</span><h2>New picture puzzle</h2><p>Create a draft first. Jigsaw and Sliding Puzzle share PodScape's existing level progression.</p></div>
+  <section className={styles.card}><div className={styles.heading}><span>CREATE</span><h2>New picture puzzle</h2><p>Create a draft first. Jigsaw and Sliding Puzzle share PodScape&apos;s existing level progression.</p></div>
    <form action={createPicturePuzzle} className={styles.form}><Fields/>
     <label className={styles.full}>Puzzle artwork <small>JPEG, PNG or WebP · Max 8 MB · Use artwork you own or can publish</small><input name="image" type="file" accept="image/png,image/jpeg,image/webp" required/></label>
     <button type="submit">Save draft puzzle →</button>
