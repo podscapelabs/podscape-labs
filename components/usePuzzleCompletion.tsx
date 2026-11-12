@@ -7,9 +7,10 @@ export type PuzzleSaveState="idle"|"saving"|"saved"|"unavailable";
 export function usePuzzleCompletion(gameKey:string,puzzleId:string){
  const completedRef=useRef(false);
  const [saved,setSaved]=useState<PuzzleSaveState>("idle");
+ const [earnedExp,setEarnedExp]=useState<number|null>(null);
  const [failedProof,setFailedProof]=useState<unknown>(null);
  const router=useRouter();
- useEffect(()=>{completedRef.current=false;setSaved("idle");setFailedProof(null)},[gameKey,puzzleId]);
+ useEffect(()=>{completedRef.current=false;setSaved("idle");setEarnedExp(null);setFailedProof(null)},[gameKey,puzzleId]);
  const record=useCallback(async(proof:unknown)=>{
   if(completedRef.current)return;
   completedRef.current=true;
@@ -23,10 +24,11 @@ export function usePuzzleCompletion(gameKey:string,puzzleId:string){
    if(!response.ok){completedRef.current=false;setFailedProof(proof);setSaved("unavailable");return;}
    const result=await response.json() as {unlocked?:AchievementNotice[]};
    (result.unlocked||[]).forEach(announceAchievement);
+   setEarnedExp((result.unlocked||[]).reduce((total,item)=>total+(Number(item.exp)||0),0));
    setFailedProof(null);setSaved("saved");router.refresh();
   }catch{completedRef.current=false;setFailedProof(proof);setSaved("unavailable");}
  },[gameKey,puzzleId,router]);
- return {saved,record,retry:failedProof===null?null:()=>record(failedProof)};
+ return {saved,earnedExp,record,retry:failedProof===null?null:()=>record(failedProof)};
 }
 export function PuzzleSaveStatus({status,retry}:{status:PuzzleSaveState;retry?:null|(()=>void)}){
  return <p role="status" aria-live="polite" style={{minHeight:"1.5em",fontSize:12,lineHeight:1.5,color:"var(--text-secondary)"}}>
