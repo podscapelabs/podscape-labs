@@ -24,6 +24,7 @@ assert.match(privateService,/PSX_V3_SECRET/,"Private seed stays in server enviro
 assert.match(privateService,/seed_fingerprint/,"Version validates seed fingerprint before returning a quote");
 assert.match(privateService,/timingSafeEqual/,"Fingerprint comparison uses constant-time comparison");
 assert.match(privateService,/priceMap\(row.opening_prices\)/,"Versioned opening anchors are required");
+assert.match(privateService,/priceAt\(symbol,cutover-1\)/,"Cutover opening prices must match the last legacy closing price");
 assert.match(engine,/minute===0\)return round\(openingPrice\)/,"V3 first minute must preserve opening anchor");
 assert.match(engine,/rumourResolution:resolution/,"Resolution only becomes part of published frame after linked event");
 assert.match(engine,/resolveRumour\(secret,currentSession,minute\)/,"Published rumour resolutions are generated from scheduled truth");
