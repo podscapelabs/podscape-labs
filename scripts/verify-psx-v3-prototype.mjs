@@ -32,7 +32,12 @@ for(const seed of [secretA,secretB]){
   assert.equal(frame.minute,t);
   assert.ok(!("direction" in frame.major)&&!("strength" in frame.major),"Future internal market magnitudes must not leak");
   assert.ok(!("direction" in frame.bulletin)&&!("strength" in frame.bulletin));
-  assert.ok(!JSON.stringify(frame).includes('"resolution"'),"Unreleased rumour resolution may never leak");
+  const sessionIndex=Math.floor(t/MAJOR_MINUTES);
+  if(sessionIndex===0||t%MAJOR_MINUTES>=20)assert.equal(frame.rumourResolution,null,"No future or expired rumour resolution");
+  else {
+   const expected=resolveRumour(seed,sessionIndex,t);
+   assert.deepEqual(frame.rumourResolution,expected,"A rumour resolves only after the related six-hour announcement");
+  }
   assert.equal(frame.major.publishedMinute,Math.floor(t/360)*360);
   assert.equal(frame.bulletin.publishedMinute,Math.floor(t/5)*5);
   for(const symbol of SYMBOLS){
