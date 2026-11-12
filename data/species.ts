@@ -1,11 +1,15 @@
 export type SpeciesStatus = "draft" | "published";
 export type SpeciesIdentityStatus = "unassigned" | "provisional" | "verified";
 export type SpeciesRecordKind = "photo-test" | "species";
+export type OrganismGroup = "isopod" | "springtail";
+export function speciesOrganismGroup(record:Pick<SpeciesRecord,"organismGroup">):OrganismGroup{return record.organismGroup==="springtail"?"springtail":"isopod"}
 
 export type SpeciesRecord = {
   id: string;
   slug: string;
   kind: SpeciesRecordKind;
+  /** The Ledger includes distinct isopod and Collembola collections. Missing legacy data = isopod. */
+  organismGroup?: OrganismGroup;
   status: SpeciesStatus;
   identityStatus: SpeciesIdentityStatus;
   commonName: string;
