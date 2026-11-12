@@ -72,7 +72,7 @@ export default function LifetimeExpRankings(){
    <div><small>COMING LATER</small><h2>Molt & Prestige</h2><p>Reach new progression milestones, earn a prestige emblem and begin a new leveling journey. Lifetime EXP rankings will remain distinct from future Molt cycles; no reset is active now.</p></div>
   </section>
 
-  <p className={styles.note}>Rankings use recorded lifetime EXP, not Pod Coins or spending alone. Tied totals share a rank. Earned EXP is ranked automatically; usernames can be anonymized. There are no extra rewards just for appearing on this leaderboard.</p>
+  <p className={styles.note}>Rankings use recorded lifetime EXP. Tied totals share a rank. Earned EXP is ranked automatically; usernames can be anonymized. There are no extra rewards just for appearing on this leaderboard.</p>
   </RankingModal></div>
   <section className={styles.board} aria-label="Lifetime EXP standings" aria-busy={loading}>
    <div className={styles.sectionHead}><div><small>THE KEEPER BOARD</small><h2>All-time standings</h2></div><span>{loading?"Updating…":(board?.rows.length||0)+" ranked keepers"}</span></div>
