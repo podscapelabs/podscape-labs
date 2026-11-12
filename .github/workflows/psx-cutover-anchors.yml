@@ -1,0 +1,33 @@
+name: PSX cutover opening-quote calculation
+on:
+  push:
+    branches:
+      - codex/psx-cutover-anchor-check-20261112
+permissions:
+  contents: read
+jobs:
+  opening-quotes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Enable pnpm
+        run: corepack enable && corepack prepare pnpm@10.14.0 --activate
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Calculate deterministic legacy closing prices (read only)
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import ts from 'typescript';
+          const source=fs.readFileSync('lib/pod-exchange.ts','utf8');
+          const compiled=ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}}).outputText;
+          const market=await import('data:text/javascript;base64,'+Buffer.from(compiled).toString('base64'));
+          for(const iso of ['2026-11-13T06:00:00.000Z','2026-11-13T12:00:00.000Z','2026-11-14T00:00:00.000Z']){
+            const cutover=market.arcadeCycleAt(Date.parse(iso));
+            const prices=Object.fromEntries(market.STOCKS.map(x=>[x.symbol,market.priceAt(x.symbol,cutover-1)]));
+            console.log('PSX_CUTOVER_ANCHORS '+JSON.stringify({cutoverAt:iso,cutoverCycle:cutover,openingPrices:prices}));
+          }
+          JS
