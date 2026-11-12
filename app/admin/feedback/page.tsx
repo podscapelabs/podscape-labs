@@ -15,14 +15,17 @@ const types:Record<Category,string>={bug:"Bug report",idea:"Idea",general:"Gener
 const stateNames:Record<Status,string>={new:"New",reviewing:"Reviewing",resolved:"Resolved"};
 const statuses=["all","new","reviewing","resolved"] as const;
 const categories=["all","bug","idea","general"] as const;
-function linkFor(status:string,category:string){const params=new URLSearchParams();if(status!=="all")params.set("status",status);if(category!=="all")params.set("category",category);const search=params.toString();return "/admin/feedback"+(search?"?"+search:"")}
+function linkFor(status:string,category:string,page=1){const params=new URLSearchParams();if(status!=="all")params.set("status",status);if(category!=="all")params.set("category",category);if(page>1)params.set("page",String(page));const search=params.toString();return "/admin/feedback"+(search?"?"+search:"")}
 function safePage(value:string){return value.startsWith("/")&&!value.startsWith("//")&&!value.includes("\\")?value:"/"}
 function formattedDate(value:string){const date=new Date(value);return Number.isNaN(date.getTime())?value:date.toLocaleString("en-CA",{year:"numeric",month:"short",day:"numeric",hour:"numeric",minute:"2-digit",timeZone:"America/Toronto"})}
-export default async function FeedbackDesk({searchParams}:{searchParams:Promise<{status?:string;category?:string;notice?:string}>}){
+export default async function FeedbackDesk({searchParams}:{searchParams:Promise<{status?:string;category?:string;notice?:string;page?:string}>}){
  if(!await isAdminAuthenticated())redirect("/admin");
  const params=await searchParams;
  const status=statuses.find(item=>item===params.status)||"all";
  const category=categories.find(item=>item===params.category)||"all";
+ const rawPage=Number(params.page||1);
+ const pageNumber=Number.isSafeInteger(rawPage)&&rawPage>=1&&rawPage<=10000?rawPage:1;
+ const pageSize=50;
  const db=getSupabaseAdmin();
  let items:Item[]=[];
  let total=0;
@@ -31,7 +34,7 @@ export default async function FeedbackDesk({searchParams}:{searchParams:Promise<
  if(!db)error="The feedback database isn't configured.";
  else{
   let query=db.from("member_feedback").select("id,user_id,category,status,message,page_path,device_info,owner_note,created_at,updated_at",{count:"exact"})
-   .order("created_at",{ascending:false}).limit(75);
+   .order("created_at",{ascending:false}).range((pageNumber-1)*pageSize,pageNumber*pageSize-1);
   if(status!=="all")query=query.eq("status",status);
   if(category!=="all")query=query.eq("category",category);
   const result=await query;
@@ -71,7 +74,7 @@ export default async function FeedbackDesk({searchParams}:{searchParams:Promise<
     </form>
    </article>)}
    {!items.length?<div className={styles.empty}><PodscapeLineIcon name="note"/><strong>No feedback here yet.</strong><p>As testers submit reports, they’ll appear in this desk.</p></div>:null}
-   {total>items.length?<p className={styles.limit}>Showing the latest 75 matching messages. Narrow your filters to see older reports.</p>:null}
+   {total>pageSize?<nav className={styles.pagination} aria-label="Feedback pages">{pageNumber>1?<Link href={linkFor(status,category,pageNumber-1)}>← Newer</Link>:<span/>}<span>Page {pageNumber} / {Math.ceil(total/pageSize)}</span>{pageNumber*pageSize<total?<Link href={linkFor(status,category,pageNumber+1)}>Older →</Link>:<span/>}</nav>:null}
   </section>:null}
  </div></main>;
 }
