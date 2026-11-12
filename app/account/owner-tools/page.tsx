@@ -4,7 +4,8 @@ import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import { signOutAdmin } from "@/app/admin/actions";
 import styles from "./page.module.css";
-import { ownerDesks, ownerOperations } from "@/data/owner-desks";
+import { ownerOperations } from "@/data/owner-desks";
+import { OwnerDeskDirectory } from "@/components/OwnerDeskDirectory";
 import { TestAchievementButton } from "@/components/TestAchievementButton";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
 
@@ -24,7 +25,7 @@ export default async function OwnerToolsPage() {
         <div className={styles.heroCopy}>
           <p className={styles.eyebrow}>PODSCAPE LABS · PRIVATE WORKSPACE</p>
           <h1>Owner Studio</h1>
-          <p>Your space to create, manage, and follow the growth of PodScape.</p>
+          <p>Manage the platform, publish content, and keep your beta moving—without digging through menus.</p>
           <div className={styles.heroActions}>
             <Link href={user ? "/account" : "/app"} className={styles.back}>← Back to PodScape</Link>
             {analytics ? <Link href={analytics.href} className={styles.heroAction}>Platform analytics <PodscapeLineIcon name="arrow-right" /></Link> : null}
@@ -34,13 +35,13 @@ export default async function OwnerToolsPage() {
       </header>
 
       <section className={styles.quickSection} aria-label="Owner quick access">
-        <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>AT A GLANCE</p><h2>Quick access</h2></div></div>
+        <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>RIGHT AT HAND</p><h2>Quick actions</h2></div></div>
         <div className={styles.quickGrid}>
           {[
             { title:"Analytics", subtitle:"Platform pulse", href:"/account/owner-tools/analytics", icon:"community" as const },
-            { title:"Species", subtitle:"Leaf Ledger desk", href:"/admin/species", icon:"leaf" as const },
-            { title:"Products", subtitle:"Shop management", href:"/admin/products", icon:"shop" as const },
             { title:"Feedback", subtitle:"Member reports", href:"/admin/feedback", icon:"note" as const },
+            { title:"Puzzles", subtitle:"Build & preview", href:"/admin/puzzle-desk", icon:"grid" as const },
+            { title:"Testers", subtitle:"Early access", href:"/admin/early-access", icon:"community" as const },
           ].map(item=><Link href={item.href} className={styles.quickCard} key={item.href}>
             <span className={styles.quickIcon}><PodscapeLineIcon name={item.icon}/></span>
             <span><strong>{item.title}</strong><small>{item.subtitle}</small></span>
@@ -49,16 +50,7 @@ export default async function OwnerToolsPage() {
         </div>
       </section>
 
-      <section aria-labelledby="content-heading">
-        <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>CONTENT STUDIO</p><h2 id="content-heading">Your desks</h2></div><span className={styles.sectionHint}>Manage and publish</span></div>
-        <div className={styles.grid}>
-          {ownerDesks.map(desk => <Link className={styles.card} href={desk.href} key={desk.href}>
-            <span className={styles.symbol} aria-hidden="true"><PodscapeLineIcon name={desk.icon} /></span>
-            <span className={styles.copy}><small>{desk.label}</small><strong>{desk.title}</strong><span>{desk.description}</span></span>
-            <span className={styles.arrow} aria-hidden="true">↗</span>
-          </Link>)}
-        </div>
-      </section>
+      <OwnerDeskDirectory />
 
       <section className={styles.other} aria-labelledby="more-heading">
         <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>OPERATIONS</p><h2 id="more-heading">Platform controls</h2></div></div>
