@@ -47,5 +47,7 @@ jobs:
         run: |
           node scripts/verify-unique-usernames.mjs
           node scripts/verify-fun-zone-completion-flow.mjs
+      - name: Verify collection and springtail Ledger flow
+        run: node scripts/verify-collection-ledger-flow.mjs
       - name: Build Next.js without deploying
         run: pnpm run build
