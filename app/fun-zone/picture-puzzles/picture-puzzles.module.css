@@ -39,3 +39,26 @@
 .artistCredit{display:block;margin:6px 0 14px;color:var(--text-secondary);font-size:12px;line-height:1.5}
 .artistCredit strong{color:var(--accent);font-weight:800}
 .copy .artistCredit{margin:2px 0 7px;font-size:11px}
+
+
+/* Compact post-puzzle discovery: no giant empty tray or pre-solve spoilers. */
+.jigsawShell{margin-bottom:18px}
+.jigsawShell .victory{margin:12px 0}
+.victory{gap:10px;padding:clamp(16px,4vw,24px);border-radius:19px}
+.victoryTitle{font-size:14px!important;font-weight:750;color:var(--text-primary)!important}
+.victoryDiscovery{width:100%;max-width:520px;padding:12px 14px;border-radius:13px;background:var(--surface-secondary);color:var(--text-primary)}
+.victoryDiscovery strong{display:block;color:var(--accent);font-size:14px;font-weight:850;margin-bottom:5px}
+.victoryDiscovery p{color:var(--text-primary);font-size:13px;line-height:1.6;margin:0}
+.victoryCredit{font-size:12px!important;color:var(--text-secondary)!important}
+.victoryCredit strong{color:var(--accent);font-weight:800}
+.victoryArt{width:min(100%,360px);max-height:360px}
+@media(max-width:720px){
+ .game{padding-bottom:18px}
+ .gameHeading{margin-bottom:12px}
+ .jigsawShell .helper{margin:8px 0}
+ .jigsawCanvas{margin:8px 0}
+ .jigsawShell .controls{margin-top:9px}
+ .victory{padding:16px 14px}
+ .victoryArt{width:min(100%,300px)}
+ .page{padding-bottom:calc(115px + env(safe-area-inset-bottom,0px))}
+}
