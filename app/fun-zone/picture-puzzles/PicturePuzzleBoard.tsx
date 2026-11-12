@@ -42,7 +42,7 @@ function validSlidingSave(value:unknown,size:number):value is {tiles:number[];in
  return board.every((tile,i)=>tile===savedTiles[i])&&
   v.finished===board.every((tile,i)=>tile===i);
 }
-function SlidingPuzzleBoard({userId,id,title,description,imageAlt,learningNote,imageUrl,difficulty,puzzleType,level,rewardsEnabled,nextHref,previewMode=false}:{userId:string;id:string;title:string;description:string;imageAlt:string;learningNote:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string;previewMode?:boolean}){
+function SlidingPuzzleBoard({userId,id,title,description,imageAlt,learningNote,artistCredit,imageUrl,difficulty,puzzleType,level,rewardsEnabled,nextHref,previewMode=false}:{userId:string;id:string;title:string;description:string;imageAlt:string;learningNote:string;artistCredit?:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string;previewMode?:boolean}){
  const size=DIFFICULTIES[difficulty]?.columns||3,count=size*size,blankTile=count-1;
  const [tiles,setTiles]=useState<number[]>(()=>Array.from({length:count},(_,i)=>i));
  const [moves,setMoves]=useState(0);
@@ -82,6 +82,7 @@ function SlidingPuzzleBoard({userId,id,title,description,imageAlt,learningNote,i
  }
  return <section className={styles.game}>
   <div className={styles.gameHeading}><div><span>{PUZZLE_TYPES[puzzleType].toUpperCase()} · {levelLabel(level)} · {DIFFICULTIES[difficulty].label}</span><h1>{title}</h1><p>{description||"Put the picture back together."}</p></div><div className={styles.moveCount}><strong>{moves}</strong><small>moves</small></div></div>
+  {artistCredit?<p className={styles.artistCredit}>Original artwork by <strong>{artistCredit}</strong></p>:null}
   {learningNote?<p className={styles.lesson}><strong>Before you play:</strong> {learningNote}</p>:null}
   <div className={styles.gameLayout}><div>
    <div className={styles.board} style={{gridTemplateColumns:`repeat(${size},minmax(0,1fr))`}} role="group" aria-label={title+" "+PUZZLE_TYPES[puzzleType]+" puzzle"}>
@@ -99,16 +100,17 @@ function SlidingPuzzleBoard({userId,id,title,description,imageAlt,learningNote,i
  </section>;
 }
 
-export function PicturePuzzleBoard(props:{userId:string;id:string;title:string;description:string;imageAlt:string;learningNote:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string;previewMode?:boolean}){
+export function PicturePuzzleBoard(props:{userId:string;id:string;title:string;description:string;imageAlt:string;learningNote:string;artistCredit?:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string;previewMode?:boolean}){
  if(props.puzzleType==="sliding")return <SlidingPuzzleBoard {...props}/>;
  return <section className={styles.game}>
   <div className={styles.gameHeading}><div><span>JIGSAW · {levelLabel(props.level)} · {DIFFICULTIES[props.difficulty].label}</span><h1>{props.title}</h1><p>{props.description||"Build this picture, one interlocking piece at a time."}</p></div></div>
+  {props.artistCredit?<p className={styles.artistCredit}>Original artwork by <strong>{props.artistCredit}</strong></p>:null}
   {props.learningNote?<p className={styles.lesson}><strong>Before you play:</strong> {props.learningNote}</p>:null}
   <RewardedJigsaw {...props}/>
  </section>;
 }
 
-function RewardedJigsaw(props:{userId:string;id:string;title:string;description:string;imageAlt:string;learningNote:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string;previewMode?:boolean}){
+function RewardedJigsaw(props:{userId:string;id:string;title:string;description:string;imageAlt:string;learningNote:string;artistCredit?:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string;previewMode?:boolean}){
  const {saved,record,retry}=usePuzzleCompletion("picture-puzzles",props.id);
  const [solved,setSolved]=useState(false);
  const onReset=useCallback(()=>setSolved(false),[]);
