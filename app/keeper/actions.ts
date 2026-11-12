@@ -52,6 +52,16 @@ export async function setEnclosureArchived(input:{id:string;archived:boolean}):P
  if(error||!data)return{success:false,error:"Couldn't update this enclosure."};
  revalidatePath("/keeper");revalidatePath("/keeper/"+input.id);revalidatePath("/account");revalidatePath("/ledger/my-collection");return{success:true};
 }
+/** Explicit, owner-scoped deletion. Care events are removed atomically by the FK. */
+export async function deleteEnclosure(input:{id:string;confirmed:boolean}):Promise<Result>{
+ await requireCustomerPreviewAccess();
+ if(!/^[a-f0-9-]{36}$/i.test(input.id)||input.confirmed!==true)return{success:false,error:"Confirm that you want to permanently delete this bin."};
+ const {db,user}=await keeperContext();if(!db||!user)return{success:false,error:"Sign in first."};
+ const {data,error}=await db.from("keeper_enclosures").delete().eq("id",input.id).eq("user_id",user.id).select("id").maybeSingle();
+ if(error||!data)return{success:false,error:"Couldn't delete this bin. Refresh and try again."};
+ revalidatePath("/keeper","layout");revalidatePath("/ledger","layout");revalidatePath("/account");
+ return{success:true};
+}
 export async function logKeeperEvent(input:{ id:string; kind:string; note:string; occurredOn?:string }):Promise<Result> {
  await requireCustomerPreviewAccess();
  if (!input.id || !eventKinds.includes(input.kind) || !input.note?.trim() || input.note.length > 1500) return {success:false,error:"Choose an activity and add a short note."};

@@ -49,7 +49,7 @@ export function CollectionButton({ speciesId, speciesName, initialCollected, sig
     setError("");
     startTransition(async () => {
       try {
-        const result = await setSpeciesCollected(speciesId, !collected);
+        const result = await setSpeciesCollected(speciesId, !collected, collected);
         if (result.success) {
           if (compact) setAnimation(result.collected ? "sprout" : "wither");
           setCollected(result.collected);

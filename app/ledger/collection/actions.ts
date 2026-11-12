@@ -199,7 +199,7 @@ export async function adjustCollectedSpeciesQuantity(input: { speciesId: string;
 }
 
 /** A user can mutate only their own collection. The database repeats this guarantee with RLS. */
-export async function setSpeciesCollected(speciesId: string, collected: boolean): Promise<CollectionMutationResult> {
+export async function setSpeciesCollected(speciesId: string, collected: boolean, removalConfirmed = false): Promise<CollectionMutationResult> {
   await requireCustomerPreviewAccess();
   if (typeof speciesId !== "string" || speciesId.length < 1 || speciesId.length > 120 || typeof collected !== "boolean") {
     return { success: false, collected: !collected, error: "Invalid species selection." };
@@ -223,18 +223,20 @@ export async function setSpeciesCollected(speciesId: string, collected: boolean)
       return { success: false, collected: false, error: "Couldn't add this species. Please try again." };
     }
   } else {
+    if (removalConfirmed !== true) return { success: false, collected: true, error: "Confirm removal before deleting your saved species and species-level notes." };
     // A saved species owns its associated bins under the database relationship.
     // Refuse even archived bins: uncollecting must NEVER cascade to care history.
     const { data: bins, error: binCheckError } = await db.from("keeper_enclosures")
       .select("id").eq("user_id", user.id).eq("species_id", speciesId).limit(1);
     if (binCheckError) return { success: false, collected: true, error: "Could not verify your bin records. Nothing was removed." };
-    if (bins?.length) return { success: false, collected: true, error: "This species still has bin records, including archived bins. Keep it in My Collection to preserve your care history." };
+    if (bins?.length) return { success: false, collected: true, error: "This species still has bin records, including archived bins. Open each bin’s Settings to delete it first, or keep this species collected to preserve its care history." };
     const { error } = await db.from("member_species_collection")
       .delete().eq("user_id", user.id).eq("species_id", speciesId);
     if (error) return { success: false, collected: true, error: "Couldn't safely remove this species. No keeper records were deleted." };
   }
 
   revalidatePath("/ledger", "layout");
+  revalidatePath("/keeper", "layout");
   revalidatePath("/account");
   return { success: true, collected };
 }
