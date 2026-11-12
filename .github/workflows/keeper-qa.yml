@@ -5,6 +5,7 @@ on:
       - codex/unified-home-manager-customization
       - codex/ledger-navigation-optimization
       - codex/podscape-unified-release-20261109
+      - codex/podscape-manager-psx-release-20261112
   pull_request:
   workflow_dispatch:
 permissions:
