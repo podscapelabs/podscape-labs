@@ -53,7 +53,6 @@ export default async function CustomerAccountPage({searchParams}:{searchParams:P
    <AccountPanelLink href="#account-preferences"><span aria-hidden="true"><PodscapeLineIcon name="menu" /></span><strong>Preferences</strong><small>Appearance & app</small><b aria-hidden="true">↘</b></AccountPanelLink>
    <AccountPanelLink href="#account-personal"><span aria-hidden="true"><PodscapeLineIcon name="community" /></span><strong>Personal Info</strong><small>Profile & security</small><b aria-hidden="true">↘</b></AccountPanelLink>
    <Link href="/account/progress"><span aria-hidden="true"><PodscapeLineIcon name="creative" /></span><strong>My Progress</strong><small>Levels & achievements</small><b aria-hidden="true">↗</b></Link>
-   <AccountPanelLink href="#account-rewards"><span aria-hidden="true"><PodscapeLineIcon name="shop" /></span><strong>Rewards</strong><small>Benefits & perks</small><b aria-hidden="true">↘</b></AccountPanelLink>
   </section>
   {isOwner?<section className={styles.accountOwner} aria-label="Owner administration">
    <details id="owner-tools">
@@ -75,7 +74,6 @@ export default async function CustomerAccountPage({searchParams}:{searchParams:P
    <div className={styles.accordions}>
     <details id="account-preferences"><summary><span className={styles.symbol}><PodscapeLineIcon name="menu" /></span><span><strong>Preferences</strong><small>Appearance and app installation</small></span><span className={styles.chevron}>⌄</span></summary><div className={styles.panel}><AppearancePreference/><p><Link href="/app?onboarding=1">Replay welcome tour and choose a starter layout →</Link></p><InstallPodscape variant="settings"/></div></details>
     <details id="account-personal"><summary><span className={styles.symbol}><PodscapeLineIcon name="community" /></span><span><strong>Personal Information</strong><small>Username, email and account security</small></span><span className={styles.chevron}>⌄</span></summary><div className={styles.panel}><p className={styles.label}>Username</p><CustomerAccountForm kind="profile" initialName={profile?.display_name||""}/><p className={styles.label}>Email</p><p>{user.email}</p><h3>Account security</h3><Link href="/account/change-password">Change password →</Link><Link href="/account/forgot-password">Password recovery →</Link><form action={signOutCustomer}><button type="submit" className={styles.signout}>Sign out</button></form></div></details>
-    <details id="account-rewards"><summary><span className={styles.symbol}><PodscapeLineIcon name="shop" /></span><span><strong>Rewards &amp; Benefits</strong><small>Keeper perks and future unlocks</small></span><span className={styles.chevron}>⌄</span></summary><div className={styles.panel}><p>Keeper EXP and member rewards are being developed. Discount thresholds and eligibility will be announced when the program launches.</p><Link href="/account/progress">View your progress →</Link></div></details>
    </div>
   </section>
  </div></main>;
