@@ -17,11 +17,20 @@ export async function createEnclosure(input: { speciesId: string; name: string }
  if (!available) return { success:false,error:"Choose a species from the Leaf Ledger." };
  const { db, user } = await keeperContext();
  if (!db || !user) return { success:false,error:"Sign in to manage your enclosures." };
- const {data:saved}=await db.from("member_species_collection").select("species_id").eq("user_id",user.id).eq("species_id",input.speciesId).maybeSingle();
- if(!saved)return{success:false,error:"Add this species to My Collection before creating an enclosure."};
+ // Creating a bin intentionally also saves its species if needed. Merely
+ // bookmarking a species never creates a physical enclosure.
+ const {data:saved,error:lookupError}=await db.from("member_species_collection").select("species_id").eq("user_id",user.id).eq("species_id",input.speciesId).maybeSingle();
+ if(lookupError)return{success:false,error:"Could not check your species collection."};
+ if(!saved){
+  const {error:saveError}=await db.from("member_species_collection").insert({user_id:user.id,species_id:input.speciesId});
+  if(saveError&&saveError.code!=="23505")return{success:false,error:"Could not add this species to your collection."};
+ }
  const { data, error } = await db.from("keeper_enclosures").insert({ user_id:user.id,species_id:input.speciesId,name }).select("id").single();
+ // On a failed bin creation, do not silently leave behind a surprise bookmark.
+ // Retain a concurrent user's bookmark if another request already created it.
+
  if (error || !data) return { success:false,error:"Couldn't create enclosure. Keeper database migration may be required." };
- revalidatePath("/keeper"); revalidatePath("/ledger/my-collection"); return { success:true,id:data.id };
+ revalidatePath("/keeper"); revalidatePath("/keeper/collection"); revalidatePath("/ledger","layout"); return { success:true,id:data.id };
 }
 export async function updateEnclosure(input: { id:string; name:string; label:string; quantity:number; status:string; breeding:string; enclosureType:string; acquiredOn:string; source:string; notes:string }):Promise<Result> {
  await requireCustomerPreviewAccess();
