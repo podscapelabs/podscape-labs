@@ -21,11 +21,11 @@ export type Portfolio={cash:number;holdings:Record<string,number>;trades:Trade[]
 export type MarketNews={headline:string;detail:string;symbol:string;effect:number};
 export const STOCKS:Stock[]=[
  {symbol:"DUCK",name:"Rubber Ducky Inc.",sector:"Luxury Moss",summary:"Premium moss penthouses and high-end hides.",base:148.20,volatility:1.3,icon:"🦆"},
- {symbol:"MOO",name:"Dairy Cow Dairy",sector:"Colony Foods",summary:"Rapid expansion. Very questionable dairy.",base:42.50,volatility:.7,icon:"🐄"},
- {symbol:"PANDA",name:"Panda King Holdings",sector:"Leaf Estates",summary:"A thriving empire in miniature real estate.",base:87.30,volatility:1,icon:"🐼"},
- {symbol:"BLUE",name:"Powder Blue Express",sector:"Leaf Delivery",summary:"Same-minute transport for tiny parcels.",base:21.60,volatility:1.2,icon:"💨"},
+ {symbol:"MOO",name:"Dairy Cow Industries",sector:"Colony Foods",summary:"A sprawling colony-food empire. Questionable expansion decisions.",base:42.50,volatility:.7,icon:"🐄"},
+ {symbol:"PANDA",name:"Panda King Holdings",sector:"Leaf Estates",summary:"A tiny property dynasty and extremely speculative miniature real estate.",base:87.30,volatility:1,icon:"🐼"},
+ {symbol:"BLUE",name:"Powder Blue Logistics",sector:"Leaf Distribution",summary:"Ridiculously fast distribution with a history of delivery disasters.",base:21.60,volatility:1.2,icon:"💨"},
  {symbol:"TITAN",name:"Titan Heavy Industries",sector:"Cork Mining",summary:"Moving enormous pieces of very small cork.",base:112.40,volatility:.85,icon:"🪵"},
- {symbol:"CLOWN",name:"Clown Entertainment",sector:"Burrow Media",summary:"Strictly professional, very unserious.",base:36.80,volatility:1.5,icon:"🎪"}
+ {symbol:"CLOWN",name:"Clown Capital",sector:"Publicity & Hype",summary:"Marketing hype, corporate confetti, and questionable investments.",base:36.80,volatility:1.5,icon:"🎪"}
 ];
 export const NEWS:MarketNews[]=[
  {symbol:"DUCK",effect:.075,headline:"DUCK unveils luxury moss penthouses",detail:"Industry analysts call the development aggressively cozy."},
