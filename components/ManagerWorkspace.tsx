@@ -23,7 +23,7 @@ import {managerStorageKey} from "@/lib/ui-preferences";
 
 type Section="hero"|"stats"|"care"|"tools"|"activity"|"enclosures"|"insights";
 type Tool={id:string;label:string;href:string;icon:PodscapeIconName};
-const defaults:Section[]=["hero","enclosures","care","stats","activity","tools","insights"];
+const defaults:Section[]=["hero","tools","enclosures","care","stats","activity","insights"];
 const required:Section[]=["hero"];
 const labels:Record<Section,string>=managerWidgetNames;
 const library:Tool[]=[
@@ -41,7 +41,7 @@ const library:Tool[]=[
  {id:"activity",label:"Recent activity",href:"/keeper/activity",icon:"note"}
 ];
 type Layout={order:Section[];visible:Section[];tools:string[]};
-const initial:Layout={order:defaults,visible:["hero","enclosures","care","stats"],tools:["scan","care","colonies","add","schedule","qr"]};
+const initial:Layout={order:defaults,visible:["hero","tools","enclosures","care"],tools:["scan","add","colonies","schedule","qr","bulkqr"]};
 const detailed:Layout={order:defaults,visible:[...defaults],tools:[...initial.tools]};
 function normalize(value:unknown):Layout{
  if(!value||typeof value!=="object")return initial;
@@ -50,9 +50,11 @@ function normalize(value:unknown):Layout{
  // Upgrade only untouched pre-redesign Manager layouts. Never overwrite intentional widget choices.
  const oldFullOrder=["hero","tools","enclosures","care","activity","stats","insights"];
  const oldFullVisible=["hero","tools","enclosures","care"];
+ const recentlyIntroducedOrder=["hero","enclosures","care","stats","activity","tools","insights"];
+ const recentlyIntroducedVisible=["hero","enclosures","care","stats"];
  if(Array.isArray(raw.order)&&Array.isArray(raw.visible)&&Array.isArray(raw.tools)&&
-   raw.order.join("|")===oldFullOrder.join("|")&&raw.visible.join("|")===oldFullVisible.join("|")&&
-   raw.tools.join("|")==="scan|care|colonies|add|schedule|qr")return initial;
+   (raw.order.join("|")===oldFullOrder.join("|")&&raw.visible.join("|")===oldFullVisible.join("|")||raw.order.join("|")===recentlyIntroducedOrder.join("|")&&raw.visible.join("|")===recentlyIntroducedVisible.join("|"))&&
+   (raw.tools.join("|")==="scan|care|colonies|add|schedule|qr"||raw.tools.join("|")==="scan|add|colonies|schedule|qr|bulkqr"))return initial;
  const oldUntouched=Array.isArray(raw.order)&&raw.order.join("|")===previousDefault.join("|");
  const previousLaunchVisible=["stats","care","tools","activity","enclosures"];
  const previousCompactVisible=["tools","enclosures","care","activity","stats"];
@@ -128,7 +130,8 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
  const [showDirectory,setShowDirectory]=useState(false);
  const [activeWorkflow,setActiveWorkflow]=useState<ManagerWorkflow|null>(null);
  const [workflowBin,setWorkflowBin]=useState<string|null>(null);
- const openWorkflow=(mode:ManagerWorkflow,id?:string)=>{setWorkflowBin(id||null);setActiveWorkflow(mode);requestAnimationFrame(()=>document.getElementById("manager-quick-workflow")?.scrollIntoView({behavior:"smooth",block:"nearest"}))};
+ useEffect(()=>{if(activeWorkflow)document.getElementById("manager-quick-workflow")?.scrollIntoView({behavior:"smooth",block:"nearest"})},[activeWorkflow]);
+ const openWorkflow=(mode:ManagerWorkflow,id?:string)=>{setWorkflowBin(id||null);setActiveWorkflow(mode)};
  // Preserve the position of the section the user held while editor controls mount above it.
  const editAnchor=useRef<{id:Section;top:number}|null>(null);
  const enterCanvas=(id?:Section)=>{
@@ -179,7 +182,7 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
     <div className={styles.managerSearchField}><span aria-hidden="true"><PodscapeLineIcon name="search"/></span><input id="manager-collection-search" aria-label="Search your collection" type="search" enterKeyHint="search" value={query} onChange={event=>setQuery(event.target.value)} onKeyDown={event=>{if(event.key==="Escape"){setQuery("");event.currentTarget.blur()}else if(event.key==="Enter"&&searchResults.length){event.preventDefault();router.push("/keeper/"+searchResults[0].id)}}} placeholder="Find a species, bin or enclosure…" autoComplete="off"/>{query?<button type="button" onClick={()=>setQuery("")} aria-label="Clear collection search">×</button>:null}</div>
     {matching?<div className={styles.managerSearchResults} role="region" aria-live="polite" aria-label="Matching colonies">{searchResults.length?<p className={styles.managerSearchCount}>{matchingBins.length} matching {matchingBins.length===1?"colony":"colonies"}{matchingBins.length>8?" · Showing 8 most recently updated":""}</p>:null}{searchResults.length?searchResults.map(bin=><Link key={bin.id} href={`/keeper/${bin.id}`}><strong>{bin.species}</strong><span>{bin.name}{bin.label?" · "+bin.label:""} · {bin.quantity} recorded</span><b aria-hidden="true">→</b></Link>):<p>No colonies match “{query}”. <Link href="/keeper/collection">Browse all colonies →</Link></p>}</div>:null}
   </div></section>
-  <div className={styles.managerWorkflowEntry}>
+  {!canvasEditing?<div className={styles.managerWorkflowEntry}>
    <div className={styles.managerWorkflowLabel}><strong>Work from your portal</strong><span>Choose a task and stay right here.</span></div>
    <div className={styles.managerWorkflowActions} role="group" aria-label="Quick Manager actions">
     <button type="button" onClick={()=>openWorkflow("care")}><PodscapeLineIcon name="droplet"/> Log care</button>
@@ -187,8 +190,8 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
     <button type="button" onClick={()=>openWorkflow("population")}><PodscapeLineIcon name="community"/> Population</button>
     <button type="button" onClick={()=>openWorkflow("bulk")}><PodscapeLineIcon name="bin"/> Multi-care</button>
    </div>
-  </div>
-  {activeWorkflow?<div id="manager-quick-workflow"><ManagerWorkflowPanel key={activeWorkflow+":"+(workflowBin||"")} mode={activeWorkflow} bins={bins} onClose={()=>setActiveWorkflow(null)}/></div>:null}
+  </div>:null}
+  {activeWorkflow&&!canvasEditing?<div id="manager-quick-workflow"><ManagerWorkflowPanel key={activeWorkflow+":"+(workflowBin||"")} mode={activeWorkflow} bins={bins} onClose={()=>setActiveWorkflow(null)}/></div>:null}
   </>,
   stats,
   care:<ManagerCareOverview bins={bins}/>,
