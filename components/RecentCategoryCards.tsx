@@ -23,7 +23,7 @@ function UpdateDetailDialog({item,category,onClose}:{item:RecentItem;category:Re
   icon={updateCategoryById[category].icon} title={item.title}
   description={item.description} onClose={onClose}>
    {details.length>0?<section aria-label="Changes in this update" className={detailStyles.changes}>
-    <h3>What's changed</h3>
+    <h3>What&apos;s changed</h3>
     <ul>{details.map((detail,index)=><li key={index}><span aria-hidden="true"><PodscapeLineIcon name="check"/></span><span>{detail}</span></li>)}</ul>
    </section>:null}
    <div className={detailStyles.actions}>
