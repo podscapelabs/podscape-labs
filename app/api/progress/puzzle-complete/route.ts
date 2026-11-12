@@ -33,9 +33,10 @@ function validProof(mode:string,puzzle:unknown,proof:unknown):boolean{
  const data=proof as Record<string,unknown>;
  if(mode==="quiz"){
   const questions=(puzzle as QuizPuzzle).questions;
-  // Completion rewards participation, not a perfect score; all answers must be valid.
+  // Quiz completion requires a perfect round, not merely participation.
+  // The client cannot unlock a new puzzle or earn EXP with incorrect answers.
   return Array.isArray(data.answers)&&data.answers.length===questions.length&&
-   data.answers.every(answer=>Number.isInteger(answer)&&answer>=0&&answer<4);
+   questions.every((question,index)=>data.answers[index]===question.answer);
  }
  if(mode==="burrow"){
   const answer=(puzzle as BurrowPuzzle).answer;
