@@ -1,11 +1,12 @@
-.backdrop{position:fixed;inset:0;z-index:1100;display:grid;place-items:center;padding:calc(20px + env(safe-area-inset-top,0px)) 16px calc(20px + env(safe-area-inset-bottom,0px));background:rgba(10,25,19,.7);backdrop-filter:blur(8px)}
-.dialog{width:min(100%,560px);max-height:min(80dvh,740px);overflow:auto;overscroll-behavior:contain;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:26px;box-shadow:0 26px 85px #0005;padding:clamp(23px,5vw,34px);text-align:left}
-.top{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:20px}.category{display:inline-flex;align-items:center;gap:9px;color:var(--forest);font-size:.7rem;letter-spacing:.05em;font-weight:800}.category svg{width:20px;height:20px}
-.close{display:grid;place-items:center;flex:0 0 40px;width:40px;height:40px;background:var(--canvas);color:var(--ink);border:1px solid var(--line);border-radius:50%;cursor:pointer}.close svg{width:18px;height:18px}
-.dialog h2{margin:0;font:500 clamp(1.65rem,5vw,2.25rem)/1.12 var(--serif);letter-spacing:-.025em}
-.intro{margin:15px 0 0;line-height:1.65;color:var(--muted);font-size:.91rem}
-.changes{margin-top:26px;padding-top:22px;border-top:1px solid var(--line)}.changes h3{margin:0 0 14px;color:var(--ink);font-size:.8rem;font-weight:800}.changes ul{display:grid;gap:13px;margin:0;padding:0;list-style:none}.changes li{display:flex;align-items:flex-start;gap:11px;line-height:1.5;font-size:.85rem}.changes li>span:first-child{display:grid;place-items:center;flex:0 0 25px;width:25px;height:25px;border-radius:9px;background:color-mix(in srgb,var(--forest) 12%,var(--paper));color:var(--forest)}.changes li svg{width:15px;height:15px}
-.actions{margin-top:26px;padding-top:20px;border-top:1px solid var(--line)}.actions a{display:inline-flex;align-items:center;justify-content:center;gap:14px;min-height:44px;padding:10px 17px;background:var(--ps-accent);color:var(--ps-accent-text);border-radius:13px;font-size:.79rem;font-weight:800}.actions svg{width:17px;height:17px}/* Accent-on-color contrast is provided by the shared semantic role. */
-.dialog :is(button,a):focus-visible{outline:3px solid var(--amber);outline-offset:3px}
-@media(max-width:600px){.backdrop{align-items:end;padding:0}.dialog{width:100%;max-height:calc(90dvh - env(safe-area-inset-top,0px));padding:25px 22px calc(28px + env(safe-area-inset-bottom,0px));border-radius:26px 26px 0 0}.top{margin-bottom:16px}}
-@media(prefers-reduced-motion:no-preference){.dialog{animation:rise .2s ease-out}@keyframes rise{from{opacity:.7;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}}
+/* Update content uses the shared PodScapeInfoDialog sheet and semantic colours. */
+.changes{margin-top:22px;padding-top:20px;border-top:1px solid var(--ps-border,var(--border))}
+.changes h3{margin:0 0 14px;color:var(--ps-text,var(--text-primary));font-size:13px;font-weight:850}
+.changes ul{display:grid;gap:11px;margin:0;padding:0;list-style:none}
+.changes li{display:flex;align-items:flex-start;gap:11px;line-height:1.5;font-size:13px;overflow-wrap:anywhere}
+.changes li>span:first-child{display:grid;place-items:center;flex:0 0 25px;width:25px;height:25px;border-radius:9px;background:color-mix(in srgb,var(--ps-accent,var(--accent)) 12%,var(--ps-surface,var(--surface)));color:var(--ps-accent,var(--accent))}
+.changes li svg{width:15px;height:15px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid var(--ps-border,var(--border))}
+.actions a{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;padding:10px 15px;border:1px solid var(--ps-border,var(--border));background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-text,var(--text-primary));border-radius:12px;font-size:12px;font-weight:800;text-decoration:none}
+.actions a:first-child{background:var(--ps-accent);color:var(--ps-accent-text);border-color:var(--ps-accent)}
+.actions svg{width:16px;height:16px}
+@media(max-width:600px){.actions{display:grid;grid-template-columns:1fr}.actions a{justify-content:space-between}}
