@@ -41,7 +41,7 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
   const uniqueSpecies = new Set(active.map(enclosure => enclosure.speciesId)).size;
   const totalPopulation = active.reduce((total, enclosure) => total + enclosure.quantity, 0);
   const recent = [...active].sort((a,b) => Date.parse(b.updatedAt)-Date.parse(a.updatedAt)).slice(0,5);
-  const firstBinHref = active[0] ? `/keeper/${active[0].id}` : "/keeper/collection";
+  const firstBinHref = recent[0] ? `/keeper/${recent[0].id}` : "/keeper/new";
   const managerBins:ManagerBin[]=active.map(enclosure=>({
     id:enclosure.id,name:enclosure.name,label:enclosure.label,
     species:speciesById.get(enclosure.speciesId)?.commonName||"Species",
@@ -59,20 +59,23 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
         </section> : unavailable ? <section className={styles.empty} role="alert"><h2>Manager is temporarily unavailable.</h2><p>The Keeper database connection could not be reached.</p></section> : <>
           <ManagerWorkspace hero={<section className={styles.managerHero} aria-label="Manager portal">
             {heroSpecies?.image?<div className={styles.managerHeroPhoto}><Image src={heroSpecies.image} alt="" fill sizes="(max-width: 720px) 100vw, 1100px" style={{objectFit:"cover",objectPosition:`${heroSpecies.imagePositionX}% ${heroSpecies.imagePositionY}%`}}/></div>:null}
-            <div className={styles.managerHeroContent}><span>MANAGER · YOUR WORKSPACE</span><h1>Your colonies</h1><p>Everything you need to keep your colonies organized.</p><Link href="/keeper/collection">Explore your colonies <span aria-hidden="true">→</span></Link></div>
+            <div className={styles.managerHeroContent}><span>MANAGER · YOUR WORKSPACE</span><h1>Your colonies</h1><p>Everything you need to keep your colonies organized.</p><div className={styles.managerHeroActions}><Link href={firstBinHref}>{recent.length?"Open latest bin":"Create your first bin"} <span aria-hidden="true">→</span></Link>{recent.length?<Link className={styles.heroSecondaryAction} href="/keeper/collection?view=active">Browse all bins</Link>:null}</div></div>
           </section>} scope={managerUser?.id || "guest"} primaryHref={firstBinHref} bins={managerBins} events={activity} activityAvailable={activityAvailable} stats={<section className={styles.metrics} aria-label={managerWidgetNames.stats}>
             <Link href="/keeper/collection"><PodscapeLineIcon name="leaf" /><strong>{uniqueSpecies}</strong><span>Species</span><b>›</b></Link>
             <Link href="/keeper/collection"><PodscapeLineIcon name="bin" /><strong>{active.length}</strong><span>Bins</span><b>›</b></Link>
             <Link href="/keeper/collection"><PodscapeLineIcon name="community" /><strong>{totalPopulation}</strong><span>Recorded population</span><b>›</b></Link>
           </section>} enclosures={<section className={styles.section}>
-            <header><h2>{managerWidgetNames.enclosures}</h2><Link href="/keeper/collection">View all <span>→</span></Link></header>
+            <header><h2>Your bins</h2><Link href="/keeper/collection?view=active">View all <span>→</span></Link></header>
             {recent.length ? <div className={styles.attentionList}>{recent.map(enclosure => {
               const record = speciesById.get(enclosure.speciesId);
-              return <Link href={`/keeper/${enclosure.id}`} key={enclosure.id}>
-                <span className={styles.thumb}>{record?.image ? <Image src={record.image} alt="" fill sizes="58px" style={{objectFit:"cover",objectPosition:`${record.imagePositionX}% ${record.imagePositionY}%`}}/>:<PodscapeLineIcon name="jar"/>}</span>
-                <span><strong>{enclosure.name === "Primary colony" && record ? speciesDisplayName(record) : enclosure.name}</strong><small>{record ? speciesDisplayName(record) : "Species record"} · {enclosure.status.replaceAll("-"," ")}</small></span>
-                <em>{enclosure.quantity} recorded</em><b>›</b>
-              </Link>;
+              return <div className={styles.directBinRow} key={enclosure.id}>
+                <Link className={styles.directBinMain} href={`/keeper/${enclosure.id}`} aria-label={`Open ${enclosure.name}`}>
+                  <span className={styles.thumb}>{record?.image ? <Image src={record.image} alt="" fill sizes="58px" style={{objectFit:"cover",objectPosition:`${record.imagePositionX}% ${record.imagePositionY}%`}}/>:<PodscapeLineIcon name="jar"/>}</span>
+                  <span><strong>{enclosure.name === "Primary colony" && record ? speciesDisplayName(record) : enclosure.name}</strong><small>{record ? speciesDisplayName(record) : "Species record"} · {enclosure.status.replaceAll("-"," ")}</small></span>
+                  <b aria-hidden="true">›</b>
+                </Link>
+                <Link className={styles.directCareAction} href={`/keeper/scan?bin=${enclosure.id}&mode=care`} aria-label={`Log care for ${enclosure.name}`}><PodscapeLineIcon name="droplet"/><span>Care</span></Link>
+              </div>;
             })}</div> : <FirstActionEmptyState icon="jar" eyebrow="YOUR FIRST COLONY" title="Your first colony starts here." description="Add an enclosure to begin recording its population, care and observations. Your new colony will appear here automatically." primary={{href:"/keeper/new",label:"Add Your First Colony"}} secondary={{href:"/ledger",label:"Explore species"}} compact/>}
           </section>} />
           {archived.length ? <details className={styles.archived}><summary>Archived bins ({archived.length})</summary><div>{archived.map((enclosure) => <Link href={`/keeper/${enclosure.id}`} key={enclosure.id}>{enclosure.name} →</Link>)}</div></details> : null}
