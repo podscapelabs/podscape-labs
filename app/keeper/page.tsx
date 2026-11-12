@@ -10,6 +10,7 @@ import { CreateEnclosure } from "@/components/KeeperWorkspace";
 import { KeeperMobileNav } from "@/components/KeeperMobileNav";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
 import { FirstActionEmptyState } from "@/components/FirstActionEmptyState";
+import { ManagerInlineCare } from "@/components/ManagerInlineCare";
 import { getMemberCollectionState } from "@/lib/member-collection";
 import { listEnclosures, listManagerActivity } from "@/lib/keeper";
 import { getSpeciesRecords } from "@/lib/species-store";
@@ -74,7 +75,7 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
                   <span><strong>{enclosure.name === "Primary colony" && record ? speciesDisplayName(record) : enclosure.name}</strong><small>{record ? speciesDisplayName(record) : "Species record"} · {enclosure.status.replaceAll("-"," ")}</small></span>
                   <b aria-hidden="true">›</b>
                 </Link>
-                <Link className={styles.directCareAction} href={`/keeper/scan?bin=${enclosure.id}&mode=care`} aria-label={`Log care for ${enclosure.name}`}><PodscapeLineIcon name="droplet"/><span>Care</span></Link>
+                <ManagerInlineCare binId={enclosure.id} binName={enclosure.name} compact/>
               </div>;
             })}</div> : <FirstActionEmptyState icon="jar" eyebrow="YOUR FIRST COLONY" title="Your first colony starts here." description="Add an enclosure to begin recording its population, care and observations. Your new colony will appear here automatically." primary={{href:"/keeper/new",label:"Add Your First Colony"}} secondary={{href:"/ledger",label:"Explore species"}} compact/>}
           </section>} />
