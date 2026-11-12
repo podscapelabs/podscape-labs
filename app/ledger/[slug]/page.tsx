@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CollectionButton } from "@/components/CollectionButton";
 import { SpeciesDashboardWorkspace } from "@/components/SpeciesDashboardWorkspace";
-import {QuickAddBin} from "@/components/QuickAddBin";
+import {SpeciesCollectionHub} from "@/components/SpeciesCollectionHub";
+import {listEnclosures} from "@/lib/keeper";
 import { SpeciesProfileNavigator } from "@/components/SpeciesProfileNavigator";
 import {MoistureAndHumidityWidget,BreedingDevelopmentWidget,TaxonomyOriginWidget,FeedingEcologyWidget,HabitatSetupWidget,BehaviourEcologyWidget,ResearchSourcesWidget} from "@/components/SpeciesResearchWidgets";
 import {getSpeciesTraitId} from "@/lib/species-traits";
@@ -72,6 +72,9 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
     .sort((a,b)=>a.catalogueNumber.localeCompare(b.catalogueNumber,"en",{numeric:true,sensitivity:"base"}))
     .map(item=>({slug:item.slug,name:speciesDisplayName(item)}));
   const collectionEntry = member.entries.find(entry => entry.speciesId === record.id);
+  let speciesBins:Awaited<ReturnType<typeof listEnclosures>>=[];
+  let binsUnavailable=false;
+  if(member.signedIn){try{speciesBins=await listEnclosures(record.id);}catch{binsUnavailable=true;}}
   const displayName = speciesDisplayName(record);
   const scientificName = speciesScientificName(record);
 
@@ -133,6 +136,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
         </SpeciesProfileNavigator>
 
         <div className={styles.dashboardBody}>
+          {record.kind==="species"&&record.status==="published"?<SpeciesCollectionHub key={record.id+":"+Boolean(collectionEntry)} speciesId={record.id} speciesName={displayName} collected={Boolean(collectionEntry)} signedIn={member.signedIn} bins={speciesBins.map(({id,name,label,quantity,isArchived})=>({id,name,label,quantity,isArchived}))} unavailable={binsUnavailable}/>:null}
           <SpeciesDashboardWorkspace scope={user?.id || "guest"} preview={previewRequested} widgets={{
             about:about ? <details className={styles.dashboardAbout}>
               <summary><span className={styles.aboutSymbol} aria-hidden="true"><PodscapeLineIcon name="book" /></span><span className={styles.aboutSummary}><strong>About {displayName}</strong><span className={styles.aboutPreview}>{about}</span></span><span className={styles.aboutChevron} aria-hidden="true">⌄</span></summary>
@@ -155,9 +159,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
             <div className={styles.dashboardPersonalTitle}>Your PodScape</div>
             <div className={styles.dashboardPersonalActions}>
               {record.status === "published" ? <PinToHome pin={{ kind: "species", id: record.slug }} userId={user?.id || null} /> : null}
-              {collectionEntry ? <Link href="/keeper/collection" className={styles.collectionDestination}>✓ Saved · My Colonies →</Link>
-                : <CollectionButton speciesId={record.id} speciesName={displayName} initialCollected={false} signedIn={member.signedIn} detail />}
-              {member.signedIn?<QuickAddBin speciesId={record.id} speciesName={displayName} className={styles.collectionDestination}/>:<Link href="/account/login" className={styles.collectionDestination}>Sign in to add a bin →</Link>}
+              <Link href="#your-species" className={styles.collectionDestination}>Your collection & bins ↑</Link>
             </div>
           </section> : null,
             navigation: <nav className={styles.compactFooter} aria-label="Explore more">

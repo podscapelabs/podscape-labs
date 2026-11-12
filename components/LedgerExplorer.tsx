@@ -144,7 +144,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
         </div>
         <nav className={spotlight.heroDestinations} aria-label="Leaf Ledger mini dashboard">
           <a href="#ledger-directory" aria-current="page" className={spotlight.heroDestinationActive}><span aria-hidden="true"><PodscapeLineIcon name="leaf"/></span><strong>Discover</strong><small>Explore species</small></a>
-          <Link href={signedIn ? "/keeper/collection" : "/account/login"}><span aria-hidden="true"><PodscapeLineIcon name="bookmark"/></span><strong>My Collection</strong><small>Your saved species</small></Link>
+          <Link href={signedIn ? "/keeper/collection" : "/account/login"}><span aria-hidden="true"><PodscapeLineIcon name="bookmark"/></span><strong>My Colonies</strong><small>Saved species &amp; bins</small></Link>
         </nav>
       </div>
     </header> : null}

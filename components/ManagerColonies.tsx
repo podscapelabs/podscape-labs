@@ -5,17 +5,19 @@ import {binDisplayName} from "@/lib/bin-identity";
 import Image from "next/image";
 import Link from "next/link";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
+import {CollectionButton} from "./CollectionButton";
 import {QuickAddBin} from "@/components/QuickAddBin";
 import { speciesDisplayName, speciesScientificName, type SpeciesRecord } from "@/data/species";
 import type { Enclosure } from "@/lib/keeper";
 import styles from "./ManagerColonies.module.css";
 
-export function ManagerColonies({ records, bins, collectedIds, intent, initialSpecies }: {
+export function ManagerColonies({ records, bins, collectedIds, intent, initialSpecies, archivedView=false }: {
   records: SpeciesRecord[];
   bins: Enclosure[];
   collectedIds: string[];
   intent?: "notes";
   initialSpecies?:string;
+  archivedView?:boolean;
 }) {
   const [tab, setTab] = useState<"species" | "bins">(intent==="notes"?"bins":"species");
   const [query, setQuery] = useState("");
@@ -29,7 +31,7 @@ export function ManagerColonies({ records, bins, collectedIds, intent, initialSp
   const speciesTotals=new Map([...binsBySpecies].map(([id,group])=>[id,group.reduce((total,bin)=>total+bin.quantity,0)]));
   const recentFor=(record:SpeciesRecord)=>Math.max(Date.parse(record.updatedAt)||0,...(binsBySpecies.get(record.id)||[]).map(bin=>Date.parse(bin.updatedAt)||0));
   const saved = new Set(collectedIds);
-  const entries = records.filter(record => saved.has(record.id) || binsBySpecies.has(record.id));
+  const entries = records.filter(record => (!archivedView&&saved.has(record.id)) || binsBySpecies.has(record.id));
   const speciesMap = new Map(records.map(record => [record.id, record]));
   const genera = [...new Set(entries.map(record => record.genus).filter(Boolean))].sort();
   const careLevels = [...new Set(entries.map(record => record.careLevel).filter(Boolean))].sort();
@@ -38,7 +40,7 @@ export function ManagerColonies({ records, bins, collectedIds, intent, initialSp
   const visibleSpecies = entries.filter(record =>
     (genus === "all" || record.genus === genus) &&
     (care === "all" || record.careLevel === care) &&
-    (!lowered || matching([speciesDisplayName(record), speciesScientificName(record), record.catalogueNumber].join(" ")))
+    (!lowered || matching([speciesDisplayName(record), speciesScientificName(record), record.catalogueNumber,...(binsBySpecies.get(record.id)||[]).flatMap(bin=>[bin.name,bin.label])].join(" ")))
   ).sort((a,b) => sort === "name" ? speciesDisplayName(a).localeCompare(speciesDisplayName(b)) : sort === "count" ?
     (speciesTotals.get(b.id)||0) - (speciesTotals.get(a.id)||0) : recentFor(b)-recentFor(a));
   const visibleBins = bins.filter(bin => {
@@ -71,7 +73,7 @@ export function ManagerColonies({ records, bins, collectedIds, intent, initialSp
           onClick={()=>setExpanded(open?null:record.id)}>
           <span className={styles.photo}>{record.image?<Image src={record.image} alt="" fill sizes="(max-width:700px) 90px,130px" style={{objectFit:"cover",objectPosition:record.imagePositionX+"% "+record.imagePositionY+"%"}}/>:<PodscapeLineIcon name="leaf"/>}</span>
           <span className={styles.cardBody}><strong>{speciesDisplayName(record)}</strong><em>{speciesScientificName(record)}</em>
-            <small>{owned.length?"Your active bins":"Saved species · No bins created"}</small>
+            <small>{owned.length?archivedView?"Archived bins":"Your active bins":"Saved species · No bins created"}</small>
             <span className={styles.counts}><span><PodscapeLineIcon name="bin"/>{owned.length} {owned.length===1?"bin":"bins"}</span>{owned.length?<span><PodscapeLineIcon name="community"/>{total} recorded</span>:null}</span>
           </span>
           <span className={styles.expandArrow} aria-hidden="true">{open?"⌃":"⌄"}</span>
@@ -79,10 +81,17 @@ export function ManagerColonies({ records, bins, collectedIds, intent, initialSp
         {open?<div id={"species-bins-"+record.id} className={styles.groupDetails}>
           {owned.length?owned.map(bin=><div className={styles.groupBin} key={bin.id}>
             <Link href={binHref(bin.id)}><strong>{binDisplayName({...bin,label:""})}</strong><small>{bin.label||"No location"} · {bin.quantity} recorded · {bin.status.replaceAll("-"," ")}</small></Link>
-            <Link href={"/keeper/scan?bin="+bin.id+"&mode=care"} className={styles.quickCare} aria-label={"Quick Care for "+bin.name}><PodscapeLineIcon name="droplet"/> Care</Link>
+            {!archivedView?<Link href={"/keeper/scan?bin="+bin.id+"&mode=care"} className={styles.quickCare} aria-label={"Quick Care for "+bin.name}><PodscapeLineIcon name="droplet"/> Care</Link>:null}
           </div>):<p className={styles.noBins}>This species is saved for reference. No enclosure has been created.</p>}
-          <div className={styles.groupActions}><QuickAddBin speciesId={record.id} speciesName={speciesDisplayName(record)}/><Link href={"/ledger/"+record.slug}>Species reference →</Link></div>
+
         </div>:null}
+        <div className={styles.groupActions}>
+          {!archivedView?<QuickAddBin speciesId={record.id} speciesName={speciesDisplayName(record)}/>:null}
+          {!archivedView&&owned.length?<Link href={"/keeper/scan?bin="+owned[0].id+"&mode=care"}>Quick Care</Link>:null}
+          {owned.length===1?<Link href={"/keeper/"+owned[0].id}>Open bin</Link>:null}
+          {record.status==="published"&&!record.archivedAt?<Link href={"/ledger/"+record.slug}>Species reference</Link>:null}
+          {!archivedView?<CollectionButton speciesId={record.id} speciesName={speciesDisplayName(record)} initialCollected={saved.has(record.id)} signedIn compact/>:null}
+        </div>
       </article>;
     }) : visibleBins.map(bin=>{
       const record=speciesMap.get(bin.speciesId);

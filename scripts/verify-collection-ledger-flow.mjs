@@ -24,7 +24,9 @@ assert.ok(keeper.includes('from("member_species_collection").insert'),"Deliberat
 assert.ok(keeper.includes('from("keeper_enclosures").insert'),"Physical bin creation remains explicit");
 assert.ok(binPage.includes("selectedSpecies")&&binPage.includes('record.status==="published"'),"Preselected bin form offers published catalogue");
 assert.ok(binForm.includes("initialSpeciesId")&&binForm.includes("Create bin"),"Species is prefilled and confirmation required");
-assert.ok(speciesPage.includes("QuickAddBin"),"Ledger profile opens Quick Add Bin in-place");
+assert.ok(speciesPage.includes("SpeciesCollectionHub"),"Ledger profile exposes direct saved-species and bin management");
+const hub=read("components/SpeciesCollectionHub.tsx");
+assert.ok(hub.includes("QuickAddBin")&&hub.includes("CollectionButton")&&hub.includes("Quick Care"),"Collection hub supports saving, explicit bin creation and direct care");
 const quick=read("components/QuickAddBin.tsx");
 assert.ok(quick.includes("PodscapeInfoDialog")&&quick.includes("createEnclosure")&&quick.includes("createPortal"),"Shared information sheet creates an explicit bin without navigation");
 assert.ok(colonies.includes("QuickAddBin")&&colonies.includes("setExpanded")&&colonies.includes("species-bins-")&&colonies.includes("Quick Care for"),"Species expands to actual bins in one screen");

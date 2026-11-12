@@ -12,7 +12,7 @@ import styles from "./page.module.css";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "My Colonies | PodScape Labs", robots: { index: false, follow: false } };
 
-export default async function MyColoniesPage({searchParams}:{searchParams:Promise<{intent?:string;species?:string}>}) {
+export default async function MyColoniesPage({searchParams}:{searchParams:Promise<{intent?:string;species?:string;view?:string}>}) {
   const member = await getMemberCollectionState();
   const options=await searchParams;
   const intent=options.intent==="notes"?"notes":undefined;
@@ -23,8 +23,9 @@ export default async function MyColoniesPage({searchParams}:{searchParams:Promis
     try { [records, bins] = await Promise.all([getSpeciesRecords(), listEnclosures()]); }
     catch { unavailable = true; }
   }
-  const active = bins.filter(bin => !bin.isArchived);
-  const species = records.filter(record => record.kind === "species" && isSpeciesRecordActive(record));
+  const archivedView=options.view==="archived";
+  const active = bins.filter(bin => archivedView?bin.isArchived:!bin.isArchived);
+  const species = records.filter(record => record.kind === "species" && (isSpeciesRecordActive(record)||bins.some(bin=>bin.speciesId===record.id)));
   return <PlatformShell>
     <div className={styles.page}>
       <div className={styles.inner}>
@@ -32,11 +33,12 @@ export default async function MyColoniesPage({searchParams}:{searchParams:Promis
         <header className={styles.heading}>
           <p className={styles.eyebrow}>MANAGER · YOUR COLLECTION</p>
           <h1>My Colonies</h1>
-          <p>Your species, bins and colony records in one place.</p>
+          <p>Your saved species and bins in one place.</p>
+          <nav aria-label="Collection views"><Link href="/ledger">Discover species</Link>{" · "}<Link href="/keeper/collection">Active collection</Link>{" · "}<Link href="/keeper/collection?view=archived">Archived bins</Link></nav>
         </header>
         {!member.signedIn ? <section className={styles.empty}><h2>Your colonies are private.</h2><p>Sign in to see and manage your records.</p><Link href="/account/login">Sign in →</Link></section>
           : unavailable ? <section className={styles.empty} role="alert"><h2>Colony records are unavailable.</h2><p>Try again when the Keeper database is available.</p></section>
-          : <ManagerColonies records={species} bins={active} collectedIds={member.ids} intent={intent} initialSpecies={options.species} />}
+          : <ManagerColonies records={species} bins={active} collectedIds={member.ids} intent={intent} initialSpecies={options.species} archivedView={archivedView} />}
       </div>
     </div>
     {member.signedIn ? <KeeperMobileNav active="keeper"/> : null}

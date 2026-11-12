@@ -16,10 +16,12 @@ export async function keeperContext() {
  const { data: { user } } = await db.auth.getUser();
  return { db, user };
 }
-export async function listEnclosures(): Promise<Enclosure[]> {
+export async function listEnclosures(speciesId?:string): Promise<Enclosure[]> {
  const { db, user } = await keeperContext();
  if (!db || !user) return [];
- const { data, error } = await db.from("keeper_enclosures").select("*").eq("user_id", user.id).order("is_archived", { ascending: true }).order("created_at", { ascending: true });
+ let query=db.from("keeper_enclosures").select("*").eq("user_id",user.id);
+ if(speciesId)query=query.eq("species_id",speciesId);
+ const {data,error}=await query.order("is_archived",{ascending:true}).order("created_at",{ascending:true});
  if (error) throw new Error("Keeper storage is unavailable. Apply the Keeper migration to the customer database.");
  return (data || []).map(mapEnclosure);
 }
