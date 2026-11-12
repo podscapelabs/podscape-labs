@@ -13,7 +13,7 @@ import {STOCKS,STORAGE_KEY,MARKET_INTERVAL_MS,ARCADE_INTERVAL_MS,STARTING_BUCKS,
 function CompanyMark({symbol}:{symbol:string}){return <ExchangeCompanyIcon symbol={symbol}/>;}
 const change=(n:number)=>(n>=0?"+":"")+n.toFixed(2)+"%";
 const countdown=(ms:number)=>String(Math.floor(ms/60000)).padStart(2,"0")+":"+String(Math.floor((ms%60000)/1000)).padStart(2,"0");
-type ChartRange="10m"|"30m"|"1h"|"2h"|"24h";
+type ChartRange="10m"|"30m"|"1h"|"24h";
 type MarketFeed={mode:"legacy";cycle:number}|{
  mode:"v3";cycle:number;quotes:Record<string,number>;previous:Record<string,number>;
  history:Record<string,Array<{cycle:number;price:number}>>;range:string;minute:number;cutoverCycle:number;
@@ -25,8 +25,8 @@ type MarketFeed={mode:"legacy";cycle:number}|{
 function Sparkline({symbol,cycle,range,series}:{symbol:string;cycle:number;range:ChartRange;series?:number[]}){
  // Sample only completed, authoritative deterministic cycles. The V3 history API
  // will replace this reconstruction once versioned persisted quotes are enabled.
- const minutes=range==="10m"?10:range==="30m"?30:range==="1h"?60:range==="2h"?120:1440;
- const spacing=isArcadeCycle(cycle)?minutes===1440?15:minutes===120?5:1:minutes===1440?3:1;
+ const minutes=range==="10m"?10:range==="30m"?30:range==="1h"?60:1440;
+ const spacing=isArcadeCycle(cycle)?minutes===1440?15:1:minutes===1440?3:1;
  const samples=Math.ceil(minutes/(isArcadeCycle(cycle)?spacing:5*spacing));
  const prices=useMemo(()=>series&&series.length>1?series:Array.from({length:samples+1},(_,i)=>priceAt(symbol,cycle-(samples-i)*spacing)),[symbol,cycle,spacing,samples,series]);
  const low=Math.min(...prices)*.985,high=Math.max(...prices)*1.015;
@@ -57,6 +57,7 @@ export function PodExchange(){
  const [now,setNow]=useState<number|null>(null);
  const [marketFeed,setMarketFeed]=useState<MarketFeed|null>(null);
  const [marketWarning,setMarketWarning]=useState("");
+ const [performance,setPerformance]=useState<{available:boolean;realized?:number;unrealized?:number;holdingsValue?:number;investedCost?:number;reason?:string;cycle?:number}|null>(null);
  const [portfolio,setPortfolio]=useState<Portfolio>(defaultPortfolio);
  const [ready,setReady]=useState(false);
  const [storageMode,setStorageMode]=useState<StorageMode>("loading");
@@ -170,6 +171,24 @@ export function PodExchange(){
   document.addEventListener("visibilitychange",refresh);
   return()=>{live=false;window.clearInterval(timer);window.removeEventListener("focus",refresh);document.removeEventListener("visibilitychange",refresh)};
  },[chartRange]);
+ useEffect(()=>{
+  if(storageMode!=="cloud"){setPerformance(null);return}
+  let live=true,loading=false;
+  const refresh=async()=>{
+   if(loading||document.visibilityState!=="visible")return;
+   loading=true;
+   try{
+    const response=await fetch("/api/fun-zone/pod-exchange/ledger",{cache:"no-store"});
+    if(response.ok){const data=await response.json();if(live)setPerformance(data);}
+    else if(live)setPerformance({available:false,reason:"Profit report temporarily unavailable"});
+   }catch{if(live)setPerformance({available:false,reason:"Profit report temporarily unavailable"});}
+   finally{loading=false}
+  };
+  void refresh();
+  const timer=window.setInterval(()=>void refresh(),60_000);
+  window.addEventListener("podscape-exchange-wallet-updated",refresh);
+  return()=>{live=false;window.clearInterval(timer);window.removeEventListener("podscape-exchange-wallet-updated",refresh)};
+ },[storageMode]);
  const cycle=arcadeCycleAt(now??0);
  const v3=marketFeed?.mode==="v3"?marketFeed:null;
  const feedFresh=marketFeed!==null&&marketWarning===""&&marketFeed.cycle===cycle;
@@ -268,7 +287,7 @@ export function PodExchange(){
       onClick={()=>{setSymbol(stock.symbol);setView("market");setMessage("");requestAnimationFrame(()=>tradeRef.current?.scrollIntoView({behavior:"smooth",block:"center"}));}}>
       <span className={styles.carouselCompany}><span className={styles.carouselIcon}><CompanyMark symbol={stock.symbol}/></span><span><strong>{stock.name}</strong><small>{stock.symbol} · {stock.sector}</small></span></span>
       <span className={styles.carouselQuote}><strong><DuckBucks amount={current}/></strong><small className={delta>=0?styles.up:styles.down}>{change(delta)}</small></span>
-      <Sparkline symbol={stock.symbol} cycle={cycle} range="30m" series={v3?.history[stock.symbol]?.map(point=>point.price)}/>
+      <Sparkline symbol={stock.symbol} cycle={cycle} range={chartRange} series={v3?.history[stock.symbol]?.map(point=>point.price)}/>
       <span className={styles.carouselBottom}><span>{status}</span><b>TRADE <span aria-hidden="true">→</span></b></span>
      </button>;
     })}
@@ -320,6 +339,12 @@ export function PodExchange(){
    {STOCKS.filter(stock=>(portfolio.holdings[stock.symbol]||0)>0).length===0?
    <div className={styles.empty}><DuckBuckIcon size={22}/> Your duck wallet is full, but you don&apos;t own any shares yet. Select a company and make your first trade!</div>:
    <div className={styles.holdings}>{STOCKS.filter(stock=>(portfolio.holdings[stock.symbol]||0)>0).map(stock=><div key={stock.symbol}><span className={styles.holdingIdentity}><span className={styles.holdingIcon}><CompanyMark symbol={stock.symbol}/></span><strong>{stock.symbol}</strong> <small>× {portfolio.holdings[stock.symbol]}</small></span><strong><DuckBucks amount={(portfolio.holdings[stock.symbol]||0)*priceAt(stock.symbol,cycle)}/></strong></div>)}</div>}
+   {storageMode==="cloud"&&performance?.available?<div className={styles.performance} aria-label="Verified market profit and loss">
+    <div><small>Realized profit / loss</small><strong className={(performance.realized||0)>=0?styles.up:styles.down}><DuckBucks amount={performance.realized||0} showSign/></strong></div>
+    <div><small>Unrealized profit / loss</small><strong className={(performance.unrealized||0)>=0?styles.up:styles.down}><DuckBucks amount={performance.unrealized||0} showSign/></strong></div>
+    <div><small>Current invested value</small><strong><DuckBucks amount={performance.holdingsValue||0}/></strong></div>
+    <p>Full-history FIFO accounting, including trading fees. Unrealized value excludes a future sale fee.</p>
+   </div>:storageMode==="cloud"&&performance?.reason?<p className={styles.performanceUnavailable}>{performance.reason}</p>:null}
    {portfolio.trades.length>0?<details className={styles.history}><summary>Recent trades ({portfolio.trades.length})</summary>{portfolio.trades.slice(0,10).map(trade=><p key={trade.id}>{trade.side==="buy"?"Bought":"Sold"} {trade.shares} {trade.symbol} · <DuckBucks amount={trade.unitPrice}/> each</p>)}</details>:null}
   </section>
   <Link href="/fun-zone/pod-exchange/rankings" className={styles.marketLeadersLink}>
