@@ -24,7 +24,7 @@ jobs:
         run: pnpm run typecheck
       - name: Verify Pod Exchange mechanics
         run: pnpm run test:pod-exchange
-      - name: Simulate PSX V3 server-private arcade market
+      - name: Simulate PSX V3 and verify persistence safety
         run: pnpm run test:psx-v3
       - name: Verify Exchange achievements
         run: pnpm run test:exchange-achievements
