@@ -1,12 +1,13 @@
 "use client";
 
-import {useEffect,useRef,useState} from "react";
+import {useRef,useState} from "react";
 import Link from "next/link";
 import {createPortal} from "react-dom";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
 import {updateCategoryById,type UpdateCategory} from "@/data/update-categories";
 import styles from "./PodscapeHome.module.css";
 import detailStyles from "./UpdateDetailDialog.module.css";
+import {PodscapeInfoDialog} from "./PodscapeInfoDialog";
 
 export type RecentCategory=UpdateCategory;
 export type RecentItem={title:string;description:string;href:string;details?:string[]};
@@ -17,43 +18,19 @@ export type RecentGroup={
 };
 
 function UpdateDetailDialog({item,category,onClose}:{item:RecentItem;category:RecentCategory;onClose:()=>void}){
- const closeRef=useRef<HTMLButtonElement>(null);
- const dialogRef=useRef<HTMLDivElement>(null);
- useEffect(()=>{
-  const previousOverflow=document.body.style.overflow;
-  document.body.style.overflow="hidden";
-  closeRef.current?.focus();
-  function onKeyDown(event:KeyboardEvent){
-   if(event.key==="Escape"){event.preventDefault();onClose();return;}
-   if(event.key!=="Tab"||!dialogRef.current)return;
-   const controls=Array.from(dialogRef.current.querySelectorAll<HTMLElement>('button:not([disabled]),a[href]'));
-   if(!controls.length)return;
-   const first=controls[0],last=controls[controls.length-1];
-   if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
-   else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
-  }
-  document.addEventListener("keydown",onKeyDown);
-  return ()=>{document.body.style.overflow=previousOverflow;document.removeEventListener("keydown",onKeyDown);};
- },[onClose]);
  const details=item.details||[];
- return <div className={detailStyles.backdrop} onMouseDown={event=>{if(event.target===event.currentTarget)onClose();}}>
-   <div className={detailStyles.dialog} ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="podscape-update-title" aria-describedby="podscape-update-description">
-    <div className={detailStyles.top}>
-     <span className={detailStyles.category}><PodscapeLineIcon name={updateCategoryById[category].icon}/>{updateCategoryById[category].label}</span>
-     <button ref={closeRef} type="button" className={detailStyles.close} aria-label="Close update details" onClick={onClose}><PodscapeLineIcon name="close"/></button>
-    </div>
-    <h2 id="podscape-update-title">{item.title}</h2>
-    <p id="podscape-update-description" className={detailStyles.intro}>{item.description}</p>
-    {details.length>0?<section aria-label="Changes in this update" className={detailStyles.changes}>
-      <h3>What&apos;s changed</h3>
-      <ul>{details.map((detail,index)=><li key={index}><span aria-hidden="true"><PodscapeLineIcon name="check"/></span><span>{detail}</span></li>)}</ul>
-     </section>:null}
-    <div className={detailStyles.actions}>
-     {item.href&&item.href!=="/app"?<Link href={item.href} onClick={onClose}>Explore this area <PodscapeLineIcon name="arrow-right"/></Link>:null}
-     <Link href={`/updates?category=${category}`} onClick={onClose}>View all {updateCategoryById[category].label.toLowerCase()} <PodscapeLineIcon name="arrow-right"/></Link>
-    </div>
+ return <PodscapeInfoDialog eyebrow={updateCategoryById[category].label}
+  icon={updateCategoryById[category].icon} title={item.title}
+  description={item.description} onClose={onClose}>
+   {details.length>0?<section aria-label="Changes in this update" className={detailStyles.changes}>
+    <h3>What's changed</h3>
+    <ul>{details.map((detail,index)=><li key={index}><span aria-hidden="true"><PodscapeLineIcon name="check"/></span><span>{detail}</span></li>)}</ul>
+   </section>:null}
+   <div className={detailStyles.actions}>
+    {item.href&&item.href!=="/app"?<Link href={item.href} onClick={onClose}>Explore this area <PodscapeLineIcon name="arrow-right"/></Link>:null}
+    <Link href={`/updates?category=${category}`} onClick={onClose}>View all {updateCategoryById[category].label.toLowerCase()} <PodscapeLineIcon name="arrow-right"/></Link>
    </div>
-  </div>;
+ </PodscapeInfoDialog>;
 }
 
 /** One category card is always visible, regardless of how many related edits occurred. */
