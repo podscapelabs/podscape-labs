@@ -1,0 +1,36 @@
+name: PodScape PSX arcade release candidate
+on:
+  push:
+    branches:
+      - codex/psx-arcade-ui-release-ready-20261112
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  release-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Set up pnpm
+        run: corepack enable && corepack prepare pnpm@10.14.0 --activate
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm run lint
+      - name: TypeScript
+        run: pnpm run typecheck
+      - name: Release candidate safety
+        run: |
+          node scripts/verify-psx-arcade-release.mjs
+          pnpm run test:psx-v3
+          pnpm run test:pod-exchange
+          pnpm run test:exchange-achievements
+          node scripts/verify-release-readiness.mjs
+          node scripts/verify-manager-workspaces.mjs
+          node scripts/verify-collection-ledger-flow.mjs
+      - name: Production Next.js build
+        run: pnpm run build
