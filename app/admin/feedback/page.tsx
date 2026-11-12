@@ -30,7 +30,7 @@ export default async function FeedbackDesk({searchParams}:{searchParams:Promise<
  let items:Item[]=[];
  let total=0;
  let error="";
- let names:Record<string,string>={};
+ const names:Record<string,string>={};
  if(!db)error="The feedback database isn't configured.";
  else{
   let query=db.from("member_feedback").select("id,user_id,category,status,message,page_path,device_info,owner_note,created_at,updated_at",{count:"exact"})
