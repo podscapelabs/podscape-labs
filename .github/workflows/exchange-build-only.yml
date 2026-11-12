@@ -4,6 +4,7 @@ on:
     branches:
       - codex/pod-exchange-playable-beta-20261110
       - codex/psx-arcade-v3-isolated-20261112
+      - codex/podscape-manager-psx-release-20261112
   workflow_dispatch:
 permissions:
   contents: read
