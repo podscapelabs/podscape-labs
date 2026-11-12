@@ -369,3 +369,41 @@
  .rankingPlace{min-height:34px;padding:7px 8px}
  .rankingsPager>.rankingsPagerTabs button{min-height:35px}
 }
+
+/* Fun Zone widget-density pass: surface the game, keep secondary material optional. */
+.learningTrail{display:block;margin:0 0 12px;padding:0;overflow:hidden}
+.learningTrail>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:43px;padding:10px 12px;cursor:pointer;list-style:none;font-size:12px;font-weight:800;color:var(--accent)}
+.learningTrail>summary::-webkit-details-marker{display:none}
+.learningTrail>summary svg{width:17px;height:17px;transform:rotate(90deg);transition:transform .16s ease}
+.learningTrail[open]>summary svg{transform:rotate(-90deg)}
+.learningTrail>div{margin:0 12px 10px}
+.learningTrailLinks{padding:0 0 10px}
+.categoryGrid button{min-height:69px;gap:4px}
+.categoryIcon{width:27px;height:27px}
+.categoryIcon svg{width:18px;height:18px}
+.categoryGames .gameCard{min-height:68px}
+.categoryGames .gameInfo p{display:none}
+.blockTitle{margin-bottom:9px}
+.exchangeWidget{padding:14px 17px}
+.exchangeWidget h2{font-size:22px;margin:5px 0}
+.exchangeWidget>.watchlistStats{margin:9px 0 10px}
+.exchangeWidget>.watchlistStats>span{padding:9px}
+.exchangeWidget>.watchlistFoot{gap:8px}
+.exchangeWidget>.watchlistFoot a{min-height:39px}
+.statGrid{grid-template-columns:repeat(auto-fit,minmax(min(100%,145px),1fr))}
+@media(max-width:720px){
+ .quickLinks a{min-height:65px;padding:8px 3px}
+ .learningTrail{margin-bottom:10px}
+ .learningTrail>summary{min-height:43px;font-size:11px}
+ .categoryGrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .categoryGrid button{min-height:62px;padding:6px 3px}
+ .categoryIcon{width:24px;height:24px}
+ .categoryGames .gameCard{min-height:64px}
+ .exchangeWidget{padding:13px}
+ .exchangeWidget h2{font-size:21px}
+ .exchangeWidget>.watchlistStats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .exchangeWidget>.watchlistStats>span{padding:8px;gap:3px}
+ .statGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:360px){.categoryGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.exchangeWidget>.watchlistStats{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.learningTrail>summary svg{transition:none}}
