@@ -103,3 +103,19 @@
  .other{margin-top:25px}
 }
 @media(max-width:360px){.directory .card{gap:5px;padding:9px}.directory .card>.symbol{width:27px;height:27px}.quickGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Use canonical global palette roles for the hero action: no blank button in Light/Ember. */
+.heading .heroActions .heroAction{
+ background:var(--theme-portal-hero-button-bg);
+ color:var(--theme-portal-hero-button-text);
+ border:1px solid color-mix(in srgb,var(--theme-portal-hero-button-text) 17%,transparent);
+ box-shadow:0 2px 7px rgba(0,0,0,.06);
+ text-shadow:none;
+}
+.heading .heroActions .heroAction svg{color:inherit;stroke:currentColor}
+.heading .heroActions .heroAction:hover{filter:brightness(.95)}
+.heading .heroActions .heroAction:focus-visible{outline:3px solid var(--theme-focus)}
+@media(max-width:600px){
+ .heroActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .heroActions>a{min-width:0;justify-content:center;padding:10px 8px;text-align:center}
+}
