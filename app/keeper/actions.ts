@@ -13,7 +13,7 @@ export async function createEnclosure(input: { speciesId: string; name: string }
  await requireCustomerPreviewAccess();
  const name = input.name?.trim();
  if (!name || name.length > 80 || !input.speciesId || input.speciesId.length > 120) return { success:false,error:"Provide an enclosure name." };
- const available = (await getSpeciesRecords()).some(x => x.id === input.speciesId && x.kind === "species");
+ const available = (await getSpeciesRecords()).some(x => x.id === input.speciesId && x.kind === "species" && x.status === "published" && !x.archivedAt);
  if (!available) return { success:false,error:"Choose a species from the Leaf Ledger." };
  const { db, user } = await keeperContext();
  if (!db || !user) return { success:false,error:"Sign in to manage your enclosures." };
