@@ -83,18 +83,18 @@ function SlidingPuzzleBoard({userId,id,title,description,imageAlt,learningNote,a
  return <section className={styles.game}>
   <div className={styles.gameHeading}><div><span>{PUZZLE_TYPES[puzzleType].toUpperCase()} · {levelLabel(level)} · {DIFFICULTIES[difficulty].label}</span><h1>{title}</h1><p>{description||"Put the picture back together."}</p></div><div className={styles.moveCount}><strong>{moves}</strong><small>moves</small></div></div>
   <div className={styles.gameLayout}><div>
-   <div className={styles.board} style={{gridTemplateColumns:`repeat(${size},minmax(0,1fr))`}} role="group" aria-label={title+" "+PUZZLE_TYPES[puzzleType]+" puzzle"}>
+   {!finished?<div className={styles.board} style={{gridTemplateColumns:`repeat(${size},minmax(0,1fr))`}} role="group" aria-label={title+" "+PUZZLE_TYPES[puzzleType]+" puzzle"}>
     {tiles.map((tile,index)=>{
      const blank=tile===blankTile;
      return <button type="button" key={index} disabled={!started||finished||blank} onClick={()=>select(index)} className={styles.tile} data-selected={false} data-blank={blank} aria-label={blank?`Empty space at position ${index+1}`:`Piece ${tile+1}, position ${index+1}, tap to slide if adjacent`} aria-pressed={false} style={blank?undefined:{backgroundImage:`url("${imageUrl}")`,backgroundSize:`${size*100}% ${size*100}%`,backgroundPosition:`${(tile%size)*100/(size-1)}% ${Math.floor(tile/size)*100/(size-1)}%`}}/>;
     })}
-   </div>
+   </div>:null}
    {finished?<div className={styles.victory} role="status"><span aria-hidden="true">✦ 🧩 ✦</span><h2>Picture complete!</h2><p className={styles.victoryTitle}>{title}</p><p>You solved the sliding puzzle in {moves} moves.</p><div className={styles.victoryArt} role="img" aria-label={imageAlt} style={{backgroundImage:`url("${imageUrl}")`}}/>{learningNote?<div className={styles.victoryDiscovery}><strong>Did you know?</strong><p>{learningNote}</p></div>:null}{artistCredit?<p className={styles.victoryCredit}>Original artwork by <strong>{artistCredit}</strong></p>:null}{previewMode?<small>Preview only · No EXP or progress recorded</small>:saved==="saved"?<strong className={styles.victoryExp}>{earnedExp?`+${earnedExp} EXP earned`:"Progress saved · No new EXP on replay"}</strong>:<small>Achievement EXP is awarded once for newly unlocked milestones.</small>}</div>:null}
    {finished&&rewardsEnabled?<PuzzleSaveStatus status={saved} retry={retry}/>:null}
    {finished&&saved==="saved"&&nextHref?<a className={styles.nextPuzzle} href={nextHref}>Next picture puzzle →</a>:null}
    {!started?<button type="button" className={styles.primary} onClick={start}>Shuffle & start puzzle</button>:<div className={styles.controls}><button type="button" className={styles.primary} onClick={start}>Start a new shuffle</button><button type="button" onClick={()=>setShowReference(v=>!v)} aria-pressed={showReference}>{showReference?"Hide image":"View image"}</button></div>}
-   <p className={styles.helper}>Tap a tile beside the empty square to slide it into place. {previewMode?"This is a temporary preview.":"Your board saves on this device."}</p>
-  </div><aside className={styles.reference}><h2>The complete artwork</h2><p>Need a little help? Reveal the original while solving.</p>{showReference?<div className={styles.fullImage} role="img" aria-label={imageAlt||"Original artwork for "+title} style={{backgroundImage:`url("${imageUrl}")`}}/>:<button type="button" onClick={()=>setShowReference(true)}>Reveal reference artwork</button>}<p className={styles.note}>An authentic sliding-tile puzzle: only tiles next to the gap can move.</p></aside></div>
+   {!finished?<p className={styles.helper}>Tap a tile beside the empty square to slide it into place. {previewMode?"This is a temporary preview.":"Your board saves on this device."}</p>:null}
+  </div>{!finished?<aside className={styles.reference}><h2>The complete artwork</h2><p>Need a little help? Reveal the original while solving.</p>{showReference?<div className={styles.fullImage} role="img" aria-label={imageAlt||"Original artwork for "+title} style={{backgroundImage:`url("${imageUrl}")`}}/>:<button type="button" onClick={()=>setShowReference(true)}>Reveal reference artwork</button>}<p className={styles.note}>An authentic sliding-tile puzzle: only tiles next to the gap can move.</p></aside>:null}</div>
  </section>;
 }
 
