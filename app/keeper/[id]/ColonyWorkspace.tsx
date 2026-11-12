@@ -107,14 +107,7 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
    {latestObservation?<div className={styles.latestNote}>
     <strong>Latest note</strong><p>{latestObservation.note}</p>
    </div>:<p className={styles.empty}>Nothing noted yet. Keep an eye on your colony and record what you see.</p>}
-   {!colony.archived?<div className={styles.noteToggle}><button type="button" aria-expanded={notesOpen} aria-controls="colony-note-editor" onClick={()=>setNotesOpen(x=>!x)}>{notesOpen?"Close note":"＋ Add observation"}</button></div>:null}
-   {notesOpen&&!colony.archived?<form className={styles.noteForm} id="colony-note-editor" onSubmit={recordObservation}>
-    <label htmlFor="colony-observation">Colony observation</label>
-    <textarea id="colony-observation" rows={3} maxLength={1500} placeholder="New mancae, changes in activity, feeding observations…" value={observation} onChange={e=>setObservation(e.target.value)} required/>
-    <button type="submit" disabled={pending||undoing||!observation.trim()||colony.archived}>{pending?"Saving…":"Save note"}</button>
-   </form>:null}
-   {error?<p className={styles.warning} role="alert">{error}</p>:null}
-   {message?<div className={styles.notice} role="status"><span>{message}</span>{lastSaved?<button type="button" onClick={undo} disabled={undoing||pending}>{undoing?"Undoing…":"Undo"}</button>:null}</div>:null}
+   {!colony.archived?<div className={styles.noteToggle}><button type="button" onClick={()=>{setNotesOpen(true);requestAnimationFrame(()=>document.getElementById("colony-note-panel")?.scrollIntoView({behavior:"smooth",block:"center"}))}}>Add an observation ↑</button></div>:null}
    </section>,
   activity:<section className={styles.widgetPanel} aria-label="Recent colony activity">
     <div className={styles.sectionTitle}><div><p>CARE HISTORY</p><h2>Recent care</h2></div><Link href={"/keeper/"+id+"/history"}>Full history →</Link></div>
@@ -135,6 +128,7 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
   <div className={styles.binToolbar}>
    <nav aria-label="Colony shortcuts">
     {!colony.archived?<ManagerInlineCare binId={colony.id} binName={binDisplayName({id:colony.id,name:colony.name})}/>:null}
+    {!colony.archived?<button type="button" className={styles.addNoteShortcut} aria-expanded={notesOpen} aria-controls="colony-note-panel" onClick={()=>setNotesOpen(v=>!v)}><PodscapeLineIcon name="note"/> {notesOpen?"Close note":"Add note"}</button>:null}
     <Link href={"/keeper/"+id+"/details"}><PodscapeLineIcon name="edit"/> Edit details</Link>
     <Link href={"/keeper/"+id+"/history"}><PodscapeLineIcon name="calendar"/> History</Link>
     {referenceUrl?<Link className={styles.referenceShortcut} href={referenceUrl}><PodscapeLineIcon name="leaf"/> Species guide</Link>:null}
@@ -145,6 +139,16 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
     </div>
    </details>
   </div>
+  {notesOpen&&!colony.archived?<section className={styles.quickObservation} id="colony-note-panel" aria-label="Quick colony observation">
+    <div><strong>New observation · {colony.name}</strong><button type="button" onClick={()=>setNotesOpen(false)} aria-label="Close observation editor">×</button></div>
+    <form className={styles.noteForm} id="colony-note-editor" onSubmit={recordObservation}>
+     <label htmlFor="colony-observation">What did you notice?</label>
+     <textarea id="colony-observation" rows={3} maxLength={1500} placeholder="New mancae, changes in activity, feeding observations…" value={observation} onChange={e=>setObservation(e.target.value)} required/>
+     <button type="submit" disabled={pending||undoing||!observation.trim()}>{pending?"Saving…":"Save observation"}</button>
+    </form>
+   </section>:null}
+   {error?<p className={styles.warning} role="alert">{error}</p>:null}
+   {message?<div className={styles.notice} role="status"><span>{message}</span>{lastSaved?<button type="button" onClick={undo} disabled={undoing||pending}>{undoing?"Undoing…":"Undo"}</button>:null}</div>:null}
   <BinSwitcher bins={navigationBins} currentId={colony.id} disabled={pending||undoing} onSelect={nextId=>{
    if(observation.trim()&&!window.confirm("Leave this bin without saving your observation?"))return;
    router.push("/keeper/"+nextId);
