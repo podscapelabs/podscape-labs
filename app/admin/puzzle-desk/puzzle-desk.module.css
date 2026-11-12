@@ -128,3 +128,6 @@
  .heroStats span{padding:6px 9px}
 }
 @media(prefers-reduced-motion:reduce){.page *{scroll-behavior:auto}}
+
+.statusForm button{min-height:42px;border:0;border-radius:999px;padding:11px 18px;background:var(--accent);color:var(--accent-contrast);font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.statusForm button:focus-visible{outline:2px solid var(--theme-focus);outline-offset:3px}
