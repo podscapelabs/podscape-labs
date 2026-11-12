@@ -5,7 +5,7 @@ import {PicturePuzzleBoard} from "@/app/fun-zone/picture-puzzles/PicturePuzzleBo
 import {DIFFICULTIES,PUZZLE_TYPES,type Difficulty,type PuzzleType} from "@/lib/picture-puzzles-client";
 import styles from "./puzzle-preview.module.css";
 
-type Preview={id:string;imageUrl:string;blob:boolean;title:string;description:string;imageAlt:string;learningNote:string;difficulty:Difficulty;puzzleType:PuzzleType;level:number};
+type Preview={id:string;imageUrl:string;blob:boolean;title:string;description:string;imageAlt:string;learningNote:string;artistCredit:string;difficulty:Difficulty;puzzleType:PuzzleType;level:number};
 export function PuzzlePreviewButton({imageUrl}:{imageUrl?:string}){
  const [preview,setPreview]=useState<Preview|null>(null);
  const [error,setError]=useState("");
@@ -49,7 +49,7 @@ export function PuzzlePreviewButton({imageUrl}:{imageUrl?:string}){
    id:"owner-draft-preview-"+Date.now(),imageUrl:url,blob:Boolean(upload),
    title:String(data.get("title")||"Untitled puzzle").trim()||"Untitled puzzle",
    description:String(data.get("description")||""),imageAlt:String(data.get("image_alt")||"Puzzle artwork"),
-   learningNote:String(data.get("learning_note")||""),
+   learningNote:String(data.get("learning_note")||""),artistCredit:String(data.get("artist_credit")||"").trim(),
    difficulty:difficulty as Difficulty,puzzleType:type as PuzzleType,level,
   });
  };
@@ -60,7 +60,7 @@ export function PuzzlePreviewButton({imageUrl}:{imageUrl?:string}){
    <div className={styles.backdrop} onPointerDown={event=>{if(event.target===event.currentTarget)setPreview(null)}}>
     <section ref={dialog} className={styles.modal+" v2-site"} role="dialog" aria-modal="true" aria-label="Puzzle test preview">
      <header className={styles.header}><div><small>OWNER STUDIO · UNSAVED PREVIEW</small><strong>Test your puzzle</strong><p>Play exactly as a member would. This preview never publishes or awards EXP.</p></div><button type="button" onClick={()=>setPreview(null)} aria-label="Close puzzle preview">×</button></header>
-     <div className={styles.game}><PicturePuzzleBoard key={preview.id} id={preview.id} userId="owner-preview" title={preview.title} description={preview.description} imageAlt={preview.imageAlt} learningNote={preview.learningNote} imageUrl={preview.imageUrl} difficulty={preview.difficulty} puzzleType={preview.puzzleType} level={preview.level} rewardsEnabled={false} previewMode/></div>
+     <div className={styles.game}><PicturePuzzleBoard key={preview.id} id={preview.id} userId="owner-preview" title={preview.title} description={preview.description} imageAlt={preview.imageAlt} learningNote={preview.learningNote} artistCredit={preview.artistCredit} imageUrl={preview.imageUrl} difficulty={preview.difficulty} puzzleType={preview.puzzleType} level={preview.level} rewardsEnabled={false} previewMode/></div>
      <footer className={styles.footer}><button type="button" onClick={()=>setPreview(null)}>Back to editing</button><span>Changes aren&apos;t saved until you submit the form.</span></footer>
     </section>
    </div>,document.body):null}
