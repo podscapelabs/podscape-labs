@@ -154,8 +154,9 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
             <div className={styles.dashboardPersonalTitle}>Your PodScape</div>
             <div className={styles.dashboardPersonalActions}>
               {record.status === "published" ? <PinToHome pin={{ kind: "species", id: record.slug }} userId={user?.id || null} /> : null}
-              {collectionEntry ? <Link href="/keeper/collection" className={styles.collectionDestination}>✓ In collection · View colonies →</Link>
+              {collectionEntry ? <Link href="/keeper/collection" className={styles.collectionDestination}>✓ Saved · My Colonies →</Link>
                 : <CollectionButton speciesId={record.id} speciesName={displayName} initialCollected={false} signedIn={member.signedIn} detail />}
+              <Link className={styles.collectionDestination} href={member.signedIn?`/keeper/new?species=${encodeURIComponent(record.id)}`:"/account/login"}>+ Add a bin →</Link>
             </div>
           </section> : null,
             navigation: <nav className={styles.compactFooter} aria-label="Explore more">
