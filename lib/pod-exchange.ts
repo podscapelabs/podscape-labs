@@ -1,6 +1,6 @@
 /** Pod Exchange — a fictional, deterministic five-minute parody market.
  * Prices are calculated from the clock, never real market data.
- * No real currency, purchased Pod Coins, EXP, or external transactions.
+ * No real currency, EXP conversion, or external transactions.
  */
 export const MARKET_INTERVAL_MS=5*60*1000;
 export const STARTING_BUCKS=10_000;
