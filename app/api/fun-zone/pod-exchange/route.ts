@@ -102,7 +102,7 @@ export async function POST(request:Request){
  // Rewards already committed transactionally; don't call a second achievement API.
  const unlocked=(Array.isArray(result?.unlocked)?result.unlocked:[]).flatMap((row:{achievement_key:string})=>{
   const item=achievementCatalog.find(a=>a.key===row.achievement_key&&a.status==="available");
-  return item?[{id:item.key,title:item.title,description:item.description,exp:item.exp,coins:0,hidden:item.hidden===true}]:[];
+  return item?[{id:item.key,title:item.title,description:item.description,exp:item.exp,hidden:item.hidden===true}]:[];
  });
  try{
   const state=await readPortfolio(admin!,user!.id);
