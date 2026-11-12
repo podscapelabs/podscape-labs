@@ -37,7 +37,8 @@ assert.match(ui,/Each puzzle counts in the period when it was first completed/,"
 
 assert.match(ui,/entries\.slice\(0,3\)/,"Podium must display at most three people");
 assert.match(ui,/100 per unique/,"Point attribution must be transparent");
-assert.match(portal,/\/fun-zone\/leaderboard/,"Fun Zone must link to the rankings page");
+assert.match(portal,/href="#rankings-spotlight"/,"Fun Zone shortcut must open the Rankings Spotlight widget");
+assert.match(read("app/fun-zone/FunZoneRankingsSpotlight.tsx"),/href:"\/fun-zone\/leaderboard"/,"Spotlight must link to full Arcade Rankings");
 for(const key of ["ranking_first_podium","ranking_weekly_champion","ranking_three_wins","ranking_alltime_top"]){
  assert.ok(catalog.includes('key:"'+key+'"'),"Missing ranking achievement: "+key);
  assert.ok(awards.includes("'"+key+"'"),"Ranking achievement is not linked to settlement: "+key);
