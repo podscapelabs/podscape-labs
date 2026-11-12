@@ -13,13 +13,18 @@ import {STOCKS,STORAGE_KEY,MARKET_INTERVAL_MS,ARCADE_INTERVAL_MS,STARTING_BUCKS,
 function CompanyMark({symbol}:{symbol:string}){return <ExchangeCompanyIcon symbol={symbol}/>;}
 const change=(n:number)=>(n>=0?"+":"")+n.toFixed(2)+"%";
 const countdown=(ms:number)=>String(Math.floor(ms/60000)).padStart(2,"0")+":"+String(Math.floor((ms%60000)/1000)).padStart(2,"0");
-function Sparkline({symbol,cycle,hours}:{symbol:string;cycle:number;hours:2|24}){
- const spacing=isArcadeCycle(cycle)?(hours===24?60:5):(hours===24?12:1);
- const prices=useMemo(()=>Array.from({length:25},(_,i)=>priceAt(symbol,cycle-(24-i)*spacing)),[symbol,cycle,spacing]);
+type ChartRange="10m"|"30m"|"1h"|"2h"|"24h";
+function Sparkline({symbol,cycle,range}:{symbol:string;cycle:number;range:ChartRange}){
+ // Sample only completed, authoritative deterministic cycles. The V3 history API
+ // will replace this reconstruction once versioned persisted quotes are enabled.
+ const minutes=range==="10m"?10:range==="30m"?30:range==="1h"?60:range==="2h"?120:1440;
+ const spacing=isArcadeCycle(cycle)?minutes===1440?15:minutes===120?5:1:minutes===1440?3:1;
+ const samples=Math.ceil(minutes/(isArcadeCycle(cycle)?spacing:5*spacing));
+ const prices=useMemo(()=>Array.from({length:samples+1},(_,i)=>priceAt(symbol,cycle-(samples-i)*spacing)),[symbol,cycle,spacing,samples]);
  const low=Math.min(...prices)*.985,high=Math.max(...prices)*1.015;
- const path=prices.map((p,i)=>`${Math.round(i*300/24)},${Math.round(79-68*(p-low)/(high-low))}`).join(" ");
- const rising=prices[24]>=prices[0];
- return <svg className={styles.chart} viewBox="0 0 300 88" preserveAspectRatio="none" role="img" aria-label={`${symbol} price movement over the last ${hours} hours, ${rising?"up":"down"}`}><line x1="0" x2="300" y1="79" y2="79" stroke="currentColor" strokeOpacity=".17"/><polyline points={path} fill="none" stroke={rising?"var(--game-correct)":"var(--game-incorrect)"} strokeWidth="2.8" vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+ const path=prices.map((p,i)=>`${Math.round(i*300/samples)},${Math.round(79-68*(p-low)/(high-low))}`).join(" ");
+ const rising=prices[prices.length-1]>=prices[0];
+ return <svg className={styles.chart} viewBox="0 0 300 88" preserveAspectRatio="none" role="img" aria-label={`${symbol} historical market quotes, last ${range}, ${rising?"rising":"falling"}`}><line x1="0" x2="300" y1="79" y2="79" stroke="currentColor" strokeOpacity=".17"/><polyline points={path} fill="none" stroke={rising?"var(--game-correct)":"var(--game-incorrect)"} strokeWidth="2.8" vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round"/></svg>;
 }
 type StorageMode="loading"|"cloud"|"local"|"error";
 type CloudState={exists:boolean;portfolio:Portfolio|null;userId?:string;unlocked?:AchievementNotice[];duplicate?:boolean};
@@ -54,7 +59,7 @@ export function PodExchange(){
  const [quantity,setQuantity]=useState("1");
  const [message,setMessage]=useState("");
  const [view,setView]=useState<"market"|"wallet">("market");
- const [chartHours,setChartHours]=useState<2|24>(24);
+ const [chartRange,setChartRange]=useState<ChartRange>("30m");
  const [rulesOpen,setRulesOpen]=useState(false);
  const rulesTrigger=useRef<HTMLButtonElement>(null);
  const closeRules=()=>{setRulesOpen(false);requestAnimationFrame(()=>rulesTrigger.current?.focus());};
@@ -225,7 +230,7 @@ export function PodExchange(){
       onClick={()=>{setSymbol(stock.symbol);setView("market");setMessage("");requestAnimationFrame(()=>tradeRef.current?.scrollIntoView({behavior:"smooth",block:"center"}));}}>
       <span className={styles.carouselCompany}><span className={styles.carouselIcon}><CompanyMark symbol={stock.symbol}/></span><span><strong>{stock.name}</strong><small>{stock.symbol} · {stock.sector}</small></span></span>
       <span className={styles.carouselQuote}><strong><DuckBucks amount={quote}/></strong><small className={delta>=0?styles.up:styles.down}>{change(delta)}</small></span>
-      <Sparkline symbol={stock.symbol} cycle={cycle} hours={2}/>
+      <Sparkline symbol={stock.symbol} cycle={cycle} range="30m"/>
       <span className={styles.carouselBottom}><span>{status}</span><b>TRADE <span aria-hidden="true">→</span></b></span>
      </button>;
     })}
@@ -256,9 +261,9 @@ export function PodExchange(){
    <section ref={tradeRef} className={styles.tradeSection} aria-label="Trading desk">
     <div className={styles.panel}><div className={styles.tradeHeading}><span aria-hidden="true"><CompanyMark symbol={company.symbol}/></span><div><small>{company.symbol} / {company.sector}</small><h2>{company.name}</h2><p>{company.summary}</p></div></div>
      <div className={styles.quote}><strong><DuckBucks amount={price}/></strong><span className={movement>=0?styles.up:styles.down}>{change(movement)} this tick</span></div>
-     <Sparkline cycle={cycle} symbol={symbol} hours={chartHours}/>
-     <div className={styles.chartToolbar}><p className={styles.chartHint}>Simulated prices · Past {chartHours} hours</p>
-      <div role="group" aria-label="Price chart range"><button type="button" aria-pressed={chartHours===2} onClick={()=>setChartHours(2)}>2h</button><button type="button" aria-pressed={chartHours===24} onClick={()=>setChartHours(24)}>24h</button></div>
+     <Sparkline cycle={cycle} symbol={symbol} range={chartRange}/>
+     <div className={styles.chartToolbar}><p className={styles.chartHint}>Shared market history · Past {chartRange}</p>
+      <div role="group" aria-label="Price chart range">{(["10m","30m","1h","24h"] as const).map(range=><button type="button" key={range} aria-pressed={chartRange===range} onClick={()=>setChartRange(range)}>{range}</button>)}</div>
      </div>
      <div className={styles.sideSwitch}><button type="button" aria-pressed={side==="buy"} onClick={()=>{setSide("buy");setMessage("");}}>Buy</button><button type="button" aria-pressed={side==="sell"} onClick={()=>{setSide("sell");setMessage("");}}>Sell</button></div>
      <label className={styles.quantity}>Number of shares<input type="number" inputMode="numeric" min={1} max={999999} step={1} value={quantity} onChange={e=>setQuantity(e.target.value)}/></label>
