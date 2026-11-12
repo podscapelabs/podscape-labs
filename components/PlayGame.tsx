@@ -24,7 +24,7 @@ function Quiz({puzzle,onComplete}:{puzzle:QuizPuzzle;onComplete:Completion}){
   <h2>{perfect?"Perfect round!":"Not quite — try again!"}</h2>
   <p>You answered {score} of {questions.length} correctly. {perfect?"Every answer was correct. The next challenge is unlocked once your result is saved.":"All questions must be correct to complete this puzzle and unlock the next one."}</p>
   {!perfect?<><div className={styles.quizReview}><h3>Review what you learned</h3>{questions.map((question,i)=>answers[i]!==question.answer?<div key={i}><strong>{question.prompt}</strong><p>Correct answer: {question.choices[question.answer]}</p><small>{question.explanation}</small></div>:null)}</div>
-   <button type="button" className={styles.primary} onClick={tryAgain}>Try Again ↻</button>
+   <button type="button" onClick={tryAgain}>Try Again ↻</button>
   </>:null}
  </div>:<><div className={styles.stage}><small>QUESTION {index+1} / {questions.length}</small><h2>{current.prompt}</h2></div><div className={styles.options}>{current.choices.map((choice,i)=><button type="button" disabled={chosen!==undefined} data-result={chosen===undefined?"":i===current.answer?"correct":i===chosen?"incorrect":""} key={choice} onClick={()=>setAnswers(a=>[...a,i])}>{choice}</button>)}</div>{chosen!==undefined?<div className={styles.feedback} role="status"><strong>{chosen===current.answer?"Correct!":"Not quite."}</strong><p>{current.explanation}</p><button type="button" onClick={()=>{if(index===questions.length-1&&answers.every((value,i)=>value===questions[i].answer))onComplete({answers});setIndex(x=>x+1)}}>{index===questions.length-1?"See results":"Next question →"}</button></div>:null}</>}</div>;
 }
