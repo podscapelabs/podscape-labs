@@ -18,12 +18,8 @@ export function KeeperControls({entry,showLogForm=true}: {entry:Enclosure;showLo
  function log(e:FormEvent){e.preventDefault();setMessage("");start(async()=>{const result=await logKeeperEvent({id:entry.id,kind,note});setMessage(result.success?"Activity recorded.":result.error||"Couldn't record activity.");if(result.success){setNote("");router.refresh();}});}
  const change=(key:keyof typeof form,value:string|number)=>setForm(prev=>({...prev,[key]:value}));
  return <div className={styles.workspace}>
- <div className={styles.metrics}>
-  <div className={styles.metric}><span>Estimated population</span><strong>{form.quantity}</strong><div className={styles.stepper}><button type="button" aria-label="Decrease population" onClick={()=>change("quantity",Math.max(0,form.quantity-1))}>−</button><input type="number" min="0" max="99999" value={form.quantity} aria-label="Population" onChange={e=>change("quantity",Number(e.target.value))}/><button type="button" aria-label="Increase population" onClick={()=>change("quantity",Math.min(99999,form.quantity+1))}>+</button></div></div>
-  <div className={styles.metric}><span>Colony condition</span><strong>{form.status.replaceAll("-"," ")}</strong><small>Keeper reported</small></div>
-  <div className={styles.metric}><span>Breeding</span><strong>{form.breeding.replaceAll("-"," ")}</strong><small>Observation status</small></div>
- </div>
  <form className={styles.card} onSubmit={edit}><div className={styles.heading}><h2>Colony profile</h2><span>Private · Editable</span></div><div className={styles.fields}>
+  <label>Estimated population<input type="number" min="0" max="99999" required value={form.quantity} onChange={e=>change("quantity",Number(e.target.value))}/></label>
   <label>Colony name<input value={form.name} maxLength={80} required onChange={e=>change("name",e.target.value)}/></label>
   <label>Bin label / location<input value={form.label} maxLength={70} onChange={e=>change("label",e.target.value)} placeholder="e.g. Rack B · 04"/></label>
   <label>Colony condition<select value={form.status} onChange={e=>change("status",e.target.value)}>{["planning","establishing","stable","thriving","declining","no-longer-kept"].map(v=><option key={v} value={v}>{v.replaceAll("-"," ")}</option>)}</select></label>

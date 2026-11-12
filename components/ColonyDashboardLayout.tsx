@@ -71,7 +71,7 @@ export function ColonyDashboardLayout({scope,colonyId,widgets,forceVisible}:{
  return <div className={styles.colonyDashboard} data-workspace-root="colony"
   onPointerMove={event=>{if(editing)dragMove(event)}} onPointerUp={()=>{if(editing)stop()}} onPointerCancel={()=>{if(editing)stop()}}>
   {!editing?<div className={styles.dashboardHeading}>
-    <div><p>YOUR COLONY, YOUR SPACE</p><h2>Colony dashboard</h2><small>See what matters. Open a focused workspace for more.</small></div>
+    <div><h2>Your widgets</h2></div>
     <button ref={triggerRef} type="button" onClick={()=>setLibraryOpen(true)} disabled={!ready}>✎ Customize</button>
    </div>:<WorkspaceEditToolbar title="Arrange your colony" description="Drag or move widgets. Your changes apply to this colony on this device." onAdd={()=>{done();setLibraryOpen(true)}} onReset={reset} onDone={done}/>}
   <div className={styles.colonyWidgetGrid} aria-busy={!ready}>

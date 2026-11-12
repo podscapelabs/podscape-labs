@@ -5,7 +5,7 @@ import {useRouter} from "next/navigation";
 import {deleteEnclosure,setEnclosureArchived} from "@/app/keeper/actions";
 import styles from "./KeeperWorkspace.module.css";
 
-export function BinLifecycleControls({id,name,archived}:{id:string;name:string;archived:boolean}){
+export function BinLifecycleControls({id,name,archived,compact=false}:{id:string;name:string;archived:boolean;compact?:boolean}){
  const router=useRouter();
  const [pending,start]=useTransition();
  const [error,setError]=useState("");
@@ -32,9 +32,9 @@ export function BinLifecycleControls({id,name,archived}:{id:string;name:string;a
    }catch{setError("Could not confirm deletion. Refresh your bins before trying again.");}
   });
  }
- return <section className={styles.card} aria-labelledby="bin-management-title">
-  <div className={styles.heading}><h2 id="bin-management-title">Manage this bin</h2></div>
-  <p className={styles.lifecycleHelp}>Archive to keep your records. Permanently deleting a bin also deletes its notes and care history.</p>
+ return <section id="manage-bin" className={compact?styles.lifecycleCompact:styles.card} aria-label="Manage this bin">
+  {!compact?<><div className={styles.heading}><h2>Manage this bin</h2></div>
+  <p className={styles.lifecycleHelp}>Archive to keep your records. Permanently deleting a bin also deletes its notes and care history.</p></>:null}
   <div className={styles.lifecycleActions}>
    <button type="button" className={styles.archiveButton} disabled={pending} onClick={archive}>{archived?"Restore bin":"Archive bin"}</button>
    <button type="button" className={styles.deleteButton} disabled={pending} onClick={remove}>Delete bin</button>

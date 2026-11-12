@@ -32,9 +32,9 @@ export default async function ColonyDetails({params,searchParams}:{params:Promis
   <WorkspaceHeader section="MANAGER / COLONY SETTINGS" title={species} description={enclosure.name+(enclosure.label?" · "+enclosure.label:"")} backHref={enclosure.isArchived?"/keeper":"/keeper/"+id} backLabel={enclosure.isArchived?"Manager":"Colony workspace"}/>
   <div className={styles.extras}><PinToHome pin={{kind:"colony",id}} userId={user?.id||null}/>{record?<Link href={"/ledger/"+record.slug}>Species reference ↗</Link>:null}</div>
   
+  <BinLifecycleControls id={id} name={enclosure.name} archived={enclosure.isArchived}/>
   <details className={styles.section}><summary><span className={styles.sectionIcon} aria-hidden="true"><PodscapeLineIcon name="manager" /></span><span className={styles.sectionLabel}><strong>Colony profile</strong><small>Population, condition & setup</small></span><span className={styles.chevron} aria-hidden="true">⌄</span></summary><div className={styles.sectionBody}><KeeperControls entry={enclosure} showLogForm={false}/></div></details>
   <details className={styles.section} id="care-reminders" open={openCare}><summary><span className={styles.sectionIcon} aria-hidden="true">▣</span><span className={styles.sectionLabel}><strong>QR & care reminders</strong><small>Labels and misting schedule</small></span><span className={styles.chevron} aria-hidden="true">⌄</span></summary><div className={styles.sectionBody}><KeeperBinTools binId={id} binName={enclosure.name} species={species} lastRecordedMisting={mistingDate}/></div></details>
-  <BinLifecycleControls id={id} name={enclosure.name} archived={enclosure.isArchived}/>
   <WorkspaceLinks items={[{href:"/keeper/"+id+"/history",label:"Care history"},{href:"/keeper/schedule",label:"Schedules"}]}/>
  </div></main><KeeperMobileNav active="keeper"/></PlatformShell>;
 }
