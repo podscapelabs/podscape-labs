@@ -18,8 +18,8 @@ import homeEditStyles from "@/components/PodscapeHome.module.css";
 type CoreWidget="rankings"|"featured"|"categories"|"favourites"|"progress"|"exchange";
 type WidgetKey=CoreWidget|`game:${string}`;
 type SavedLayout={order:WidgetKey[];visible:WidgetKey[]};
-const defaultOrder:WidgetKey[]=["rankings","featured","categories","exchange","favourites","progress",...ARCADE_GAME_KEYS.map(key=>`game:${key}` as const)];
-const defaultVisible:WidgetKey[]=["rankings","featured","categories","exchange","favourites","progress"];
+const defaultOrder:WidgetKey[]=["featured","categories","rankings","exchange","favourites","progress",...ARCADE_GAME_KEYS.map(key=>`game:${key}` as const)];
+const defaultVisible:WidgetKey[]=["featured","categories","rankings","exchange"];
 const widgetNames:Record<CoreWidget,string>={rankings:"Rankings Spotlight",featured:"Featured Games",categories:"Game Categories",favourites:"My Favourite Games",progress:"My Play Progress",exchange:"Duck Bucks Watchlist"};
 const widgetIcons:Record<CoreWidget,PodscapeIconName>={rankings:"trophy",featured:"gamepad",categories:"grid",favourites:"bookmark",progress:"achievement",exchange:"gamepad"};
 function label(id:WidgetKey):string{return id.startsWith("game:")?ARCADE_GAMES.find(game=>game.key===id.slice(5))?.title||id:widgetNames[id as CoreWidget];}
@@ -115,8 +115,8 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
   if(id==="rankings")return <FunZoneRankingsSpotlight/>;
   if(id==="featured")return <FunZoneCarousel signedIn={Boolean(userId)} exp={exp} coins={coins}/>;
   if(id==="categories")return <section className={styles.card} aria-label="Game categories">
-   <div className={styles.blockTitle}><div><span className={styles.eyebrow}>GAME LIBRARY</span><h2>Pick a game.</h2></div><span className={styles.subtle}>{ARCADE_GAMES.length} games to explore</span></div>
-   <div className={styles.learningTrail} aria-label="Suggested beginner learning path">
+   <div className={styles.blockTitle}><div><span className={styles.eyebrow}>GAME LIBRARY</span><h2>Pick a game.</h2></div><span className={styles.subtle}>{ARCADE_GAMES.length} games</span></div>
+   <details className={styles.learningTrail} aria-label="Suggested beginner learning path"><summary><span>New here? Start with the basics</span><PodscapeLineIcon name="arrow-right"/></summary>
     <div><span className={styles.learningTrailEyebrow}>NEW TO THE HOBBY?</span><strong>Start simple. Learn as you play.</strong><p>These games introduce everyday keeper words before the more scientific challenges.</p></div>
     <div className={styles.learningTrailLinks}>
      <Link href="/fun-zone/species-quiz">1 · Isopod basics</Link>
@@ -124,21 +124,21 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
      <Link href="/fun-zone/word-of-the-week">3 · Learn vocabulary</Link>
      <Link href="/fun-zone/colony-connections">4 · Connect the ideas</Link>
     </div>
-   </div>
+   </details>
    <div className={styles.categoryGrid}>{ARCADE_CATEGORIES.map(item=><button key={item} type="button" aria-pressed={category===item} onClick={()=>setCategory(item)}>
     <span className={styles.categoryIcon}><PodscapeLineIcon name={item==="Word Games"?"letters":item==="Puzzles & Logic"?"connections":item==="Trivia & Knowledge"?"quiz":item==="Simulations"?"gamepad":"podbound"}/></span>
     <strong>{item}</strong><small>{categoryCounts[item]} {categoryCounts[item]===1?"game":"games"}</small>
    </button>)}</div>
-   <div className={styles.categoryListing}><div className={styles.categoryHeading}><h3>{category}</h3><span>{categoryCounts[category]} available</span></div>
+   <div className={styles.categoryListing}><div className={styles.categoryHeading}><h3>{category}</h3></div>
     {ARCADE_GAMES.filter(game=>game.category===category).length?<div className={styles.categoryGames}>{ARCADE_GAMES.filter(game=>game.category===category).map(game=><GameCard key={game.key} game={game} isFavourite={favourites.includes(game.key)} onToggle={toggleFavourite}/>)}</div>:<p className={styles.empty}>More games are coming to this category.</p>}
    </div>
   </section>;
-  if(id==="favourites")return <section className={styles.card} aria-label="Your favourite games"><div className={styles.blockTitle}><div><span className={styles.eyebrow}>YOUR ARCADE</span><h2>My Favourite Games</h2></div><span className={styles.subtle}>{favouriteGames.length} saved</span></div>
+  if(id==="favourites")return <section className={styles.card} aria-label="Your favourite games"><div className={styles.blockTitle}><div><span className={styles.eyebrow}>YOUR ARCADE</span><h2>My Games</h2></div><span className={styles.subtle}>{favouriteGames.length} saved</span></div>
     {favouriteGames.length?<div className={styles.favouritesGrid}>{favouriteGames.map(game=><GameCard key={game.key} game={game} compact isFavourite onToggle={toggleFavourite}/>)}</div>:<p className={styles.empty}>Save a game with the heart icon to keep it here. Puzzle progress stays separate.</p>}
    </section>;
   if(id==="progress")return <section className={styles.card} aria-label="Game progress"><div className={styles.blockTitle}><div><span className={styles.eyebrow}>PLAY & PROGRESS</span><h2>My Play Progress</h2></div><PodscapeLineIcon name="achievement"/></div>
-   <div className={styles.statGrid}><div><strong>{userId?exp.toLocaleString("en-CA"):"—"}</strong><small>EXP earned</small></div><div><strong>{userId?coins.toLocaleString("en-CA"):"—"}</strong><small>Pod Coins (separate)</small></div><div><strong>{trackingAvailable?done:"—"}</strong><small>Puzzle completions</small></div></div>
-   <div className={styles.inlineLinks}><Link href="/account/progress">Achievements →</Link><Link href="/fun-zone/leaderboard">Leaderboards →</Link></div>
+   <div className={styles.statGrid}><div><strong>{userId?exp.toLocaleString("en-CA"):"—"}</strong><small>Lifetime EXP</small></div><div><strong>{trackingAvailable?done:"—"}</strong><small>Puzzles completed</small></div>{coins>0?<div><strong>{coins.toLocaleString("en-CA")}</strong><small>Pod Coins</small></div>:null}</div>
+   <div className={styles.inlineLinks}><Link href="/account/progress">View My Progress →</Link></div>
   </section>;
   if(id==="exchange")return <PodExchangeWatchlist/>;
   if(id.startsWith("game:")){
@@ -148,7 +148,7 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
   return null;
  };
  return <div className={`${styles.portal} ${editing?homeEditStyles.homeCanvasEditing:""}`} data-workspace-root="fun-zone" onPointerMove={e=>{if(editing)moveDrag(e)}} onPointerUp={()=>{if(editing)stopDrag()}} onPointerCancel={()=>{if(editing)stopDrag()}}>
-  <header className={styles.hero}><div><span className={styles.heroEyebrow}>PODSCAPE / FUN ZONE</span><h1>Your little arcade.</h1><p>Puzzles, games and tiny market adventures. Make this arcade your own.</p></div></header>
+  <header className={styles.hero}><div><span className={styles.heroEyebrow}>PODSCAPE / FUN ZONE</span><h1>Your little arcade.</h1><p>Games, puzzles and a little market drama.</p></div></header>
   <nav className={styles.quickLinks} aria-label="Fun Zone shortcuts"><a href="#arcade-games"><PodscapeLineIcon name="grid"/> Categories</a><a href="#arcade-favourites"><PodscapeLineIcon name="bookmark"/> My Games</a><a href="#rankings-spotlight"><PodscapeLineIcon name="trophy"/> Rankings</a><Link href="/fun-zone/pod-exchange"><PodscapeLineIcon name="gamepad"/> Pod Exchange</Link></nav>
   {editing?<WorkspaceEditToolbar title="Arrange Fun Zone" description="Drag the handles or use arrows to reorder games and widgets." onAdd={()=>{finishCanvas();setLibraryOpen(true)}} onReset={reset} onDone={finishCanvas}/>:null}
   <div className={styles.widgets}>{active.map((id,i)=><div key={id} id={id==="rankings"?"rankings-spotlight":id==="categories"?"arcade-games":id==="favourites"?"arcade-favourites":undefined}><WorkspaceEditBlock id={id} scope="fun-zone" label={label(id)} index={i} count={active.length} editing={editing} dragging={dragging===id} required={false} onMove={move} onRemove={remove} begin={beginDrag} move={moveDrag} stop={stopDrag} onLongPress={()=>enterCanvas(id)}>{renderWidget(id)}</WorkspaceEditBlock></div>)}</div>
@@ -159,7 +159,7 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
      <div><small>YOUR ARCADE, YOUR WAY</small><h2 id="arcade-widget-title">Widget Library</h2></div>
      <button type="button" onClick={()=>setLibraryOpen(false)}>Done</button>
     </div>
-    <p>Add games and widgets to your arcade. Your layout and favourites stay saved on this device.</p>
+    <p>Choose what belongs in your arcade. Your arrangement stays saved on this device.</p>
     <div className={homeEditStyles.widgetLibraryActions}><span>{layout.visible.length} of {defaultOrder.length} widgets added</span><button type="button" onClick={()=>{setLibraryOpen(false);enterCanvas()}}>Arrange Fun Zone</button></div>
     <WidgetLibraryFilter view={libraryView} onChange={setLibraryView} added={defaultOrder.filter(id=>layout.visible.includes(id)).length} total={defaultOrder.length}/>
     {!defaultOrder.some(id=>widgetMatchesView(layout.visible.includes(id),libraryView))?<WidgetLibraryEmptyState view={libraryView}/>:null}
