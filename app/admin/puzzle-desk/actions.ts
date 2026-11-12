@@ -15,7 +15,7 @@ function fields(form:FormData){
  const puzzle_type=String(form.get("puzzle_type")||"jigsaw");
  const difficulty=String(form.get("difficulty")||"easy");
  const level=Number(form.get("level")||1);
- if(title.length<3||title.length>90||description.length>240||image_alt.length<3||image_alt.length>180||learning_note.length>300||!(puzzle_type in PUZZLE_TYPES)||!(difficulty in DIFFICULTIES)||!Number.isInteger(level)||level<1||level>LEVEL_NAMES.length)return null;
+ if(title.length<3||title.length>90||description.length>240||image_alt.length<3||image_alt.length>180||learning_note.length>300||!Object.prototype.hasOwnProperty.call(PUZZLE_TYPES,puzzle_type)||!Object.prototype.hasOwnProperty.call(DIFFICULTIES,difficulty)||!Number.isInteger(level)||level<1||level>LEVEL_NAMES.length)return null;
  return {title,description,image_alt,learning_note,puzzle_type,difficulty,level};
 }
 function refresh(id?:string){revalidatePath(desk);revalidatePath("/fun-zone/picture-puzzles");if(id)revalidatePath("/fun-zone/picture-puzzles/"+id);}
@@ -23,8 +23,9 @@ export async function createPicturePuzzle(form:FormData){
  if(!await isAdminAuthenticated())redirect("/admin");
  const payload=fields(form),image=form.get("image");
  if(!payload||!(image instanceof File)||image.size<100||image.size>8*1024*1024||!["image/jpeg","image/png","image/webp"].includes(image.type))redirect(desk+"?error=invalid");
+ // Validate content with browser-submitted type plus actual file signatures.
  const bytes=new Uint8Array(await image.arrayBuffer());
- const signatureOk=image.type==="image/png"?(bytes[0]===137&&bytes[1]===80&&bytes[2]===78&&bytes[3]===71):image.type==="image/jpeg"?(bytes[0]===255&&bytes[1]===216&&bytes[2]===255):(bytes[0]===82&&bytes[1]===73&&bytes[2]===70&&bytes[3]===70&&String.fromCharCode(...bytes.slice(8,12))==="WEBP");
+ const signatureOk=image.type==="image/png"?(bytes.length>=8&&[137,80,78,71,13,10,26,10].every((v,i)=>bytes[i]===v)):image.type==="image/jpeg"?(bytes.length>=4&&bytes[0]===255&&bytes[1]===216&&bytes[2]===255):(bytes.length>=12&&bytes[0]===82&&bytes[1]===73&&bytes[2]===70&&bytes[3]===70&&String.fromCharCode(...bytes.slice(8,12))==="WEBP");
  if(!signatureOk)redirect(desk+"?error=invalid");
  const db=getWritableSupabaseAdmin();if(!db)redirect(desk+"?error=storage");
  const ext=image.type==="image/png"?"png":image.type==="image/webp"?"webp":"jpg";
