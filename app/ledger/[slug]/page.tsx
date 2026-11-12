@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CollectionButton } from "@/components/CollectionButton";
 import { SpeciesDashboardWorkspace } from "@/components/SpeciesDashboardWorkspace";
+import {QuickAddBin} from "@/components/QuickAddBin";
 import { SpeciesProfileNavigator } from "@/components/SpeciesProfileNavigator";
 import {MoistureAndHumidityWidget,BreedingDevelopmentWidget,TaxonomyOriginWidget,FeedingEcologyWidget,HabitatSetupWidget,BehaviourEcologyWidget,ResearchSourcesWidget} from "@/components/SpeciesResearchWidgets";
 import {getSpeciesTraitId} from "@/lib/species-traits";
@@ -156,7 +157,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
               {record.status === "published" ? <PinToHome pin={{ kind: "species", id: record.slug }} userId={user?.id || null} /> : null}
               {collectionEntry ? <Link href="/keeper/collection" className={styles.collectionDestination}>✓ Saved · My Colonies →</Link>
                 : <CollectionButton speciesId={record.id} speciesName={displayName} initialCollected={false} signedIn={member.signedIn} detail />}
-              <Link className={styles.collectionDestination} href={member.signedIn?`/keeper/new?species=${encodeURIComponent(record.id)}`:"/account/login"}>+ Add a bin →</Link>
+              {member.signedIn?<QuickAddBin speciesId={record.id} speciesName={displayName} className={styles.collectionDestination}/>:<Link href="/account/login" className={styles.collectionDestination}>Sign in to add a bin →</Link>}
             </div>
           </section> : null,
             navigation: <nav className={styles.compactFooter} aria-label="Explore more">
