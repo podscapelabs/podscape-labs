@@ -2,7 +2,15 @@
  * Prices are calculated from the clock, never real market data.
  * No real currency, EXP conversion, or external transactions.
  */
-export const MARKET_INTERVAL_MS=5*60*1000;
+export const MARKET_INTERVAL_MS=5*60*1000; // Legacy market trade history
+export const ARCADE_INTERVAL_MS=60*1000;
+export const ARCADE_CYCLE_TAG=1_000_000_000;
+/** Never rebase this launch boundary once versioned minute trades have occurred. */
+export const ARCADE_START_MS=Date.parse("2026-11-11T00:00:00Z");
+export const arcadeCycleAt=(ms:number)=>ms<ARCADE_START_MS?cycleAt(ms):ARCADE_CYCLE_TAG+Math.floor(ms/ARCADE_INTERVAL_MS);
+export const isArcadeCycle=(cycle:number)=>cycle>=ARCADE_CYCLE_TAG;
+export const tickIntervalFor=(cycle:number)=>isArcadeCycle(cycle)?ARCADE_INTERVAL_MS:MARKET_INTERVAL_MS;
+export const cycleFromFiveMinutes=(cycle:number)=>ARCADE_CYCLE_TAG+cycle*5;
 export const STARTING_BUCKS=10_000;
 /** A small, symmetric fee discourages zero-risk flip-flopping every tick. */
 export const TRADE_FEE_RATE=.005;
@@ -54,15 +62,17 @@ const MARKET_EVENTS=[
  {title:"Express Delivery Surge",detail:"New contracts send courier demand soaring.",featured:"BLUE",direction:1 as const}
 ];
 export function marketSessionAt(cycle:number):MarketSession{
- const session=Math.floor(cycle/MARKET_SESSION_TICKS);
+ const arcade=isArcadeCycle(cycle);
+ const fiveMinuteCycle=arcade?Math.floor((cycle-ARCADE_CYCLE_TAG)/5):cycle;
+ const session=Math.floor(fiveMinuteCycle/MARKET_SESSION_TICKS);
  const index=Math.floor(random(session*347+119)*MARKET_EVENTS.length);
  const event=MARKET_EVENTS[index];
- return {...event,startCycle:session*MARKET_SESSION_TICKS,endCycle:(session+1)*MARKET_SESSION_TICKS,
+ return {...event,startCycle:arcade?cycleFromFiveMinutes(session*MARKET_SESSION_TICKS):session*MARKET_SESSION_TICKS,endCycle:arcade?cycleFromFiveMinutes((session+1)*MARKET_SESSION_TICKS):(session+1)*MARKET_SESSION_TICKS,
   intensity:.14+random(session*67+503)*.11};
 }
 /** A six-hour catalyst rises and fades instead of resetting the market at each boundary. */
 export function sessionImpactAt(symbol:string,cycle:number):number{
- if(cycle<MARKET_V2_START_CYCLE)return 0;
+ if(!isArcadeCycle(cycle)&&cycle<MARKET_V2_START_CYCLE)return 0;
  const event=marketSessionAt(cycle);
  if(event.featured!==symbol)return 0;
  const progress=(cycle-event.startCycle)/MARKET_SESSION_TICKS;
@@ -85,6 +95,12 @@ function newsOrder(block:number):number[]{
  return sequence;
 }
 export function newsAt(cycle:number):MarketNews|null{
+ if(isArcadeCycle(cycle)){
+  const minute=cycle-ARCADE_CYCLE_TAG;
+  if(minute%5!==0)return null;
+  // Reuse the shuffled parody news deck, with a new story every five minutes.
+  return newsAt(Math.floor(minute/5)*3);
+ }
  if(cycle%3!==0)return null;
  const issue=Math.floor(cycle/3);
  const block=Math.floor(issue/NEWS.length);
@@ -100,7 +116,7 @@ export function newsAt(cycle:number):MarketNews|null{
  * priceAt still uses newsAt so the actual price catalyst applies on publication only.
  */
 export function headlineAt(cycle:number):{story:MarketNews;publishedCycle:number}{
- const publishedCycle=cycle-((cycle%3+3)%3);
+ const publishedCycle=isArcadeCycle(cycle)?cycle-((cycle-ARCADE_CYCLE_TAG)%5+5)%5:cycle-((cycle%3+3)%3);
  const story=newsAt(publishedCycle);
  if(!story)throw Error("Missing market bulletin");
  return {story,publishedCycle};
@@ -130,6 +146,7 @@ export function newsImpactAt(symbol:string,cycle:number):number{
  const {story,publishedCycle}=headlineAt(cycle);
  if(story.symbol!==symbol)return 0;
  const age=cycle-publishedCycle;
+ if(isArcadeCycle(cycle))return story.effect*1.3*([1,.8,.58,.38,.18][age]??0);
  return story.effect*(cycle>=MARKET_V2_START_CYCLE?1.35:1)*([1,.62,.3][age]??0);
 }
 /** No runaway compounding or predictable fixed-period sine-wave profit. */
@@ -137,6 +154,16 @@ export function priceAt(symbol:string,cycle:number):number{
  const stock=STOCKS.find(item=>item.symbol===symbol);
  if(!stock||!Number.isSafeInteger(cycle))return 0;
  const index=STOCKS.findIndex(item=>item.symbol===symbol)+1;
+ if(isArcadeCycle(cycle)){
+  const minute=cycle-ARCADE_CYCLE_TAG;
+  const previousFiveMinutePrice=priceAt(symbol,Math.floor(minute/5));
+  const tickNoise=(random(minute*7919+index*1013)-.5)*.075*stock.volatility;
+  const rush=(random(Math.floor(minute/9)*191+index*997)-.5)*.065*stock.volatility;
+  const catalyst=sessionImpactAt(symbol,cycle)*.6;
+  const breaking=newsImpactAt(symbol,cycle)*.85;
+  const raw=previousFiveMinutePrice*(1+tickNoise+rush+catalyst+breaking);
+  return money(Math.min(stock.base*2,Math.max(stock.base*.4,raw)));
+ }
  // Company character stays distinct; all movement is mathematically bounded.
  const modern=cycle>=MARKET_V2_START_CYCLE;
  const regime=marketMood(index,cycle)*stock.volatility*(modern?1.45:1);
