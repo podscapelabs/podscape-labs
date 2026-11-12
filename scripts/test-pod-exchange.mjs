@@ -178,8 +178,8 @@ assert.ok(ui.includes("chartHours")&&ui.includes("24h"),"Charts support a full-d
 assert.ok(ui.includes("maxAffordableShares(price,portfolio.cash)"),"Quick-fill respects fees");
 assert.ok(ui.indexOf('className={styles.marketLeadersLink}')>ui.indexOf('className={styles.columns}'),"Trading appears before secondary ranking navigation");
 assert.ok(ui.includes("headlineAt(cycle).story"),"Exchange always displays current story");
-assert.ok(ui.includes('id="exchange-rules"')&&ui.includes("How to Play"),"Exchange has collapsible rules");
-assert.ok(styling.includes(".rulesBody"),"Rules styled with theme roles");
+assert.ok(ui.includes("rulesOpen?createPortal(")&&ui.includes("PodscapeInfoDialog")&&ui.includes("How to Play"),"Exchange rules use the shared information sheet");
+assert.ok(styling.includes(".gameRules")&&styling.includes(".rulesShortcut"),"Shared rules shortcut uses theme roles");
 assert.ok(ui.includes("tradeFee(subtotal)")&&ui.includes("tradeTotal(price,count,side)"),"Trade desk must show server-matching fee");
 assert.ok(ui.includes("newsImpactAt(news.symbol,cycle)"),"News bulletin must display actual mathematical impact");
 const walletMigration=readFileSync(resolve("supabase/migrations/20261110234500_pod_exchange_persistent_portfolios.sql"),"utf8");
