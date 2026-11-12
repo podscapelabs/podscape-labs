@@ -11,6 +11,11 @@ const rankingCss=read("components/RankingModal.module.css");
 const exchange=read("app/fun-zone/pod-exchange/PodExchange.tsx");
 const exchangeCss=read("app/fun-zone/pod-exchange/exchange.module.css");
 const theme=read("lib/theme-registry.ts");
+const ledgerCss=read("app/ledger/discover.module.css");
+const managerCss=read("components/ManagerColonies.module.css");
+const scannerCss=read("components/KeeperScanner.module.css");
+const speciesCss=read("components/SpeciesProfile.module.css");
+const shopCss=read("app/shop/shop-home.module.css");
 
 for(const id of ["light","dark","woodland","ember","lilac"])
  assert.ok(theme.includes('id:"'+id+'"'),"Theme must stay registered: "+id);
@@ -48,6 +53,15 @@ assert.match(shop,/\.hero\{[\s\S]*?var\(--portal-hero-glow\)/,"Shop hero must fo
 assert.doesNotMatch(shop,/#[0-9a-f]{3,8}\b/i,"Remove dead fixed-green Shop colours");
 assert.match(species,/\.researchDialog::backdrop\{background:color-mix\(in srgb,var\(--ps-bg/,"Research dialog must use current theme overlay");
 assert.match(scanner,/\.binHero\{[^}]*var\(--portal-hero-start\)/,"Keeper scanner result hero must follow theme");
+assert.doesNotMatch(ledgerCss,/#(?:102d23|153c2b|f6f1e6|fffdf5)\\b/i,"Ledger hero and search must not rely on green/cream literals");
+assert.match(ledgerCss,/var\\(--portal-hero-button-bg\\)/,"Ledger primary navigation uses the active portal palette");
+assert.doesNotMatch(managerCss,/\\.card\\{background:#10271e/,"Colony tiles must inherit the selected theme");
+assert.match(managerCss,/\\.card\\{background:var\\(--surface\\)/,"Manager colony cards use theme surface");
+assert.doesNotMatch(speciesCss,/researchDialog::backdrop\\{background:rgba\\(11,27,20/,"Species research popup has no green screen tint");
+assert.match(scannerCss,/var\\(--portal-hero-start\\)/,"Scanner bin hero uses shared portal colours");
+assert.match(scannerCss,/var\\(--accent-contrast\\)/,"Scanner actions retain accessible contrast");
+assert.doesNotMatch(shopCss,/background:#fffaf066|color:#294535/i,"Shop no longer contains fixed forest-style foregrounds");
+
 const styles=[];
 function walk(dir){
  for(const item of readdirSync(dir,{withFileTypes:true})){
