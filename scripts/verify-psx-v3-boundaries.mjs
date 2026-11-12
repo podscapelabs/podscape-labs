@@ -24,7 +24,8 @@ assert.match(preview,/PSX_V3_PREVIEW_ENABLED/,"Preview can only be enabled by ex
 assert.match(privateService,/PSX_V3_SECRET/,"Private seed stays in server environment");
 assert.match(privateService,/seed_fingerprint/,"Version validates seed fingerprint before returning a quote");
 assert.match(privateService,/timingSafeEqual/,"Fingerprint comparison uses constant-time comparison");
-assert.match(privateService,/priceMap\(row.opening_prices\)/,"Versioned opening anchors are required");
+assert.match(privateService,/priceMap\(\(data as VersionRow\)\.opening_prices\)/,"Staged preview requires immutable versioned opening anchors");
+assert.match(privateService,/simulated\?Object\.fromEntries\(SYMBOLS/,"Sandbox opening prices are computed from the previous legacy closing quotes");
 assert.match(privateService,/priceAt\(symbol,cutover-1\)/,"Cutover opening prices must match the last legacy closing price");
 assert.match(engine,/minute===0\)return round\(openingPrice\)/,"V3 first minute must preserve opening anchor");
 assert.match(engine,/rumourResolution:resolution/,"Resolution only becomes part of published frame after linked event");
