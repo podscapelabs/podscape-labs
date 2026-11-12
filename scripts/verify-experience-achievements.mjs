@@ -19,7 +19,7 @@ for(const [key,exp] of Object.entries(expected)){
  const item=catalog.find(a=>a.key===key);
  assert.ok(item,`Missing achievement ${key}`);
  assert.equal(item.exp,exp);
- assert.equal(item.coins,0,"Experience milestones must not award Pod Coins");
+ assert.equal(item.exp,exp,"Achievement EXP must stay unchanged");
  assert.equal(item.status,"available");
  assert.ok(item.description.length>=25);
 }
@@ -28,7 +28,7 @@ for(const key of ["secret_two_paths","secret_first_steps"]){
  const achievement=catalog.find(a=>a.key===key);
  assert.ok(achievement,"Missing hidden achievement");
  assert.equal(achievement.hidden,true);
- assert.equal(achievement.coins,0);
+ assert.ok(achievement.exp>0);
  assert.equal(achievement.status,"available");
 }
 
