@@ -152,21 +152,6 @@
 .holdingIcon svg{width:21px;height:21px}
 @media(max-width:720px){.stockIcon svg{width:21px;height:21px}.tradeHeading>span svg{width:27px;height:27px}.holdingIcon svg{width:19px;height:19px}}
 
-/* Small collapsible rules panel — neutral PodScape surface, closed by default. */
-.rules{border:1px solid var(--border);border-radius:13px;background:var(--surface);margin:0 0 12px;overflow:hidden}
-.rules summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 15px;cursor:pointer;color:var(--text-primary);font-size:12px;font-weight:800;min-height:46px}
-.rules summary::-webkit-details-marker{display:none}
-.rules summary>span:first-child{display:inline-flex;align-items:center;gap:9px}
-.rules summary svg{display:inline-block;width:19px;height:19px;color:var(--accent)}
-.rulesHint{font-size:11px;color:var(--text-secondary);font-weight:600}
-.rulesHint>span{display:inline-block;margin-left:5px;transition:transform .15s ease}
-.rules[open] .rulesHint>span{transform:rotate(180deg)}
-.rulesBody{border-top:1px solid var(--border);padding:11px 15px 13px;display:grid;gap:9px}
-.rulesBody p{margin:0;font-size:12px;line-height:1.5;color:var(--text-secondary)}
-.rulesBody strong{color:var(--text-primary)}
-.rulesBody small{font-size:10px;line-height:1.5;color:var(--text-secondary)}
-.rules summary:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
-
 /* Saving must fail visibly, never pretending a fresh wallet replaced old data. */
 .walletAlert{display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:13px;background:var(--surface);padding:12px 15px;margin-bottom:12px}
 .walletAlert strong{display:block;font-size:13px}
@@ -192,7 +177,7 @@
 .marketStatus small{color:var(--portal-hero-muted)}
 .disclaimer{background:var(--surface);line-height:1.5}
 .disclaimer svg{width:18px;height:18px;color:var(--accent);flex:none}
-.balances>div,.panel,.portfolio,.rules{border-color:var(--border);background:var(--surface)}
+.balances>div,.panel,.portfolio{border-color:var(--border);background:var(--surface)}
 .balances>div{min-width:0}
 .balances strong{overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
 .panelHead h2{font-size:clamp(23px,2.7vw,28px)}
@@ -270,7 +255,7 @@
 .quickTrade button:disabled{opacity:.45;cursor:not-allowed}
 .quickTrade span{color:var(--text-secondary);font-size:10px;text-align:right}
 .rulesDock{display:grid;gap:0;margin-top:14px}
-.rulesDock .rules{margin-bottom:8px}
+
 @media(max-width:720px){
  .marketAgenda{grid-template-columns:minmax(0,1fr)}
  .agendaNow,.agendaNext{padding:12px 14px;gap:5px;border-radius:13px}
@@ -329,3 +314,15 @@
 .quickSizes button{min-width:40px}
 .quickSizes button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--accent-contrast)}
 @media(max-width:390px){.quickSizes{gap:4px}.quickTrade button{padding-inline:9px}}
+
+/* Focused help lives in the shared PodScape information sheet. */
+.rulesDock{margin:9px 0 0}
+.rulesShortcut{display:inline-flex;align-items:center;gap:10px;min-height:44px;width:100%;justify-content:space-between;padding:11px 14px;border:1px solid var(--border);border-radius:13px;background:var(--surface);color:var(--text-primary);font-family:inherit;font-size:12px;font-weight:800;line-height:1.3;cursor:pointer;text-align:left}
+.rulesShortcut svg{width:20px;height:20px;color:var(--accent);flex:none}
+.rulesShortcut span{margin-left:auto;color:var(--accent)}
+.rulesShortcut:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.gameRules{display:grid;gap:0;margin-top:18px}
+.gameRules>div{padding:12px 0;border-top:1px solid var(--ps-border,var(--border))}
+.gameRules strong{color:var(--ps-text,var(--text-primary));font-size:13px}
+.gameRules p{margin:6px 0 0;color:var(--ps-text-secondary,var(--text-secondary));line-height:1.55;font-size:12px}
+@media(max-width:720px){.rulesShortcut{min-height:45px}.gameRules>div{padding:11px 0}}
