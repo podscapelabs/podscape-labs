@@ -21,6 +21,26 @@ function shuffledSliding(size:number){
  if(tiles.every((n,i)=>n===i)){const next=blank===count-1?blank-1:blank+1;[tiles[blank],tiles[next]]=[tiles[next],tiles[blank]];}
  return tiles;
 }
+/** Reject stale or corrupted device saves instead of presenting an unwinnable board. */
+function validSlidingSave(value:unknown,size:number):value is {tiles:number[];initial:number[];steps:number[];moves:number;finished:boolean}{
+ if(!value||typeof value!=="object")return false;
+ const v=value as Record<string,unknown>,count=size*size;
+ const permutation=(x:unknown):x is number[]=>Array.isArray(x)&&x.length===count&&
+  x.every(n=>Number.isInteger(n)&&n>=0&&n<count)&&new Set(x).size===count;
+ if(!permutation(v.initial)||!permutation(v.tiles)||!Array.isArray(v.steps)||
+    v.steps.length>1000||!Number.isSafeInteger(v.moves)||v.moves!==v.steps.length||
+    typeof v.finished!=="boolean")return false;
+ const board=[...v.initial],hole=count-1;
+ if(board.every((tile,i)=>tile===i))return false;
+ for(const move of v.steps){
+  if(!Number.isInteger(move)||move<0||move>=count)return false;
+  const blank=board.indexOf(hole);
+  if(!adjacent(move,blank,size))return false;
+  [board[blank],board[move]]=[board[move],board[blank]];
+ }
+ return board.every((tile,i)=>tile===v.tiles[i])&&
+  v.finished===board.every((tile,i)=>tile===i);
+}
 function SlidingPuzzleBoard({userId,id,title,description,imageAlt,learningNote,imageUrl,difficulty,puzzleType,level,rewardsEnabled,nextHref}:{userId:string;id:string;title:string;description:string;imageAlt:string;learningNote:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string}){
  const size=DIFFICULTIES[difficulty]?.columns||3,count=size*size,blankTile=count-1;
  const [tiles,setTiles]=useState<number[]>(()=>Array.from({length:count},(_,i)=>i));
@@ -36,11 +56,11 @@ function SlidingPuzzleBoard({userId,id,title,description,imageAlt,learningNote,i
  const start=useCallback(()=>{const next=shuffledSliding(size);setTiles(next);setInitial(next);setSteps([]);setMoves(0);setFinished(false);setStarted(true);},[size]);
  useEffect(()=>{try{
   const saved=localStorage.getItem(key);if(!saved)return;
-  const v=JSON.parse(saved) as {tiles:number[];moves:number;finished:boolean;initial?:number[];steps?:number[]};
-  if(!Array.isArray(v.tiles)||v.tiles.length!==count||new Set(v.tiles).size!==count||!v.tiles.every(n=>Number.isInteger(n)&&n>=0&&n<count))return;
-  setTiles(v.tiles);setMoves(Number.isSafeInteger(v.moves)&&v.moves>=0?v.moves:0);
-  setFinished(v.finished===true);setInitial(Array.isArray(v.initial)?v.initial:[]);setSteps(Array.isArray(v.steps)?v.steps:[]);setStarted(true);
- }catch{/* Device storage unavailable */}finally{setHydrated(true)}},[key,count]);
+  const v:unknown=JSON.parse(saved);
+  if(!validSlidingSave(v,size))return;
+  setTiles(v.tiles);setMoves(v.moves);
+  setFinished(v.finished);setInitial(v.initial);setSteps(v.steps);setStarted(true);
+ }catch{/* Device storage unavailable */}finally{setHydrated(true)}},[key,size]);
  useEffect(()=>{if(!started||!hydrated)return;try{localStorage.setItem(key,JSON.stringify({tiles,moves,finished,initial,steps}));}catch{/* Device storage unavailable */}},[key,tiles,moves,finished,started,hydrated,initial,steps]);
  // If the player completed a board while offline, retry the verified save on return.
  // A server-side move replay still decides whether EXP/progression is earned.
