@@ -42,7 +42,7 @@ function validSlidingSave(value:unknown,size:number):value is {tiles:number[];in
  return board.every((tile,i)=>tile===savedTiles[i])&&
   v.finished===board.every((tile,i)=>tile===i);
 }
-function SlidingPuzzleBoard({userId,id,title,description,imageAlt,learningNote,imageUrl,difficulty,puzzleType,level,rewardsEnabled,nextHref}:{userId:string;id:string;title:string;description:string;imageAlt:string;learningNote:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string}){
+function SlidingPuzzleBoard({userId,id,title,description,imageAlt,learningNote,imageUrl,difficulty,puzzleType,level,rewardsEnabled,nextHref,previewMode=false}:{userId:string;id:string;title:string;description:string;imageAlt:string;learningNote:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string;previewMode?:boolean}){
  const size=DIFFICULTIES[difficulty]?.columns||3,count=size*size,blankTile=count-1;
  const [tiles,setTiles]=useState<number[]>(()=>Array.from({length:count},(_,i)=>i));
  const [moves,setMoves]=useState(0);
@@ -55,14 +55,14 @@ function SlidingPuzzleBoard({userId,id,title,description,imageAlt,learningNote,i
  const {saved,record,retry}=usePuzzleCompletion("picture-puzzles",id);
  const key="podscape:picture-puzzle:v3:"+userId+":"+id+":"+puzzleType+":"+difficulty;
  const start=useCallback(()=>{const next=shuffledSliding(size);setTiles(next);setInitial(next);setSteps([]);setMoves(0);setFinished(false);setStarted(true);},[size]);
- useEffect(()=>{try{
+ useEffect(()=>{if(previewMode){setHydrated(true);return;}try{
   const saved=localStorage.getItem(key);if(!saved)return;
   const v:unknown=JSON.parse(saved);
   if(!validSlidingSave(v,size))return;
   setTiles(v.tiles);setMoves(v.moves);
   setFinished(v.finished);setInitial(v.initial);setSteps(v.steps);setStarted(true);
- }catch{/* Device storage unavailable */}finally{setHydrated(true)}},[key,size]);
- useEffect(()=>{if(!started||!hydrated)return;try{localStorage.setItem(key,JSON.stringify({tiles,moves,finished,initial,steps}));}catch{/* Device storage unavailable */}},[key,tiles,moves,finished,started,hydrated,initial,steps]);
+ }catch{/* Device storage unavailable */}finally{setHydrated(true)}},[key,size,previewMode]);
+ useEffect(()=>{if(!started||!hydrated||previewMode)return;try{localStorage.setItem(key,JSON.stringify({tiles,moves,finished,initial,steps}));}catch{/* Device storage unavailable */}},[key,tiles,moves,finished,started,hydrated,initial,steps,previewMode]);
  // If the player completed a board while offline, retry the verified save on return.
  // A server-side move replay still decides whether EXP/progression is earned.
  useEffect(()=>{
@@ -90,16 +90,16 @@ function SlidingPuzzleBoard({userId,id,title,description,imageAlt,learningNote,i
      return <button type="button" key={index} disabled={!started||finished||blank} onClick={()=>select(index)} className={styles.tile} data-selected={false} data-blank={blank} aria-label={blank?`Empty space at position ${index+1}`:`Piece ${tile+1}, position ${index+1}, tap to slide if adjacent`} aria-pressed={false} style={blank?undefined:{backgroundImage:`url("${imageUrl}")`,backgroundSize:`${size*100}% ${size*100}%`,backgroundPosition:`${(tile%size)*100/(size-1)}% ${Math.floor(tile/size)*100/(size-1)}%`}}/>;
     })}
    </div>
-   {finished?<p className={styles.win} role="status">Puzzle complete! Rebuilt in {moves} moves. Beautifully done!</p>:null}
+   {finished?<div className={styles.victory} role="status"><span aria-hidden="true">✦ 🧩 ✦</span><h2>Picture complete!</h2><p>You solved the sliding puzzle in {moves} moves.</p><div className={styles.victoryArt} role="img" aria-label={imageAlt} style={{backgroundImage:`url("${imageUrl}")`}}/>{previewMode?<small>Preview only · No progress or EXP recorded</small>:null}</div>:null}
    {finished&&rewardsEnabled?<PuzzleSaveStatus status={saved} retry={retry}/>:null}
    {finished&&saved==="saved"&&nextHref?<a className={styles.nextPuzzle} href={nextHref}>Next picture puzzle →</a>:null}
    {!started?<button type="button" className={styles.primary} onClick={start}>Shuffle & start puzzle</button>:<div className={styles.controls}><button type="button" className={styles.primary} onClick={start}>Start a new shuffle</button><button type="button" onClick={()=>setShowReference(v=>!v)} aria-pressed={showReference}>{showReference?"Hide image":"View image"}</button></div>}
-   <p className={styles.helper}>Tap a tile beside the empty square to slide it into place. Your board saves on this device.</p>
+   <p className={styles.helper}>Tap a tile beside the empty square to slide it into place. {previewMode?"This is a temporary preview.":"Your board saves on this device."}</p>
   </div><aside className={styles.reference}><h2>The complete artwork</h2><p>Need a little help? Reveal the original while solving.</p>{showReference?<div className={styles.fullImage} role="img" aria-label={imageAlt||"Original artwork for "+title} style={{backgroundImage:`url("${imageUrl}")`}}/>:<button type="button" onClick={()=>setShowReference(true)}>Reveal reference artwork</button>}<p className={styles.note}>An authentic sliding-tile puzzle: only tiles next to the gap can move.</p></aside></div>
  </section>;
 }
 
-export function PicturePuzzleBoard(props:{userId:string;id:string;title:string;description:string;imageAlt:string;learningNote:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string}){
+export function PicturePuzzleBoard(props:{userId:string;id:string;title:string;description:string;imageAlt:string;learningNote:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string;previewMode?:boolean}){
  if(props.puzzleType==="sliding")return <SlidingPuzzleBoard {...props}/>;
  return <section className={styles.game}>
   <div className={styles.gameHeading}><div><span>JIGSAW · {levelLabel(props.level)} · {DIFFICULTIES[props.difficulty].label}</span><h1>{props.title}</h1><p>{props.description||"Build this picture, one interlocking piece at a time."}</p></div></div>
@@ -114,7 +114,7 @@ function RewardedJigsaw(props:{userId:string;id:string;title:string;description:
  const onReset=useCallback(()=>setSolved(false),[]);
  const onComplete=useCallback((proof:{placed:number[];moves:number})=>{setSolved(true);if(props.rewardsEnabled)void record(proof);},[record,props.rewardsEnabled]);
  return <>
-  <InterlockingJigsawBoard key={props.id+props.difficulty} userId={props.userId} id={props.id} imageUrl={props.imageUrl} imageAlt={props.imageAlt||props.title} size={DIFFICULTIES[props.difficulty].columns} onComplete={onComplete} onReset={onReset}/>
+  <InterlockingJigsawBoard key={props.id+props.difficulty} previewMode={props.previewMode} userId={props.userId} id={props.id} imageUrl={props.imageUrl} imageAlt={props.imageAlt||props.title} size={DIFFICULTIES[props.difficulty].columns} onComplete={onComplete} onReset={onReset}/>
   {solved&&props.rewardsEnabled?<PuzzleSaveStatus status={saved} retry={retry}/>:null}
   {solved&&saved==="saved"&&props.nextHref?<a className={styles.nextPuzzle} href={props.nextHref}>Next picture puzzle →</a>:null}
  </>;
