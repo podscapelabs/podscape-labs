@@ -35,6 +35,43 @@ export async function createEnclosure(input: { speciesId: string; name: string; 
  if (error || !data) return { success:false,error:"Couldn't create enclosure. Keeper database migration may be required." };
  revalidatePath("/keeper"); revalidatePath("/keeper/collection"); revalidatePath("/ledger","layout"); return { success:true,id:data.id };
 }
+
+/** One atomic database insert for multiple new enclosures of a single published species.
+ * Results are scoped to the currently authenticated keeper.
+ */
+export async function createEnclosureBatch(input:{speciesId:string;names:string[];label?:string}):Promise<{success:boolean;error?:string;ids?:string[]}>{
+ await requireCustomerPreviewAccess();
+ if(!input||typeof input.speciesId!=="string"||!Array.isArray(input.names)||input.names.length<2||input.names.length>20||
+   input.names.some(name=>typeof name!=="string"||!name.trim()||name.trim().length>80)||
+   typeof input.label!=="undefined"&&typeof input.label!=="string")
+   return {success:false,error:"Choose between 2 and 20 bins and valid names."};
+ const label=(input.label||"").trim();
+ if(label.length>70)return{success:false,error:"Location must be 70 characters or fewer."};
+ const unique=new Set(input.names.map(name=>name.trim().toLocaleLowerCase()));
+ if(unique.size!==input.names.length)return{success:false,error:"Each bin needs a different name."};
+ const available=(await getSpeciesRecords()).some(x=>x.id===input.speciesId&&x.kind==="species"&&x.status==="published"&&!x.archivedAt);
+ if(!available)return{success:false,error:"Choose a published species from Leaf Ledger."};
+ const {db,user}=await keeperContext();
+ if(!db||!user)return{success:false,error:"Sign in to manage your bins."};
+ const {data:existing,error:checkError}=await db.from("keeper_enclosures").select("name").eq("user_id",user.id).eq("species_id",input.speciesId);
+ if(checkError)return{success:false,error:"Unable to check existing bin names."};
+ const names=new Set((existing||[]).map(row=>String(row.name).trim().toLocaleLowerCase()));
+ if(input.names.some(name=>names.has(name.trim().toLocaleLowerCase())))return{success:false,error:"Some of those bin names already exist. Refresh and try again."};
+ const {data:saved,error:lookupError}=await db.from("member_species_collection").select("species_id").eq("user_id",user.id).eq("species_id",input.speciesId).maybeSingle();
+ if(lookupError)return{success:false,error:"Could not check your species collection."};
+ if(!saved){
+  const {error:saveError}=await db.from("member_species_collection").insert({user_id:user.id,species_id:input.speciesId});
+  if(saveError&&saveError.code!=="23505")return{success:false,error:"Could not add this species to your collection."};
+ }
+ const {data,error}=await db.from("keeper_enclosures")
+  .insert(input.names.map(name=>({user_id:user.id,species_id:input.speciesId,name:name.trim(),label})))
+  .select("id");
+ if(error||!data||data.length!==input.names.length)
+  return{success:false,error:"Couldn't create this group of bins. Check My Colonies before retrying."};
+ revalidatePath("/keeper");revalidatePath("/keeper/collection");revalidatePath("/ledger","layout");
+ return{success:true,ids:data.map(row=>String(row.id))};
+}
+
 export async function updateEnclosure(input: { id:string; name:string; label:string; quantity:number; status:string; breeding:string; enclosureType:string; acquiredOn:string; source:string; notes:string }):Promise<Result> {
  await requireCustomerPreviewAccess();
  const validDate = input.acquiredOn === "" || /^\d{4}-\d{2}-\d{2}$/.test(input.acquiredOn);
