@@ -50,7 +50,6 @@ export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,size,onProg
  const [ready,setReady]=useState(false);
  const [moves,setMoves]=useState(0);
  const [active,setActive]=useState<number|null>(null);
- const [help,setHelp]=useState(false);
  const completionSent=useRef(false);
  const drag=useRef<{index:number;pointerId:number;clientX:number;clientY:number;originX:number;originY:number;changed:boolean}|null>(null);
  // Keep the first server and client renders deterministic to avoid hydration errors.
@@ -110,8 +109,6 @@ export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,size,onProg
    <svg ref={root} viewBox={`0 0 ${WIDTH} ${height}`} xmlns="http://www.w3.org/2000/svg" role="group" aria-label={"Interactive jigsaw of "+imageAlt} className={styles.jigsawSvg}>
     <defs>{outline.map((d,i)=><clipPath key={i} id={uid+"-p-"+i} clipPathUnits="userSpaceOnUse"><path d={d}/></clipPath>)}</defs>
     <rect x={BOARD_X} y={BOARD_Y} width={BOARD} height={BOARD} rx="4" fill="var(--surface-secondary)" stroke="var(--border)" strokeWidth="3"/>
-    <image href={imageUrl} x={BOARD_X} y={BOARD_Y} width={BOARD} height={BOARD} preserveAspectRatio="xMidYMid slice" opacity={help?.28:.07} style={{pointerEvents:"none"}}/>
-    {outline.map((d,i)=><path key={i} d={d} fill="none" stroke="var(--border)" strokeWidth="1.4" opacity=".65" pointerEvents="none"/>)}
     <text x="18" y="570" fill="var(--text-secondary)" fontSize="19" fontWeight="700">YOUR PIECES</text>
     {order.map(i=>{
      const p=positions[i],to=target(i),tx=p.x-to.x,ty=p.y-to.y;
@@ -127,8 +124,8 @@ export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,size,onProg
    </svg>
   </div>
   {solved===count?<p className={styles.win} role="status">Jigsaw complete! Every piece has found its place. 🧩</p>:null}
-  <div className={styles.controls}><button type="button" onClick={startOver}>Shuffle pieces again</button><button type="button" onClick={()=>setHelp(v=>!v)} aria-pressed={help}>{help?"Hide guide":"Show faint guide"}</button></div>
+  <div className={styles.controls}><button type="button" onClick={startOver}>Shuffle pieces again</button></div>
   <details className={styles.jigsawReference}><summary>View original artwork</summary><div className={styles.fullImage} role="img" aria-label={imageAlt} style={{backgroundImage:`url("${imageUrl}")`}}/></details>
-  <p className={styles.note}>Progress is saved on this device. All pieces have genuine interlocking contours; exterior edges remain flat.</p>
+  <p className={styles.note}>The board starts blank: build the picture by fitting its interlocking pieces together. Progress is saved on this device.</p>
  </div>;
 }
