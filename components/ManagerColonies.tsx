@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
+import {QuickAddBin} from "@/components/QuickAddBin";
 import { speciesDisplayName, speciesScientificName, type SpeciesRecord } from "@/data/species";
 import type { Enclosure } from "@/lib/keeper";
 import styles from "./ManagerColonies.module.css";
@@ -74,7 +75,7 @@ export function ManagerColonies({ records, bins, collectedIds, intent }: {
             <Link href={binHref(bin.id)}><strong>{bin.name}</strong><small>{bin.label||"No location"} · {bin.quantity} recorded · {bin.status.replaceAll("-"," ")}</small></Link>
             <Link href={"/keeper/scan?bin="+bin.id+"&mode=care"} className={styles.quickCare} aria-label={"Quick Care for "+bin.name}><PodscapeLineIcon name="droplet"/> Care</Link>
           </div>):<p className={styles.noBins}>This species is saved for reference. No enclosure has been created.</p>}
-          <div className={styles.groupActions}><Link href={"/keeper/new?species="+encodeURIComponent(record.id)}>+ Add Bin</Link><Link href={"/ledger/"+record.slug}>Species reference →</Link></div>
+          <div className={styles.groupActions}><QuickAddBin speciesId={record.id} speciesName={speciesDisplayName(record)}/><Link href={"/ledger/"+record.slug}>Species reference →</Link></div>
         </div>:null}
       </article>;
     }) : visibleBins.map(bin=>{
