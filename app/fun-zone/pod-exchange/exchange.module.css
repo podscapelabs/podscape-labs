@@ -326,3 +326,15 @@
 .gameRules strong{color:var(--ps-text,var(--text-primary));font-size:13px}
 .gameRules p{margin:6px 0 0;color:var(--ps-text-secondary,var(--text-secondary));line-height:1.55;font-size:12px}
 @media(max-width:720px){.rulesShortcut{min-height:45px}.gameRules>div{padding:11px 0}}
+
+/* A single glanceable market event replaces two vertically stacked banners. */
+.marketAgenda{grid-template-columns:minmax(0,1fr);margin:0 0 9px}
+.agendaNow{padding:12px 16px;gap:5px}
+.agendaHeader{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:5px}
+.agendaHeader>span{font-size:10px;color:var(--text-secondary);font-weight:700;white-space:nowrap}
+.agendaNow>strong{font-size:clamp(19px,2.4vw,24px)}
+.agendaNow>p{margin:0;font-size:11px;line-height:1.45}
+.agendaFoot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 15px;margin-top:5px}
+.agendaFoot>span{color:var(--text-secondary);font-size:10px;line-height:1.45}
+.agendaFoot>span:first-child{color:var(--accent);font-weight:800}
+@media(max-width:720px){.marketAgenda{grid-template-columns:minmax(0,1fr)}.agendaNow{padding:12px 13px;gap:5px}.agendaFoot{gap:5px 12px}.agendaNow>strong{font-size:20px}}
