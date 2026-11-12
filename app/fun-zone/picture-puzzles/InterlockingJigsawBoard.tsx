@@ -3,7 +3,7 @@ import {useCallback,useEffect,useId,useMemo,useRef,useState} from "react";
 import styles from "./picture-puzzles.module.css";
 
 type PiecePosition={x:number;y:number;placed:boolean};
-type Props={id:string;imageUrl:string;imageAlt:string;size:number;onProgress?:(placed:number,total:number)=>void;onComplete?:(proof:{placed:number[];moves:number})=>void};
+type Props={userId:string;id:string;imageUrl:string;imageAlt:string;size:number;onProgress?:(placed:number,total:number)=>void;onComplete?:(proof:{placed:number[];moves:number})=>void};
 const WIDTH=600,BOARD=480,BOARD_X=60,BOARD_Y=35,TRAY_Y=595;
 function seedSign(n:number){return ((n*37+17)%7)%2===0?1:-1;}
 function pathForPiece(r:number,c:number,size:number){
@@ -37,7 +37,7 @@ function newPositions(size:number,randomize=true):PiecePosition[]{
 function isValidPositions(value:unknown,size:number):value is PiecePosition[]{
  return Array.isArray(value)&&value.length===size*size&&value.every(p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&Math.abs(p.x)<5000&&Math.abs(p.y)<5000&&typeof p.placed==="boolean");
 }
-export function InterlockingJigsawBoard({id,imageUrl,imageAlt,size,onProgress,onComplete}:Props){
+export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,size,onProgress,onComplete}:Props){
  const count=size*size,unit=BOARD/size,cols=size===3?3:4,rows=Math.ceil(count/cols);
  const height=TRAY_Y+rows*unit*1.38+35,root=useRef<SVGSVGElement>(null);
  const uid=useId().replace(/:/g,"");
@@ -49,7 +49,7 @@ export function InterlockingJigsawBoard({id,imageUrl,imageAlt,size,onProgress,on
  const completionSent=useRef(false);
  const drag=useRef<{index:number;pointerId:number;clientX:number;clientY:number;originX:number;originY:number;changed:boolean}|null>(null);
  // Keep the first server and client renders deterministic to avoid hydration errors.
- const key="podscape:jigsaw:v1:"+id+":"+size;
+ const key="podscape:jigsaw:v2:"+userId+":"+id+":"+size;
  const solved=positions.filter(p=>p.placed).length;
  const outline=useMemo(()=>Array.from({length:count},(_,i)=>pathForPiece(Math.floor(i/size),i%size,size)),[count,size]);
  const order=useMemo(()=>[...Array.from({length:count},(_,i)=>i).filter(i=>i!==active),...(active===null?[]:[active])],[count,active]);
