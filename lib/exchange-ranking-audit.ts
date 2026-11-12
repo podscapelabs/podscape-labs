@@ -1,6 +1,7 @@
 import "server-only";
 import {getSupabaseAdmin} from "@/lib/supabase-admin";
 import {STARTING_BUCKS,STOCKS,arcadeCycleAt,priceAt,tradeTotal} from "@/lib/pod-exchange";
+import {getActivePsxV3,quoteForCycle} from "@/lib/psx-v3-market-server";
 type Order={symbol:string;side:string;shares:number;unit_price:number|string;cycle:number|string;created_at?:string};
 type Wallet={cash:number|string;holdings:Record<string,number>};
 const symbols=new Set(STOCKS.map(x=>x.symbol));
@@ -8,7 +9,7 @@ const symbols=new Set(STOCKS.map(x=>x.symbol));
  * server-recorded orders and a fair 10,000 Duck Bucks starting wallet.
  * Historical tick prices remain versioned and deterministic.
  */
-export function auditExchangeLedger(wallet:Wallet,orders:Order[]){
+export function auditExchangeLedger(wallet:Wallet,orders:Order[],quote:(symbol:string,cycle:number)=>number=priceAt){
  if(orders.length>5000)return {ok:false,reason:"Too many orders for automatic reconciliation"};
  let cashCents=STARTING_BUCKS*100;
  const held:Record<string,number>={};
@@ -20,7 +21,7 @@ export function auditExchangeLedger(wallet:Wallet,orders:Order[]){
   if(!Number.isSafeInteger(cycle)||cycle>arcadeCycleAt(Date.now())||
    cycle<lastCycle||!symbols.has(order.symbol)||!Number.isSafeInteger(shares)||
    shares<1||shares>1_000_000||(order.side!=="buy"&&order.side!=="sell")||
-   !Number.isFinite(unit)||unit!==priceAt(order.symbol,cycle))
+   !Number.isFinite(unit)||unit!==quote(order.symbol,cycle))
    return {ok:false,reason:"Invalid or unverifiable historical order"};
   lastCycle=cycle;
   const netCents=Math.round(tradeTotal(unit,shares,order.side)*100);
@@ -63,6 +64,7 @@ export async function auditStoredExchangeWallet(userId:string){
   if(!result.data||result.data.length<1000)break;
  }
  if(orders.length>5000)return {ok:false,reason:"Order history exceeds verification limit",cash:Number(wallet.cash),orders:orders.length};
- const audit=auditExchangeLedger({cash:wallet.cash,holdings:wallet.holdings as Record<string,number>},orders);
+ const active=await getActivePsxV3();
+ const audit=auditExchangeLedger({cash:wallet.cash,holdings:wallet.holdings as Record<string,number>},orders,(symbol,cycle)=>quoteForCycle(active,symbol,cycle));
  return {...audit,cash:Number(wallet.cash),orders:orders.length};
 }
