@@ -7,9 +7,9 @@ import styles from "./page.module.css";
 
 type SpeciesOption={id:string;name:string;scientific:string};
 
-export function NewBinForm({species}:{species:SpeciesOption[]}){
+export function NewBinForm({species,initialSpeciesId}:{species:SpeciesOption[];initialSpeciesId?:string}){
  const router=useRouter();
- const [speciesId,setSpeciesId]=useState(species[0]?.id||"");
+ const [speciesId,setSpeciesId]=useState(species.some(x=>x.id===initialSpeciesId)?initialSpeciesId!:species[0]?.id||"");
  const [name,setName]=useState("");
  const [error,setError]=useState("");
  const [pending,start]=useTransition();
@@ -26,13 +26,13 @@ export function NewBinForm({species}:{species:SpeciesOption[]}){
   });
  }
  return <form className={styles.form} onSubmit={submit}>
-  <div className={styles.step}><span>01</span><div><h2>Select a species</h2><p>Choose a species already saved in your collection.</p></div></div>
+  <div className={styles.step}><span>01</span><div><h2>Select a species</h2><p>Choose any published species. Creating a bin also saves it to My Collection.</p></div></div>
   <label className={styles.field}>Species
    <select required value={speciesId} onChange={event=>setSpeciesId(event.target.value)}>
     {species.map(item=><option key={item.id} value={item.id}>{item.name}{item.scientific?" · "+item.scientific:""}</option>)}
    </select>
   </label>
-  <p className={styles.helper}>Missing a species? <Link href="/ledger">Find it in Leaf Ledger →</Link></p>
+  <p className={styles.helper}>Looking for a species? <Link href="/ledger">Explore Leaf Ledger →</Link></p>
   <div className={styles.separator}/>
   <div className={styles.step}><span>02</span><div><h2>Name your bin</h2><p>Use a name you’ll recognize on your labels and care records.</p></div></div>
   <label className={styles.field}>Bin or enclosure name
@@ -40,6 +40,6 @@ export function NewBinForm({species}:{species:SpeciesOption[]}){
   </label>
   {error?<p className={styles.error} role="alert">{error}</p>:null}
   <button type="submit" className={styles.submit} disabled={pending||!speciesId||!name.trim()}>{pending?"Creating bin…":"Create bin →"}</button>
-  <p className={styles.helper}>After creation, you can edit its details, print a QR label, and start logging care.</p>
+  <p className={styles.helper}>No bin is created by simply saving a species. Your new bin appears in My Colonies with its own history.</p>
  </form>;
 }
