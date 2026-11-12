@@ -35,8 +35,9 @@ function validProof(mode:string,puzzle:unknown,proof:unknown):boolean{
   const questions=(puzzle as QuizPuzzle).questions;
   // Quiz completion requires a perfect round, not merely participation.
   // The client cannot unlock a new puzzle or earn EXP with incorrect answers.
-  return Array.isArray(data.answers)&&data.answers.length===questions.length&&
-   questions.every((question,index)=>data.answers[index]===question.answer);
+  const answers=data.answers;
+  return Array.isArray(answers)&&answers.length===questions.length&&
+   questions.every((question,index)=>answers[index]===question.answer);
  }
  if(mode==="burrow"){
   const answer=(puzzle as BurrowPuzzle).answer;
