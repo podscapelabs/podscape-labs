@@ -322,3 +322,10 @@
  .columns>section:last-child{order:1}
 }
 @media(prefers-reduced-motion:reduce){.carouselRail{scroll-behavior:auto}}
+
+/* Frequent trades should take one tap to size, while confirming remains explicit. */
+.quickTrade{justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.quickSizes{display:flex;align-items:center;gap:6px}
+.quickSizes button{min-width:40px}
+.quickSizes button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--accent-contrast)}
+@media(max-width:390px){.quickSizes{gap:4px}.quickTrade button{padding-inline:9px}}
