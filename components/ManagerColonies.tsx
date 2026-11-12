@@ -26,11 +26,12 @@ export function ManagerColonies({ records, bins, allBins=bins, collectedIds, int
   savedView?:boolean;
   allBins?:{speciesId:string;isArchived:boolean}[];
 }) {
-  const [tab, setTab] = useState<"species" | "bins">(!savedView&&intent==="notes"?"bins":"species");
+  const [tab, setTab] = useState<"species" | "bins">(savedView?"species":"bins");
   const [query, setQuery] = useState("");
   const [expanded,setExpanded]=useState<string|null>(initialSpecies||null);
   const binHref=(id:string)=>"/keeper/"+id+(intent==="notes"?"?panel=observation#observation":"");
   const [genus, setGenus] = useState("all");
+  const [filtersOpen,setFiltersOpen]=useState(false);
   const [care, setCare] = useState("all");
   const [sort, setSort] = useState("recent");
   const router=useRouter();
@@ -45,7 +46,7 @@ export function ManagerColonies({ records, bins, allBins=bins, collectedIds, int
       const raw=sessionStorage.getItem(storageKey),saved=raw?JSON.parse(raw):null;
       if(saved&&typeof saved==="object"){
         if(typeof saved.query==="string")setQuery(saved.query.slice(0,200));
-        if(!savedView&&!intent&&["species","bins"].includes(saved.tab))setTab(saved.tab);
+        if(!explicitView&&!savedView&&["species","bins"].includes(saved.tab))setTab(saved.tab);
         if(typeof saved.genus==="string")setGenus(saved.genus);
         if(typeof saved.care==="string")setCare(saved.care);
         if(["recent","name","count"].includes(saved.sort))setSort(saved.sort);
@@ -87,13 +88,13 @@ export function ManagerColonies({ records, bins, allBins=bins, collectedIds, int
   }).sort((a,b)=>sort==="name"?a.name.localeCompare(b.name):sort==="count"?b.quantity-a.quantity:Date.parse(b.updatedAt)-Date.parse(a.updatedAt));
   function reset(){setQuery("");setGenus("all");setCare("all");setSort("recent");}
   return <section id="colonies" className={styles.section} aria-label="My Colonies">
-    <div className={styles.titleRow}><h2>{savedView?"Saved for later":archivedView?"Archived bins":"Your colonies"}</h2>{!savedView?<div className={styles.tabs} role="group" aria-label="Browse collection by">
+    <div className={styles.titleRow}><h2>{savedView?"Saved for later":archivedView?"Archived bins":"Your bins"}</h2>{!savedView?<div className={styles.tabs} role="group" aria-label="Browse collection by">
       <button type="button" className={tab==="species"?styles.selected:""} aria-pressed={tab==="species"} onClick={()=>{setTab("species");reset();}}>Species</button>
       <button type="button" className={tab==="bins"?styles.selected:""} aria-pressed={tab==="bins"} onClick={()=>{setTab("bins");reset();}}>Bins</button>
     </div>:null}</div>
     {intent==="notes"?<p style={{color:"var(--text-secondary)",fontSize:".82rem",margin:"0 0 12px"}}>Select a bin to add a dated observation to its care history.</p>:null}
-    <div className={styles.search}><PodscapeLineIcon name="scan" /><input type="search" value={query} onChange={e=>setQuery(e.target.value)} placeholder={tab==="species"?"Search species in your collection…":"Search your bins…"} aria-label="Search your colonies" /></div>
-    <div className={styles.filters}>
+    <div className={styles.searchRow}><div className={styles.search}><PodscapeLineIcon name="search" /><input type="search" value={query} onChange={e=>setQuery(e.target.value)} placeholder={tab==="species"?"Find a species…":"Find a bin or species…"} aria-label="Search your colonies" /></div><button type="button" className={styles.filterToggle} aria-expanded={filtersOpen} aria-controls="colony-collection-filters" onClick={()=>setFiltersOpen(v=>!v)}><PodscapeLineIcon name="filter"/> Filters</button></div>
+    <div id="colony-collection-filters" className={styles.filters} hidden={!filtersOpen}>
       {tab==="species" && <>
         <select aria-label="Filter by genus" value={genus} onChange={e=>setGenus(e.target.value)}><option value="all">Genus</option>{genera.map(g=><option value={g} key={g}>{g}</option>)}</select>
         <select aria-label="Filter by care level" value={care} onChange={e=>setCare(e.target.value)}><option value="all">Care level</option>{careLevels.map(c=><option key={c} value={c}>{c}</option>)}</select>
@@ -141,6 +142,6 @@ export function ManagerColonies({ records, bins, allBins=bins, collectedIds, int
     })}
     {((tab==="species" && !visibleSpecies.length)||(tab==="bins"&&!visibleBins.length))&&<div className={styles.empty}><p>{entries.length?"No matching records.":savedView?"No saved species without bins. Save a species from Leaf Ledger to find it here.":archivedView?"No archived bins.":"No active colonies yet. Add a bin for a saved species to get started."}</p>{entries.length?<button onClick={reset} type="button">Clear filters</button>:<Link href={savedView?"/ledger":"/keeper/collection?view=saved"}>{savedView?"Browse Leaf Ledger →":"View saved species →"}</Link>}</div>}
     </div>
-    <div className={styles.actions}><Link href="/keeper/new">＋ Add bin</Link><Link href="/keeper/import">Import spreadsheet</Link><Link href="/ledger">＋ Add species →</Link></div>
+    <div className={styles.actions}><Link href="/keeper/new">+ Add bins</Link><Link href="/keeper/import">Import spreadsheet</Link><Link href="/ledger">Browse species →</Link></div>
   </section>;
 }
