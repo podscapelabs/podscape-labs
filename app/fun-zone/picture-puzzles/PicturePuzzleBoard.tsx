@@ -21,7 +21,7 @@ function shuffledSliding(size:number){
  if(tiles.every((n,i)=>n===i)){const next=blank===count-1?blank-1:blank+1;[tiles[blank],tiles[next]]=[tiles[next],tiles[blank]];}
  return tiles;
 }
-function SlidingPuzzleBoard({id,title,description,imageAlt,learningNote,imageUrl,difficulty,puzzleType,level,rewardsEnabled,nextHref}:{id:string;title:string;description:string;imageAlt:string;learningNote:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string}){
+function SlidingPuzzleBoard({userId,id,title,description,imageAlt,learningNote,imageUrl,difficulty,puzzleType,level,rewardsEnabled,nextHref}:{userId:string;id:string;title:string;description:string;imageAlt:string;learningNote:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string}){
  const size=DIFFICULTIES[difficulty]?.columns||3,count=size*size,blankTile=count-1;
  const [tiles,setTiles]=useState<number[]>(()=>Array.from({length:count},(_,i)=>i));
  const [moves,setMoves]=useState(0);
@@ -32,7 +32,7 @@ function SlidingPuzzleBoard({id,title,description,imageAlt,learningNote,imageUrl
  const [initial,setInitial]=useState<number[]>([]);
  const [steps,setSteps]=useState<number[]>([]);
  const {saved,record,retry}=usePuzzleCompletion("picture-puzzles",id);
- const key="podscape:picture-puzzle:v2:"+id+":"+puzzleType+":"+difficulty;
+ const key="podscape:picture-puzzle:v3:"+userId+":"+id+":"+puzzleType+":"+difficulty;
  const start=useCallback(()=>{const next=shuffledSliding(size);setTiles(next);setInitial(next);setSteps([]);setMoves(0);setFinished(false);setStarted(true);},[size]);
  useEffect(()=>{try{
   const saved=localStorage.getItem(key);if(!saved)return;
@@ -78,7 +78,7 @@ function SlidingPuzzleBoard({id,title,description,imageAlt,learningNote,imageUrl
  </section>;
 }
 
-export function PicturePuzzleBoard(props:{id:string;title:string;description:string;imageAlt:string;learningNote:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string}){
+export function PicturePuzzleBoard(props:{userId:string;id:string;title:string;description:string;imageAlt:string;learningNote:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string}){
  if(props.puzzleType==="sliding")return <SlidingPuzzleBoard {...props}/>;
  return <section className={styles.game}>
   <div className={styles.gameHeading}><div><span>JIGSAW · {levelLabel(props.level)} · {DIFFICULTIES[props.difficulty].label}</span><h1>{props.title}</h1><p>{props.description||"Build this picture, one interlocking piece at a time."}</p></div></div>
@@ -87,12 +87,12 @@ export function PicturePuzzleBoard(props:{id:string;title:string;description:str
  </section>;
 }
 
-function RewardedJigsaw(props:{id:string;title:string;description:string;imageAlt:string;learningNote:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string}){
+function RewardedJigsaw(props:{userId:string;id:string;title:string;description:string;imageAlt:string;learningNote:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string}){
  const {saved,record,retry}=usePuzzleCompletion("picture-puzzles",props.id);
  const [solved,setSolved]=useState(false);
  const onComplete=useCallback((proof:{placed:number[];moves:number})=>{setSolved(true);if(props.rewardsEnabled)void record(proof);},[record,props.rewardsEnabled]);
  return <>
-  <InterlockingJigsawBoard key={props.id+props.difficulty} id={props.id} imageUrl={props.imageUrl} imageAlt={props.imageAlt||props.title} size={DIFFICULTIES[props.difficulty].columns} onComplete={onComplete}/>
+  <InterlockingJigsawBoard key={props.id+props.difficulty} userId={props.userId} id={props.id} imageUrl={props.imageUrl} imageAlt={props.imageAlt||props.title} size={DIFFICULTIES[props.difficulty].columns} onComplete={onComplete}/>
   {solved&&props.rewardsEnabled?<PuzzleSaveStatus status={saved} retry={retry}/>:null}
   {solved&&saved==="saved"&&props.nextHref?<a className={styles.nextPuzzle} href={props.nextHref}>Next picture puzzle →</a>:null}
  </>;
