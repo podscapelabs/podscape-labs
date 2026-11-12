@@ -407,3 +407,7 @@
 }
 @media(max-width:360px){.categoryGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.exchangeWidget>.watchlistStats{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.learningTrail>summary svg{transition:none}}
+
+/* Five portal quick links, including Picture Puzzles, stay balanced across screen sizes. */
+.quickLinks{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media(max-width:760px){.quickLinks{grid-template-columns:repeat(2,minmax(0,1fr))}.quickLinks a:last-child{grid-column:1/-1}}
