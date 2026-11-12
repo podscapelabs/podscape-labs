@@ -7,6 +7,7 @@ import styles from "./page.module.css";
 import { ownerOperations } from "@/data/owner-desks";
 import { OwnerDeskDirectory } from "@/components/OwnerDeskDirectory";
 import { TestAchievementButton } from "@/components/TestAchievementButton";
+import { OwnerThemeRestoreButton } from "@/components/OwnerThemeRestoreButton";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
 
 export const dynamic = "force-dynamic";
@@ -58,6 +59,7 @@ export default async function OwnerToolsPage() {
           {[earlyAccess,security].filter((item):item is NonNullable<typeof item>=>Boolean(item)).map(item=><Link href={item.href} key={item.href}>
             <span className={styles.operationCopy}><strong><PodscapeLineIcon name={item.icon} /> {item.title}</strong><small>{item.description}</small></span><b aria-hidden="true">→</b>
           </Link>)}
+          <details className={styles.qa}><summary><PodscapeLineIcon name="creative" /> Theme tester <span>Owner QA</span></summary><div><p>Show the floating five-theme switcher for page-by-page visual checks. You can dismiss it again at any time.</p><OwnerThemeRestoreButton /></div></details>
           <details className={styles.qa}><summary><PodscapeLineIcon name="achievement" /> Achievement banner preview <span>Owner QA</span></summary><div><p>Preview the achievement banner without changing EXP or unlocking an achievement.</p><TestAchievementButton /></div></details>
         </div>
       </section>
