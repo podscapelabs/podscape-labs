@@ -5,6 +5,7 @@ import {KeeperMobileNav} from "@/components/KeeperMobileNav";
 import {getMemberCollectionState} from "@/lib/member-collection";
 import {getSpeciesRecords} from "@/lib/species-store";
 import {isSpeciesRecordActive,speciesDisplayName,speciesScientificName} from "@/data/species";
+import {listEnclosures} from "@/lib/keeper";
 import {NewBinForm} from "./NewBinForm";
 import styles from "./page.module.css";
 
@@ -14,13 +15,13 @@ export const metadata:Metadata={title:"Add Bin | PodScape Manager",robots:{index
 export default async function NewBinPage({searchParams}:{searchParams:Promise<{species?:string}>}){
  const member=await getMemberCollectionState();
  const selectedSpecies=(await searchParams).species||"";
- let species:{id:string;name:string;scientific:string}[]=[];
+ let species:{id:string;name:string;scientific:string;existingNames:string[]}[]=[];
  let unavailable=false;
  if(member.signedIn){
   try{
-   const records=await getSpeciesRecords();
+   const [records,bins]=await Promise.all([getSpeciesRecords(),listEnclosures()]);
    species=records.filter(record=>record.kind==="species"&&isSpeciesRecordActive(record)&&record.status==="published")
-    .map(record=>({id:record.id,name:speciesDisplayName(record),scientific:speciesScientificName(record)}))
+    .map(record=>({id:record.id,name:speciesDisplayName(record),scientific:speciesScientificName(record),existingNames:bins.filter(bin=>bin.speciesId===record.id).map(bin=>bin.name)}))
     .sort((a,b)=>a.name.localeCompare(b.name));
   }catch{unavailable=true;}
  }

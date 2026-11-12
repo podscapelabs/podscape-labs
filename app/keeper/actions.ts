@@ -9,9 +9,12 @@ const statuses = ["planning","establishing","stable","thriving","declining","no-
 const breedingValues = ["unknown","not-observed","observed","active"];
 const eventKinds = ["feeding","maintenance","breeding","observation","inventory"];
 
-export async function createEnclosure(input: { speciesId: string; name: string }): Promise<Result> {
+export async function createEnclosure(input: { speciesId: string; name: string; label?:string }): Promise<Result> {
  await requireCustomerPreviewAccess();
  const name = input.name?.trim();
+ if(input.label!==undefined&&typeof input.label!=="string")return{success:false,error:"Provide a valid location."};
+ const label=input.label?.trim()||"";
+ if(label.length>70)return{success:false,error:"Location must be 70 characters or fewer."};
  if (!name || name.length > 80 || !input.speciesId || input.speciesId.length > 120) return { success:false,error:"Provide an enclosure name." };
  const available = (await getSpeciesRecords()).some(x => x.id === input.speciesId && x.kind === "species" && x.status === "published" && !x.archivedAt);
  if (!available) return { success:false,error:"Choose a species from the Leaf Ledger." };
@@ -25,7 +28,7 @@ export async function createEnclosure(input: { speciesId: string; name: string }
   const {error:saveError}=await db.from("member_species_collection").insert({user_id:user.id,species_id:input.speciesId});
   if(saveError&&saveError.code!=="23505")return{success:false,error:"Could not add this species to your collection."};
  }
- const { data, error } = await db.from("keeper_enclosures").insert({ user_id:user.id,species_id:input.speciesId,name }).select("id").single();
+ const { data, error } = await db.from("keeper_enclosures").insert({ user_id:user.id,species_id:input.speciesId,name,label }).select("id").single();
  // On a failed bin creation, do not silently leave behind a surprise bookmark.
  // Retain a concurrent user's bookmark if another request already created it.
 

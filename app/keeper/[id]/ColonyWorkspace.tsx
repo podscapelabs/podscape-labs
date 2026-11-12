@@ -19,8 +19,8 @@ function dayLabel(timestamp:string){
  const d=new Date(timestamp);
  return Number.isNaN(d.getTime())?"Date unavailable":d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
 }
-export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,referenceUrl,scope,navigationBins=[]}:{
- colony:Colony;initialEvents:CareEvent[];careDates:Record<string,string>;initialPanel?:string;referenceUrl?:string;scope:string;navigationBins?:SwitchableBin[]
+export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,referenceUrl,scope,navigationBins=[],created=false}:{
+ colony:Colony;initialEvents:CareEvent[];careDates:Record<string,string>;initialPanel?:string;referenceUrl?:string;scope:string;navigationBins?:SwitchableBin[];created?:boolean
 }){
  const router=useRouter();
  const [events,setEvents]=useState(initialEvents);
@@ -129,6 +129,7 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
     <span>{colony.label||"No location assigned"} · {colony.status.replaceAll("-"," ")}{colony.archived?" · Archived":""}</span>
    </div>
   </header>
+  {created?<p className={styles.notice} role="status">Bin created. You’re ready to record care.</p>:null}
   <div className={styles.binToolbar}>
    <nav aria-label="Bin actions">
     {!colony.archived?<Link href={careUrl}>Quick Care</Link>:null}

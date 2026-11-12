@@ -2,14 +2,15 @@
 import { useState, useTransition, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createEnclosure, updateEnclosure, logKeeperEvent } from "@/app/keeper/actions";
+import {nextBinName} from "@/lib/bin-setup";
 import {useUnsavedBinChanges} from "./useUnsavedBinChanges";
 import type { Enclosure } from "@/lib/keeper";
 import styles from "./KeeperWorkspace.module.css";
 
 export function CreateEnclosure({ speciesId, speciesName }: {speciesId:string;speciesName:string}) {
- const [name,setName]=useState(""); const [message,setMessage]=useState(""); const [pending,start]=useTransition();const router=useRouter();
- function submit(e:FormEvent){e.preventDefault();start(async()=>{const result=await createEnclosure({speciesId,name});if(result.success&&result.id){router.push("/keeper/"+result.id);router.refresh();}else setMessage(result.error||"Unable to create.");});}
- return <form className={styles.create} onSubmit={submit}><label>New enclosure for {speciesName}<input value={name} maxLength={80} onChange={e=>setName(e.target.value)} placeholder="e.g. Panda King · Bin A04" required /></label><button disabled={pending}>{pending?"Creating…":"Create enclosure →"}</button>{message?<p role="alert">{message}</p>:null}</form>;
+ const [name,setName]=useState(()=>nextBinName(speciesName,[]));const [location,setLocation]=useState(""); const [message,setMessage]=useState(""); const [pending,start]=useTransition();const router=useRouter();
+ function submit(e:FormEvent){e.preventDefault();start(async()=>{const result=await createEnclosure({speciesId,name,label:location});if(result.success&&result.id){router.push("/keeper/"+result.id+"?created=1");router.refresh();}else setMessage(result.error||"Unable to create.");});}
+ return <form className={styles.create} onSubmit={submit}><label>New enclosure for {speciesName}<input value={name} maxLength={80} onChange={e=>setName(e.target.value)} placeholder="e.g. Panda King · Bin A04" required /></label><label>Location (optional)<input value={location} maxLength={70} onChange={e=>setLocation(e.target.value)}/></label><button disabled={pending}>{pending?"Creating…":"Create bin →"}</button>{message?<p role="alert">{message}</p>:null}</form>;
 }
 
 export function KeeperControls({entry,showLogForm=true}: {entry:Enclosure;showLogForm?:boolean}) {

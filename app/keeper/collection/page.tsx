@@ -40,7 +40,7 @@ export default async function MyColoniesPage({searchParams}:{searchParams:Promis
         </header>
         {!member.signedIn ? <section className={styles.empty}><h2>Your colonies are private.</h2><p>Sign in to see and manage your records.</p><Link href="/account/login">Sign in →</Link></section>
           : unavailable ? <section className={styles.empty} role="alert"><h2>Colony records are unavailable.</h2><p>Try again when the Keeper database is available.</p></section>
-          : <ManagerColonies key={view+":"+(options.species||"")} records={species} bins={active} allBins={bins.map(({speciesId,isArchived})=>({speciesId,isArchived}))} collectedIds={member.ids} intent={intent} initialSpecies={options.species} archivedView={archivedView} savedView={savedView} />}
+          : <ManagerColonies key={(member.userId||"guest")+":"+view+":"+(options.species||"")} scope={member.userId||"guest"} explicitView={Boolean(options.view||options.species||intent)} records={species} bins={active} allBins={bins.map(({speciesId,isArchived})=>({speciesId,isArchived}))} collectedIds={member.ids} intent={intent} initialSpecies={options.species} archivedView={archivedView} savedView={savedView} />}
       </div>
     </div>
     {member.signedIn ? <KeeperMobileNav active="keeper"/> : null}

@@ -10,7 +10,7 @@ const db={
  auth:{getUser:async()=>({data:{user},error:null})},
  from(table){
   const query={};
-  for(const method of ["delete","insert","select","eq","limit","maybeSingle"]){
+  for(const method of ["delete","insert","select","eq","limit","maybeSingle","single"]){
    query[method]=(...args)=>{calls.push({table,method,args});return query;};
   }
   query.then=(resolve,reject)=>Promise.resolve(table==="member_achievements"?{data:[],error:null}:table==="keeper_enclosures"&&calls.some(c=>c.table===table&&c.method==="limit")?binResult:result).then(resolve,reject);
@@ -33,7 +33,7 @@ function load(path){
  }});
  return module.exports;
 }
-const {deleteEnclosure}=load("app/keeper/actions.ts");
+const {deleteEnclosure,createEnclosure}=load("app/keeper/actions.ts");
 const {setSpeciesCollected}=load("app/ledger/collection/actions.ts");
 const id="12345678-1234-1234-1234-123456789abc";
 assert.equal((await deleteEnclosure({id,confirmed:false})).success,false);
@@ -64,3 +64,10 @@ assert.equal((await setSpeciesCollected("species-a",true)).success,true);
 assert.ok(calls.some(c=>c.table==="member_species_collection"&&c.method==="insert"));
 assert.ok(!calls.some(c=>c.table==="keeper_enclosures"),"Collecting must only save a species bookmark");
 console.log("Keeper deletion ownership, confirmation, archived-bin protection and bookmark-only collection tests passed.");
+
+calls.length=0;result={data:{id},error:null};
+assert.equal((await createEnclosure({speciesId:"species-a",name:"Test bin",label:"Rack A"})).success,true);
+assert.ok(calls.some(c=>c.table==="keeper_enclosures"&&c.method==="insert"&&c.args[0].label==="Rack A"),"Bin location saves with creation");
+calls.length=0;
+assert.equal((await createEnclosure({speciesId:"species-a",name:"Test",label:"x".repeat(71)})).success,false);
+assert.equal(calls.length,0,"Invalid locations must not mutate records");

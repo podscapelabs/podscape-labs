@@ -1,18 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect,useState } from "react";
 import {binDisplayName} from "@/lib/bin-identity";
 import {speciesMatchesCollectionView} from "@/lib/collection-views";
+import {useRouter} from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
 import {CollectionButton} from "./CollectionButton";
+import {SpeciesQuickCare} from "./SpeciesQuickCare";
 import {QuickAddBin} from "@/components/QuickAddBin";
 import { speciesDisplayName, speciesScientificName, type SpeciesRecord } from "@/data/species";
 import type { Enclosure } from "@/lib/keeper";
 import styles from "./ManagerColonies.module.css";
 
-export function ManagerColonies({ records, bins, allBins=bins, collectedIds, intent, initialSpecies, archivedView=false, savedView=false }: {
+export function ManagerColonies({ records, bins, allBins=bins, collectedIds, intent, initialSpecies, archivedView=false, savedView=false,scope="guest",explicitView=false }: {
+  scope?:string;
+  explicitView?:boolean;
   records: SpeciesRecord[];
   bins: Enclosure[];
   collectedIds: string[];
@@ -29,6 +33,37 @@ export function ManagerColonies({ records, bins, allBins=bins, collectedIds, int
   const [genus, setGenus] = useState("all");
   const [care, setCare] = useState("all");
   const [sort, setSort] = useState("recent");
+  const router=useRouter();
+  const view=savedView?"saved":archivedView?"archived":"active";
+  const storageKey="podscape-colony-browser:"+scope+":"+view;
+  const [memoryReady,setMemoryReady]=useState(false);
+  useEffect(()=>{
+    try{
+      const last=sessionStorage.getItem("podscape-colony-view:"+scope);
+      if(!explicitView&&last&&["active","saved","archived"].includes(last)&&last!==view){router.replace("/keeper/collection?view="+last);return;}
+      sessionStorage.setItem("podscape-colony-view:"+scope,view);
+      const raw=sessionStorage.getItem(storageKey),saved=raw?JSON.parse(raw):null;
+      if(saved&&typeof saved==="object"){
+        if(typeof saved.query==="string")setQuery(saved.query.slice(0,200));
+        if(!savedView&&!intent&&["species","bins"].includes(saved.tab))setTab(saved.tab);
+        if(typeof saved.genus==="string")setGenus(saved.genus);
+        if(typeof saved.care==="string")setCare(saved.care);
+        if(["recent","name","count"].includes(saved.sort))setSort(saved.sort);
+        if(!initialSpecies&&typeof saved.expanded==="string")setExpanded(saved.expanded);
+        if(!initialSpecies&&Number.isFinite(saved.scrollY))requestAnimationFrame(()=>window.scrollTo(0,Math.max(0,saved.scrollY)));
+      }
+    }catch{/* Browser memory is optional. */}
+    setMemoryReady(true);
+  },[storageKey,scope,view,explicitView,initialSpecies,intent,router,savedView]);
+  useEffect(()=>{
+    if(!memoryReady)return;
+    let position=window.scrollY;
+    const save=()=>{try{sessionStorage.setItem(storageKey,JSON.stringify({query,tab,genus,care,sort,expanded,scrollY:position}));}catch{}};
+    save();let timer:ReturnType<typeof setTimeout>|undefined;
+    const onScroll=()=>{position=window.scrollY;clearTimeout(timer);timer=setTimeout(save,150)};
+    window.addEventListener("scroll",onScroll,{passive:true});
+    return()=>{clearTimeout(timer);window.removeEventListener("scroll",onScroll);save();};
+  },[memoryReady,storageKey,query,tab,genus,care,sort,expanded]);
   const binsBySpecies=new Map<string,Enclosure[]>();
   for(const bin of bins){const group=binsBySpecies.get(bin.speciesId)||[];group.push(bin);binsBySpecies.set(bin.speciesId,group);}
   const speciesTotals=new Map([...binsBySpecies].map(([id,group])=>[id,group.reduce((total,bin)=>total+bin.quantity,0)]));
@@ -89,8 +124,8 @@ export function ManagerColonies({ records, bins, allBins=bins, collectedIds, int
 
         </div>:null}
         <div className={styles.groupActions}>
-          {!archivedView?<QuickAddBin speciesId={record.id} speciesName={speciesDisplayName(record)}/>:null}
-          {!archivedView&&owned.length?<Link href={"/keeper/scan?bin="+owned[0].id+"&mode=care"}>Quick Care</Link>:null}
+          {!archivedView?<QuickAddBin speciesId={record.id} speciesName={speciesDisplayName(record)} existingNames={owned.map(bin=>bin.name)}/>:null}
+          {!archivedView&&owned.length?<SpeciesQuickCare bins={owned.map(({id,name,label})=>({id,name,label}))} speciesName={speciesDisplayName(record)}/>:null}
           {owned.length===1?<Link href={"/keeper/"+owned[0].id}>Open bin</Link>:null}
           {record.status==="published"&&!record.archivedAt?<Link href={"/ledger/"+record.slug}>Species reference</Link>:null}
           {!archivedView?<CollectionButton speciesId={record.id} speciesName={speciesDisplayName(record)} initialCollected={saved.has(record.id)} signedIn compact/>:null}

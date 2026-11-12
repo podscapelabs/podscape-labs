@@ -18,7 +18,7 @@ export function SpeciesCollectionHub({speciesId,speciesName,collected,signedIn,b
    {active.length>1?<label>Choose your bin<select value={bin?.id||""} onChange={event=>setSelected(event.target.value)}>{active.map(item=><option key={item.id} value={item.id}>{binDisplayName(item)}</option>)}</select></label>:bin?<small>{binDisplayName(bin)}</small>:null}
    <div className={styles.actions}>
     {bin?<><Link href={"/keeper/"+bin.id}>Open bin</Link><Link href={"/keeper/scan?bin="+bin.id+"&mode=care"}>Quick Care</Link></>:null}
-    <QuickAddBin speciesId={speciesId} speciesName={speciesName}/>
+    <QuickAddBin speciesId={speciesId} speciesName={speciesName} existingNames={bins.map(bin=>bin.name)}/>
     <Link href={collectionUrl+"#colonies"}>My Colonies</Link>
     {archived.length?<Link href={collectionUrl+"&view=archived#colonies"}>Archived bins ({archived.length})</Link>:null}
    </div>

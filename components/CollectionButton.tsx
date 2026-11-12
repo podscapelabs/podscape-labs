@@ -24,6 +24,7 @@ export function CollectionButton({ speciesId, speciesName, initialCollected, sig
 }) {
   const [collected, setCollected] = useState(initialCollected);
   const [animation, setAnimation] = useState<"sprout" | "wither" | null>(null);
+  const [feedback,setFeedback]=useState("");
   const [error, setError] = useState("");
   const [pending, startTransition] = useTransition();
   const router = useRouter();
@@ -55,6 +56,7 @@ export function CollectionButton({ speciesId, speciesName, initialCollected, sig
           for(const badge of result.unlocked||[])announceAchievement(badge);
           if (compact) setAnimation(result.collected ? "sprout" : "wither");
           setCollected(result.collected);
+          setFeedback(result.collected?"Species saved. Add a bin whenever you’re ready.":"Species removed from your saved collection.");
           router.refresh();
         } else {
           setError(result.error || "Could not update your collection.");
@@ -71,6 +73,7 @@ export function CollectionButton({ speciesId, speciesName, initialCollected, sig
         onClick={toggle} aria-pressed={collected} aria-label={title} title={title}>
         <OwnershipLeaf filled={collected} />
       </button>
+      {feedback?<span role="status" className={styles.srOnly}>{feedback}</span>:null}
       {error ? <p className={styles.toggleError} role="alert">{error}</p> : null}
       <span className={styles.srOnly} role="status" aria-live="polite">{pending ? "Updating collection" : error ? error : collected ? "Saved to My Collection" : "Not in My Collection"}</span>
     </div>;
@@ -82,6 +85,7 @@ export function CollectionButton({ speciesId, speciesName, initialCollected, sig
       <span>{pending ? "Updating…" : collected && detail ? "Remove from collection" : collected ? "✓ In Collection" : "+ Add to Collection"}</span>
       <span aria-hidden="true">{collected ? "−" : "→"}</span>
     </button>
+    {feedback?<p role="status">{feedback}</p>:null}
     {error ? <p className={styles.error} role="alert">{error}</p> : null}
   </div>;
 }

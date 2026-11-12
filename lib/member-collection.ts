@@ -42,11 +42,11 @@ export async function getMemberSpeciesIds(db: MemberDatabase, userId: string): P
   return (await getMemberCollectionEntries(db, userId)).map((entry) => entry.speciesId);
 }
 
-export async function getMemberCollectionState(): Promise<{ signedIn: boolean; ids: string[]; entries: MemberCollectionEntry[] }> {
+export async function getMemberCollectionState(): Promise<{ signedIn: boolean; ids: string[]; entries: MemberCollectionEntry[]; userId:string|null }> {
   const db = await customerSupabase();
-  if (!db) return { signedIn: false, ids: [], entries: [] };
+  if (!db) return { signedIn: false, ids: [], entries: [], userId:null };
   const { data: { user } } = await db.auth.getUser();
-  if (!user) return { signedIn: false, ids: [], entries: [] };
+  if (!user) return { signedIn: false, ids: [], entries: [], userId:null };
   const entries = await getMemberCollectionEntries(db, user.id);
-  return { signedIn: true, ids: entries.map((entry) => entry.speciesId), entries };
+  return { signedIn: true, userId:user.id, ids: entries.map((entry) => entry.speciesId), entries };
 }
