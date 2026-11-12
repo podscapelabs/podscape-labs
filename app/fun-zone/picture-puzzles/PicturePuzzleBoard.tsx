@@ -82,7 +82,7 @@ function SlidingPuzzleBoard({userId,id,title,description,imageAlt,learningNote,a
  }
  return <section className={styles.game}>
   <div className={styles.gameHeading}><div><span>{PUZZLE_TYPES[puzzleType].toUpperCase()} · {levelLabel(level)} · {DIFFICULTIES[difficulty].label}</span><h1>{title}</h1><p>{description||"Put the picture back together."}</p></div><div className={styles.moveCount}><strong>{moves}</strong><small>moves</small></div></div>
-  <div className={styles.gameLayout}><div>
+  <div className={`${styles.gameLayout} ${finished?styles.finishedLayout:""}`}><div>
    {!finished?<div className={styles.board} style={{gridTemplateColumns:`repeat(${size},minmax(0,1fr))`}} role="group" aria-label={title+" "+PUZZLE_TYPES[puzzleType]+" puzzle"}>
     {tiles.map((tile,index)=>{
      const blank=tile===blankTile;
