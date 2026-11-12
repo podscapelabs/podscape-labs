@@ -6,18 +6,18 @@ import styles from "./exchange.module.css";
 import {DuckBucks,DuckBuckIcon,duckBucksNumber} from "@/components/DuckBucks";
 import {ExchangeCompanyIcon} from "@/components/ExchangeCompanyIcon";
 import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
-import {STOCKS,STORAGE_KEY,MARKET_INTERVAL_MS,MARKET_V2_START_CYCLE,STARTING_BUCKS,cycleAt,marketSessionAt,sessionImpactAt,defaultPortfolio,decodeSavedPortfolio,executeOrder,money,headlineAt,newsImpactAt,priceAt,tradeFee,tradeSubtotal,tradeTotal,maxAffordableShares,sanitizePortfolio,totalValue,type Portfolio} from "@/lib/pod-exchange";
+import {STOCKS,STORAGE_KEY,MARKET_INTERVAL_MS,ARCADE_INTERVAL_MS,STARTING_BUCKS,arcadeCycleAt,isArcadeCycle,tickIntervalFor,marketSessionAt,sessionImpactAt,defaultPortfolio,decodeSavedPortfolio,executeOrder,money,headlineAt,newsImpactAt,priceAt,tradeFee,tradeSubtotal,tradeTotal,maxAffordableShares,sanitizePortfolio,totalValue,type Portfolio} from "@/lib/pod-exchange";
 
 function CompanyMark({symbol}:{symbol:string}){return <ExchangeCompanyIcon symbol={symbol}/>;}
 const change=(n:number)=>(n>=0?"+":"")+n.toFixed(2)+"%";
 const countdown=(ms:number)=>String(Math.floor(ms/60000)).padStart(2,"0")+":"+String(Math.floor((ms%60000)/1000)).padStart(2,"0");
 function Sparkline({symbol,cycle,hours}:{symbol:string;cycle:number;hours:2|24}){
- const spacing=hours===24?12:1;
+ const spacing=isArcadeCycle(cycle)?(hours===24?60:5):(hours===24?12:1);
  const prices=useMemo(()=>Array.from({length:25},(_,i)=>priceAt(symbol,cycle-(24-i)*spacing)),[symbol,cycle,spacing]);
  const low=Math.min(...prices)*.985,high=Math.max(...prices)*1.015;
  const path=prices.map((p,i)=>`${Math.round(i*300/24)},${Math.round(79-68*(p-low)/(high-low))}`).join(" ");
  const rising=prices[24]>=prices[0];
- return <svg className={styles.chart} viewBox="0 0 300 88" preserveAspectRatio="none" role="img" aria-label={`${symbol} price movement over the last two hours, ${rising?"up":"down"}`}><line x1="0" x2="300" y1="79" y2="79" stroke="currentColor" strokeOpacity=".17"/><polyline points={path} fill="none" stroke={rising?"var(--game-correct)":"var(--game-incorrect)"} strokeWidth="2.8" vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+ return <svg className={styles.chart} viewBox="0 0 300 88" preserveAspectRatio="none" role="img" aria-label={`${symbol} price movement over the last ${hours} hours, ${rising?"up":"down"}`}><line x1="0" x2="300" y1="79" y2="79" stroke="currentColor" strokeOpacity=".17"/><polyline points={path} fill="none" stroke={rising?"var(--game-correct)":"var(--game-incorrect)"} strokeWidth="2.8" vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round"/></svg>;
 }
 type StorageMode="loading"|"cloud"|"local"|"error";
 type CloudState={exists:boolean;portfolio:Portfolio|null;userId?:string;unlocked?:AchievementNotice[];duplicate?:boolean};
@@ -130,7 +130,7 @@ export function PodExchange(){
    window.removeEventListener("podscape-exchange-wallet-updated",onWalletEvent);
   };
  },[]);
- const cycle=cycleAt(now??0);
+ const cycle=arcadeCycleAt(now??0);
  const price=priceAt(symbol,cycle);
  const previous=priceAt(symbol,cycle-1);
  const movement=(price/previous-1)*100;
@@ -147,19 +147,20 @@ export function PodExchange(){
  const news=now===null?null:headlineAt(cycle).story;
  const newsImpact=now===null||!news?0:newsImpactAt(news.symbol,cycle);
  const newsAge=cycle-(now===null?cycle:headlineAt(cycle).publishedCycle);
- const timeLeft=now===null?0:MARKET_INTERVAL_MS-(now%MARKET_INTERVAL_MS);
+ const tickDuration=tickIntervalFor(cycle);
+ const timeLeft=now===null?0:tickDuration-(now%tickDuration);
  const session=marketSessionAt(cycle);
- const sessionLive=cycle>=MARKET_V2_START_CYCLE;
+ 
  const nextSession=marketSessionAt(session.endCycle);
- const sessionLeft=(session.endCycle-cycle)*MARKET_INTERVAL_MS-(now===null?0:now%MARKET_INTERVAL_MS);
- const bulletinLeft=(3-((cycle%3+3)%3))*MARKET_INTERVAL_MS-(now===null?0:now%MARKET_INTERVAL_MS);
- const eventDelta=sessionLive?sessionImpactAt(session.featured,cycle)*100:0;
- const nextMarketEvent=MARKET_V2_START_CYCLE*MARKET_INTERVAL_MS-(now??0);
+ const sessionLeft=(session.endCycle-cycle)*tickDuration-(now===null?0:now%tickDuration);
+ const bulletinLeft=isArcadeCycle(cycle)?(5-((cycle-1_000_000_000)%5))*ARCADE_INTERVAL_MS-(now===null?0:now%ARCADE_INTERVAL_MS):(3-((cycle%3+3)%3))*MARKET_INTERVAL_MS-(now===null?0:now%MARKET_INTERVAL_MS);
+ const eventDelta=sessionImpactAt(session.featured,cycle)*100;
+ 
  const eventCountdown=(ms:number)=>ms>0?Math.floor(ms/3600000)+"h "+Math.floor(ms%3600000/60000)+"m":"Now";
  const maxShares=side==="buy"?maxAffordableShares(price,portfolio.cash):owned;
  async function order(){
   if(!ready||pending||tradingRef.current||now===null)return;
-  const tick=cycleAt(Date.now());
+  const tick=arcadeCycleAt(Date.now());
   const result=executeOrder(portfolio,symbol,side,count,tick);
   if(!result.ok){setMessage(result.error);return}
   const trade=result.portfolio.trades[0];
@@ -208,25 +209,42 @@ export function PodExchange(){
    <div><span>Duck Bucks available</span><strong>{ready?<DuckBucks amount={portfolio.cash}/>:"—"}</strong><small>Virtual currency only</small></div>
    <div><span>Companies owned</span><strong>{STOCKS.filter(s=>(portfolio.holdings[s.symbol]||0)>0).length}</strong><small>{portfolio.trades.length} recent trades</small></div>
   </section>
+    <section className={styles.companyCarousel} aria-label="Swipe through market companies">
+   <div className={styles.carouselTop}><span className={styles.carouselKicker}>THE TRADING FLOOR · LIVE QUOTES</span><span>Swipe to explore <span aria-hidden="true">→</span></span></div>
+   <div className={styles.carouselRail}>
+    {STOCKS.map(stock=>{
+     const quote=priceAt(stock.symbol,cycle),before=priceAt(stock.symbol,cycle-1);
+     const delta=(quote/before-1)*100;
+     const status=delta>3?"LEAF FRENZY":delta>1?"RALLYING":delta< -3?"PANIC SELLING":delta< -1?"DIPPING":"HOLDING STEADY";
+     return <button type="button" key={stock.symbol} className={styles.carouselStock} aria-pressed={symbol===stock.symbol}
+      onClick={()=>{setSymbol(stock.symbol);setView("market");setMessage("");requestAnimationFrame(()=>tradeRef.current?.scrollIntoView({behavior:"smooth",block:"center"}));}}>
+      <span className={styles.carouselCompany}><span className={styles.carouselIcon}><CompanyMark symbol={stock.symbol}/></span><span><strong>{stock.name}</strong><small>{stock.symbol} · {stock.sector}</small></span></span>
+      <span className={styles.carouselQuote}><strong><DuckBucks amount={quote}/></strong><small className={delta>=0?styles.up:styles.down}>{change(delta)}</small></span>
+      <Sparkline symbol={stock.symbol} cycle={cycle} hours={2}/>
+      <span className={styles.carouselBottom}><span>{status}</span><b>TRADE <span aria-hidden="true">→</span></b></span>
+     </button>;
+    })}
+   </div>
+  </section>
   <section className={styles.marketAgenda} aria-label="Market events">
    <div className={styles.agendaNow}>
-    <small>MARKET CATALYST · SIX-HOUR EVENT</small>
-    <strong>{sessionLive?session.title:"Market 2.0 is approaching"}</strong>
-    <p>{sessionLive?session.detail:"A livelier market with timed company shocks, stronger news and more to watch throughout the day."}</p>
-    <span>{sessionLive?<><b>{session.featured}</b> · {eventDelta>=0?"+":""}{eventDelta.toFixed(1)}% current pressure · {eventCountdown(sessionLeft)} remaining</>:<>Starts Nov 20, 00:00 UTC · {eventCountdown(nextMarketEvent)} to launch</>}</span>
+    <small>MARKET MAYHEM · SIX-HOUR CATALYST</small>
+    <strong>{session.title}</strong>
+    <p>{session.detail}</p>
+    <span><><b>{session.featured}</b> · {eventDelta>=0?"+":""}{eventDelta.toFixed(1)}% market pressure · {eventCountdown(sessionLeft)} remaining</></span>
    </div>
    <div className={styles.agendaNext}>
     <small>UP NEXT</small>
-    <strong>{sessionLive?nextSession.title:"Six-hour market events"}</strong>
-    <p>{sessionLive?<>In {eventCountdown(sessionLeft)} · {nextSession.featured} in focus</>:"Every day, four distinct market sessions."}</p>
+    <strong>{nextSession.title}</strong>
+    <p>In {eventCountdown(sessionLeft)} · {nextSession.featured} in focus</p>
     <small>Next headline in {countdown(bulletinLeft)}</small>
    </div>
   </section>
-  <section className={styles.bulletin} aria-label="Market news"><span className={styles.newsLabel}>THE LEAF STREET JOURNAL</span><div><strong>{news?.headline||"Market bulletin loading…"}</strong><p>{news?.detail||"The next tiny market story is being prepared."}</p><small className={styles.newsEffect}>{news?`${news.symbol} · ${newsImpact>=0?"+":""}${(newsImpact*100).toFixed(1)}% news influence · ${newsAge===0?"Breaking":newsAge===1?"Cooling":"Fading"}`:"New headlines every 15 minutes"}</small></div><b style={{display:"inline-flex",alignItems:"center",gap:7}}>{news?<CompanyMark symbol={news.symbol}/>:null}{news?.symbol||"PODX"}</b></section>
+  <section className={styles.bulletin} aria-label="Market news"><span className={styles.newsLabel}>THE LEAF STREET JOURNAL</span><div><strong>{news?.headline||"Market bulletin loading…"}</strong><p>{news?.detail||"The next tiny market story is being prepared."}</p><small className={styles.newsEffect}>{news?`${news.symbol} · ${newsImpact>=0?"+":""}${(newsImpact*100).toFixed(1)}% news influence · ${newsAge===0?"Breaking":newsAge<=2?"Heating up":"Fading"}`:"New headlines every 15 minutes"}</small></div><b style={{display:"inline-flex",alignItems:"center",gap:7}}>{news?<CompanyMark symbol={news.symbol}/>:null}{news?.symbol||"PODX"}</b></section>
   <div className={styles.mobileSwitch}><button type="button" aria-pressed={view==="market"} onClick={()=>setView("market")}>Trade market</button><button type="button" aria-pressed={view==="wallet"} onClick={()=>setView("wallet")}>My holdings</button></div>
   <div className={`${styles.columns} ${view==="wallet"?styles.marketHiddenMobile:""}`}>
    <section aria-label="Fictional market listings">
-    <div className={styles.panel}><div className={styles.panelHead}><div><h2>Market watch</h2><p>Six companies. Endless leaf drama.</p></div><small>5-minute ticks</small></div>
+    <div className={styles.panel}><div className={styles.panelHead}><div><h2>Market watch</h2><p>Six companies. Endless leaf drama.</p></div><small>1-minute ticks</small></div>
      <div className={styles.list}>{STOCKS.map(stock=>{
       const current=priceAt(stock.symbol,cycle),prior=priceAt(stock.symbol,cycle-1),delta=(current/prior-1)*100;
       return <button type="button" key={stock.symbol} aria-pressed={symbol===stock.symbol} className={styles.stock} onClick={()=>{setSymbol(stock.symbol);setMessage("");setView("market");if(window.matchMedia("(max-width:720px)").matches)requestAnimationFrame(()=>tradeRef.current?.scrollIntoView({behavior:"smooth",block:"start"}));}}>
@@ -271,7 +289,7 @@ export function PodExchange(){
    <div className={styles.rulesBody}>
     <p><strong>Start with 10,000 Duck Bucks.</strong> They&apos;re fictional game currency.</p>
     <p><strong>Buy shares</strong> in any of the six companies. You can sell shares you own whenever you like.</p>
-    <p><strong>Prices change every five minutes</strong> based on market moods, news and six-hour catalysts after the market update.</p>
+    <p><strong>Prices change every minute</strong> with exaggerated company swings, five-minute headlines and six-hour market mayhem.</p>
     <p><strong>Grow your portfolio</strong> by trading wisely. Its value is your remaining Duck Bucks plus the current value of your shares.</p>
     <small>Beta rules: whole shares only, 0.5% fee per buy or sell. No real money or prizes. Signed-in wallets sync to your account.</small>
    </div>
