@@ -71,7 +71,7 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
  ];
  const widgets:Record<ColonyWidgetId,ReactNode>={
   shortcuts:<section className={styles.tools} aria-label="Colony tools">
-   <div className={styles.sectionTitle}><div><p>QUICK ACTIONS</p><h2>Colony tools</h2></div></div>
+   <div className={styles.sectionTitle}><div><p>AT A GLANCE</p><h2>Colony shortcuts</h2></div></div>
    <div className={styles.toolGrid}>{tiles.filter(tile=>!colony.archived||!tile.requiresActive).map(tile=><Link key={tile.title} className={tile.featured?styles.featuredTool:undefined} href={tile.href}>
      <PodscapeLineIcon name={tile.icon}/><strong>{tile.title}</strong><small>{tile.detail}</small><span className={styles.toolArrow} aria-hidden="true">↗</span>
     </Link>)}</div>
@@ -125,19 +125,24 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
   <header className={styles.hero}>
    <div className={styles.heroImage}>{colony.image?<Image src={colony.image} alt="" fill sizes="(max-width:720px) 70px,96px" style={{objectFit:"cover"}}/>:<PodscapeLineIcon name="jar"/>}</div>
    <div className={styles.heroText}>
-    <p>MANAGER / COLONY</p><h1>{colony.species}</h1><strong>{binDisplayName({id:colony.id,name:colony.name})}</strong>
-    <span>{colony.label||"No location assigned"} · {colony.status.replaceAll("-"," ")}{colony.archived?" · Archived":""}</span>
+    <p>MANAGER / YOUR COLONY</p><h1>{colony.species}</h1><strong>{binDisplayName({id:colony.id,name:colony.name})}</strong>
+    <span>{colony.label||"Location not set"} · {colony.status.replaceAll("-"," ")}{colony.archived?" · Archived":""}</span>
    </div>
+   <div className={styles.heroMetrics} aria-label="Colony overview"><span><b>{colony.quantity.toLocaleString()}</b> Population</span><span><b>{colony.breeding.replaceAll("-"," ")}</b> Breeding</span></div>
   </header>
   {created?<p className={styles.notice} role="status">Bin created. You’re ready to record care.</p>:null}
   <div className={styles.binToolbar}>
-   <nav aria-label="Bin actions">
-    {!colony.archived?<Link href={careUrl}>Quick Care</Link>:null}
-    <Link href={"/keeper/"+id+"/details"}>Settings</Link>
-    <Link href={"/keeper/"+id+"/history"}>History</Link>
-    {referenceUrl?<Link href={referenceUrl}>Species reference</Link>:null}
+   <nav aria-label="Colony shortcuts">
+    {!colony.archived?<Link className={styles.quickCarePrimary} href={careUrl}><PodscapeLineIcon name="droplet"/> Quick Care</Link>:null}
+    <Link href={"/keeper/"+id+"/details"}><PodscapeLineIcon name="edit"/> Edit details</Link>
+    <Link href={"/keeper/"+id+"/history"}><PodscapeLineIcon name="calendar"/> History</Link>
+    {referenceUrl?<Link className={styles.referenceShortcut} href={referenceUrl}><PodscapeLineIcon name="leaf"/> Species guide</Link>:null}
    </nav>
-   <BinLifecycleControls id={colony.id} name={colony.name} speciesId={colony.speciesId} archived={colony.archived} compact/>
+   <details className={styles.manageMenu}><summary><PodscapeLineIcon name="menu"/> Manage bin</summary>
+    <div className={styles.managePanel}><p>Archiving keeps your records. Deleting permanently removes this bin and its care history.</p>
+     <BinLifecycleControls id={colony.id} name={colony.name} speciesId={colony.speciesId} archived={colony.archived} compact/>
+    </div>
+   </details>
   </div>
   <BinSwitcher bins={navigationBins} currentId={colony.id} disabled={pending||undoing} onSelect={nextId=>{
    if(observation.trim()&&!window.confirm("Leave this bin without saving your observation?"))return;
