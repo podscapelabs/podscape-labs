@@ -2,9 +2,9 @@ import "server-only";
 import {getSupabaseAdmin} from "@/lib/supabase-admin";
 import {DIFFICULTIES,LEVEL_NAMES,PUZZLE_TYPES,levelLabel,gridDescription,type PuzzleType,type Difficulty} from "./picture-puzzles-client";
 export {DIFFICULTIES,LEVEL_NAMES,PUZZLE_TYPES,levelLabel,gridDescription};
-export type PicturePuzzle={id:string;title:string;description:string;image_path:string;image_alt:string;learning_note:string;puzzle_type:PuzzleType;difficulty:Difficulty;level:number;status:"draft"|"published";created_at:string;};
+export type PicturePuzzle={id:string;title:string;description:string;image_path:string;image_alt:string;learning_note:string;artist_credit:string;puzzle_type:PuzzleType;difficulty:Difficulty;level:number;status:"draft"|"published";created_at:string;};
 export const PUZZLE_BUCKET="picture-puzzles";
-const FIELDS="id,title,description,image_path,image_alt,learning_note,puzzle_type,difficulty,level,status,created_at";
+const FIELDS="id,title,description,image_path,image_alt,learning_note,artist_credit,puzzle_type,difficulty,level,status,created_at";
 export async function listPicturePuzzles(includeDrafts=false):Promise<PicturePuzzle[]|null>{
  const db=getSupabaseAdmin();if(!db)return null;
  const query=db.from("picture_puzzles").select(FIELDS).order("level",{ascending:true}).order("created_at",{ascending:true});
