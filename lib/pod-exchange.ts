@@ -21,11 +21,11 @@ export type Portfolio={cash:number;holdings:Record<string,number>;trades:Trade[]
 export type MarketNews={headline:string;detail:string;symbol:string;effect:number};
 export const STOCKS:Stock[]=[
  {symbol:"DUCK",name:"Rubber Ducky Inc.",sector:"Luxury Moss",summary:"Premium moss penthouses and high-end hides.",base:148.20,volatility:1.3,icon:"🦆"},
- {symbol:"MOO",name:"Dairy Cow Dairy",sector:"Colony Foods",summary:"Rapid expansion. Very questionable dairy.",base:42.50,volatility:.7,icon:"🐄"},
- {symbol:"PANDA",name:"Panda King Holdings",sector:"Leaf Estates",summary:"A thriving empire in miniature real estate.",base:87.30,volatility:1,icon:"🐼"},
- {symbol:"BLUE",name:"Powder Blue Express",sector:"Leaf Delivery",summary:"Same-minute transport for tiny parcels.",base:21.60,volatility:1.2,icon:"💨"},
+ {symbol:"MOO",name:"Dairy Cow Industries",sector:"Colony Foods",summary:"A sprawling colony-food empire. Questionable expansion decisions.",base:42.50,volatility:.7,icon:"🐄"},
+ {symbol:"PANDA",name:"Panda King Holdings",sector:"Leaf Estates",summary:"A tiny property dynasty and extremely speculative miniature real estate.",base:87.30,volatility:1,icon:"🐼"},
+ {symbol:"BLUE",name:"Powder Blue Logistics",sector:"Leaf Distribution",summary:"Ridiculously fast distribution with a history of delivery disasters.",base:21.60,volatility:1.2,icon:"💨"},
  {symbol:"TITAN",name:"Titan Heavy Industries",sector:"Cork Mining",summary:"Moving enormous pieces of very small cork.",base:112.40,volatility:.85,icon:"🪵"},
- {symbol:"CLOWN",name:"Clown Entertainment",sector:"Burrow Media",summary:"Strictly professional, very unserious.",base:36.80,volatility:1.5,icon:"🎪"}
+ {symbol:"CLOWN",name:"Clown Capital",sector:"Publicity & Hype",summary:"Marketing hype, corporate confetti, and questionable investments.",base:36.80,volatility:1.5,icon:"🎪"}
 ];
 export const NEWS:MarketNews[]=[
  {symbol:"DUCK",effect:.075,headline:"DUCK unveils luxury moss penthouses",detail:"Industry analysts call the development aggressively cozy."},
@@ -238,14 +238,22 @@ export function sanitizePortfolio(value:unknown):Portfolio{
    Number.isSafeInteger(t.cycle))).slice(0,50):[];
  return {cash:money(x.cash),holdings,trades};
 }
-export function totalValue(portfolio:Portfolio,cycle:number):number{
- return (Math.round(portfolio.cash*100)+STOCKS.reduce((sum,stock)=>sum+Math.round(priceAt(stock.symbol,cycle)*100)*(portfolio.holdings[stock.symbol]||0),0))/100;
+export function totalValue(portfolio:Portfolio,cycle:number,quotes?:Record<string,number>):number{
+ // The historical formula is untouched. Current V3 valuation optionally uses
+ // server-authenticated published quotes, never speculative client prices.
+ return (Math.round(portfolio.cash*100)+STOCKS.reduce((sum,stock)=>{
+  const quote=quotes?.[stock.symbol]??priceAt(stock.symbol,cycle);
+  return sum+Math.round(quote*100)*(portfolio.holdings[stock.symbol]||0);
+ },0))/100;
 }
 export type OrderResult={ok:true;portfolio:Portfolio}|{ok:false;error:string};
-export function executeOrder(portfolio:Portfolio,symbol:string,side:"buy"|"sell",shares:number,cycle:number):OrderResult{
+export function executeOrder(portfolio:Portfolio,symbol:string,side:"buy"|"sell",shares:number,cycle:number,serverQuote?:number):OrderResult{
  if(!STOCKS.some(s=>s.symbol===symbol))return {ok:false,error:"Unknown company."};
  if(!Number.isSafeInteger(shares)||shares<1||shares>1_000_000)return {ok:false,error:"Choose a valid number of whole shares."};
- const price=priceAt(symbol,cycle),subtotal=tradeSubtotal(price,shares),charge=tradeTotal(price,shares,side);
+ const price=serverQuote??priceAt(symbol,cycle);
+ if(!Number.isFinite(price)||price<=0||Math.round(price*100)/100!==price)
+  return {ok:false,error:"Market quote is unavailable."};
+ const subtotal=tradeSubtotal(price,shares),charge=tradeTotal(price,shares,side);
  if(!Number.isFinite(charge)||charge<=0||!Number.isFinite(subtotal)||subtotal<=0)return {ok:false,error:"Unable to price this trade."};
  const owned=portfolio.holdings[symbol]||0;
  if(side==="buy"&&charge>portfolio.cash)return {ok:false,error:"Not enough Duck Bucks for this trade."};

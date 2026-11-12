@@ -2,6 +2,7 @@ import {NextResponse} from "next/server";
 import {customerSupabase} from "@/lib/customer-auth/server";
 import {getSupabaseAdmin} from "@/lib/supabase-admin";
 import {STARTING_BUCKS,arcadeCycleAt,totalValue,isValidPortfolioSnapshot,type Portfolio} from "@/lib/pod-exchange";
+import {getActivePsxV3,quotesForCycle} from "@/lib/psx-v3-market-server";
 import {auditStoredExchangeWallet} from "@/lib/exchange-ranking-audit";
 
 export const dynamic="force-dynamic";
@@ -69,6 +70,8 @@ export async function GET(){
   );
   const participants:Participant[]=[];
   const cycle=arcadeCycleAt(Date.now()),weekStart=monday(new Date());
+  const engine=await getActivePsxV3();
+  const quotes=quotesForCycle(engine,cycle);
   for(let from=0;from<preferences.length;from+=batchSize){
    const preferenceBatch=preferences.slice(from,from+batchSize);
    const hiddenIds=new Set(preferenceBatch.filter(x=>x.hide_username).map(x=>x.user_id));
@@ -85,7 +88,7 @@ export async function GET(){
    for(const wallet of wallets.data||[]){
     const portfolio:Portfolio={cash:Number(wallet.cash),holdings:wallet.holdings as Record<string,number>,trades:[]};
     if(!isValidPortfolioSnapshot(portfolio))continue;
-    const value=totalValue(portfolio,cycle);
+    const value=totalValue(portfolio,cycle,quotes);
     if(!Number.isFinite(value)||value<0)continue;
     const baseline=baselines.get(wallet.user_id);
     const profit=Math.round((value-STARTING_BUCKS)*100)/100;

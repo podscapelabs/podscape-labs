@@ -338,3 +338,14 @@
 .agendaFoot>span{color:var(--text-secondary);font-size:10px;line-height:1.45}
 .agendaFoot>span:first-child{color:var(--accent);font-weight:800}
 @media(max-width:720px){.marketAgenda{grid-template-columns:minmax(0,1fr)}.agendaNow{padding:12px 13px;gap:5px}.agendaFoot{gap:5px 12px}.agendaNow>strong{font-size:20px}}
+
+/* PSX 2.0 · A quiet, at-a-glance full-ledger performance widget. */
+.performance{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:13px 0;padding:12px;border:1px solid var(--border);border-radius:14px;background:var(--surface-secondary)}
+.performance>div{display:grid;align-content:center;gap:6px;min-width:0;padding:10px;border-radius:10px;background:var(--surface)}
+.performance small{color:var(--text-secondary);font-size:10px;line-height:1.4}
+.performance strong{color:var(--text-primary);font-size:clamp(13px,1.8vw,17px);font-weight:850;overflow-wrap:anywhere}
+.performance strong.up{color:var(--game-correct)}
+.performance strong.down{color:var(--game-incorrect)}
+.performance>p{grid-column:1/-1;margin:1px 0 0;font-size:10px;line-height:1.5;color:var(--text-secondary)}
+.performanceUnavailable{margin:12px 0;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--surface-secondary);color:var(--text-secondary);font-size:11px}
+@media(max-width:650px){.performance{grid-template-columns:repeat(2,minmax(0,1fr));padding:9px;gap:6px}.performance>div:last-of-type{grid-column:1/-1}.performance>div{padding:9px}.performance strong{font-size:15px}}

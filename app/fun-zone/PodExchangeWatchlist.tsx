@@ -9,11 +9,18 @@ export function PodExchangeWatchlist(){
  const [time,setTime]=useState<number|null>(null);
  const [portfolio,setPortfolio]=useState<Portfolio>(defaultPortfolio);
  const [portfolioAvailable,setPortfolioAvailable]=useState(false);
+ const [market,setMarket]=useState<{mode:"legacy";cycle:number}|{mode:"v3";cycle:number;quotes:Record<string,number>;previous:Record<string,number>}|null>(null);
  useEffect(()=>{
   let mounted=true;
   const read=async()=>{
    try{
-    const response=await fetch("/api/fun-zone/pod-exchange",{cache:"no-store"});
+    const [response,quoteResponse]=await Promise.all([
+     fetch("/api/fun-zone/pod-exchange",{cache:"no-store"}),
+     fetch("/api/fun-zone/pod-exchange/market?range=10m",{cache:"no-store"})
+    ]);
+    if(!quoteResponse.ok){if(mounted)setMarket(null);}
+    else{const shared=await quoteResponse.json();if(mounted)setMarket(shared);}
+
     if(response.ok){
      const data=await response.json() as {exists:boolean;portfolio:Portfolio|null;userId?:string};
      if(!mounted)return;
@@ -41,14 +48,17 @@ export function PodExchangeWatchlist(){
   return()=>{mounted=false;window.clearInterval(timer);window.removeEventListener("storage",update);window.removeEventListener("podscape-exchange-wallet-updated",update)}
  },[]);
  const cycle=arcadeCycleAt(time??0);
- const price=priceAt("DUCK",cycle);
- const gain=(price/priceAt("DUCK",cycle-1)-1)*100;
+ const currentMarket=market?.cycle===cycle?market:null;
+ const quote=currentMarket?.mode==="v3"?currentMarket.quotes:null;
+ const price=currentMarket?.mode==="v3"?currentMarket.quotes.DUCK:priceAt("DUCK",cycle);
+ const previous=currentMarket?.mode==="v3"?currentMarket.previous.DUCK:priceAt("DUCK",cycle-1);
+ const gain=(price/previous-1)*100;
  return <section className={styles.exchangeWidget} aria-label="Duck Bucks watchlist">
   <span className={styles.eyebrow}>POD EXCHANGE</span><h2><DuckBuckIcon size={23}/> Market Watch</h2>
   <div className={styles.watchlistStats}>
-   <span><small>Portfolio value</small><strong>{time===null||!portfolioAvailable?"Syncing…":<DuckBucks amount={totalValue(portfolio,cycle)}/>}</strong></span>
-   <span><small style={{display:"flex",alignItems:"center",gap:6}}><ExchangeCompanyIcon symbol="DUCK" size={17}/> DUCK · Rubber Ducky Inc.</small><strong>{time===null?"Loading…":<DuckBucks amount={price}/>}</strong><small>{time===null?"5-minute market":(gain>=0?"+":"")+gain.toFixed(2)+"% this tick"}</small></span>
+   <span><small>Portfolio value</small><strong>{time===null||!portfolioAvailable||!currentMarket?"Syncing…":<DuckBucks amount={totalValue(portfolio,cycle,quote||undefined)}/>}</strong></span>
+   <span><small style={{display:"flex",alignItems:"center",gap:6}}><ExchangeCompanyIcon symbol="DUCK" size={17}/> DUCK · Rubber Ducky Inc.</small><strong>{time===null||!currentMarket?"Loading…":<DuckBucks amount={price}/>}</strong><small>{time===null||!currentMarket?"Syncing quotes":(gain>=0?"+":"")+gain.toFixed(2)+"% this tick"}</small></span>
   </div>
-  <div className={styles.watchlistFoot}><span>{STOCKS.length} companies · 5-minute prices</span><Link href="/fun-zone/pod-exchange">Trade now →</Link></div>
+  <div className={styles.watchlistFoot}><span>{STOCKS.length} companies · 1-minute prices</span><Link href="/fun-zone/pod-exchange">Trade now →</Link></div>
  </section>;
 }

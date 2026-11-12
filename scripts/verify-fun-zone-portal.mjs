@@ -47,7 +47,7 @@ assert.match(styles,/var\(--surface\)/,"Use semantic surfaces");
 assert.match(game,/PodExchange/,"Exchange route must remain available");
 assert.match(gameUi,/Duck Bucks/,"Exchange must use Duck Bucks");
 assert.match(portal,/PodExchangeWatchlist/,"Portal must render the actual watchlist widget");
-assert.ok(watchlist.includes("totalValue(portfolio,cycle)"),"Watchlist must show saved portfolio value");
+assert.ok(watchlist.includes("totalValue(portfolio,cycle,quote||undefined)"),"Watchlist must show saved portfolio value using the shared market quote");
 assert.ok(watchlist.includes('priceAt("DUCK",cycle)'),"Watchlist must show DUCK ticker");
 assert.match(watchlist,/STORAGE_KEY/,"Watchlist must share exchange wallet storage");
 // Keep the default dashboard inviting, with deeper tools accessible by customization.

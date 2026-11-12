@@ -76,7 +76,7 @@ export default function MarketRankings(){
   </section>
   <div className={styles.helpAction}><RankingModal trigger="How rankings work" title="Market rankings explained">
   <section className={styles.rules}><div className={styles.rulesTitle}><span><PodscapeLineIcon name="book"/> How market rankings work</span></div>
-   <div><p><strong>The Rich List:</strong> Duck Bucks cash plus all share holdings, repriced at the current shared five-minute market tick.</p>
+   <div><p><strong>The Rich List:</strong> Duck Bucks cash plus all share holdings, repriced at the current shared one-minute market tick.</p>
     <p><strong>Top Investors:</strong> (Current portfolio value − 10,000) ÷ 10,000, expressed as a percentage. A fair starting balance matters.</p>
     <p><strong>Market Movers:</strong> Change from an immutable server-recorded Monday UTC portfolio snapshot. Snapshots are not backdated; late entrants wait for the next period.</p>
     <p>Verified cloud wallets enter automatically. Historical beta wallets are audited against server trade records without owner approval. No portfolio resets, no purchased currency, and no real-world rewards. Percentages may be negative.</p>

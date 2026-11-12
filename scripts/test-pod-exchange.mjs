@@ -174,7 +174,7 @@ assert.ok(ui.includes('<DuckBucks amount=')&&watchlist.includes('<DuckBucks amou
 assert.ok(!ui.includes("🦆")&&!watchlist.includes("🦆"),"no emoji currency in Exchange or watchlist");
 assert.ok(ui.includes("Duck Bucks"),"all cash is Duck Bucks");
 assert.ok(ui.includes("marketSessionAt(cycle)")&&ui.includes("sessionImpactAt("),"Six-hour market agenda uses deterministic prices");
-assert.ok(ui.includes("chartHours")&&ui.includes("24h"),"Charts support a full-day view");
+assert.ok(ui.includes("chartRange")&&ui.includes('["10m","30m","1h","24h"]'),"Charts support useful 10m/30m/1h/24h arcade views");
 assert.ok(ui.includes("maxAffordableShares(price,portfolio.cash)"),"Quick-fill respects fees");
 assert.ok(ui.indexOf('className={styles.marketLeadersLink}')>ui.indexOf('className={styles.columns}'),"Trading appears before secondary ranking navigation");
 assert.ok(ui.includes("headlineAt(cycle).story"),"Exchange always displays current story");
