@@ -1,0 +1,38 @@
+.page{width:min(1020px,calc(100% - 28px));margin:0 auto;padding:18px 0 120px;display:grid;gap:13px;color:var(--text-primary)}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary)}
+.breadcrumb a{color:var(--accent);text-decoration:none;font-weight:800}
+.hero{display:flex;align-items:start;justify-content:space-between;flex-wrap:wrap;gap:16px;padding:23px;border-radius:20px;border:1px solid var(--border);background:linear-gradient(120deg,var(--portal-hero-start),var(--portal-hero-end));color:var(--portal-hero-text)}
+.hero small{color:var(--portal-hero-soft);font-size:10px;font-weight:900;letter-spacing:.15em}
+.hero h1{font:500 clamp(30px,5vw,47px)/1.08 var(--display);margin:8px 0 7px}
+.hero p{font-size:12px;color:var(--portal-hero-muted);max-width:500px;margin:0}
+.previewTag{display:inline-flex;padding:8px 11px;border:1px solid color-mix(in srgb,var(--portal-hero-text) 35%,transparent);border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.07em}
+.notice{display:grid;gap:4px;padding:12px 15px;border:1px solid var(--border);border-radius:13px;background:var(--surface-secondary)}
+.notice strong{font-size:12px}.notice span{font-size:11px;line-height:1.5;color:var(--text-secondary)}
+.error,.loading{padding:20px;border:1px solid var(--border);border-radius:13px;background:var(--surface);font-size:13px}
+.sectionHeader{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-bottom:11px}
+.sectionHeader small{font-size:10px;letter-spacing:.11em;color:var(--accent);font-weight:900}
+.sectionHeader h2{font:500 clamp(21px,3.2vw,28px)/1.14 var(--display);margin:4px 0 0}
+.sectionHeader>span{color:var(--text-secondary);font-size:11px;text-align:right}
+.sectionHeader>strong{font-size:17px}
+.market,.detail,.stories{padding:15px;border:1px solid var(--border);border-radius:17px;background:var(--surface)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.stock{padding:13px;border:1px solid var(--border);border-radius:13px;background:var(--surface-secondary);color:var(--text-primary);text-align:left;font:inherit;cursor:pointer;display:grid;gap:12px;min-width:0}
+.stock[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.stockTop{display:flex;gap:9px;align-items:center}.stockTop svg{flex:none;color:var(--accent)}
+.stockTop>div{display:grid;gap:3px;min-width:0}.stockTop strong{font-size:12px;line-height:1.2}
+.stockTop small{font-size:10px;color:var(--text-secondary)}
+.quote{display:grid;gap:5px;font-size:18px;font-weight:800}.quote>span:last-child{font-size:11px;font-weight:800}
+.up{color:var(--game-correct,#468e62)}.down{color:var(--game-incorrect,#c66a61)}
+.chartControls{display:flex;gap:5px;justify-content:flex-end;margin:0 0 8px}
+.chartControls button{border:1px solid var(--border);border-radius:9px;background:var(--surface-secondary);color:var(--text-secondary);padding:8px 12px;font:inherit;font-size:11px;font-weight:800;cursor:pointer}
+.chartControls button[aria-pressed=true]{background:var(--theme-accent,var(--accent));color:var(--theme-accent-contrast,#fff);border-color:transparent}
+.chart{display:block;width:100%;height:160px;background:var(--surface-secondary);border-radius:11px;padding:10px;box-sizing:border-box}
+.chartCaption,.footnote{font-size:11px;color:var(--text-secondary);line-height:1.5;margin:8px 0 0}
+.stories{display:grid;gap:10px}.stories .sectionHeader{margin-bottom:2px}
+.stories article{padding:13px;border:1px solid var(--border);border-radius:12px;background:var(--surface-secondary)}
+.stories article small{color:var(--accent);letter-spacing:.09em;font-size:10px;font-weight:900}
+.stories article h3{font:500 20px/1.2 var(--display);margin:7px 0}
+.stories article p{font-size:12px;color:var(--text-secondary);line-height:1.5;margin:0}
+.page :is(button,a):focus-visible{outline:2px solid var(--theme-focus,var(--accent));outline-offset:3px}
+@media(max-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{padding:18px}}
+@media(max-width:420px){.page{width:calc(100% - 22px);gap:10px;padding-top:10px}.grid{gap:6px}.market,.detail,.stories{padding:11px}.stock{padding:10px;gap:9px}.stockTop{gap:6px}.stockTop strong{font-size:11px}.stockTop small{font-size:9px}.quote{font-size:15px}.previewTag{font-size:9px}.chart{height:125px}}
