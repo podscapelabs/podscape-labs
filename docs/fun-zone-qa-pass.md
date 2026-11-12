@@ -6,7 +6,7 @@ Branch: `codex/ledger-navigation-optimization`
 - Eight games, four curated puzzles per game (original + three new), 32 total.
 - Each game has an independent progression path: only the first puzzle is open initially, subsequent puzzles unlock one at a time after recorded completion.
 - Game library and Fun Zone portal show saved completion counts; My Progress includes total puzzles completed.
-- Replays do not grant EXP again. Pod Coins are never awarded for puzzle activity.
+- Replays do not grant EXP again. Milestone rewards remain one-time.
 - Five milestone achievements: first puzzle (10 EXP), five (30), sixteen (80), one in each of eight games (125), and all 32 (200).
 - Achievement notifications appear only after successful server-side award response.
 - An owner-only notification test button in Owner Tools emits a simulated banner without storing an achievement or granting EXP.
