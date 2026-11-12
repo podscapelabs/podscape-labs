@@ -36,7 +36,7 @@ assert.match(sql,/v_lifetime_exp>=240100/,"Level 50 must use the existing 100*(l
 assert.match(sql,/pg_trigger_depth\(\)>1/,"Progress trigger must avoid recursive payouts");
 assert.match(sql,/on conflict do nothing/,"Achievement awards must be idempotent");
 assert.match(sql,/member_progress_events/,"Every new EXP payout must be backed by an event");
-assert.match(sql,/coin_delta\)\s+values\([^\n]+,0\)/,"New achievements must not mint Pod Coins");
+assert.match(sql,/coin_delta\)\s+values\([^\n]+,0\)/,"Historical payout ledger must remain neutral for existing achievements");
 assert.match(sql,/revoke all on function public.reconcile_member_extended_achievements/,"Reconciliation RPC must not be callable by ordinary users");
 assert.match(progress,/reconcile_member_extended_achievements/,"Progress page must backfill existing milestones");
 assert.match(dashboard,/Keeper Progression/,"Level milestones should have their own browsing category");
