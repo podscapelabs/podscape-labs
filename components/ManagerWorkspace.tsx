@@ -22,8 +22,8 @@ import {managerStorageKey} from "@/lib/ui-preferences";
 
 type Section="hero"|"stats"|"care"|"tools"|"activity"|"enclosures"|"insights";
 type Tool={id:string;label:string;href:string;icon:PodscapeIconName};
-const defaults:Section[]=["hero","tools","enclosures","care","activity","stats","insights"];
-const required:Section[]=["hero","tools"];
+const defaults:Section[]=["hero","enclosures","care","stats","activity","tools","insights"];
+const required:Section[]=["hero"];
 const labels:Record<Section,string>=managerWidgetNames;
 const library:Tool[]=[
  {id:"scan",label:"Scan bin",href:"/keeper/scan",icon:"scan"},
@@ -38,19 +38,25 @@ const library:Tool[]=[
  {id:"activity",label:"Recent activity",href:"/keeper/activity",icon:"note"}
 ];
 type Layout={order:Section[];visible:Section[];tools:string[]};
-const initial:Layout={order:defaults,visible:["hero","tools","enclosures","care"],tools:["scan","care","colonies","add","schedule","qr"]};
+const initial:Layout={order:defaults,visible:["hero","enclosures","care","stats"],tools:["scan","care","colonies","add","schedule","qr"]};
 const detailed:Layout={order:defaults,visible:[...defaults],tools:[...initial.tools]};
 function normalize(value:unknown):Layout{
  if(!value||typeof value!=="object")return initial;
  const raw=value as Partial<Layout>;
  const previousDefault=["stats","care","tools","activity","enclosures","insights"];
+ // Upgrade only untouched pre-redesign Manager layouts. Never overwrite intentional widget choices.
+ const oldFullOrder=["hero","tools","enclosures","care","activity","stats","insights"];
+ const oldFullVisible=["hero","tools","enclosures","care"];
+ if(Array.isArray(raw.order)&&Array.isArray(raw.visible)&&Array.isArray(raw.tools)&&
+   raw.order.join("|")===oldFullOrder.join("|")&&raw.visible.join("|")===oldFullVisible.join("|")&&
+   raw.tools.join("|")==="scan|care|colonies|add|schedule|qr")return initial;
  const oldUntouched=Array.isArray(raw.order)&&raw.order.join("|")===previousDefault.join("|");
  const previousLaunchVisible=["stats","care","tools","activity","enclosures"];
  const previousCompactVisible=["tools","enclosures","care","activity","stats"];
  const untouchedVisibility=Array.isArray(raw.visible)&&[previousLaunchVisible,previousCompactVisible].some(items=>items.length===raw.visible!.length&&items.every(item=>raw.visible!.includes(item as Section)));
  const untouchedTools=Array.isArray(raw.tools)&&raw.tools.join("|")==="scan|qr|add|care|schedule|notes";
  const savedOrder=oldUntouched?[...defaults]:[...uniqueAllowed(Array.isArray(raw.order)?raw.order:[],defaults),...defaults].filter((v,i,a)=>a.indexOf(v)===i);
- const order:Section[]=["hero","tools",...savedOrder.filter(v=>!required.includes(v))];
+ const order:Section[]=["hero",...savedOrder.filter(v=>v!=="hero")];
  // Existing layouts keep their custom selections, but gain the new care/activity widgets on upgrade.
  const legacy=Array.isArray(raw.order)&&!raw.order.some(v=>v==="care"||v==="activity"||v==="insights");
  const visible=Array.isArray(raw.visible)?(oldUntouched&&untouchedVisibility?initial.visible:defaults.filter(v=>required.includes(v)||raw.visible!.includes(v)||(legacy&&(v==="care"||v==="activity")))):initial.visible;
@@ -182,8 +188,8 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
   {editing?<div className={homeStyles.homeEditorOverlay} onPointerDown={e=>{if(e.target===e.currentTarget){setEditing(false);setSlot(null)}}}>
    <div className={`${homeStyles.widgetEditor} ${homeStyles.widgetLibrary}`} ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="manager-widget-title">
     <div className={homeStyles.homeEditorHead}><div><small>YOUR WORKSPACE, YOUR WAY</small><h2 id="manager-widget-title">Widget Library</h2></div><button type="button" onClick={()=>{setEditing(false);setSlot(null)}}>Done</button></div>
-    <p>Keep the dashboard simple or bring your entire collection overview onto one screen. Every keeper tool remains available either way.</p>
-    <div className={styles.managerPresets} role="group" aria-label="Dashboard starting layouts"><button type="button" onClick={()=>applyPreset("compact")}>Compact dashboard <small>Shortcuts, colonies and care</small></button><button type="button" onClick={()=>applyPreset("detailed")}>Detailed dashboard <small>All collection widgets</small></button></div>
+    <p>Keep your bins and care upfront. Tools are optional widgets and remain available in the Manager tool directory.</p>
+    <div className={styles.managerPresets} role="group" aria-label="Dashboard starting layouts"><button type="button" onClick={()=>applyPreset("compact")}>Everyday Manager <small>Your bins and care first, without extra shortcut rows</small></button><button type="button" onClick={()=>applyPreset("detailed")}>Detailed dashboard <small>All collection widgets</small></button></div>
     <div className={homeStyles.widgetLibraryActions}><span>{layout.visible.length} of {defaults.length} sections shown</span><button type="button" onClick={()=>{setEditing(false);setSlot(null);setCanvasEditing(true)}}>Arrange Manager</button></div>
     <WidgetLibraryFilter view={libraryView} onChange={setLibraryView} added={defaults.filter(id=>layout.visible.includes(id)).length} total={defaults.length}/>
     {slot!==null?<div className={styles.managerEditor}><div className={styles.managerPickerTitle}><h3>Replace Quick Tool {slot+1}</h3><button type="button" onClick={()=>setSlot(null)} aria-label="Close tool picker">×</button></div><div className={styles.managerToolLibrary}>{library.filter(tool=>tool.id!=="activity"||layout.tools.includes("activity")).map(tool=><button type="button" key={tool.id} onClick={()=>swap(tool.id)}><PodscapeLineIcon name={tool.icon}/><span>{tool.label}</span>{layout.tools[slot]===tool.id?" ✓":""}</button>)}</div></div>:<>
