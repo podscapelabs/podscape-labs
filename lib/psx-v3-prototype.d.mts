@@ -1,0 +1,20 @@
+export const ENGINE_VERSION:string;
+export const TICK_MS:number;
+export const MAJOR_MINUTES:number;
+export const MINOR_MINUTES:number;
+export type PsxSymbol="MOO"|"PANDA"|"BLUE"|"TITAN"|"CLOWN"|"DUCK";
+export type PsxEvent={id:string;symbol:PsxSymbol;headline:string;detail:string;startMinute:number};
+export type PsxRumour={id:string;symbol:PsxSymbol;fromMinute:number;expiresMinute:number;headline:string;status:"UNVERIFIED";detail:string};
+export const SYMBOLS:readonly PsxSymbol[];
+export const COMPANY_PROFILES:Readonly<Record<PsxSymbol,{name:string;sector:string;ceo:string;volatility:number;trendMinutes:number;range:number;recovery:number}>>;
+export function quoteAt(input:{secret:string;symbol:PsxSymbol;minute:number;openingPrice:number}):number;
+export function majorEventAt(secret:string,sessionIndex:number):PsxEvent & {endMinute:number;direction:1|-1;strength:number};
+export function minorNewsAt(secret:string,bulletinIndex:number):PsxEvent & {direction:1|-1;strength:number};
+export function rumourAt(secret:string,minute:number):PsxRumour|null;
+export function resolveRumour(secret:string,sessionIndex:number,asOfMinute:number):{rumourId:string;majorEventId:string;resolution:"accurate"|"partial"|"false";confirmedSymbol:PsxSymbol;publishedHeadline:string}|null;
+export function publicMarketFrame(input:{secret:string;minute:number;openingPrices:Record<PsxSymbol,number>}):{
+ version:string;minute:number;prices:Record<PsxSymbol,number>;
+ major:{id:string;symbol:PsxSymbol;headline:string;detail:string;publishedMinute:number};
+ bulletin:{id:string;symbol:PsxSymbol;headline:string;detail:string;publishedMinute:number};
+ rumour:PsxRumour|null;
+};
