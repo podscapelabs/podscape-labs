@@ -41,7 +41,7 @@ assert.doesNotMatch(portal,/className=\{styles\.editButton\}/,"Avoid redundant C
 
 assert.match(page,/FunZonePortal/,"Fun Zone landing must render portal");
 assert.match(page,/member_puzzle_completions/,"Existing completion data must be preserved");
-assert.match(page,/member_progress/,"Existing EXP and coins must remain available");
+assert.match(page,/member_progress/,"Existing EXP progress must remain available");
 assert.match(styles,/var\(--portal-hero-start\)/,"Use theme environment hero tokens");
 assert.match(styles,/var\(--surface\)/,"Use semantic surfaces");
 assert.match(game,/PodExchange/,"Exchange route must remain available");
