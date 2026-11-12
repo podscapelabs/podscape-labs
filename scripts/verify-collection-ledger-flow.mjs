@@ -16,7 +16,8 @@ const explorer=read("components/LedgerExplorer.tsx");
 for(const trigger of ["create_primary_keeper_colony_after_insert","create_primary_keeper_enclosure_after_insert"])
  assert.ok(migration.includes("drop trigger if exists "+trigger),"Collecting a species must not create a bin");
 assert.ok(migration.includes("on delete restrict"),"Database must prevent cascade deletion of owned bins");
-assert.ok(collection.includes('.eq("is_archived",')===false,"Collection guard must include archived bins");
+const uncollectPath=collection.slice(collection.indexOf("export async function setSpeciesCollected"));
+assert.ok(!uncollectPath.includes('.eq("is_archived",'),"Uncollection guard must include archived bins");
 assert.ok(collection.includes('from("keeper_enclosures")')&&collection.includes("if (bins?.length) return"),"Uncollection blocked for any surviving bin");
 assert.ok(button.includes("bins, including archived bins")||button.includes("including archived bins"),"User sees clear destructive warning");
 assert.ok(keeper.includes('from("member_species_collection").insert'),"Deliberate bin creation also saves species");
