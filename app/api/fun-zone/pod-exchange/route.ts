@@ -3,7 +3,7 @@ import {customerSupabase} from "@/lib/customer-auth/server";
 import {testerAccessStatus} from "@/lib/customer-auth/access";
 import {isAdminAuthenticated} from "@/lib/admin-auth";
 import {getSupabaseAdmin} from "@/lib/supabase-admin";
-import {STOCKS,STARTING_BUCKS,cycleAt,priceAt,isValidPortfolioSnapshot,sanitizePortfolio,type Portfolio,type Trade} from "@/lib/pod-exchange";
+import {STOCKS,STARTING_BUCKS,arcadeCycleAt,priceAt,isValidPortfolioSnapshot,sanitizePortfolio,type Portfolio,type Trade} from "@/lib/pod-exchange";
 import {achievementCatalog} from "@/data/achievement-catalog";
 
 async function account(){
@@ -90,7 +90,7 @@ export async function POST(request:Request){
  const segments=trade.id.split(":");
  if(Number(segments[0])!==trade.cycle||segments[1]!==trade.symbol||segments[2]!==trade.side||
    Math.abs(Date.now()-Number(segments[3]))>300000||
-   Math.abs(cycleAt(Date.now())-trade.cycle)>0||
+   Math.abs(arcadeCycleAt(Date.now())-trade.cycle)>0||
    priceAt(trade.symbol,trade.cycle)!==trade.unitPrice)
   return NextResponse.json({error:"Market price moved. Please review the updated quote and try again."},{status:409});
  const {data:result,error}=await admin!.rpc("execute_member_exchange_order",{
