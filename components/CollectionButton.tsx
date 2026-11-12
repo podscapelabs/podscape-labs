@@ -5,6 +5,7 @@ import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { setSpeciesCollected } from "@/app/ledger/collection/actions";
 import styles from "./CollectionControls.module.css";
+import {announceAchievement} from "./AchievementToast";
 
 function OwnershipLeaf({ filled }: { filled: boolean }) {
   return <svg className={styles.ownershipLeaf} viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -51,6 +52,7 @@ export function CollectionButton({ speciesId, speciesName, initialCollected, sig
       try {
         const result = await setSpeciesCollected(speciesId, !collected, collected);
         if (result.success) {
+          for(const badge of result.unlocked||[])announceAchievement(badge);
           if (compact) setAnimation(result.collected ? "sprout" : "wither");
           setCollected(result.collected);
           router.refresh();

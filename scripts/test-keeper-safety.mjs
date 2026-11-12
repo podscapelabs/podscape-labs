@@ -13,7 +13,7 @@ const db={
   for(const method of ["delete","insert","select","eq","limit","maybeSingle"]){
    query[method]=(...args)=>{calls.push({table,method,args});return query;};
   }
-  query.then=(resolve,reject)=>Promise.resolve(table==="keeper_enclosures"&&calls.some(c=>c.table===table&&c.method==="limit")?binResult:result).then(resolve,reject);
+  query.then=(resolve,reject)=>Promise.resolve(table==="member_achievements"?{data:[],error:null}:table==="keeper_enclosures"&&calls.some(c=>c.table===table&&c.method==="limit")?binResult:result).then(resolve,reject);
   return query;
  }
 };
@@ -21,6 +21,7 @@ function load(path){
  const compiled=ts.transpileModule(readFileSync(path,"utf8"),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
  const module={exports:{}};
  vm.runInNewContext(compiled,{exports:module.exports,module,console,require(name){
+  if(name==="@/data/achievement-catalog")return{achievementCatalog:[]};
   if(name==="next/cache")return{revalidatePath(){}};
   if(name==="@/lib/keeper")return{keeperContext:async()=>({db,user})};
   if(name==="@/lib/customer-auth/access")return{requireCustomerPreviewAccess:async()=>{}};

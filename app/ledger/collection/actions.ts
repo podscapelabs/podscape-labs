@@ -6,8 +6,9 @@ import { isSpeciesRecordActive } from "@/data/species";
 import { requireCustomerPreviewAccess } from "@/lib/customer-auth/access";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import { getSpeciesRecords } from "@/lib/species-store";
+import {achievementCatalog} from "@/data/achievement-catalog";
 
-export type CollectionMutationResult = { success: boolean; collected: boolean; error?: string };
+export type CollectionMutationResult = { success: boolean; collected: boolean; error?: string; unlocked?:{id:string;title:string;description:string;exp:number}[] };
 export type CollectionDetailsResult = { success: boolean; error?: string };
 
 export async function updateCollectionDetails(input: {
@@ -209,6 +210,7 @@ export async function setSpeciesCollected(speciesId: string, collected: boolean,
   if (!db) return { success: false, collected: !collected, error: "Member accounts are not configured." };
   const { data: { user }, error: authError } = await db.auth.getUser();
   if (authError || !user) return { success: false, collected: !collected, error: "Sign in to manage My Collection." };
+  const before=collected?await db.from("member_achievements").select("achievement_key").eq("user_id",user.id):null;
 
   if (collected) {
     const eligible = (await getSpeciesRecords()).some(
@@ -238,5 +240,16 @@ export async function setSpeciesCollected(speciesId: string, collected: boolean,
   revalidatePath("/ledger", "layout");
   revalidatePath("/keeper", "layout");
   revalidatePath("/account");
-  return { success: true, collected };
+  let unlocked:NonNullable<CollectionMutationResult["unlocked"]>=[];
+  if(collected&&before&&!before.error){
+    const {data:after,error}=await db.from("member_achievements").select("achievement_key").eq("user_id",user.id);
+    if(!error){
+      const previous=new Set((before.data||[]).map(row=>row.achievement_key));
+      unlocked=(after||[]).filter(row=>row.achievement_key.startsWith("collection_")&&!previous.has(row.achievement_key)).flatMap(row=>{
+        const badge=achievementCatalog.find(entry=>entry.key===row.achievement_key);
+        return badge?[{id:badge.key,title:badge.title,description:badge.description,exp:badge.exp}]:[];
+      });
+    }
+  }
+  return { success: true, collected, unlocked };
 }
