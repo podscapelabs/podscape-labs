@@ -19,8 +19,8 @@ const db={
 };
 function load(path){
  const compiled=ts.transpileModule(readFileSync(path,"utf8"),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
- const module={exports:{}};
- vm.runInNewContext(compiled,{exports:module.exports,module,console,require(name){
+ const loadedModule={exports:{}};
+ vm.runInNewContext(compiled,{exports:loadedModule.exports,module:loadedModule,console,require(name){
   if(name==="@/lib/collection-achievements")return{collectionAchievementCatalog:()=>[]};
   if(name==="next/cache")return{revalidatePath(){}};
   if(name==="@/lib/keeper")return{keeperContext:async()=>({db,user})};
@@ -31,7 +31,7 @@ function load(path){
   if(name==="@/data/collection")return{};
   throw Error(name);
  }});
- return module.exports;
+ return loadedModule.exports;
 }
 const {deleteEnclosure,createEnclosure}=load("app/keeper/actions.ts");
 const {setSpeciesCollected}=load("app/ledger/collection/actions.ts");
