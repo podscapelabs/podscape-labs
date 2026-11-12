@@ -205,3 +205,96 @@
 .presetPicker button:focus-visible{outline:2px solid var(--forest);outline-offset:3px}
 @media(max-width:650px){.presetPicker{grid-template-columns:1fr 1fr}.presetPicker button{min-height:72px}}
 .binToolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.binToolbar nav{display:flex;flex-wrap:wrap;gap:7px}.binToolbar nav a{display:inline-flex;align-items:center;min-height:44px;padding:8px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--accent);font-size:.75rem;font-weight:750;text-decoration:none}.toolGrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.toolGrid a{min-height:76px;padding:11px;gap:6px}.toolGrid small,.toolGrid .toolArrow{display:none}.toolGrid strong{font-size:.75rem}.tools .sectionTitle{margin-bottom:9px}.tools .sectionTitle p{display:none}.tools .sectionTitle h2{font-size:1.1rem}.dashboardHeading{padding:0}.dashboardHeading h2{font-size:1.15rem}.page{padding-bottom:100px}.hero{padding:12px;gap:12px}.heroImage{width:64px;height:64px;flex-basis:64px}.heroText h1{font-size:clamp(1.5rem,4vw,2rem)}@media(max-width:650px){.binToolbar{gap:7px}.binToolbar nav{gap:6px}.binToolbar nav a{padding:8px 10px;font-size:.72rem}.toolGrid{grid-template-columns:repeat(3,minmax(0,1fr))}.toolGrid a{min-height:72px;padding:10px}.toolGrid strong{font-size:.71rem}.dashboardHeading h2{font-size:1.13rem}}
+
+
+/* PodScape colony portal: one unified hero, compact actions, content-first widgets. */
+.page{padding:12px 0 calc(122px + env(safe-area-inset-bottom,0px))}
+.root{width:min(980px,calc(100% - 28px));gap:12px}
+.breadcrumb{gap:7px;flex-wrap:wrap;min-height:30px;font-size:11px}
+.breadcrumb span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:42vw}
+.hero{
+ display:grid;grid-template-columns:74px minmax(0,1fr) auto;align-items:center;gap:16px;
+ padding:clamp(17px,3.2vw,26px);border-radius:20px;
+ border:1px solid var(--border);
+ background:radial-gradient(circle at 90% 0%,var(--portal-hero-glow),transparent 48%),
+ linear-gradient(120deg,var(--portal-hero-start),var(--portal-hero-end));
+ color:var(--portal-hero-text);
+}
+.heroImage{width:74px;height:74px;flex:none;border-radius:17px;border:1px solid color-mix(in srgb,var(--portal-hero-text) 22%,transparent);background:color-mix(in srgb,var(--portal-hero-text) 11%,transparent);color:var(--portal-hero-text)}
+.heroImage svg{width:38px;height:38px}
+.heroText{gap:5px}
+.heroText p{color:var(--portal-hero-soft);letter-spacing:.15em;font-size:10px}
+.heroText h1{color:var(--portal-hero-text);font:500 clamp(27px,4vw,43px)/1.12 var(--display);letter-spacing:-.025em}
+.heroText strong{font-size:13px;color:var(--portal-hero-text)}
+.heroText>span{font-size:11px;color:var(--portal-hero-muted)}
+.heroMetrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-width:205px}
+.heroMetrics span{display:grid;align-content:center;justify-items:start;gap:5px;min-height:60px;padding:10px 12px;border:1px solid color-mix(in srgb,var(--portal-hero-text) 23%,transparent);border-radius:13px;background:color-mix(in srgb,var(--portal-hero-text) 8%,transparent);color:var(--portal-hero-muted);font-size:10px;white-space:nowrap}
+.heroMetrics b{color:var(--portal-hero-text);font-size:17px;font-weight:800;text-transform:capitalize;line-height:1.2}
+.binToolbar{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:9px}
+.binToolbar nav{display:flex;flex:1 1 400px;flex-wrap:wrap;gap:7px}
+.binToolbar nav a{display:inline-flex;align-items:center;gap:7px;min-height:42px;padding:9px 13px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text-primary);font-size:12px;font-weight:750;line-height:1.2;text-decoration:none;white-space:nowrap}
+.binToolbar nav a svg{width:17px;height:17px;color:var(--accent)}
+.binToolbar nav a.quickCarePrimary{background:var(--theme-accent,var(--accent));color:var(--theme-accent-contrast,#fff);border-color:var(--theme-accent,var(--accent))}
+.binToolbar nav a.quickCarePrimary svg{color:inherit}
+.binToolbar nav a:focus-visible,.manageMenu summary:focus-visible{outline:2px solid var(--theme-focus,var(--accent));outline-offset:3px}
+.manageMenu{position:relative;flex:0 0 auto}
+.manageMenu summary{display:inline-flex;align-items:center;gap:7px;min-height:42px;padding:9px 12px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text-secondary);font-size:11px;font-weight:800;cursor:pointer;list-style:none}
+.manageMenu summary::-webkit-details-marker{display:none}
+.manageMenu summary svg{width:17px;height:17px;color:var(--accent)}
+.manageMenu[open] summary{color:var(--accent);border-color:var(--accent)}
+.managePanel{position:absolute;z-index:10;top:calc(100% + 7px);right:0;min-width:min(320px,calc(100vw - 32px));padding:14px;border:1px solid var(--border-strong);border-radius:15px;background:var(--surface-raised);box-shadow:0 13px 34px rgba(0,0,0,.16)}
+.managePanel p{margin:0 0 10px;color:var(--text-secondary);font-size:11px;line-height:1.5}
+.managePanel :global(section){margin:0;padding:0;border:0;background:transparent}
+.managePanel :global(button){min-height:39px}
+.notice{margin:0;padding:11px 13px;border-radius:12px;background:var(--surface-secondary);border:1px solid var(--border);color:var(--text-primary)}
+.dashboardHeading{gap:9px;padding:3px 2px 1px}
+.dashboardHeading p{margin:0 0 4px;color:var(--accent);font-size:10px;font-weight:850;letter-spacing:.13em}
+.dashboardHeading h2{font:500 clamp(22px,3vw,30px)/1.15 var(--display)}
+.dashboardHeading button{border-radius:999px;padding:9px 14px;min-height:40px;background:var(--surface);color:var(--accent)}
+.colonyDashboard{gap:12px}
+.colonyWidgetGrid{gap:11px}
+.widgetPanel,.tools{min-height:0;padding:15px;border-radius:16px;background:var(--surface);border:1px solid var(--border);gap:11px}
+.widgetPanel .sectionTitle h2{font-size:clamp(18px,2.6vw,24px)}
+.widgetPanel .sectionTitle p{font-size:9px}
+.widgetPanel .sectionTitle>a{font-size:11px}
+.miniMetrics{gap:7px}
+.miniMetrics>div{padding:12px;border-radius:12px;min-height:75px;align-content:center}
+.miniMetrics span{font-size:11px}
+.miniMetrics strong{font-size:clamp(17px,2vw,23px)}
+.dataHint{font-size:11px;line-height:1.5}
+.toolGrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.toolGrid a{min-height:89px;border-radius:13px;padding:13px;gap:6px;background:var(--surface-secondary)}
+.toolGrid a svg{width:23px;height:23px}
+.toolGrid strong{font-size:12px}
+.tools .sectionTitle h2{font-size:23px}
+.tools .sectionTitle p{display:block}
+.addWidgetFooter{padding:4px 0}
+.addWidgetFooter button{background:var(--surface);border-color:var(--border);font-size:11px;min-height:40px}
+@media(max-width:650px){
+ .root{width:calc(100% - 24px);gap:10px}
+ .hero{grid-template-columns:54px minmax(0,1fr);gap:10px;padding:15px;border-radius:17px}
+ .heroImage{width:54px;height:54px;border-radius:12px}
+ .heroImage svg{width:29px;height:29px}
+ .heroText h1{font-size:clamp(25px,6.2vw,36px)}
+ .heroText strong{font-size:12px}
+ .heroText>span{font-size:11px}
+ .heroMetrics{grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr));min-width:0}
+ .heroMetrics span{min-height:52px;padding:9px 12px;gap:3px}
+ .heroMetrics b{font-size:15px}
+ .binToolbar{align-items:center;gap:7px}
+ .binToolbar nav{gap:6px;flex:1 1 auto}
+ .binToolbar nav a{min-height:40px;padding:8px 11px;font-size:11px}
+ .binToolbar nav a svg{width:15px;height:15px}
+ .binToolbar nav .referenceShortcut{display:none}
+ .manageMenu summary{min-height:40px;padding:8px 10px;font-size:10px}
+ .managePanel{min-width:min(310px,calc(100vw - 26px))}
+ .dashboardHeading h2{font-size:23px}
+ .dashboardHeading button{font-size:11px;padding:8px 12px}
+ .colonyWidgetGrid{gap:9px}
+ .widgetPanel,.tools{padding:13px;gap:10px}
+ .miniMetrics>div{min-height:65px;padding:10px}
+ .miniMetrics strong{font-size:20px}
+ .toolGrid a{min-height:78px;padding:11px;gap:5px}
+ .toolGrid strong{font-size:11px}
+}
+@media(max-width:390px){.binToolbar nav{flex:1 1 100%}.binToolbar nav a{flex:1;justify-content:center}}
