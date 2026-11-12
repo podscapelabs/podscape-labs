@@ -285,7 +285,6 @@
  .binToolbar nav{gap:6px;flex:1 1 auto}
  .binToolbar nav a{min-height:40px;padding:8px 11px;font-size:11px}
  .binToolbar nav a svg{width:15px;height:15px}
- .binToolbar nav .referenceShortcut{display:none}
  .manageMenu summary{min-height:40px;padding:8px 10px;font-size:10px}
  .managePanel{min-width:min(310px,calc(100vw - 26px))}
  .dashboardHeading h2{font-size:23px}
