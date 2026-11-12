@@ -52,7 +52,7 @@ function SlidingPuzzleBoard({userId,id,title,description,imageAlt,learningNote,a
  const [hydrated,setHydrated]=useState(false);
  const [initial,setInitial]=useState<number[]>([]);
  const [steps,setSteps]=useState<number[]>([]);
- const {saved,record,retry}=usePuzzleCompletion("picture-puzzles",id);
+ const {saved,earnedExp,record,retry}=usePuzzleCompletion("picture-puzzles",id);
  const key="podscape:picture-puzzle:v3:"+userId+":"+id+":"+puzzleType+":"+difficulty;
  const start=useCallback(()=>{const next=shuffledSliding(size);setTiles(next);setInitial(next);setSteps([]);setMoves(0);setFinished(false);setStarted(true);},[size]);
  useEffect(()=>{if(previewMode){setHydrated(true);return;}try{
@@ -89,7 +89,7 @@ function SlidingPuzzleBoard({userId,id,title,description,imageAlt,learningNote,a
      return <button type="button" key={index} disabled={!started||finished||blank} onClick={()=>select(index)} className={styles.tile} data-selected={false} data-blank={blank} aria-label={blank?`Empty space at position ${index+1}`:`Piece ${tile+1}, position ${index+1}, tap to slide if adjacent`} aria-pressed={false} style={blank?undefined:{backgroundImage:`url("${imageUrl}")`,backgroundSize:`${size*100}% ${size*100}%`,backgroundPosition:`${(tile%size)*100/(size-1)}% ${Math.floor(tile/size)*100/(size-1)}%`}}/>;
     })}
    </div>
-   {finished?<div className={styles.victory} role="status"><span aria-hidden="true">✦ 🧩 ✦</span><h2>Picture complete!</h2><p className={styles.victoryTitle}>{title}</p><p>You solved the sliding puzzle in {moves} moves.</p><div className={styles.victoryArt} role="img" aria-label={imageAlt} style={{backgroundImage:`url("${imageUrl}")`}}/>{learningNote?<div className={styles.victoryDiscovery}><strong>Did you know?</strong><p>{learningNote}</p></div>:null}{artistCredit?<p className={styles.victoryCredit}>Original artwork by <strong>{artistCredit}</strong></p>:null}{previewMode?<small>Preview only · No EXP or progress recorded</small>:<small>Achievement EXP is awarded once for newly unlocked milestones.</small>}</div>:null}
+   {finished?<div className={styles.victory} role="status"><span aria-hidden="true">✦ 🧩 ✦</span><h2>Picture complete!</h2><p className={styles.victoryTitle}>{title}</p><p>You solved the sliding puzzle in {moves} moves.</p><div className={styles.victoryArt} role="img" aria-label={imageAlt} style={{backgroundImage:`url("${imageUrl}")`}}/>{learningNote?<div className={styles.victoryDiscovery}><strong>Did you know?</strong><p>{learningNote}</p></div>:null}{artistCredit?<p className={styles.victoryCredit}>Original artwork by <strong>{artistCredit}</strong></p>:null}{previewMode?<small>Preview only · No EXP or progress recorded</small>:saved==="saved"?<strong className={styles.victoryExp}>{earnedExp?`+${earnedExp} EXP earned`:"Progress saved · No new EXP on replay"}</strong>:<small>Achievement EXP is awarded once for newly unlocked milestones.</small>}</div>:null}
    {finished&&rewardsEnabled?<PuzzleSaveStatus status={saved} retry={retry}/>:null}
    {finished&&saved==="saved"&&nextHref?<a className={styles.nextPuzzle} href={nextHref}>Next picture puzzle →</a>:null}
    {!started?<button type="button" className={styles.primary} onClick={start}>Shuffle & start puzzle</button>:<div className={styles.controls}><button type="button" className={styles.primary} onClick={start}>Start a new shuffle</button><button type="button" onClick={()=>setShowReference(v=>!v)} aria-pressed={showReference}>{showReference?"Hide image":"View image"}</button></div>}
@@ -107,12 +107,12 @@ export function PicturePuzzleBoard(props:{userId:string;id:string;title:string;d
 }
 
 function RewardedJigsaw(props:{userId:string;id:string;title:string;description:string;imageAlt:string;learningNote:string;artistCredit?:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string;previewMode?:boolean}){
- const {saved,record,retry}=usePuzzleCompletion("picture-puzzles",props.id);
+ const {saved,earnedExp,record,retry}=usePuzzleCompletion("picture-puzzles",props.id);
  const [solved,setSolved]=useState(false);
  const onReset=useCallback(()=>setSolved(false),[]);
  const onComplete=useCallback((proof:{placed:number[];moves:number})=>{setSolved(true);if(props.rewardsEnabled)void record(proof);},[record,props.rewardsEnabled]);
  return <>
-  <InterlockingJigsawBoard key={props.id+props.difficulty} previewMode={props.previewMode} userId={props.userId} id={props.id} imageUrl={props.imageUrl} imageAlt={props.imageAlt||props.title} title={props.title} learningNote={props.learningNote} artistCredit={props.artistCredit} size={DIFFICULTIES[props.difficulty].columns} onComplete={onComplete} onReset={onReset}/>
+  <InterlockingJigsawBoard key={props.id+props.difficulty} previewMode={props.previewMode} earnedExp={earnedExp} rewardSaved={saved==="saved"} userId={props.userId} id={props.id} imageUrl={props.imageUrl} imageAlt={props.imageAlt||props.title} title={props.title} learningNote={props.learningNote} artistCredit={props.artistCredit} size={DIFFICULTIES[props.difficulty].columns} onComplete={onComplete} onReset={onReset}/>
   {solved&&props.rewardsEnabled?<PuzzleSaveStatus status={saved} retry={retry}/>:null}
   {solved&&saved==="saved"&&props.nextHref?<a className={styles.nextPuzzle} href={props.nextHref}>Next picture puzzle →</a>:null}
  </>;
