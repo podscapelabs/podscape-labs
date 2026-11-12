@@ -8,30 +8,31 @@ import type {ManagerBin} from "./ManagerCareWidgets";
 import styles from "./ManagerWorkflowPanel.module.css";
 export type ManagerWorkflow="care"|"notes"|"population"|"bulk";
 const tasks=[{label:"Misted",kind:"maintenance",icon:"droplet"},{label:"Fed",kind:"feeding",icon:"jar"},{label:"Spot cleaned",kind:"maintenance",icon:"bin"},{label:"Leaf litter added",kind:"maintenance",icon:"leaf"}] as const;
-type UndoRecord={id:string;binId:string;previous?:string|null};
+type UndoRecord={id:string;binId:string;label:string;previous?:string|null};
 function mistReminder(id:string){try{const k="podscape-keeper-reminder-"+id,old=localStorage.getItem(k);if(!old)return undefined;const obj=JSON.parse(old);if(!Number.isInteger(obj.intervalDays))return undefined;const now=new Date(),day=[now.getFullYear(),String(now.getMonth()+1).padStart(2,"0"),String(now.getDate()).padStart(2,"0")].join("-");localStorage.setItem(k,JSON.stringify({...obj,lastMisted:day,updatedAt:now.toISOString()}));return old}catch{return undefined}}
 function restoreReminder(id:string,value:string|null|undefined){if(value===undefined)return;try{const k="podscape-keeper-reminder-"+id;if(value===null)localStorage.removeItem(k);else localStorage.setItem(k,value)}catch{}}
 export function ManagerWorkflowPanel({bins,mode,onClose}:{bins:ManagerBin[];mode:ManagerWorkflow;onClose:()=>void}){
- const router=useRouter(),[selected,setSelected]=useState(bins[0]?.id||""),[query,setQuery]=useState(""),[note,setNote]=useState(""),[count,setCount]=useState(String(bins[0]?.quantity??0)),[breeding,setBreeding]=useState(bins[0]?.breeding||"unknown"),[ids,setIds]=useState<string[]>([]),[pending,start]=useTransition(),[error,setError]=useState(""),[message,setMessage]=useState(""),[undo,setUndo]=useState<UndoRecord[]|null>(null),[confirm,setConfirm]=useState<{kind:string;label:string;ids:string[]}|null>(null);
+ const router=useRouter(),[selected,setSelected]=useState(bins[0]?.id||""),[query,setQuery]=useState(""),[note,setNote]=useState(""),[count,setCount]=useState(String(bins[0]?.quantity??0)),[breeding,setBreeding]=useState(bins[0]?.breeding||"unknown"),[ids,setIds]=useState<string[]>([]),[pending,start]=useTransition(),[error,setError]=useState(""),[message,setMessage]=useState(""),[undo,setUndo]=useState<UndoRecord[]|null>(null),[logged,setLogged]=useState<string[]>([]),[confirm,setConfirm]=useState<{kind:string;label:string;ids:string[]}|null>(null);
  const bin=bins.find(item=>item.id===selected);
  const matched=bins.filter(item=>[item.name,item.label,item.species].some(v=>v.toLowerCase().includes(query.trim().toLowerCase()))).slice(0,40);
  const title=mode==="care"?"Quick Care":mode==="notes"?"Add an observation":mode==="population"?"Colony details":"Care for multiple bins";
  function saveCare(kind:string,label:string,targets:string[],confirmed=false){
   if(!targets.length||pending)return;
-  if(undo?.length){setError("Undo the last care action or reopen the workflow to log another.");return}
+  const pendingTargets=targets.filter(id=>!logged.includes(label+":"+id));
+  if(!pendingTargets.length){setMessage(label+" already recorded for the selected bins in this session.");return}
   if(!confirmed&&targets.length===bins.length&&bins.length>1){setConfirm({kind,label,ids:targets});return}
   setConfirm(null);setError("");setMessage("");
   start(async()=>{try{
    let records:UndoRecord[]=[];
-   if(targets.length===1){const result=await logKeeperEvent({id:targets[0],kind,note:label});if(!result.success||!result.id){setError(result.error||"Save failed.");return}records=[{id:result.id,binId:targets[0],previous:label==="Misted"?mistReminder(targets[0]):undefined}]}else{
-    const result=await logKeeperEventBatch({ids:targets,kind,note:label});if(!result.success||!result.events){setError(result.error||"Bulk save failed.");return}records=result.events.map(item=>({id:item.id,binId:item.enclosureId,previous:label==="Misted"?mistReminder(item.enclosureId):undefined}));
+   if(pendingTargets.length===1){const result=await logKeeperEvent({id:pendingTargets[0],kind,note:label});if(!result.success||!result.id){setError(result.error||"Save failed.");return}records=[{id:result.id,binId:pendingTargets[0],label,previous:label==="Misted"?mistReminder(pendingTargets[0]):undefined}]}else{
+    const result=await logKeeperEventBatch({ids:pendingTargets,kind,note:label});if(!result.success||!result.events){setError(result.error||"Bulk save failed.");return}records=result.events.map(item=>({id:item.id,binId:item.enclosureId,label,previous:label==="Misted"?mistReminder(item.enclosureId):undefined}));
    }
-   setUndo(records);setMessage(label+" recorded for "+targets.length+" "+(targets.length===1?"bin":"bins")+".");router.refresh();
+   setUndo(records);setLogged(old=>[...old,...records.map(item=>item.label+":"+item.binId)]);setMessage(label+" recorded for "+records.length+" "+(records.length===1?"bin":"bins")+".");router.refresh();
   }catch{setError("Connection interrupted. Check your care history before retrying.")}});
  }
  function undoCare(){
   if(!undo?.length||pending)return;const records=undo;
-  start(async()=>{try{const result=records.length===1?await undoKeeperEvent({id:records[0].id,enclosureId:records[0].binId}):await undoKeeperEventBatch({eventIds:records.map(item=>item.id)});if(!result.success){setError(result.error||"Undo failed.");return}for(const item of records)restoreReminder(item.binId,item.previous);setUndo(null);setMessage("Care action undone.");router.refresh()}catch{setError("Undo failed. Check your care history.")}});
+  start(async()=>{try{const result=records.length===1?await undoKeeperEvent({id:records[0].id,enclosureId:records[0].binId}):await undoKeeperEventBatch({eventIds:records.map(item=>item.id)});if(!result.success){setError(result.error||"Undo failed.");return}for(const item of records)restoreReminder(item.binId,item.previous);setLogged(old=>old.filter(key=>!records.some(item=>key===item.label+":"+item.binId)));setUndo(null);setMessage("Care action undone.");router.refresh()}catch{setError("Undo failed. Check your care history.")}});
  }
  function saveNote(){if(!bin||!note.trim()||pending)return;start(async()=>{try{const result=await logKeeperEvent({id:bin.id,kind:"observation",note:note.trim()});if(!result.success){setError(result.error||"Save failed.");return}setNote("");setMessage("Observation saved.");setError("");router.refresh()}catch{setError("Connection interrupted. Check observations before retrying.")}})}
  function saveCount(){if(!bin||!/^\d+$/.test(count)||pending)return;start(async()=>{try{const result=await updateEnclosureEssentials({id:bin.id,quantity:Number(count),breeding});if(!result.success){setError(result.error||"Save failed.");return}setMessage("Colony details updated.");setError("");router.refresh()}catch{setError("Save interrupted. Check the bin before retrying.")}})}
