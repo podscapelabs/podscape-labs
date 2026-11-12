@@ -40,7 +40,7 @@ export default async function OwnerToolsPage() {
             { title:"Analytics", subtitle:"Platform pulse", href:"/account/owner-tools/analytics", icon:"community" as const },
             { title:"Species", subtitle:"Leaf Ledger desk", href:"/admin/species", icon:"leaf" as const },
             { title:"Products", subtitle:"Shop management", href:"/admin/products", icon:"shop" as const },
-            { title:"Guides", subtitle:"Field Guide desk", href:"/admin/guides", icon:"book" as const },
+            { title:"Feedback", subtitle:"Member reports", href:"/admin/feedback", icon:"note" as const },
           ].map(item=><Link href={item.href} className={styles.quickCard} key={item.href}>
             <span className={styles.quickIcon}><PodscapeLineIcon name={item.icon}/></span>
             <span><strong>{item.title}</strong><small>{item.subtitle}</small></span>
