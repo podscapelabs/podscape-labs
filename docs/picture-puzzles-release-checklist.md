@@ -1,4 +1,4 @@
-# Picture Puzzles + Species Detective release checklist
+# Picture Puzzles + Species Detective + Feedback release checklist
 
 Branch: `codex/podbound-picture-puzzle-desk-20261112`
 
@@ -15,6 +15,9 @@ Branch: `codex/podbound-picture-puzzle-desk-20261112`
 - [ ] Test Species Detective: a wrong answer leads to a score review and Try Again; no completion, EXP, or next unlock. All-correct attempts save and unlock next.
 - [ ] Test one-time EXP and achievement toast: first Jigsaw +20, first Sliding +20, fifth Picture Puzzle +45, no duplicate awards on replay.
 - [ ] Confirm original eight-game and 32-puzzle milestones still only count the legacy games.
+- [ ] Test the floating feedback tab on Android Chrome/Samsung Internet, iOS Safari/PWA, and desktop. Verify it clears the bottom nav and closes with Escape, overlay click, and Close.
+- [ ] Send feedback as an approved verified account. Check Bug/Idea/General, page path, device details, sent confirmation, and the five-per-hour rate limit. Confirm guests and unapproved accounts cannot submit.
+- [ ] Verify Feedback Desk requires owner access, shows member display names and report details, filters by status/type, and saves New/Reviewing/Resolved without exposing the table through RLS.
 
 ## Database release prerequisites
 
@@ -23,8 +26,9 @@ The current production database does **not** yet have the `picture_puzzles` tabl
 1. `supabase/migrations/20261112000000_picture_puzzles.sql` — RLS-protected picture-puzzles table and artwork bucket
 2. `supabase/migrations/20261112001000_picture_puzzle_modes.sql` — mode, level, image descriptions, learning cue
 3. `supabase/migrations/20261112002000_picture_puzzle_rewards.sql` — update existing one-time award function, jigsaw/sliding achievements, revoke direct client EXECUTE
+4. `supabase/migrations/20261112003000_member_feedback.sql` — feedback table, account ownership, private service-role access, categories and owner review statuses
 
-After applying, verify that the table/columns/bucket exist, service-role read/write succeeds, and the completion RPC remains service-role only. Preserve production member data. **Do not** apply migrations to production just to run a static audit.
+After applying, verify that the table/columns/bucket exist, service-role read/write succeeds, the feedback table has RLS with no member direct grants, and the completion RPC remains service-role only. Preserve production member data. **Do not** apply migrations to production just to run a static audit.
 
 ## Release sequence
 
