@@ -4,6 +4,7 @@ const read=path=>readFileSync(path,"utf8");
 
 const engine=read("lib/psx-v3-prototype.mjs");
 const privateService=read("lib/psx-v3-preview-server.ts");
+const marketService=read("lib/psx-v3-market-server.ts");
 const preview=read("app/api/fun-zone/pod-exchange/v3-preview/route.ts");
 const history=read("lib/psx-v3-history-server.ts");
 const migration=read("supabase/migrations/20261112180000_psx_v3_versioned_history.sql");
@@ -31,7 +32,9 @@ assert.match(engine,/resolveRumour\(secret,currentSession,minute\)/,"Published r
 assert.doesNotMatch(page,/psx-v3-(prototype|preview)/,"Current client market stays on the historical engine");
 assert.doesNotMatch(oldTrade,/psx-v3-(prototype|preview)/,"Live atomic trades must remain unchanged until rollout approval");
 assert.match(oldTrade,/execute_member_exchange_order/,"Existing signed-in settlement RPC remains authoritative");
-assert.match(ledger,/priceAt\(order.symbol,cycle\)/,"Historical order audit still uses exact legacy formula");
+assert.match(ledger,/quoteForCycle\(active,symbol,cycle\)/,"Order audit chooses the stored engine version for every past cycle");
+assert.match(marketService,/cycle<config.cutoverCycle\)return priceAt\(symbol,cycle\)/,"Cycles before V3 cutover always retain the original price formula");
+assert.match(oldTrade,/quoteForCycle\(engine,trade.symbol,trade.cycle\)/,"Server verifies the actual published V3 or legacy quote before settlement");
 assert.match(oldEngine,/ARCADE_CYCLE_TAG=1_000_000_000/,"Legacy minute-cycle namespace untouched");
 assert.match(migration,/create table if not exists public.psx_market_versions/i);
 assert.match(migration,/create table if not exists public.psx_market_price_history/i);
