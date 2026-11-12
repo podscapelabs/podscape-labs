@@ -3,7 +3,7 @@ import {useCallback,useEffect,useId,useMemo,useRef,useState} from "react";
 import styles from "./picture-puzzles.module.css";
 
 type PiecePosition={x:number;y:number;placed:boolean};
-type Props={userId:string;id:string;imageUrl:string;imageAlt:string;title:string;learningNote?:string;artistCredit?:string;size:number;previewMode?:boolean;onProgress?:(placed:number,total:number)=>void;onComplete?:(proof:{placed:number[];moves:number})=>void;onReset?:()=>void};
+type Props={userId:string;id:string;imageUrl:string;imageAlt:string;title:string;learningNote?:string;artistCredit?:string;earnedExp?:number|null;rewardSaved?:boolean;size:number;previewMode?:boolean;onProgress?:(placed:number,total:number)=>void;onComplete?:(proof:{placed:number[];moves:number})=>void;onReset?:()=>void};
 const WIDTH=600,BOARD=480,BOARD_X=60,BOARD_Y=35,TRAY_Y=595;
 function seedSign(n:number){return ((n*37+17)%7)%2===0?1:-1;}
 function pathForPiece(r:number,c:number,size:number){
@@ -42,7 +42,7 @@ function isValidPositions(value:unknown,size:number):value is PiecePosition[]{
   return p.x>=0&&p.x<=WIDTH-unit&&p.y>=0&&p.y<=TRAY_Y+Math.ceil(size*size/(size===3?3:4))*unit*1.38+35-unit;
  });
 }
-export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,title,learningNote,artistCredit,size,previewMode=false,onProgress,onComplete,onReset}:Props){
+export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,title,learningNote,artistCredit,earnedExp=null,rewardSaved=false,size,previewMode=false,onProgress,onComplete,onReset}:Props){
  const count=size*size,unit=BOARD/size,cols=size===3?3:4,rows=Math.ceil(count/cols);
  const height=TRAY_Y+rows*unit*1.38+35,root=useRef<SVGSVGElement>(null);
  const uid=useId().replace(/:/g,"");
@@ -126,7 +126,7 @@ export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,title,learn
     })}
    </svg>
   </div>:null}
-  {solved===count?<div className={styles.victory} role="status"><span aria-hidden="true">✦ 🧩 ✦</span><h2>Picture complete!</h2><p className={styles.victoryTitle}>{title}</p><p>You placed all {count} pieces with {moves} successful snaps.</p><div className={styles.victoryArt} role="img" aria-label={imageAlt} style={{backgroundImage:`url("${imageUrl}")`}}/>{learningNote?<div className={styles.victoryDiscovery}><strong>Did you know?</strong><p>{learningNote}</p></div>:null}{artistCredit?<p className={styles.victoryCredit}>Original artwork by <strong>{artistCredit}</strong></p>:null}{previewMode?<small>Preview only · No EXP or progress recorded</small>:<small>Achievement EXP is awarded once for newly unlocked milestones.</small>}</div>:null}
+  {solved===count?<div className={styles.victory} role="status"><span aria-hidden="true">✦ 🧩 ✦</span><h2>Picture complete!</h2><p className={styles.victoryTitle}>{title}</p><p>You placed all {count} pieces with {moves} successful snaps.</p><div className={styles.victoryArt} role="img" aria-label={imageAlt} style={{backgroundImage:`url("${imageUrl}")`}}/>{learningNote?<div className={styles.victoryDiscovery}><strong>Did you know?</strong><p>{learningNote}</p></div>:null}{artistCredit?<p className={styles.victoryCredit}>Original artwork by <strong>{artistCredit}</strong></p>:null}{previewMode?<small>Preview only · No EXP or progress recorded</small>:rewardSaved?<strong className={styles.victoryExp}>{earnedExp?`+${earnedExp} EXP earned`:"Progress saved · No new EXP on replay"}</strong>:<small>Achievement EXP is awarded once for newly unlocked milestones.</small>}</div>:null}
   <div className={styles.controls}><button type="button" onClick={startOver}>Shuffle pieces again</button></div>
   {solved!==count?<details className={styles.jigsawReference}><summary>View original artwork</summary><div className={styles.fullImage} role="img" aria-label={imageAlt} style={{backgroundImage:`url("${imageUrl}")`}}/></details>:null}
   {solved!==count?<p className={styles.note}>The board starts blank: build the picture by fitting its interlocking pieces together. {previewMode?"Preview only: nothing is saved.":"Progress is saved on this device."}</p>:null}
