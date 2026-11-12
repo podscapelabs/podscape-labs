@@ -9,6 +9,7 @@ as $function$
 declare
  inserted_count bigint := 0;
  puzzle_count integer;
+ legacy_count integer;
  game_count integer;
  picture_count integer;
  jigsaw_count integer;
@@ -34,8 +35,9 @@ begin
  if inserted_count=0 then return; end if;
 
  select count(*),
+        count(*) filter (where game_key <> 'picture-puzzles'),
         count(distinct game_key) filter (where game_key <> 'picture-puzzles')
- into puzzle_count,game_count
+ into puzzle_count,legacy_count,game_count
  from public.member_puzzle_completions where user_id=p_user_id;
 
  select count(*),
@@ -53,7 +55,7 @@ begin
    ('puzzle_sixteen'::text,80,16),
    ('puzzle_all_thirty_two'::text,200,32)
   ) as v(key,points,threshold)
-  where puzzle_count>=v.threshold
+  where case when v.key='puzzle_all_thirty_two' then legacy_count else puzzle_count end >= v.threshold
   union all select 'puzzle_all_eight_games',125 where game_count>=8
   union all select 'picture_first_jigsaw',20 where jigsaw_count>=1
   union all select 'picture_first_sliding',20 where sliding_count>=1
