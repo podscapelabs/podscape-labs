@@ -4,13 +4,13 @@ import {useEffect,useState} from "react";
 import Link from "next/link";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
 import {DuckBuckIcon} from "./DuckBucks";
-import {cycleAt,headlineAt,newsImpactAt,STOCKS} from "@/lib/pod-exchange";
+import {arcadeCycleAt,headlineAt,newsImpactAt,STOCKS} from "@/lib/pod-exchange";
 import styles from "./HomeMarketNews.module.css";
 
 export function HomeMarketNews(){
  const [cycle,setCycle]=useState<number|null>(null);
  useEffect(()=>{
-  const refresh=()=>setCycle(cycleAt(Date.now()));
+  const refresh=()=>setCycle(arcadeCycleAt(Date.now()));
   refresh();
   const timer=window.setInterval(refresh,15_000);
   return()=>window.clearInterval(timer);
