@@ -54,7 +54,7 @@ function GameCard({game,isFavourite,onToggle,compact=false}:{game:ArcadeGame;isF
   </div>
  </article>;
 }
-export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coins}:{userId:string|null;completedByGame:Record<string,number>;trackingAvailable:boolean;exp:number;coins:number;}){
+export function FunZonePortal({userId,completedByGame,trackingAvailable,exp}:{userId:string|null;completedByGame:Record<string,number>;trackingAvailable:boolean;exp:number;}){
  const scopeKey=userId||"guest";
  const layoutKey=ARCADE_LAYOUT_KEY+":"+scopeKey;
  const favoritesKey=GAME_FAVOURITES_KEY+":"+scopeKey;
@@ -113,7 +113,7 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
  const done=Object.values(completedByGame).reduce((sum,n)=>sum+n,0);
  const renderWidget=(id:WidgetKey)=>{
   if(id==="rankings")return <FunZoneRankingsSpotlight/>;
-  if(id==="featured")return <FunZoneCarousel signedIn={Boolean(userId)} exp={exp} coins={coins}/>;
+  if(id==="featured")return <FunZoneCarousel/>;
   if(id==="categories")return <section className={styles.card} aria-label="Game categories">
    <div className={styles.blockTitle}><div><span className={styles.eyebrow}>GAME LIBRARY</span><h2>Pick a game.</h2></div><span className={styles.subtle}>{ARCADE_GAMES.length} games</span></div>
    <details className={styles.learningTrail} aria-label="Suggested beginner learning path"><summary><span>New here? Start with the basics</span><PodscapeLineIcon name="arrow-right"/></summary>
@@ -137,7 +137,7 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp,coin
     {favouriteGames.length?<div className={styles.favouritesGrid}>{favouriteGames.map(game=><GameCard key={game.key} game={game} compact isFavourite onToggle={toggleFavourite}/>)}</div>:<p className={styles.empty}>Save a game with the heart icon to keep it here. Puzzle progress stays separate.</p>}
    </section>;
   if(id==="progress")return <section className={styles.card} aria-label="Game progress"><div className={styles.blockTitle}><div><span className={styles.eyebrow}>PLAY & PROGRESS</span><h2>My Play Progress</h2></div><PodscapeLineIcon name="achievement"/></div>
-   <div className={styles.statGrid}><div><strong>{userId?exp.toLocaleString("en-CA"):"—"}</strong><small>Lifetime EXP</small></div><div><strong>{trackingAvailable?done:"—"}</strong><small>Puzzles completed</small></div>{coins>0?<div><strong>{coins.toLocaleString("en-CA")}</strong><small>Pod Coins</small></div>:null}</div>
+   <div className={styles.statGrid}><div><strong>{userId?exp.toLocaleString("en-CA"):"—"}</strong><small>Lifetime EXP</small></div><div><strong>{trackingAvailable?done:"—"}</strong><small>Puzzles completed</small></div></div>
    <div className={styles.inlineLinks}><Link href="/account/progress">View My Progress →</Link></div>
   </section>;
   if(id==="exchange")return <PodExchangeWatchlist/>;
