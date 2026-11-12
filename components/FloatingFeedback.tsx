@@ -26,7 +26,7 @@ export function FloatingFeedback({enabled}:{enabled:boolean}){
    else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
   };
   window.addEventListener("keydown",handle);document.body.style.overflow="hidden";
-  requestAnimationFrame(()=>dialog.current?.querySelector<HTMLElement>("select")?.focus());
+  requestAnimationFrame(()=>dialog.current?.querySelector<HTMLElement>('button[aria-label="Close feedback"]')?.focus({preventScroll:true}));
   return ()=>{window.removeEventListener("keydown",handle);document.body.style.overflow="";(triggerNode||previous)?.focus()};
  },[open]);
  if(!mounted||!enabled||excluded)return null;
