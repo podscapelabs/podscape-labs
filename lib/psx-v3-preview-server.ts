@@ -1,7 +1,7 @@
 import "server-only";
 import {createHash,timingSafeEqual} from "node:crypto";
 import {getSupabaseAdmin} from "@/lib/supabase-admin";
-import {arcadeCycleAt} from "@/lib/pod-exchange";
+import {arcadeCycleAt,priceAt} from "@/lib/pod-exchange";
 import {ENGINE_VERSION,SYMBOLS,publicMarketFrame,quoteAt,type PsxSymbol} from "@/lib/psx-v3-prototype.mjs";
 
 const BACKFILL_WINDOW=1440;
@@ -48,6 +48,12 @@ export async function getPsxV3Preview(range:PsxRange="30m",nowMs=Date.now()){
  const minute=cycle-cutover;
  if(!Number.isSafeInteger(minute)||minute<0)return {available:false as const,reason:"Invalid market clock"};
  const secret=secretFor(row),openingPrices=priceMap(row.opening_prices);
+ // The V3 opening quote must be exactly the final published legacy price.
+ // Reject an accidental release configuration that would revalue existing shares.
+ for(const symbol of SYMBOLS){
+  if(openingPrices[symbol]!==priceAt(symbol,cutover-1))
+   throw Error("PSX opening anchors disagree with historical closing prices");
+ }
  const frame=publicMarketFrame({secret,minute,openingPrices});
  const {minutes,step}=ranges[range];
  const from=Math.max(0,minute-Math.min(minutes,BACKFILL_WINDOW));
