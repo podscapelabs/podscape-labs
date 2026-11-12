@@ -19,7 +19,7 @@ const categoryFromPuzzle=(category:string,key:string):ArcadeCategory=>{
 const discoveryOrder:Record<string,number>={
  "species-quiz":1,"word-search":2,"word-burrow":3,"word-of-the-week":4,
  "species-detective":5,"keepers-challenge":6,"colony-connections":7,
- "crossword-colony":8,"pod-exchange":9
+ "crossword-colony":8,"picture-puzzles":9,"pod-exchange":10
 };
 export const ARCADE_GAMES:ArcadeGame[]=([ 
  ...puzzles.map(game=>({
@@ -29,6 +29,7 @@ export const ARCADE_GAMES:ArcadeGame[]=([
   featured:game.key==="word-burrow"
  })),
  {key:"word-search",title:"Word Search",description:"Start with familiar words, then discover anatomy and scientific names.",category:"Word Games",href:"/fun-zone/word-search",icon:"word-search"},
+ {key:"picture-puzzles",title:"Picture Puzzles",description:"Rebuild PodBound artwork and isopod photos, piece by piece.",category:"Puzzles & Logic",href:"/fun-zone/picture-puzzles",icon:"grid",featured:true},
  {key:"pod-exchange",title:"The Pod Exchange",description:"Trade fictional stocks using Duck Bucks.",category:"Simulations",href:"/fun-zone/pod-exchange",icon:"gamepad",beta:true,featured:true}
 ] as ArcadeGame[]).sort((a,b)=>(discoveryOrder[a.key]??99)-(discoveryOrder[b.key]??99));
 export const ARCADE_GAME_KEYS=ARCADE_GAMES.map(g=>g.key);
