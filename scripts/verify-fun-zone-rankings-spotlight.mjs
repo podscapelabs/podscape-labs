@@ -29,8 +29,8 @@ assert.match(carousel,/document\.hidden/,"Avoid polling when the page is not vis
 assert.match(carousel,/controller\.abort\(\)/,"Stop network requests when unmounting");
 assert.match(carousel,/Standings temporarily unavailable/,"One API error must not blank the entire widget");
 assert.match(carousel,/market&&!state\.market\.weeklyReady/,"Show pending weekly baselines accurately");
-assert.match(portal,/const defaultOrder:WidgetKey\[\]=\["rankings"/,"Spotlight should start near the top");
-assert.match(portal,/const defaultVisible:WidgetKey\[\]=\["rankings"/,"New dashboards should show the Spotlight");
+assert.match(portal,/const defaultOrder:WidgetKey\[\]=\["featured","categories","rankings"/,"Spotlight sits near the top without displacing gameplay");
+assert.match(portal,/const defaultVisible:WidgetKey\[\]=\["featured","categories","rankings","exchange"\]/,"New dashboards show focused core widgets");
 assert.match(portal,/if\(!order\.includes\("rankings"\)\)/,"Upgrade old dashboards once");
 assert.match(portal,/if\(id==="rankings"\)return <FunZoneRankingsSpotlight/,"Widget must render");
 assert.match(portal,/id==="rankings"\?"rankings-spotlight"/,"Shortcut anchor must be stable");
