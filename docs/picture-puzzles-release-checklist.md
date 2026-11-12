@@ -40,6 +40,13 @@ Previously verified: puzzle and feedback tables, mode columns, artwork bucket, R
 6. Stage the production-target build on Vercel project **`podscape-labs-preview`** (`prj_7RyjnPePjJVBONXLcRe9D4wbUMa0`), which owns **www.podscapelabs.com**. The separately named `podscape-labs` project does not serve the custom domain.
 7. Confirm the custom domain resolves to the exact release commit and manually verify puzzle upload → draft preview → publish → player completion → EXP and achievement once, and Species Detective retry.
 
+## Original artist credit prerequisite
+
+- [ ] Apply `supabase/migrations/20261112004000_picture_puzzle_artist_credit.sql` to Supabase project `qptvfwmxmhmhdmfyuzbb` **before deploying code that queries `artist_credit`**. Previous puzzle migrations are already applied; this new migration is pending.
+- [ ] Confirm artwork credit is required for new drafts and for publishing existing uncredited drafts.
+- [ ] Verify artist attribution appears on the owner preview, public picture-puzzle library card, and both jigsaw/sliding gameplay pages in each theme.
+- [ ] Record the original artist accurately (for example, Ola for the artwork she created). Artist credit does not replace a licence or the artist’s permission to use community-submitted artwork.
+
 ## Remaining release-blocking QA
 
 - [ ] Confirm `pnpm run build` succeeds on the newest branch commit (daily quota prevented this at time of editing).
