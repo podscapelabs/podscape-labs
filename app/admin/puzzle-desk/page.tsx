@@ -6,6 +6,7 @@ import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
 import {createPicturePuzzle,updatePicturePuzzle,setPicturePuzzleStatus} from "./actions";
 import {PuzzlePreviewButton} from "./PuzzlePreviewButton";
 import {PuzzleArtworkPicker} from "./PuzzleArtworkPicker";
+import {PuzzlePublicationButton} from "./PuzzlePublicationButton";
 import styles from "./puzzle-desk.module.css";
 
 export const dynamic="force-dynamic";
@@ -87,7 +88,7 @@ export default async function PuzzleDesk({searchParams}:{searchParams:Promise<{s
     <form className={styles.statusForm} action={setPicturePuzzleStatus}>
      <input type="hidden" name="id" value={p.id}/>
      <input type="hidden" name="status" value={p.status==="published"?"draft":"published"}/>
-     <button type="submit" className={styles.statusButton}>{p.status==="published"?"Unpublish":"Publish"}</button>
+     <PuzzlePublicationButton published={p.status==="published"}/>
     </form>
     <details className={styles.editor}>
      <summary><PodscapeLineIcon name="edit"/> Edit puzzle settings</summary>
