@@ -4,6 +4,7 @@ import {isAdminAuthenticated} from "@/lib/admin-auth";
 import {DIFFICULTIES,PUZZLE_TYPES,LEVEL_NAMES,levelLabel,gridDescription,listPicturePuzzles,picturePuzzleImage,type PicturePuzzle} from "@/lib/picture-puzzles";
 import {createPicturePuzzle,updatePicturePuzzle,setPicturePuzzleStatus} from "./actions";
 import styles from "./puzzle-desk.module.css";
+import {PuzzlePreviewButton} from "./PuzzlePreviewButton";
 export const dynamic="force-dynamic";
 export const metadata={title:"Puzzle Desk | PodScape Owner Studio",robots:{index:false,follow:false}};
 function Fields({entry}:{entry?:PicturePuzzle}){
@@ -26,18 +27,19 @@ export default async function PuzzleDesk({searchParams}:{searchParams:Promise<{s
   {params.saved?<p role="status" className={styles.notice}>Puzzle {params.saved==="updated"?"updated":params.saved==="draft"?"saved as draft":params.saved+" successfully"}.</p>:null}
   {params.error?<p role="alert" className={styles.alert}>{params.error==="completed-immutable"?"This puzzle has saved completions. Its game format and difficulty are now locked to preserve player progress.": "Could not save. Check required fields, image format, storage bucket, and database migrations."}</p>:null}
   {puzzles===null?<p role="alert" className={styles.alert}>Puzzle storage is not ready. Apply the picture-puzzles migrations first.</p>:null}
-  <section className={styles.card}><div className={styles.heading}><span>CREATE</span><h2>New picture puzzle</h2><p>Create a draft first. Jigsaw and Sliding Puzzle share PodScape&apos;s existing level progression.</p></div>
+  <section className={styles.card}><div className={styles.heading}><span>CREATE</span><h2>New picture puzzle</h2><p>Choose artwork and settings, play-test your puzzle, then save it as a private draft. Nothing is published until you choose Publish.</p></div>
    <form action={createPicturePuzzle} className={styles.form}><Fields/>
     <label className={styles.full}>Puzzle artwork <small>JPEG, PNG or WebP · Max 8 MB · Use artwork you own or can publish</small><input name="image" type="file" accept="image/png,image/jpeg,image/webp" required/></label>
+    <PuzzlePreviewButton/>
     <button type="submit">Save draft puzzle →</button>
    </form>
   </section>
   <section className={styles.card}><div className={styles.heading}><span>LIBRARY</span><h2>Manage puzzles</h2><p>{puzzles?.length||0} puzzles · {puzzles?.filter(p=>p.status==="published").length||0} published · {LEVEL_NAMES.length} named Fun Zone progression levels</p></div>
    <div className={styles.list}>{(puzzles||[]).map(p=><article key={p.id} className={styles.item}>
     <div className={styles.art} style={{backgroundImage:`url("${picturePuzzleImage(p.image_path)}")`}} role="img" aria-label={p.image_alt||p.title}/>
-    <div className={styles.itemInfo}><strong>{p.title}</strong><small>{PUZZLE_TYPES[p.puzzle_type]||"Jigsaw"} · {levelLabel(p.level)} · {DIFFICULTIES[p.difficulty].label} · {gridDescription(p.puzzle_type,p.difficulty)} · {p.status}</small><Link href={`/fun-zone/picture-puzzles/${p.id}`}>Preview →</Link></div>
+    <div className={styles.itemInfo}><strong>{p.title}</strong><small>{PUZZLE_TYPES[p.puzzle_type]||"Jigsaw"} · {levelLabel(p.level)} · {DIFFICULTIES[p.difficulty].label} · {gridDescription(p.puzzle_type,p.difficulty)} · {p.status}</small><Link href={`/fun-zone/picture-puzzles/${p.id}`}>Open saved preview →</Link></div>
     <form action={setPicturePuzzleStatus}><input type="hidden" name="id" value={p.id}/><input type="hidden" name="status" value={p.status==="published"?"draft":"published"}/><button type="submit">{p.status==="published"?"Unpublish":"Publish"}</button></form>
-    <details className={styles.editor}><summary>Edit puzzle settings</summary><form action={updatePicturePuzzle} className={styles.form}><input type="hidden" name="id" value={p.id}/><Fields entry={p}/><button type="submit">Save changes</button></form></details>
+    <details className={styles.editor}><summary>Edit puzzle settings</summary><form action={updatePicturePuzzle} className={styles.form}><input type="hidden" name="id" value={p.id}/><Fields entry={p}/><PuzzlePreviewButton imageUrl={picturePuzzleImage(p.image_path)}/><button type="submit">Save changes</button></form></details>
    </article>)}{puzzles?.length===0?<p>No puzzles yet. Your first upload will appear here.</p>:null}</div>
   </section>
  </div></main>;
