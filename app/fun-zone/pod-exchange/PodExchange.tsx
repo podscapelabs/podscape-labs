@@ -233,19 +233,13 @@ export function PodExchange(){
   </section>
   <section className={styles.marketAgenda} aria-label="Market events">
    <div className={styles.agendaNow}>
-    <small>MARKET MAYHEM · SIX-HOUR CATALYST</small>
+    <div className={styles.agendaHeader}><small>MARKET MAYHEM · ACTIVE EVENT</small><span>Next story {countdown(bulletinLeft)}</span></div>
     <strong>{session.title}</strong>
     <p>{session.detail}</p>
-    <span><><b>{session.featured}</b> · {eventDelta>=0?"+":""}{eventDelta.toFixed(1)}% market pressure · {eventCountdown(sessionLeft)} remaining</></span>
-   </div>
-   <div className={styles.agendaNext}>
-    <small>UP NEXT</small>
-    <strong>{nextSession.title}</strong>
-    <p>In {eventCountdown(sessionLeft)} · {nextSession.featured} in focus</p>
-    <small>Next headline in {countdown(bulletinLeft)}</small>
+    <div className={styles.agendaFoot}><span><b>{session.featured}</b> · {eventDelta>=0?"+":""}{eventDelta.toFixed(1)}% pressure</span><span>{eventCountdown(sessionLeft)} left · Next: {nextSession.title}</span></div>
    </div>
   </section>
-  <section className={styles.bulletin} aria-label="Market news"><span className={styles.newsLabel}>THE LEAF STREET JOURNAL</span><div><strong>{news?.headline||"Market bulletin loading…"}</strong><p>{news?.detail||"The next tiny market story is being prepared."}</p><small className={styles.newsEffect}>{news?`${news.symbol} · ${newsImpact>=0?"+":""}${(newsImpact*100).toFixed(1)}% news influence · ${newsAge===0?"Breaking":newsAge<=2?"Heating up":"Fading"}`:"New headlines every 15 minutes"}</small></div><b style={{display:"inline-flex",alignItems:"center",gap:7}}>{news?<CompanyMark symbol={news.symbol}/>:null}{news?.symbol||"PODX"}</b></section>
+  <section className={styles.bulletin} aria-label="Market news"><span className={styles.newsLabel}>THE LEAF STREET JOURNAL</span><div><strong>{news?.headline||"Market bulletin loading…"}</strong><p>{news?.detail||"The next tiny market story is being prepared."}</p><small className={styles.newsEffect}>{news?`${news.symbol} · ${newsImpact>=0?"+":""}${(newsImpact*100).toFixed(1)}% news influence · ${newsAge===0?"Breaking":newsAge<=2?"Heating up":"Fading"}`:"New headline every 5 minutes"}</small></div><b style={{display:"inline-flex",alignItems:"center",gap:7}}>{news?<CompanyMark symbol={news.symbol}/>:null}{news?.symbol||"PODX"}</b></section>
   <div className={styles.mobileSwitch}><button type="button" aria-pressed={view==="market"} onClick={()=>setView("market")}>Trade market</button><button type="button" aria-pressed={view==="wallet"} onClick={()=>setView("wallet")}>My holdings</button></div>
   <div className={`${styles.columns} ${view==="wallet"?styles.marketHiddenMobile:""}`}>
    <section aria-label="Fictional market listings">
