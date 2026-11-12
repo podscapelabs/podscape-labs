@@ -52,8 +52,8 @@ function SlidingPuzzleBoard({userId,id,title,description,imageAlt,learningNote,a
  const [hydrated,setHydrated]=useState(false);
  const [initial,setInitial]=useState<number[]>([]);
  const [steps,setSteps]=useState<number[]>([]);
- const {saved,earnedExp,record,clearAwardDisplay,retry}=usePuzzleCompletion("picture-puzzles",id);
  const key="podscape:picture-puzzle:v3:"+userId+":"+id+":"+puzzleType+":"+difficulty;
+ const {saved,earnedExp,record,clearAwardDisplay,retry}=usePuzzleCompletion("picture-puzzles",id);
  const start=useCallback(()=>{const next=shuffledSliding(size);setTiles(next);setInitial(next);setSteps([]);setMoves(0);setFinished(false);setStarted(true);clearAwardDisplay();},[size,clearAwardDisplay]);
  useEffect(()=>{if(previewMode){setHydrated(true);return;}try{
   const saved=localStorage.getItem(key);if(!saved)return;
