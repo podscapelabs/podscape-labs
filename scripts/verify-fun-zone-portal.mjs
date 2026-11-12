@@ -50,4 +50,12 @@ assert.match(portal,/PodExchangeWatchlist/,"Portal must render the actual watchl
 assert.ok(watchlist.includes("totalValue(portfolio,cycle)"),"Watchlist must show saved portfolio value");
 assert.ok(watchlist.includes('priceAt("DUCK",cycle)'),"Watchlist must show DUCK ticker");
 assert.match(watchlist,/STORAGE_KEY/,"Watchlist must share exchange wallet storage");
+// Keep the default dashboard inviting, with deeper tools accessible by customization.
+assert.match(portal,/const defaultVisible:WidgetKey\[\]=\["featured","categories","rankings","exchange"\]/,"New dashboards should start with four purposeful widgets");
+assert.match(portal,/const defaultOrder:WidgetKey\[\]=\["featured","categories","rankings","exchange","favourites","progress"/,"Optional widgets must remain in the library");
+assert.match(portal,/<details className=\{styles\.learningTrail\}/,"Beginner lesson trail should be collapsible");
+assert.match(portal,/favouritesKey/,"Keep saved favourites scoped to each account");
+assert.match(portal,/localStorage\.setItem\(layoutKey/,"Keep user-customized layouts saved");
+assert.match(watchlist,/Market Watch/,"Watchlist uses concise title");
+assert.doesNotMatch(watchlist,/marketRankingsShortcut/,"Do not repeat rankings navigation");
 console.log("Fun Zone portal source checks passed: categories, editable widgets, saved favourites, theme roles, existing progress, and Duck Bucks route.");
