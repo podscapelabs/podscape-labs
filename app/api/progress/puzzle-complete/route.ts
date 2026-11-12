@@ -88,7 +88,7 @@ export async function POST(request:Request){
  const awarded=Array.isArray(data)?data:[];
  const unlocked=awarded.flatMap(row=>{
   const entry=achievementCatalog.find(item=>item.key===row.achievement_key&&item.status==="available");
-  return entry?[{id:entry.key,title:entry.title,description:entry.description,exp:entry.exp,coins:0,hidden:entry.hidden===true}]:[];
+  return entry?[{id:entry.key,title:entry.title,description:entry.description,exp:entry.exp,hidden:entry.hidden===true}]:[];
  });
  if(!beforeError){
   const {data:afterBadges,error:afterError}=await admin.from("member_achievements")
@@ -100,7 +100,7 @@ export async function POST(request:Request){
     if(previous.has(row.achievement_key)||announced.has(row.achievement_key))continue;
     const badge=achievementCatalog.find(x=>x.key===row.achievement_key&&x.status==="available");
     if(badge){
-     unlocked.push({id:badge.key,title:badge.title,description:badge.description,exp:badge.exp,coins:0,hidden:badge.hidden===true});
+     unlocked.push({id:badge.key,title:badge.title,description:badge.description,exp:badge.exp,hidden:badge.hidden===true});
      announced.add(badge.key);
     }
    }
