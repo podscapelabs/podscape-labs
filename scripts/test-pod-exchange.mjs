@@ -9,6 +9,45 @@ const market=await import("data:text/javascript;base64,"+Buffer.from(compiled).t
 assert.equal(market.STOCKS.length,6);
 assert.equal(new Set(market.STOCKS.map(s=>s.symbol)).size,6);
 assert.equal(market.MARKET_INTERVAL_MS,300000);
+
+assert.equal(market.ARCADE_INTERVAL_MS,60000);
+assert.ok(market.ARCADE_CYCLE_TAG>market.cycleAt(Date.now())*50);
+assert.equal(market.arcadeCycleAt(market.ARCADE_START_MS-60000),market.cycleAt(market.ARCADE_START_MS-60000));
+const arcadeStart=market.arcadeCycleAt(market.ARCADE_START_MS);
+assert.equal(arcadeStart,market.ARCADE_CYCLE_TAG+Math.floor(market.ARCADE_START_MS/60000));
+assert.equal(market.arcadeCycleAt(market.ARCADE_START_MS+60000),arcadeStart+1);
+assert.equal(market.tickIntervalFor(arcadeStart),60000);
+assert.equal(market.tickIntervalFor(market.cycleAt(market.ARCADE_START_MS-60000)),300000);
+for(const offset of [0,1,2,4,5,60,359,360,700]){
+ const tick=arcadeStart+offset;
+ const session=market.marketSessionAt(tick);
+ assert.equal(session.endCycle-session.startCycle,360,"Catalyst must remain six hours under minute cycles");
+ assert.ok(session.startCycle<=tick&&tick<session.endCycle);
+ assert.equal(market.sessionImpactAt(session.featured,session.startCycle),0);
+ assert.equal(market.sessionImpactAt(session.featured,session.endCycle),0);
+ const bulletin=market.headlineAt(tick);
+ assert.equal(bulletin.publishedCycle,tick-((tick-market.ARCADE_CYCLE_TAG)%5));
+ assert.ok(bulletin.story.headline);
+ for(const stock of market.STOCKS){
+  const price=market.priceAt(stock.symbol,tick);
+  assert.ok(Number.isFinite(price)&&price>0);
+  assert.equal(price,market.priceAt(stock.symbol,tick),"Shared price reproducible on every device");
+ }
+}
+for(const offset of [0,1,5,10,15]){
+ const tick=arcadeStart+offset;
+ assert.equal(market.headlineAt(tick).story,market.headlineAt(tick+Math.min(4,4-offset%5)).story,"Bulletins stay for five minutes");
+}
+for(const symbol of ["DUCK","MOO","PANDA","BLUE","TITAN","CLOWN"]){
+ const quotes=Array.from({length:30},(_,i)=>market.priceAt(symbol,arcadeStart+i));
+ assert.ok(new Set(quotes).size>=12,"Fast arcade prices should actually change between minutes");
+}
+const newTrade=market.executeOrder(market.defaultPortfolio(),"MOO","buy",2,arcadeStart);
+assert.ok(newTrade.ok,"Versioned market quotes allow ordinary trades");
+const arcadeMigration=readFileSync(resolve("supabase/migrations/202611110010_pod_exchange_arcade_minute_settlement.sql"),"utf8");
+assert.match(arcadeMigration,/1000000000\+floor\(extract\(epoch from now\(\)\)\/60\)/,"Database checks the minute clock");
+assert.match(arcadeMigration,/floor\(extract\(epoch from now\(\)\)\/300\)/,"Old five-minute trades remain accepted");
+
 for(let block=100;block<112;block++){
  const stories=Array.from({length:market.NEWS.length},(_,i)=>market.newsAt((block*market.NEWS.length+i)*3));
  assert.equal(new Set(stories.map(story=>story.headline)).size,market.NEWS.length,
