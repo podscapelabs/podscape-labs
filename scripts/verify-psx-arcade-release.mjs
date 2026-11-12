@@ -20,6 +20,8 @@ assert.match(ui,/if\(!saveLocalSnapshot\(result\.portfolio/,"Local trades must s
 assert.match(ui,/!response\.ok\|\|!data\.exists\|\|!data\.portfolio/,"Cloud failures must not overwrite saved holdings");
 assert.match(api,/quoteForCycle\(engine,trade\.symbol,trade\.cycle\)/,"Server independently verifies trade prices");
 assert.match(market,/priceAt\(symbol,cycle\)/,"Historical prices remain reproducible");
+assert.ok(market.includes(`.in("state",["active","retired"])`),"Published prices must survive retired releases");
+assert.ok(market.includes(`.lte("cutover_cycle",arcadeCycleAt(Date.now()))`),"Future cutovers must not begin early");
 for(const className of ["marketPulse","intelligenceContent","intelligenceRumour","pulsePrimary"]){
  assert.ok(styles.includes("."+className+"{"),"Missing themed arcade style: "+className);
 }
