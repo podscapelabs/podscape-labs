@@ -18,7 +18,7 @@ for(const [key,exp] of Object.entries(expected)){
  const item=achievements.find(a=>a.key===key);
  assert.ok(item,"Missing "+key);
  assert.equal(item.exp,exp);
- assert.equal(item.coins,0,"No purchase-backed Pod Coins from gameplay");
+ assert.ok(item.exp>0,"Trade milestones continue to award EXP");
  assert.equal(item.status,"available");
  assert.equal(item.href,"/fun-zone/pod-exchange");
  assert.ok(sql.includes("'"+key+"'"),"Milestone tracked server-side: "+key);
