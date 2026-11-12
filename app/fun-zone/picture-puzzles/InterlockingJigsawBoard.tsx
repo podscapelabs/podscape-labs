@@ -35,7 +35,12 @@ function newPositions(size:number,randomize=true):PiecePosition[]{
  return indices.map(slot=>({x:stepX*(slot%cols)+(stepX-unit)/2,y:TRAY_Y+Math.floor(slot/cols)*stepY,placed:false}));
 }
 function isValidPositions(value:unknown,size:number):value is PiecePosition[]{
- return Array.isArray(value)&&value.length===size*size&&value.every(p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&Math.abs(p.x)<5000&&Math.abs(p.y)<5000&&typeof p.placed==="boolean");
+ const unit=BOARD/size;
+ return Array.isArray(value)&&value.length===size*size&&value.every((p,i)=>{
+  if(!p||!Number.isFinite(p.x)||!Number.isFinite(p.y)||typeof p.placed!=="boolean")return false;
+  if(p.placed)return p.x===BOARD_X+(i%size)*unit&&p.y===BOARD_Y+Math.floor(i/size)*unit;
+  return p.x>=0&&p.x<=WIDTH-unit&&p.y>=0&&p.y<=TRAY_Y+Math.ceil(size*size/(size===3?3:4))*unit*1.38+35-unit;
+ });
 }
 export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,size,onProgress,onComplete,onReset}:Props){
  const count=size*size,unit=BOARD/size,cols=size===3?3:4,rows=Math.ceil(count/cols);
