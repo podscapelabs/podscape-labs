@@ -38,7 +38,8 @@ function validSlidingSave(value:unknown,size:number):value is {tiles:number[];in
   if(!adjacent(move,blank,size))return false;
   [board[blank],board[move]]=[board[move],board[blank]];
  }
- return board.every((tile,i)=>tile===v.tiles[i])&&
+ const savedTiles=v.tiles;
+ return board.every((tile,i)=>tile===savedTiles[i])&&
   v.finished===board.every((tile,i)=>tile===i);
 }
 function SlidingPuzzleBoard({userId,id,title,description,imageAlt,learningNote,imageUrl,difficulty,puzzleType,level,rewardsEnabled,nextHref}:{userId:string;id:string;title:string;description:string;imageAlt:string;learningNote:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string}){
