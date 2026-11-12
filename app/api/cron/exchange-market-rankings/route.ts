@@ -1,6 +1,7 @@
 import {NextResponse} from "next/server";
 import {getSupabaseAdmin} from "@/lib/supabase-admin";
 import {STARTING_BUCKS,arcadeCycleAt,isValidPortfolioSnapshot,totalValue,type Portfolio} from "@/lib/pod-exchange";
+import {getActivePsxV3,quotesForCycle} from "@/lib/psx-v3-market-server";
 export const dynamic="force-dynamic";
 // Once a week, only the server can create a baseline for next week's Movers board.
 // Do not generate a retrospective baseline from user-selected values.
@@ -16,6 +17,8 @@ export async function GET(request:Request){
  // Snapshot the same minute-cycle quote shown to traders and live leaderboard viewers.
  // Existing prior-week baselines are immutable and are never recalculated.
  const weekStart=now.toISOString().slice(0,10),cycle=arcadeCycleAt(now.getTime());
+ const engine=await getActivePsxV3();
+ const quotes=quotesForCycle(engine,cycle);
  const previousWeek=new Date(now.getTime()-7*86400000).toISOString().slice(0,10);
  const candidates:Array<{userId:string;value:number;returnPct:number;weeklyPct:number|null}>=[];
  let created=0;
@@ -38,7 +41,7 @@ export async function GET(request:Request){
    const records=(wallets.data||[]).flatMap(w=>{
     const portfolio:Portfolio={cash:Number(w.cash),holdings:w.holdings as Record<string,number>,trades:[]};
     if(!isValidPortfolioSnapshot(portfolio))return [];
-    const baseline=totalValue(portfolio,cycle);
+    const baseline=totalValue(portfolio,cycle,quotes);
     if(!Number.isFinite(baseline)||baseline<=0)return [];
     const previous=oldBaselines.get(w.user_id);
     candidates.push({userId:w.user_id,value:baseline,
