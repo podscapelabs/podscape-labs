@@ -54,3 +54,52 @@
 @media(max-width:600px){.heading{min-height:170px;border-radius:18px}.heroArt{display:none}.grid{grid-template-columns:1fr}.card{min-height:0;padding:14px}.quickCard{padding:11px}.quickIcon{width:34px;height:34px}.quickIcon svg{width:19px;height:19px}.heading h1{font-size:2.35rem}.page{padding-bottom:130px}}
 @media(max-width:370px){.quickCard{gap:6px}.quickCard small{font-size:.61rem}}
 @media(prefers-reduced-motion:reduce){.card{transition:none}}
+
+
+/* Owner Studio: compact, searchable desk directory across phone and desktop. */
+.directory{margin-top:8px}
+.directoryTools{display:grid;gap:11px;margin:0 0 14px}
+.searchLabel{display:flex;align-items:center;gap:9px;width:100%;min-height:46px;padding:0 13px;border:1px solid var(--line);border-radius:14px;background:var(--paper);color:var(--forest)}
+.searchLabel svg{width:19px;height:19px;flex:none}
+.searchLabel input{flex:1;min-width:0;padding:11px 0;background:transparent;border:0;outline:none;font:inherit;font-size:.82rem;color:var(--ink)}
+.searchLabel input::placeholder{color:var(--muted)}
+.searchLabel:focus-within{outline:2px solid var(--forest);outline-offset:2px}
+.filters{display:flex;gap:7px;overflow:auto;padding-bottom:2px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.filters button{flex:none;min-height:37px;padding:8px 13px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--muted);font:inherit;font-size:.72rem;font-weight:750;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--forest);color:var(--canvas);border-color:var(--forest)}
+.directory .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.directory .card{min-height:95px;padding:13px;align-items:center;border-radius:14px}
+.directory .card>.symbol{width:38px;height:38px}
+.directory .card>.copy{gap:4px}
+.directory .card>.copy small{font-size:.55rem}
+.directory .card>.copy strong{font-size:.79rem}
+.directory .card>.copy span{font-size:.66rem;line-height:1.35}
+.directory .card>svg{width:17px;height:17px;flex:none;color:var(--forest)}
+.noResults{border:1px dashed var(--line);border-radius:16px;padding:26px;text-align:center;background:var(--paper)}
+.noResults strong{font-size:.88rem}
+.noResults p{font-size:.72rem;color:var(--muted)}
+.noResults button{border:0;border-radius:999px;background:var(--forest);color:var(--canvas);padding:10px 15px;cursor:pointer}
+@media(max-width:950px){.directory .grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){
+ .heading{min-height:150px;padding:22px;margin-bottom:22px}
+ .heading h1{font-size:2.15rem}
+ .heroActions{margin-top:15px}
+ .quickSection{margin-bottom:24px}
+ .quickGrid{gap:8px}
+ .quickCard{min-height:66px;padding:10px;gap:8px}
+ .quickIcon{width:32px;height:32px}
+ .quickCard>svg{display:none}
+ .quickCard strong{font-size:.74rem}
+ .quickCard small{font-size:.59rem}
+ .directory .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .directory .card{min-height:84px;align-items:flex-start;padding:11px 10px;gap:8px}
+ .directory .card>.symbol{width:31px;height:31px;border-radius:10px}
+ .directory .card>.symbol svg{width:18px;height:18px}
+ .directory .card>.copy strong{font-size:.74rem;line-height:1.25}
+ .directory .card>.copy small{font-size:.5rem}
+ .directory .card>.copy span{display:none}
+ .directory .card>svg{display:none}
+ .other{margin-top:25px}
+}
+@media(max-width:360px){.directory .card{gap:5px;padding:9px}.directory .card>.symbol{width:27px;height:27px}.quickGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
