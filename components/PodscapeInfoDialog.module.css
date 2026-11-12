@@ -1,0 +1,14 @@
+.dialog{position:fixed;inset:0;width:min(590px,calc(100% - 30px));max-width:none;max-height:min(86dvh,790px);margin:auto;padding:0;overflow:hidden;border:1px solid var(--ps-border,var(--border));border-radius:22px;background:var(--ps-surface,var(--surface));color:var(--ps-text,var(--text-primary));box-shadow:0 25px 85px rgba(0,0,0,.28)}
+.dialog::backdrop{background:color-mix(in srgb,var(--ps-bg,var(--background)) 80%,transparent);backdrop-filter:blur(7px)}
+.content{display:flex;flex-direction:column;max-height:min(86dvh,790px);min-height:0}
+.header{display:flex;align-items:center;justify-content:space-between;flex:none;gap:16px;padding:18px 23px 11px}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;color:var(--ps-accent,var(--accent));font-size:11px;font-weight:850;letter-spacing:.065em}
+.eyebrow svg{width:20px;height:20px}
+.close{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:50%;border:1px solid var(--ps-border,var(--border));background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-text,var(--text-primary));cursor:pointer}
+.close svg{width:19px;height:19px}
+.body{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:6px 23px 26px}
+.body h2{margin:0;font:500 clamp(25px,5vw,35px)/1.12 var(--ps-font-display,var(--display));letter-spacing:-.025em;overflow-wrap:anywhere}
+.description{margin:13px 0 0;line-height:1.58;color:var(--ps-text-secondary,var(--text-secondary));font-size:14px}
+.dialog :is(button,a):focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:3px}
+@media(max-width:600px){.dialog{width:100%;max-height:calc(91dvh - env(safe-area-inset-top,0px));margin:auto 0 0;border-radius:23px 23px 0 0;border-bottom:0}.content{max-height:calc(91dvh - env(safe-area-inset-top,0px))}.header{padding:15px 19px 10px}.body{padding:4px 19px calc(25px + env(safe-area-inset-bottom,0px))}.body h2{font-size:clamp(24px,7vw,32px)}}
+@media(prefers-reduced-motion:no-preference){.dialog[open]{animation:podscapeSheetRise .2s ease-out}@keyframes podscapeSheetRise{from{opacity:.7;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}}
