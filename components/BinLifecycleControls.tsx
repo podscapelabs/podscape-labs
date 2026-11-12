@@ -5,7 +5,7 @@ import {useRouter} from "next/navigation";
 import {deleteEnclosure,setEnclosureArchived} from "@/app/keeper/actions";
 import styles from "./KeeperWorkspace.module.css";
 
-export function BinLifecycleControls({id,name,archived,compact=false}:{id:string;name:string;archived:boolean;compact?:boolean}){
+export function BinLifecycleControls({id,name,archived,compact=false,speciesId}:{id:string;name:string;archived:boolean;compact?:boolean;speciesId?:string}){
  const router=useRouter();
  const [pending,start]=useTransition();
  const [error,setError]=useState("");
@@ -27,7 +27,7 @@ export function BinLifecycleControls({id,name,archived,compact=false}:{id:string
    try{
     const result=await deleteEnclosure({id,confirmed:true});
     if(!result.success){setError(result.error||"Could not delete this bin.");return;}
-    router.replace("/keeper/collection");
+    router.replace("/keeper/collection"+(speciesId?"?species="+encodeURIComponent(speciesId)+"#colonies":""));
     router.refresh();
    }catch{setError("Could not confirm deletion. Refresh your bins before trying again.");}
   });

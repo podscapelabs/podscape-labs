@@ -8,11 +8,13 @@ import Image from "next/image";
 import {logKeeperEvent,undoKeeperEvent} from "@/app/keeper/actions";
 import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
 import {BinSwitcher,type SwitchableBin} from "@/components/BinSwitcher";
+import {useUnsavedBinChanges} from "@/components/useUnsavedBinChanges";
+import {binDisplayName} from "@/lib/bin-identity";
 import {BinLifecycleControls} from "@/components/BinLifecycleControls";
 import styles from "./ColonyWorkspace.module.css";
 
 type CareEvent={id:string;kind:string;note:string;createdAt:string;quantityChange:number|null};
-type Colony={id:string;name:string;label:string;species:string;image:string|null;status:string;breeding:string;quantity:number;archived:boolean;enclosureType:string};
+type Colony={id:string;name:string;label:string;species:string;speciesId:string;image:string|null;status:string;breeding:string;quantity:number;archived:boolean;enclosureType:string};
 function dayLabel(timestamp:string){
  const d=new Date(timestamp);
  return Number.isNaN(d.getTime())?"Date unavailable":d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
@@ -29,6 +31,7 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
  const [lastSaved,setLastSaved]=useState<string|null>(null);
  const [undoing,setUndoing]=useState(false);
  const [notesOpen,setNotesOpen]=useState(initialPanel==="observation"&&!colony.archived);
+ useUnsavedBinChanges(Boolean(observation.trim()));
  const id=encodeURIComponent(colony.id);
  const careUrl="/keeper/scan?bin="+id+"&mode=care";
  const lastMisted=events.find(x=>x.note==="Misted")?.createdAt||careDates.Misted;
@@ -118,11 +121,11 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
    </section>
  };
  return <div className={styles.root}>
-  <nav className={styles.breadcrumb} aria-label="Colony navigation"><Link href="/keeper">Manager</Link><span>/</span><Link href="/keeper/collection">My Colonies</Link><span>/</span><span>{colony.name}</span></nav>
+  <nav className={styles.breadcrumb} aria-label="Colony navigation"><Link href="/keeper">Manager</Link><span>/</span><Link href={"/keeper/collection?species="+encodeURIComponent(colony.speciesId)+"#colonies"}>My Colonies</Link><span>/</span><span>{binDisplayName({id:colony.id,name:colony.name})}</span></nav>
   <header className={styles.hero}>
    <div className={styles.heroImage}>{colony.image?<Image src={colony.image} alt="" fill sizes="(max-width:720px) 70px,96px" style={{objectFit:"cover"}}/>:<PodscapeLineIcon name="jar"/>}</div>
    <div className={styles.heroText}>
-    <p>MANAGER / COLONY</p><h1>{colony.species}</h1><strong>{colony.name}</strong>
+    <p>MANAGER / COLONY</p><h1>{colony.species}</h1><strong>{binDisplayName({id:colony.id,name:colony.name})}</strong>
     <span>{colony.label||"No location assigned"} · {colony.status.replaceAll("-"," ")}{colony.archived?" · Archived":""}</span>
    </div>
   </header>
@@ -133,7 +136,7 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
     <Link href={"/keeper/"+id+"/history"}>History</Link>
     {referenceUrl?<Link href={referenceUrl}>Species reference</Link>:null}
    </nav>
-   <BinLifecycleControls id={colony.id} name={colony.name} archived={colony.archived} compact/>
+   <BinLifecycleControls id={colony.id} name={colony.name} speciesId={colony.speciesId} archived={colony.archived} compact/>
   </div>
   <BinSwitcher bins={navigationBins} currentId={colony.id} disabled={pending||undoing} onSelect={nextId=>{
    if(observation.trim()&&!window.confirm("Leave this bin without saving your observation?"))return;

@@ -3,6 +3,8 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
 import Image from "next/image";
+import {useUnsavedBinChanges} from "./useUnsavedBinChanges";
+import {binDisplayName} from "@/lib/bin-identity";
 import jsQR from "jsqr";
 import { logKeeperEvent, undoKeeperEvent, logKeeperEventBatch, undoKeeperEventBatch } from "@/app/keeper/actions";
 import styles from "./KeeperScanner.module.css";
@@ -65,6 +67,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careMode=f
  const [showBinPicker,setShowBinPicker]=useState(false);
  const [showHistory,setShowHistory]=useState(false);
  const [customNote,setCustomNote]=useState("");const [customDate,setCustomDate]=useState("");
+ useUnsavedBinChanges(Boolean(customNote.trim()));
  const [recent,setRecent]=useState<CareRecord[]>([]);
  const [undoneIds,setUndoneIds]=useState<string[]>([]);
  const [lastDates,setLastDates]=useState<Record<string,Record<string,string>>>(careDates);
@@ -232,15 +235,15 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careMode=f
  {state==="idle"&&!selected?<section className={styles.quickChoose} aria-label="Choose a bin to log care">
    <div className={styles.quickChooseHeader}><div><p className={styles.kicker}>YOUR ENCLOSURES</p><h2>Choose a bin</h2><p>Tap a colony to start logging care.</p></div><span>{bins.length} {bins.length===1?"bin":"bins"}</span></div>
    {bins.length?<><div className={styles.quickChooseSearch}><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" aria-label="Find a bin to log care" placeholder="Search species or bin name…" value={binSearch} onChange={event=>{setBinSearch(event.target.value);setShowAllBins(false)}} autoComplete="off"/>{binSearch?<button type="button" aria-label="Clear bin search" onClick={()=>setBinSearch("")}>×</button>:null}</div>
-    <div className={styles.quickChooseList}>{filteredBins.length?visibleChoices.map(bin=><button key={bin.id} type="button" className={styles.quickChooseBin} onClick={()=>match(bin.id)}><span className={styles.quickChoosePhoto}>{bin.image?<Image src={bin.image} alt="" fill sizes="46px"/>:<span aria-hidden="true"><PodscapeLineIcon name="bin"/></span>}</span><span className={styles.quickChooseIdentity}><strong>{bin.species}</strong><small>{bin.name}{bin.label?" · "+bin.label:""}</small></span><span aria-hidden="true" className={styles.quickChooseArrow}>→</span></button>):<p className={styles.quickChooseEmpty}>No matching bins. Try another species or enclosure name.</p>}</div>{!binSearch.trim()&&!showAllBins&&filteredBins.length>8?<button type="button" className={styles.showMoreBins} onClick={()=>setShowAllBins(true)}>Show all {filteredBins.length} bins ↓</button>:null}{showAllBins&&filteredBins.length>8&&!binSearch.trim()?<button type="button" className={styles.showMoreBins} onClick={()=>setShowAllBins(false)}>Show fewer bins ↑</button>:null}</>
+    <div className={styles.quickChooseList}>{filteredBins.length?visibleChoices.map(bin=><button key={bin.id} type="button" className={styles.quickChooseBin} onClick={()=>match(bin.id)}><span className={styles.quickChoosePhoto}>{bin.image?<Image src={bin.image} alt="" fill sizes="46px"/>:<span aria-hidden="true"><PodscapeLineIcon name="bin"/></span>}</span><span className={styles.quickChooseIdentity}><strong>{bin.species}</strong><small>{binDisplayName({id:bin.id,name:bin.name})}{bin.label?" · "+bin.label:""}</small></span><span aria-hidden="true" className={styles.quickChooseArrow}>→</span></button>):<p className={styles.quickChooseEmpty}>No matching bins. Try another species or enclosure name.</p>}</div>{!binSearch.trim()&&!showAllBins&&filteredBins.length>8?<button type="button" className={styles.showMoreBins} onClick={()=>setShowAllBins(true)}>Show all {filteredBins.length} bins ↓</button>:null}{showAllBins&&filteredBins.length>8&&!binSearch.trim()?<button type="button" className={styles.showMoreBins} onClick={()=>setShowAllBins(false)}>Show fewer bins ↑</button>:null}</>
     :<div className={styles.quickChooseEmpty}>You do not have any active bins yet. <Link href="/keeper/new">Add your first bin →</Link></div>}
    <div className={styles.quickChooseFooter}><button type="button" onClick={beginScan}>▣ Scan a QR label instead</button><Link href="/keeper/new">+ Add bin</Link></div>
   </section>:null}
  {selected&&state==="idle"?<div className={styles.careWorkspace}>
-   <div className={styles.careTopline}><span>MANAGER / COLONY WORKSPACE</span><Link href="/keeper">← Manager</Link></div>
+   <div className={styles.careTopline}><span>MANAGER / QUICK CARE</span><Link href={"/keeper/"+selected.id}>← Back to bin</Link></div>
    <div className={styles.careIdentity}>
     {selected.image?<div className={styles.careThumb}><Image src={selected.image} alt="" fill sizes="84px"/></div>:<div className={styles.careThumbFallback}><PodscapeLineIcon name="bin"/></div>}
-    <div className={styles.careIdentityText}><h1>{selected.species}</h1><p><strong>{selected.name}</strong>{selected.label?" · "+selected.label:""}</p><span>{selected.status.replaceAll("-"," ")} · Breeding: {selected.breeding.replaceAll("-"," ")}</span></div>
+    <div className={styles.careIdentityText}><h1>{selected.species}</h1><p><strong>{binDisplayName({id:selected.id,name:selected.name})}</strong>{selected.label?" · "+selected.label:""}</p><span>{selected.status.replaceAll("-"," ")} · Breeding: {selected.breeding.replaceAll("-"," ")}</span></div>
    </div>
    <BinSwitcher bins={bins} currentId={selected.id} disabled={pending||undoPending||multiCare} onSelect={id=>{
     const bin=bins.find(item=>item.id===id);
@@ -253,7 +256,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careMode=f
       description={multiCare?"Choose which bins will receive this care entry.":"Quick Care is focused on the selected bin."}
       action={<button type="button" className={styles.modeButton} aria-pressed={multiCare} onClick={toggleMultiCare} disabled={pending||undoPending}>{multiCare?"Done selecting":"Multi-care"}</button>}/>
     {!multiCare?<div className={styles.compactBinSwitch}>
-      <div><strong>{selected.name}</strong><small>{selected.species}{speciesBins.length>1?" · "+speciesBins.length+" bins in this species":""}</small></div>
+      <div><strong>{binDisplayName({id:selected.id,name:selected.name})}</strong><small>{selected.species}{speciesBins.length>1?" · "+speciesBins.length+" bins in this species":""}</small></div>
       <button type="button" disabled={pending||undoPending||speciesBins.length<=1} aria-expanded={showBinPicker} onClick={()=>setShowBinPicker(x=>!x)}>{showBinPicker?"Hide bins":"Switch bin"}</button>
       <button type="button" disabled={pending||undoPending} onClick={()=>{setSelected(null);setState("idle");setShowBinPicker(false);setBinSearch("");setMultiCare(false);}}>Other species</button>
      </div>:null}
@@ -262,7 +265,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careMode=f
       <div className={styles.selectionActions}><button type="button" onClick={selectSpecies} disabled={pending||undoPending}>All {selected.species} ({speciesBins.length})</button><button type="button" onClick={selectAllEnclosures} disabled={pending||undoPending}>All bins ({bins.length})</button></div>
     </div>:null}
     {(multiCare||showBinPicker)?<div className={styles.binCarousel} role="group" aria-label={multiCare?"Choose bins for bulk care":"Other enclosures of this species"}>
-      {(multiCare?bins:speciesBins).map(bin=>{const marked=multiCare?chosenBins.includes(bin.id):bin.id===selected.id;return <button type="button" key={bin.id} className={marked?styles.binCardSelected:styles.binCard} onClick={()=>multiCare?toggleChosen(bin.id):switchBin(bin)} aria-pressed={marked} disabled={pending||undoPending}><span className={styles.binCardHeading}>{multiCare?bin.species:bin.name}<span aria-hidden="true">{marked?"✓":""}</span></span><strong>{multiCare?bin.name:bin.label||"No shelf assigned"}</strong></button>;})}
+      {(multiCare?bins:speciesBins).map(bin=>{const marked=multiCare?chosenBins.includes(bin.id):bin.id===selected.id;return <button type="button" key={bin.id} className={marked?styles.binCardSelected:styles.binCard} onClick={()=>multiCare?toggleChosen(bin.id):switchBin(bin)} aria-pressed={marked} disabled={pending||undoPending}><span className={styles.binCardHeading}>{multiCare?bin.species:binDisplayName({id:bin.id,name:bin.name})}<span aria-hidden="true">{marked?"✓":""}</span></span><strong>{multiCare?binDisplayName({id:bin.id,name:bin.name}):bin.label||"No shelf assigned"}</strong></button>;})}
      </div>:null}
     {multiCare?<p className={styles.bulkHint}>Bulk care writes a separate private log to each selected bin. Undo reverses the batch.</p>:null}
    </div>
@@ -283,7 +286,7 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careMode=f
     <div className={styles.compactHistoryHead}><strong>Recent care</strong><button type="button" aria-expanded={showHistory} onClick={()=>setShowHistory(v=>!v)}>{showHistory?"Hide records":"Show records"}</button><Link className={styles.historyFullLink} href={"/keeper/"+selected.id+"/history"}>Full history →</Link></div>
     {showHistory?(historyForBin.length?<div className={styles.historyList}>{historyForBin.map(event=><div key={event.id} className={styles.historyEntry}><div><strong>{event.note||event.kind.replaceAll("-"," ")}</strong><small>{event.kind.replaceAll("-"," ")}</small></div><time dateTime={event.createdAt}>{new Date(event.createdAt).toLocaleDateString(undefined,{month:"short",day:"numeric"})}</time></div>)}</div>:<p className={styles.historyEmpty}>No recorded care yet. Your next log will appear here.</p>):<p className={styles.historyEmpty}>{historyForBin.length?historyForBin.length+" recent "+(historyForBin.length===1?"entry":"entries"):"Your next care entry will appear here."}</p>}
    </div>
-   <div className={styles.careFooter}><Link className={styles.settingsLink} href={"/keeper/"+selected.id+"/details"}>Colony settings & QR ↗</Link><button type="button" className={styles.nextBin} onClick={beginScan} disabled={pending||undoPending}>▣ Scan next bin</button></div>
+   <div className={styles.careFooter}><Link className={styles.settingsLink} href={"/keeper/"+selected.id+"/details"}>Bin settings & QR ↗</Link><button type="button" className={styles.nextBin} onClick={beginScan} disabled={pending||undoPending}>▣ Scan next bin</button></div>
 
 
   </div>:null}

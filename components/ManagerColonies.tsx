@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import {binDisplayName} from "@/lib/bin-identity";
 import Image from "next/image";
 import Link from "next/link";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
@@ -9,21 +10,26 @@ import { speciesDisplayName, speciesScientificName, type SpeciesRecord } from "@
 import type { Enclosure } from "@/lib/keeper";
 import styles from "./ManagerColonies.module.css";
 
-export function ManagerColonies({ records, bins, collectedIds, intent }: {
+export function ManagerColonies({ records, bins, collectedIds, intent, initialSpecies }: {
   records: SpeciesRecord[];
   bins: Enclosure[];
   collectedIds: string[];
   intent?: "notes";
+  initialSpecies?:string;
 }) {
   const [tab, setTab] = useState<"species" | "bins">(intent==="notes"?"bins":"species");
   const [query, setQuery] = useState("");
-  const [expanded,setExpanded]=useState<string|null>(null);
+  const [expanded,setExpanded]=useState<string|null>(initialSpecies||null);
   const binHref=(id:string)=>"/keeper/"+id+(intent==="notes"?"?panel=observation#observation":"");
   const [genus, setGenus] = useState("all");
   const [care, setCare] = useState("all");
   const [sort, setSort] = useState("recent");
+  const binsBySpecies=new Map<string,Enclosure[]>();
+  for(const bin of bins){const group=binsBySpecies.get(bin.speciesId)||[];group.push(bin);binsBySpecies.set(bin.speciesId,group);}
+  const speciesTotals=new Map([...binsBySpecies].map(([id,group])=>[id,group.reduce((total,bin)=>total+bin.quantity,0)]));
+  const recentFor=(record:SpeciesRecord)=>Math.max(Date.parse(record.updatedAt)||0,...(binsBySpecies.get(record.id)||[]).map(bin=>Date.parse(bin.updatedAt)||0));
   const saved = new Set(collectedIds);
-  const entries = records.filter(record => saved.has(record.id) || bins.some(bin => bin.speciesId === record.id));
+  const entries = records.filter(record => saved.has(record.id) || binsBySpecies.has(record.id));
   const speciesMap = new Map(records.map(record => [record.id, record]));
   const genera = [...new Set(entries.map(record => record.genus).filter(Boolean))].sort();
   const careLevels = [...new Set(entries.map(record => record.careLevel).filter(Boolean))].sort();
@@ -34,7 +40,7 @@ export function ManagerColonies({ records, bins, collectedIds, intent }: {
     (care === "all" || record.careLevel === care) &&
     (!lowered || matching([speciesDisplayName(record), speciesScientificName(record), record.catalogueNumber].join(" ")))
   ).sort((a,b) => sort === "name" ? speciesDisplayName(a).localeCompare(speciesDisplayName(b)) : sort === "count" ?
-    bins.filter(bin=>bin.speciesId===b.id).reduce((s,bin)=>s+bin.quantity,0) - bins.filter(bin=>bin.speciesId===a.id).reduce((s,bin)=>s+bin.quantity,0) : 0);
+    (speciesTotals.get(b.id)||0) - (speciesTotals.get(a.id)||0) : recentFor(b)-recentFor(a));
   const visibleBins = bins.filter(bin => {
     const record = speciesMap.get(bin.speciesId);
     return !lowered || matching([bin.name, bin.label, record ? speciesDisplayName(record) : ""].join(" "));
@@ -56,7 +62,7 @@ export function ManagerColonies({ records, bins, collectedIds, intent }: {
     </div>
     <div className={styles.cards}>
     {tab==="species" ? visibleSpecies.map(record=>{
-      const owned = bins.filter(bin=>bin.speciesId===record.id);
+      const owned = binsBySpecies.get(record.id)||[];
       const total = owned.reduce((sum,bin)=>sum+bin.quantity,0);
       const status = owned.find(bin=>bin.isPrimary)?.status || owned[0]?.status;
       const open=expanded===record.id;
@@ -72,7 +78,7 @@ export function ManagerColonies({ records, bins, collectedIds, intent }: {
         </button>
         {open?<div id={"species-bins-"+record.id} className={styles.groupDetails}>
           {owned.length?owned.map(bin=><div className={styles.groupBin} key={bin.id}>
-            <Link href={binHref(bin.id)}><strong>{bin.name}</strong><small>{bin.label||"No location"} · {bin.quantity} recorded · {bin.status.replaceAll("-"," ")}</small></Link>
+            <Link href={binHref(bin.id)}><strong>{binDisplayName({...bin,label:""})}</strong><small>{bin.label||"No location"} · {bin.quantity} recorded · {bin.status.replaceAll("-"," ")}</small></Link>
             <Link href={"/keeper/scan?bin="+bin.id+"&mode=care"} className={styles.quickCare} aria-label={"Quick Care for "+bin.name}><PodscapeLineIcon name="droplet"/> Care</Link>
           </div>):<p className={styles.noBins}>This species is saved for reference. No enclosure has been created.</p>}
           <div className={styles.groupActions}><QuickAddBin speciesId={record.id} speciesName={speciesDisplayName(record)}/><Link href={"/ledger/"+record.slug}>Species reference →</Link></div>
@@ -82,7 +88,7 @@ export function ManagerColonies({ records, bins, collectedIds, intent }: {
       const record=speciesMap.get(bin.speciesId);
       return <Link className={styles.card} key={bin.id} href={binHref(bin.id)}>
         <span className={styles.photo}>{record?.image?<Image src={record.image} alt="" fill sizes="(max-width:700px) 90px,130px" style={{objectFit:"cover"}}/>:<PodscapeLineIcon name="bin"/>}</span>
-        <span className={styles.cardBody}><strong>{bin.name}</strong><em>{record?speciesDisplayName(record):"Species record"}</em><small>{bin.label||"Colony record"}</small><span className={styles.counts}><span><PodscapeLineIcon name="community"/>{bin.quantity} count</span></span></span>
+        <span className={styles.cardBody}><strong>{binDisplayName({...bin,label:""})}</strong><em>{record?speciesDisplayName(record):"Species record"}</em><small>{bin.label||"Colony record"}</small><span className={styles.counts}><span><PodscapeLineIcon name="community"/>{bin.quantity} count</span></span></span>
         <span className={styles.status}>{bin.status.replaceAll("-"," ")}</span><span className={styles.arrow}>›</span>
       </Link>;
     })}
