@@ -82,4 +82,31 @@ create trigger psx_event_history_immutable before update or delete
  on public.psx_market_event_history for each row
  execute function public.psx_reject_published_history_mutation();
 
+-- Guard release fingerprint, first quote anchors and clock from changing in place.
+-- A new version is required to change any historical price-driving parameter.
+create or replace function public.psx_guard_market_version_change()
+returns trigger language plpgsql set search_path='' as $
+begin
+ if tg_op='DELETE' then
+  raise exception 'Cannot delete a PSX market version with historical prices';
+ end if;
+ if new.version is distinct from old.version
+   or new.cutover_cycle is distinct from old.cutover_cycle
+   or new.cutover_at is distinct from old.cutover_at
+   or new.opening_prices is distinct from old.opening_prices
+   or new.seed_fingerprint is distinct from old.seed_fingerprint
+   or new.created_at is distinct from old.created_at
+ then raise exception 'PSX version pricing parameters are immutable'; end if;
+ if old.state='retired' and new.state<>'retired' then
+  raise exception 'Cannot reactivate an already retired PSX engine'; end if;
+ if old.state='active' and new.state='testing' then
+  raise exception 'An active PSX engine cannot revert to testing'; end if;
+ return new;
+end;
+$;
+drop trigger if exists psx_version_pricing_immutable on public.psx_market_versions;
+create trigger psx_version_pricing_immutable before update or delete
+ on public.psx_market_versions for each row
+ execute function public.psx_guard_market_version_change();
+
 -- Do not create initial active rows, set secrets, run catch-up jobs or alter any trading RPC here.
