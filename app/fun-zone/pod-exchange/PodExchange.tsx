@@ -263,7 +263,7 @@ export function PodExchange(){
      </div>
      <div className={styles.sideSwitch}><button type="button" aria-pressed={side==="buy"} onClick={()=>{setSide("buy");setMessage("");}}>Buy</button><button type="button" aria-pressed={side==="sell"} onClick={()=>{setSide("sell");setMessage("");}}>Sell</button></div>
      <label className={styles.quantity}>Number of shares<input type="number" inputMode="numeric" min={1} max={999999} step={1} value={quantity} onChange={e=>setQuantity(e.target.value)}/></label>
-     <div className={styles.quickTrade}><button type="button" disabled={!ready||maxShares<1} onClick={()=>setQuantity(String(Math.min(999999,maxShares)))}>{side==="buy"?"Max affordable":"Sell all"}</button><span>Quick fill · no trade until you confirm</span></div>
+     <div className={styles.quickTrade}><div className={styles.quickSizes}>{[1,5,10].map(q=><button type="button" key={q} aria-pressed={quantity===String(q)} disabled={!ready||maxShares<q} onClick={()=>setQuantity(String(q))}>{q}</button>)}</div><button type="button" disabled={!ready||maxShares<1} onClick={()=>setQuantity(String(Math.min(999999,maxShares)))}>{side==="buy"?"MAX":"ALL"}</button></div>
      <div className={styles.orderDetails}><span>You own {owned}</span><span>Trade fee (0.5%) {validCount?<DuckBucks amount={fee}/>:"—"}</span><strong>{side==="buy"?"Pay":"Receive"} {validCount?<DuckBucks amount={total}/>:"—"}</strong></div>
      <button className={styles.action} disabled={!allowed} onClick={order} type="button">{pending?"Saving trade…":side==="buy"?"Buy":"Sell"} {company.symbol} shares</button>
      {message?<p className={styles.message} role="status">{message}</p>:null}
