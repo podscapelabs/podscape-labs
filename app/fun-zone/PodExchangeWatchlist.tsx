@@ -1,7 +1,7 @@
 "use client";
 import {useEffect,useState} from "react";
 import Link from "next/link";
-import {cycleAt,decodeSavedPortfolio,defaultPortfolio,priceAt,sanitizePortfolio,STOCKS,STORAGE_KEY,totalValue,type Portfolio} from "@/lib/pod-exchange";
+import {arcadeCycleAt,decodeSavedPortfolio,defaultPortfolio,priceAt,sanitizePortfolio,STOCKS,STORAGE_KEY,totalValue,type Portfolio} from "@/lib/pod-exchange";
 import styles from "./fun-zone-portal.module.css";
 import {DuckBucks,DuckBuckIcon} from "@/components/DuckBucks";
 import {ExchangeCompanyIcon} from "@/components/ExchangeCompanyIcon";
@@ -40,7 +40,7 @@ export function PodExchangeWatchlist(){
   window.addEventListener("podscape-exchange-wallet-updated",update);
   return()=>{mounted=false;window.clearInterval(timer);window.removeEventListener("storage",update);window.removeEventListener("podscape-exchange-wallet-updated",update)}
  },[]);
- const cycle=cycleAt(time??0);
+ const cycle=arcadeCycleAt(time??0);
  const price=priceAt("DUCK",cycle);
  const gain=(price/priceAt("DUCK",cycle-1)-1)*100;
  return <section className={styles.exchangeWidget} aria-label="Duck Bucks watchlist">
