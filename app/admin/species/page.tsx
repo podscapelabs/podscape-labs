@@ -58,7 +58,7 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
           <button className="button button-primary" type="submit">Open record</button>
         </form>
         <nav className={styles.recordLinks} aria-label="Species records">{visibleRecords.map((record) => <Link className={record.id === selected?.id ? "is-active" : ""} href={`/admin/species?view=${archivedView ? "archived" : "active"}&record=${record.id}`} prefetch={false} key={record.id}><small>{record.catalogueNumber}</small><b>{speciesDisplayName(record)}</b><em>{speciesScientificName(record)}</em><span>{record.archivedAt ? "Archived" : `${speciesRecordLabel(record)} · ${record.status}`}</span></Link>)}</nav>
-        {!archivedView ? <form action={createSpeciesRecord}><button className="button button-outline" type="submit">+ New blank record</button></form> : null}
+        {!archivedView ? <form action={createSpeciesRecord}><button className="button button-outline" name="organismGroup" value="isopod" type="submit">+ New isopod record</button><button className="button button-outline" name="organismGroup" value="springtail" type="submit">+ New springtail record</button></form> : null}
       </aside>
 
       {selected ? <section className={`admin-record-editor ${styles.editor}`} key={selected.id}>
