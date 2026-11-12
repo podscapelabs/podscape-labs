@@ -13,7 +13,7 @@ const groups={
 export const colonyWidgetIds=["shortcuts","care","population","environment","observations","activity"] as const;
 export type ColonyWidgetId=(typeof colonyWidgetIds)[number];
 type Layout={order:ColonyWidgetId[];visible:ColonyWidgetId[]};
-const defaultVisible:ColonyWidgetId[]=["shortcuts","care","population","observations"];
+const defaultVisible:ColonyWidgetId[]=["care","population","observations","activity"];
 export const defaultColonyLayout=():Layout=>({order:[...colonyWidgetIds],visible:[...defaultVisible]});
 export function normalizeColonyLayout(value:unknown):Layout{
  if(!value||typeof value!=="object")return defaultColonyLayout();
@@ -71,8 +71,8 @@ export function ColonyDashboardLayout({scope,colonyId,widgets,forceVisible}:{
  return <div className={styles.colonyDashboard} data-workspace-root="colony"
   onPointerMove={event=>{if(editing)dragMove(event)}} onPointerUp={()=>{if(editing)stop()}} onPointerCancel={()=>{if(editing)stop()}}>
   {!editing?<div className={styles.dashboardHeading}>
-    <div><h2>Your widgets</h2></div>
-    <button ref={triggerRef} type="button" onClick={()=>setLibraryOpen(true)} disabled={!ready}>✎ Customize</button>
+    <div><p>YOUR COLONY / AT A GLANCE</p><h2>Colony dashboard</h2></div>
+    <button ref={triggerRef} type="button" onClick={()=>setLibraryOpen(true)} disabled={!ready}>Customize</button>
    </div>:<WorkspaceEditToolbar title="Arrange your colony" description="Drag or move widgets. Your changes apply to this colony on this device." onAdd={()=>{done();setLibraryOpen(true)}} onReset={reset} onDone={done}/>}
   <div className={styles.colonyWidgetGrid} aria-busy={!ready}>
    {ready?visible.map((id,index)=><WorkspaceEditBlock key={id} id={id} scope="colony" label={labels[id]} index={index} count={visible.length} editing={editing} dragging={dragging===id} required={false}
@@ -80,7 +80,7 @@ export function ColonyDashboardLayout({scope,colonyId,widgets,forceVisible}:{
      {widgets[id]}
     </WorkspaceEditBlock>):<p className={styles.emptyDashboard}>Loading your colony layout…</p>}
   </div>
-  {ready&&!editing?<div className={styles.addWidgetFooter}><button type="button" onClick={()=>setLibraryOpen(true)}>＋ Add widgets</button></div>:null}
+  {ready&&!editing?<div className={styles.addWidgetFooter}><button type="button" onClick={()=>setLibraryOpen(true)}>Add widgets +</button></div>:null}
   {ready&&!visible.length?<p className={styles.emptyDashboard}>This colony dashboard is clear. Add a widget to begin.</p>:null}
   {libraryOpen?<div className={home.homeEditorOverlay} onPointerDown={event=>{if(event.target===event.currentTarget)setLibraryOpen(false)}}>
    <div data-colony-widget-library className={styles.colonyWidgetLibrary} role="dialog" aria-modal="true" aria-labelledby="colony-widget-heading">
