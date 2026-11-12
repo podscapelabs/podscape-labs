@@ -61,7 +61,7 @@ export default async function FeedbackDesk({searchParams}:{searchParams:Promise<
    {items.map(item=><article className={styles.card} key={item.id}>
     <div className={styles.cardTop}><div className={styles.chips}><span className={styles.category} data-type={item.category}>{types[item.category]||"Feedback"}</span><span className={styles.state} data-state={item.status}>{stateNames[item.status]||"New"}</span></div><time dateTime={item.created_at}>{formattedDate(item.created_at)}</time></div>
     <p className={styles.message}>{item.message}</p>
-    <div className={styles.context}><span><PodscapeLineIcon name="community"/> {names[item.user_id]||"PodScape member"}</span><span><PodscapeLineIcon name="link"/> Submitted on <Link href={safePage(item.page_path)}>{safePage(item.page_path)}</Link></span></div>
+    <div className={styles.context}><span><PodscapeLineIcon name="community"/> {names[item.user_id]||"PodScape member"}</span><span><PodscapeLineIcon name="arrow-right"/> Submitted on <Link href={safePage(item.page_path)}>{safePage(item.page_path)}</Link></span></div>
     {item.device_info?<details className={styles.details}><summary>Device details</summary><p>{item.device_info}</p></details>:null}
     <form action={updateFeedbackStatus} className={styles.actions}>
      <input type="hidden" name="id" value={item.id}/>
