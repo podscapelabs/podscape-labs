@@ -269,7 +269,7 @@ export function PodExchange(){
    <details className={styles.rules} id="exchange-rules">
    <summary><span><PodscapeLineIcon name="book"/> How to Play</span><span className={styles.rulesHint}>The basics <span aria-hidden="true">⌄</span></span></summary>
    <div className={styles.rulesBody}>
-    <p><strong>Start with 10,000 Duck Bucks.</strong> They&apos;re fictional game currency, not Pod Coins.</p>
+    <p><strong>Start with 10,000 Duck Bucks.</strong> They&apos;re fictional game currency.</p>
     <p><strong>Buy shares</strong> in any of the six companies. You can sell shares you own whenever you like.</p>
     <p><strong>Prices change every five minutes</strong> based on market moods, news and six-hour catalysts after the market update.</p>
     <p><strong>Grow your portfolio</strong> by trading wisely. Its value is your remaining Duck Bucks plus the current value of your shares.</p>
