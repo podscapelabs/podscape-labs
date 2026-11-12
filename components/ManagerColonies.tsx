@@ -53,7 +53,7 @@ export function ManagerColonies({ records, bins, allBins=bins, collectedIds, int
       }
     }catch{/* Browser memory is optional. */}
     setMemoryReady(true);
-  },[storageKey,scope,view,explicitView,initialSpecies,intent,router,savedView]);
+  },[storageKey,scope,view,explicitView,initialSpecies,intent,savedView]);
   useEffect(()=>{
     if(!memoryReady)return;
     let position=window.scrollY;
