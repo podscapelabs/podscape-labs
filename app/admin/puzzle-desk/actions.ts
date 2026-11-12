@@ -4,7 +4,7 @@ import {revalidatePath} from "next/cache";
 import {redirect} from "next/navigation";
 import {isAdminAuthenticated} from "@/lib/admin-auth";
 import {getWritableSupabaseAdmin} from "@/lib/supabase-admin";
-import {PUZZLE_BUCKET,DIFFICULTIES,PUZZLE_TYPES} from "@/lib/picture-puzzles";
+import {PUZZLE_BUCKET,DIFFICULTIES,PUZZLE_TYPES,LEVEL_NAMES} from "@/lib/picture-puzzles";
 
 const desk="/admin/puzzle-desk";
 function fields(form:FormData){
@@ -15,7 +15,7 @@ function fields(form:FormData){
  const puzzle_type=String(form.get("puzzle_type")||"jigsaw");
  const difficulty=String(form.get("difficulty")||"easy");
  const level=Number(form.get("level")||1);
- if(title.length<3||title.length>90||description.length>240||image_alt.length<3||image_alt.length>180||learning_note.length>300||!(puzzle_type in PUZZLE_TYPES)||!(difficulty in DIFFICULTIES)||!Number.isInteger(level)||level<1||level>20)return null;
+ if(title.length<3||title.length>90||description.length>240||image_alt.length<3||image_alt.length>180||learning_note.length>300||!(puzzle_type in PUZZLE_TYPES)||!(difficulty in DIFFICULTIES)||!Number.isInteger(level)||level<1||level>LEVEL_NAMES.length)return null;
  return {title,description,image_alt,learning_note,puzzle_type,difficulty,level};
 }
 function refresh(id?:string){revalidatePath(desk);revalidatePath("/fun-zone/picture-puzzles");if(id)revalidatePath("/fun-zone/picture-puzzles/"+id);}
