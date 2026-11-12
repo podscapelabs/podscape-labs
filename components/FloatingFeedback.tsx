@@ -12,7 +12,7 @@ export function FloatingFeedback({enabled}:{enabled:boolean}){
  const [category,setCategory]=useState<Category>("bug"),[message,setMessage]=useState("");
  const [sending,setSending]=useState(false),[success,setSuccess]=useState(false),[error,setError]=useState("");
  const heading=useId(),dialog=useRef<HTMLDivElement>(null),trigger=useRef<HTMLButtonElement>(null);
- const excluded=pathname==="/"||pathname==="/admin"||pathname.startsWith("/auth/")||pathname.startsWith("/account/login")||pathname.startsWith("/account/register")||pathname.startsWith("/account/reset")||pathname.startsWith("/early-access");
+ const excluded=pathname==="/"||pathname.startsWith("/admin")||pathname.startsWith("/account/owner-tools")||pathname.startsWith("/auth/")||pathname.startsWith("/account/login")||pathname.startsWith("/account/register")||pathname.startsWith("/account/reset")||pathname.startsWith("/early-access");
  useEffect(()=>setMounted(true),[]);
  useEffect(()=>{if(!open)return;const previous=document.activeElement as HTMLElement|null;
   const triggerNode=trigger.current;
