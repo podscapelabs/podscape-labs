@@ -23,7 +23,7 @@ export default async function PicturePuzzlesPage(){
    return <article key={p.id} className={styles.card}>
     <div className={styles.cover} role="img" aria-label={p.image_alt||p.title} style={{backgroundImage:`url("${picturePuzzleImage(p.image_path)}")`}}/>
     <div className={styles.copy}><span>{PUZZLE_TYPES[p.puzzle_type]||"Jigsaw"} · {levelLabel(p.level)} · {DIFFICULTIES[p.difficulty]?.label} · {gridDescription(p.puzzle_type,p.difficulty)}</span>
-     <h2>{p.title}</h2><p>{p.description||"Put the image back together."}</p>
+     <h2>{p.title}</h2>{p.artist_credit?<p className={styles.artistCredit}>Original artwork by <strong>{p.artist_credit}</strong></p>:null}<p>{p.description||"Put the image back together."}</p>
      {p.learning_note?<p>{p.learning_note}</p>:null}
      {ready?<Link href={`/fun-zone/picture-puzzles/${p.id}`}><strong>{done?"Replay puzzle →":"Play puzzle →"}</strong></Link>:<strong>{available?"Locked · Complete the previous puzzle":"Sign in to play"}</strong>}
     </div>
