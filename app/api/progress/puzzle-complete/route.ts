@@ -5,7 +5,29 @@ import {customerSupabase} from "@/lib/customer-auth/server";
 import {getSupabaseAdmin} from "@/lib/supabase-admin";
 import {achievementCatalog} from "@/data/achievement-catalog";
 import {getPuzzle,getPuzzles,type QuizPuzzle,type BurrowPuzzle,type ConnectionsPuzzle,type CrosswordPuzzle,type SearchPuzzle} from "@/lib/fun-zone-puzzles";
+import {getPicturePuzzle,listPicturePuzzles} from "@/lib/picture-puzzles";
+import {DIFFICULTIES} from "@/lib/picture-puzzles-client";
 
+function validPictureProof(mode:string,difficulty:keyof typeof DIFFICULTIES,proof:unknown):boolean{
+ if(!proof||typeof proof!=="object")return false;
+ const data=proof as Record<string,unknown>,size=DIFFICULTIES[difficulty].columns,count=size*size;
+ if(mode==="jigsaw")return Array.isArray(data.placed)&&data.placed.length===count&&
+  new Set(data.placed).size===count&&data.placed.every(x=>Number.isInteger(x)&&x>=0&&x<count)&&
+  Number.isInteger(data.moves)&&Number(data.moves)>=count;
+ if(mode!=="sliding")return false;
+ const initial=data.initial,steps=data.steps;
+ if(!Array.isArray(initial)||initial.length!==count||new Set(initial).size!==count||
+    !initial.every(n=>Number.isInteger(n)&&n>=0&&n<count)||!Array.isArray(steps)||
+    steps.length<1||steps.length>300||!steps.every(n=>Number.isInteger(n)&&n>=0&&n<count))return false;
+ const board=[...initial],blank=count-1;
+ if(board.every((n,i)=>n===i))return false;
+ for(const index of steps){
+  const hole=board.indexOf(blank);
+  if(Math.abs(Math.floor(hole/size)-Math.floor(index/size))+Math.abs(hole%size-index%size)!==1)return false;
+  [board[index],board[hole]]=[board[hole],board[index]];
+ }
+ return board.every((n,i)=>n===i);
+}
 function validProof(mode:string,puzzle:unknown,proof:unknown):boolean{
  if(!proof||typeof proof!=="object")return false;
  const data=proof as Record<string,unknown>;
@@ -66,12 +88,24 @@ export async function POST(request:Request){
    !/^[a-z0-9-]{3,60}$/.test(gameKey)||!/^[a-z0-9-]{3,80}$/.test(puzzleId)||
    JSON.stringify(proof)?.length>4500)
   return NextResponse.json({error:"Invalid puzzle ID or result"},{status:400});
- const challenge=getPuzzle(gameKey,puzzleId);
- if(!challenge||!validProof(challenge.mode,challenge.puzzle,proof))
-  return NextResponse.json({error:"Puzzle completion was not verified"},{status:400});
- const ordered=getPuzzles(gameKey);
- const index=ordered.findIndex(entry=>entry.puzzle.id===puzzleId);
- const previousPuzzleId=index>0?ordered[index-1].puzzle.id:null;
+ let previousPuzzleId:string|null=null;
+ if(gameKey==="picture-puzzles"){
+  const challenge=await getPicturePuzzle(puzzleId);
+  if(!challenge||challenge.status!=="published"||!validPictureProof(challenge.puzzle_type,challenge.difficulty,proof))
+   return NextResponse.json({error:"Picture puzzle completion was not verified"},{status:400});
+  const published=await listPicturePuzzles();
+  if(!published)return NextResponse.json({error:"Progress storage unavailable"},{status:503});
+  const index=published.findIndex(p=>p.id===puzzleId);
+  if(index<0)return NextResponse.json({error:"Puzzle unavailable"},{status:404});
+  previousPuzzleId=index>0?published[index-1].id:null;
+ }else{
+  const challenge=getPuzzle(gameKey,puzzleId);
+  if(!challenge||!validProof(challenge.mode,challenge.puzzle,proof))
+   return NextResponse.json({error:"Puzzle completion was not verified"},{status:400});
+  const ordered=getPuzzles(gameKey);
+  const index=ordered.findIndex(entry=>entry.puzzle.id===puzzleId);
+  previousPuzzleId=index>0?ordered[index-1].puzzle.id:null;
+ }
  const admin=getSupabaseAdmin();
  if(!admin)return NextResponse.json({error:"Progress is temporarily unavailable"},{status:503});
  // Compare earned achievements around the verified completion so trigger-based
