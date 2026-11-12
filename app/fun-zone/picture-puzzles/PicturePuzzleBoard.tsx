@@ -2,6 +2,7 @@
 import {useCallback,useEffect,useState} from "react";
 import {DIFFICULTIES,PUZZLE_TYPES,levelLabel,type PicturePuzzle} from "@/lib/picture-puzzles-client";
 import styles from "./picture-puzzles.module.css";
+import {InterlockingJigsawBoard} from "./InterlockingJigsawBoard";
 
 type Difficulty=PicturePuzzle["difficulty"];
 type Mode=PicturePuzzle["puzzle_type"];
@@ -25,7 +26,7 @@ function shuffledSliding(size:number){
  if(tiles.every((n,i)=>n===i)){const next=blank===count-1?blank-1:blank+1;[tiles[blank],tiles[next]]=[tiles[next],tiles[blank]];}
  return tiles;
 }
-export function PicturePuzzleBoard({id,title,description,imageAlt,learningNote,imageUrl,difficulty,puzzleType,level}:{id:string;title:string;description:string;imageAlt:string;learningNote:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number}){
+function SlidingPuzzleBoard({id,title,description,imageAlt,learningNote,imageUrl,difficulty,puzzleType,level}:{id:string;title:string;description:string;imageAlt:string;learningNote:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number}){
  const size=DIFFICULTIES[difficulty]?.columns||3,count=size*size,blankTile=count-1,sliding=puzzleType==="sliding";
  const [tiles,setTiles]=useState<number[]>(()=>Array.from({length:count},(_,i)=>i));
  const [selected,setSelected]=useState<number|null>(null);
@@ -73,5 +74,14 @@ export function PicturePuzzleBoard({id,title,description,imageAlt,learningNote,i
    {!started?<button type="button" className={styles.primary} onClick={start}>Shuffle & start puzzle</button>:<div className={styles.controls}><button type="button" className={styles.primary} onClick={start}>Start a new shuffle</button><button type="button" onClick={()=>setShowReference(v=>!v)} aria-pressed={showReference}>{showReference?"Hide image":"View image"}</button></div>}
    <p className={styles.helper}>{sliding?"Tap a tile beside the empty square to slide it into place.":"Tap one piece, then another to swap their places."} Your board saves on this device.</p>
   </div><aside className={styles.reference}><h2>The complete artwork</h2><p>Need a little help? Reveal the original while solving.</p>{showReference?<div className={styles.fullImage} role="img" aria-label={imageAlt||"Original artwork for "+title} style={{backgroundImage:`url("${imageUrl}")`}}/>:<button type="button" onClick={()=>setShowReference(true)}>Reveal reference artwork</button>}<p className={styles.note}>{sliding?"An authentic sliding-tile puzzle: only tiles next to the gap can move.":"Touch-friendly picture-piece assembly with tap-to-swap controls."}</p></aside></div>
+ </section>;
+}
+
+export function PicturePuzzleBoard(props:{id:string;title:string;description:string;imageAlt:string;learningNote:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number}){
+ if(props.puzzleType==="sliding")return <SlidingPuzzleBoard {...props}/>;
+ return <section className={styles.game}>
+  <div className={styles.gameHeading}><div><span>JIGSAW · {levelLabel(props.level)} · {DIFFICULTIES[props.difficulty].label}</span><h1>{props.title}</h1><p>{props.description||"Build this picture, one interlocking piece at a time."}</p></div></div>
+  {props.learningNote?<p className={styles.lesson}><strong>Before you play:</strong> {props.learningNote}</p>:null}
+  <InterlockingJigsawBoard key={props.id+props.difficulty} id={props.id} imageUrl={props.imageUrl} imageAlt={props.imageAlt||props.title} size={DIFFICULTIES[props.difficulty].columns}/>
  </section>;
 }
