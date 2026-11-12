@@ -71,7 +71,7 @@ export function NewBinForm({species,initialSpeciesId}:{species:SpeciesOption[];i
    <div className={styles.searchControl}>
     <PodscapeLineIcon name="search"/>
     <input id="new-bin-species-search" type="search" autoComplete="off" value={search}
-      placeholder="Search common or scientific name…" aria-expanded={showOptions}
+      placeholder="Search common or scientific name…"
       aria-controls="new-bin-species-results"
       onFocus={()=>setShowOptions(true)}
       onChange={event=>{setSearch(event.target.value);setSelected("");setShowOptions(true);setCustomName("");}}
@@ -88,7 +88,7 @@ export function NewBinForm({species,initialSpeciesId}:{species:SpeciesOption[];i
    </div>:null}
    {current&&!showOptions?<div className={styles.chosenSpecies}><PodscapeLineIcon name="check"/><span><strong>{current.name}</strong><small>{current.scientific}</small></span><button type="button" onClick={()=>setShowOptions(true)}>Change</button></div>:null}
   </div>
-  <p className={styles.helper}>Can't find it? <Link href="/ledger">Explore the Leaf Ledger →</Link></p>
+  <p className={styles.helper}>Can&apos;t find it? <Link href="/ledger">Explore the Leaf Ledger →</Link></p>
 
   <div className={styles.separator}/>
   <div className={styles.step}><span>02</span><div><h2>How many bins?</h2><p>Create one enclosure, or add several for the same species at once.</p></div></div>
