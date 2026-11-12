@@ -8,7 +8,7 @@ import { PodscapeLineIcon, type PodscapeIconName } from "@/components/PodscapeLi
 import { FirstActionEmptyState } from "@/components/FirstActionEmptyState";
 
 type Achievement = {
-  key: string; title: string; description: string; exp: number; coins: number; icon: string; href: string;
+  key: string; title: string; description: string; exp: number; icon: string; href: string;
   unlockedAt?: string | null; status: "available" | "planned"; hidden?:boolean;
 };
 
