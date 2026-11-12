@@ -18,7 +18,7 @@ function validPictureProof(mode:string,difficulty:keyof typeof DIFFICULTIES,proo
  const initial=data.initial,steps=data.steps;
  if(!Array.isArray(initial)||initial.length!==count||new Set(initial).size!==count||
     !initial.every(n=>Number.isInteger(n)&&n>=0&&n<count)||!Array.isArray(steps)||
-    steps.length<1||steps.length>300||!steps.every(n=>Number.isInteger(n)&&n>=0&&n<count))return false;
+    steps.length<1||steps.length>1000||!steps.every(n=>Number.isInteger(n)&&n>=0&&n<count))return false;
  const board=[...initial],blank=count-1;
  if(board.every((n,i)=>n===i))return false;
  for(const index of steps){
