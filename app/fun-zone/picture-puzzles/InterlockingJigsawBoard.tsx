@@ -3,7 +3,7 @@ import {useCallback,useEffect,useId,useMemo,useRef,useState} from "react";
 import styles from "./picture-puzzles.module.css";
 
 type PiecePosition={x:number;y:number;placed:boolean};
-type Props={id:string;imageUrl:string;imageAlt:string;size:number;onProgress?:(placed:number,total:number)=>void};
+type Props={id:string;imageUrl:string;imageAlt:string;size:number;onProgress?:(placed:number,total:number)=>void;onComplete?:(proof:{placed:number[];moves:number})=>void};
 const WIDTH=600,BOARD=480,BOARD_X=60,BOARD_Y=35,TRAY_Y=595;
 function seedSign(n:number){return ((n*37+17)%7)%2===0?1:-1;}
 function pathForPiece(r:number,c:number,size:number){
@@ -37,7 +37,7 @@ function newPositions(size:number):PiecePosition[]{
 function isValidPositions(value:unknown,size:number):value is PiecePosition[]{
  return Array.isArray(value)&&value.length===size*size&&value.every(p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&Math.abs(p.x)<5000&&Math.abs(p.y)<5000&&typeof p.placed==="boolean");
 }
-export function InterlockingJigsawBoard({id,imageUrl,imageAlt,size,onProgress}:Props){
+export function InterlockingJigsawBoard({id,imageUrl,imageAlt,size,onProgress,onComplete}:Props){
  const count=size*size,unit=BOARD/size,cols=size===3?3:4,rows=Math.ceil(count/cols);
  const height=TRAY_Y+rows*unit*1.38+35,root=useRef<SVGSVGElement>(null);
  const uid=useId().replace(/:/g,"");
@@ -46,6 +46,7 @@ export function InterlockingJigsawBoard({id,imageUrl,imageAlt,size,onProgress}:P
  const [moves,setMoves]=useState(0);
  const [active,setActive]=useState<number|null>(null);
  const [help,setHelp]=useState(false);
+ const completionSent=useRef(false);
  const drag=useRef<{index:number;pointerId:number;clientX:number;clientY:number;originX:number;originY:number;changed:boolean}|null>(null);
  const key="podscape:jigsaw:v1:"+id+":"+size;
  const solved=positions.filter(p=>p.placed).length;
@@ -57,7 +58,8 @@ export function InterlockingJigsawBoard({id,imageUrl,imageAlt,size,onProgress}:P
  },[key,size]);
  useEffect(()=>{if(!ready)return;try{localStorage.setItem(key,JSON.stringify({positions,moves}));}catch{/* Local storage is optional */}},[key,ready,positions,moves]);
  useEffect(()=>{onProgress?.(solved,count);},[solved,count,onProgress]);
- const startOver=useCallback(()=>{setPositions(newPositions(size));setMoves(0);setActive(null);drag.current=null;},[size]);
+ useEffect(()=>{if(ready&&solved===count&&!completionSent.current){completionSent.current=true;onComplete?.({placed:Array.from({length:count},(_,i)=>i),moves});}},[ready,solved,count,moves,onComplete]);
+ const startOver=useCallback(()=>{completionSent.current=false;setPositions(newPositions(size));setMoves(0);setActive(null);drag.current=null;},[size]);
  const target=(index:number)=>({x:BOARD_X+(index%size)*unit,y:BOARD_Y+Math.floor(index/size)*unit});
  function trySnap(index:number,x:number,y:number){
   const to=target(index);
