@@ -34,3 +34,8 @@
 .victoryArt{width:min(100%,290px);aspect-ratio:1;border:1px solid var(--border);border-radius:14px;background-position:center;background-size:cover;background-color:var(--surface-secondary)}
 @keyframes puzzle-piece-lock{0%{filter:drop-shadow(0 0 1px var(--accent));opacity:.74}60%{filter:drop-shadow(0 0 10px var(--accent))}100%{filter:none;opacity:1}}
 @media(prefers-reduced-motion:reduce){.jigsawJustPlaced{animation:none}}
+
+/* Consistent attribution for jigsaws, sliding games, and library cards. */
+.artistCredit{display:block;margin:6px 0 14px;color:var(--text-secondary);font-size:12px;line-height:1.5}
+.artistCredit strong{color:var(--accent);font-weight:800}
+.copy .artistCredit{margin:2px 0 7px;font-size:11px}
