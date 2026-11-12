@@ -18,7 +18,7 @@ export const widgetPlacement={
  },
  manager:{
   hero:{group:"Essentials",purpose:"Manager context and colony search",placement:"required"},
-  tools:{group:"Essentials",purpose:"Six customizable care shortcuts",placement:"required"},
+  tools:{group:"Essentials",purpose:"Optional shortcuts for extra keeper tools; direct care and bins stay available without them",placement:"optional"},
   enclosures:{group:"Your Colonies",purpose:"Recently updated enclosure list",placement:"optional"},
   stats:{group:"Your Colonies",purpose:"Colony and population totals",placement:"optional"},
   insights:{group:"Your Colonies",purpose:"Patterns from recorded colonies",placement:"optional"},
