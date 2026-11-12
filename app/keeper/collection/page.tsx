@@ -35,8 +35,8 @@ export default async function MyColoniesPage({searchParams}:{searchParams:Promis
         <header className={styles.heading}>
           <p className={styles.eyebrow}>MANAGER · YOUR COLLECTION</p>
           <h1>{savedView?"Saved species":archivedView?"Archived bins":"My Colonies"}</h1>
-          <p>{savedView?"Species saved for reference. Add a bin when you start keeping them.":archivedView?"Review or restore bins you have archived.":"Your active bins, grouped by species."}</p>
-          <nav aria-label="Collection views"><Link href="/keeper/collection?view=active" aria-current={view==="active"?"page":undefined}>My Colonies</Link>{" · "}<Link href="/keeper/collection?view=saved" aria-current={savedView?"page":undefined}>Saved species</Link>{" · "}<Link href="/keeper/collection?view=archived" aria-current={archivedView?"page":undefined}>Archived bins</Link></nav>
+          <p>{savedView?"Species saved for later, separate from your active enclosures.":archivedView?"Your preserved bins and care records.":"Find a bin, record care, or manage your collection."}</p>
+          <nav className={styles.views} aria-label="Collection views"><Link href="/keeper/collection?view=active" aria-current={view==="active"?"page":undefined}>Active bins</Link><Link href="/keeper/collection?view=saved" aria-current={savedView?"page":undefined}>Saved species</Link><Link href="/keeper/collection?view=archived" aria-current={archivedView?"page":undefined}>Archived</Link></nav>
         </header>
         {!member.signedIn ? <section className={styles.empty}><h2>Your colonies are private.</h2><p>Sign in to see and manage your records.</p><Link href="/account/login">Sign in →</Link></section>
           : unavailable ? <section className={styles.empty} role="alert"><h2>Colony records are unavailable.</h2><p>Try again when the Keeper database is available.</p></section>
