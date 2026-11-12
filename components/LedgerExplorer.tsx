@@ -11,7 +11,7 @@ import {PodscapeLineIcon} from "./PodscapeLineIcon";
 import {FirstActionEmptyState} from "./FirstActionEmptyState";
 import {LEDGER_BROWSE_ORDER_KEY,LEDGER_EXPLORER_STATE_KEY,type LedgerExplorerSnapshot} from "@/lib/ledger-navigation";
 import type { ColonyStatus } from "@/data/collection";
-import { speciesDisplayName, speciesScientificName, type SpeciesRecord } from "@/data/species";
+import { speciesDisplayName, speciesScientificName, speciesOrganismGroup, type SpeciesRecord } from "@/data/species";
 
 type SortMode = "catalogue" | "common" | "scientific" | "recent";
 
@@ -28,6 +28,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
   const [query, setQuery] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [genus, setGenus] = useState("all");
+  const [organism,setOrganism]=useState<"all"|"isopod"|"springtail">("all");
   const [care, setCare] = useState("all");
   const [sort, setSort] = useState<SortMode>(mode === "collection" ? "recent" : "catalogue");
   const deferredQuery = useDeferredValue(query.trim().toLowerCase());
@@ -46,6 +47,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
       if(raw){
         const saved=JSON.parse(raw) as Partial<LedgerExplorerSnapshot>;
         if(typeof saved.query==="string")setQuery(saved.query);
+        if(saved.organism==="isopod"||saved.organism==="springtail"||saved.organism==="all")setOrganism(saved.organism);
         if(typeof saved.genus==="string"&&(saved.genus==="all"||records.some(item=>item.genus===saved.genus)))setGenus(saved.genus);
         if(typeof saved.care==="string"&&(saved.care==="all"||records.some(item=>item.careLevel===saved.care)))setCare(saved.care);
         if(["catalogue","common","scientific"].includes(saved.sort||""))setSort(saved.sort as SortMode);
@@ -65,7 +67,8 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
   const results = useMemo(() => records
     .filter((record) => {
       const haystack = `${speciesDisplayName(record)} ${speciesScientificName(record)} ${record.genus} ${record.species} ${record.morph} ${record.catalogueNumber} ${record.tags.join(" ")}`.toLowerCase();
-      return (genus === "all" || record.genus === genus)
+      return (organism === "all" || speciesOrganismGroup(record)===organism)
+        && (genus === "all" || record.genus === genus)
         && (care === "all" || record.careLevel === care)
         && (!deferredQuery || haystack.includes(deferredQuery));
     })
@@ -74,12 +77,12 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
       if (sort === "common") return speciesDisplayName(a).localeCompare(speciesDisplayName(b));
       if (sort === "scientific") return speciesScientificName(a).localeCompare(speciesScientificName(b));
       return a.catalogueNumber.localeCompare(b.catalogueNumber,"en",{numeric:true,sensitivity:"base"});
-    }), [addedAtById, care, deferredQuery, genus, records, sort]);
+    }), [addedAtById, care, deferredQuery, genus, organism, records, sort]);
 
   const saveBrowseContext=()=>{
     if(mode!=="catalogue")return;
     try{
-      const snapshot:LedgerExplorerSnapshot={query,genus,care,sort,filtersOpen,scrollY:window.scrollY};
+      const snapshot:LedgerExplorerSnapshot={query,genus,care,sort,organism,filtersOpen,scrollY:window.scrollY};
       sessionStorage.setItem(LEDGER_EXPLORER_STATE_KEY,JSON.stringify(snapshot));
       sessionStorage.setItem(LEDGER_BROWSE_ORDER_KEY,JSON.stringify({slugs:results.map(item=>item.slug)}));
     }catch{}
@@ -88,7 +91,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
     if(mode!=="catalogue"||!restorationReady||!scrollRestored)return;
     let pendingFrame:number|null=null;
     const save=()=>{
-      try{sessionStorage.setItem(LEDGER_EXPLORER_STATE_KEY,JSON.stringify({query,genus,care,sort,filtersOpen,scrollY:window.scrollY} satisfies LedgerExplorerSnapshot));}catch{}
+      try{sessionStorage.setItem(LEDGER_EXPLORER_STATE_KEY,JSON.stringify({query,genus,care,sort,organism,filtersOpen,scrollY:window.scrollY} satisfies LedgerExplorerSnapshot));}catch{}
     };
     const queueSave=()=>{
       if(pendingFrame!==null)return;
@@ -102,7 +105,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
       window.removeEventListener("pagehide",save);
       if(pendingFrame!==null)cancelAnimationFrame(pendingFrame);
     };
-  },[mode,query,genus,care,sort,filtersOpen,restorationReady,scrollRestored]);
+  },[mode,query,genus,care,sort,organism,filtersOpen,restorationReady,scrollRestored]);
   useEffect(()=>{
     if(mode!=="catalogue"||!restorationReady||restoredRef.current||deferredQuery!==query.trim().toLowerCase())return;
     let second=0;
@@ -118,11 +121,12 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
     setQuery("");
     setFiltersOpen(false);
     setGenus("all");
+    setOrganism("all");
     setCare("all");
     setSort(mode === "collection" ? "recent" : "catalogue");
   }
 
-  const filtersActive = Boolean(query || genus !== "all" || care !== "all" || sort !== (mode === "collection" ? "recent" : "catalogue"));
+  const filtersActive = Boolean(query || organism !== "all" || genus !== "all" || care !== "all" || sort !== (mode === "collection" ? "recent" : "catalogue"));
 
   return <>
     {heroMode && mode === "catalogue" ? <header className={spotlight.hero} aria-labelledby="ledger-hero-title">
@@ -146,6 +150,9 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
     <div className={heroMode && mode === "catalogue" ? spotlight.content : undefined}>
     <div className={heroMode && mode === "catalogue" ? "v2-container" : undefined} id={heroMode && mode === "catalogue" ? "ledger-directory" : undefined}>
     <section className="v2-ledger-explorer" aria-labelledby="ledger-directory-title">
+     <div className={spotlight.organismTabs} role="group" aria-label="Browse organisms">
+       {([["all","All organisms"],["isopod","Isopods"],["springtail","Springtails"]] as const).map(([key,label])=><button key={key} type="button" aria-pressed={organism===key} onClick={()=>{setOrganism(key);setGenus("all")}}>{label}</button>)}
+     </div>
     <div className={`v2-filter-bar ${styles.filterBar}`} role="search" aria-label={mode === "collection" ? "Search and filter your collection" : "Search and filter the species catalogue"}>
       {!(heroMode && mode === "catalogue") ? <div className={styles.searchField}>
         <svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -154,9 +161,9 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
         <input id={mode === "catalogue" ? "ledger-directory-search" : undefined} className={styles.searchInput} aria-label={mode === "collection" ? "Search your collection" : "Search species"} value={query} onChange={(event) => setQuery(event.target.value)} type="search" placeholder={mode === "collection" ? "Search your collection…" : "Search species…"} />
         {mode === "catalogue" ? <button className={spotlight.filterToggle} type="button" aria-label={filtersOpen?"Hide species filters":"Show species filters"} aria-expanded={filtersOpen} aria-controls="ledger-filter-options" onClick={() => setFiltersOpen(value => !value)}>
           <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2.5" fill="var(--surface)"/><circle cx="16" cy="17" r="2.5" fill="var(--surface)"/></svg>
-          {genus !== "all" || care !== "all" || sort !== "catalogue" ? <span className={spotlight.filterDot} /> : null}
+          {organism !== "all" || genus !== "all" || care !== "all" || sort !== "catalogue" ? <span className={spotlight.filterDot} /> : null}
         </button> : null}
-      </div> : <button type="button" className={spotlight.catalogueFilterButton} aria-expanded={filtersOpen} aria-controls="ledger-filter-options" onClick={() => setFiltersOpen(value=>!value)}>⚙ {filtersOpen ? "Hide filters" : "Filters & sort"}{genus !== "all" || care !== "all" || sort !== "catalogue" ? " •" : ""}</button>}
+      </div> : <button type="button" className={spotlight.catalogueFilterButton} aria-expanded={filtersOpen} aria-controls="ledger-filter-options" onClick={() => setFiltersOpen(value=>!value)}>⚙ {filtersOpen ? "Hide filters" : "Filters & sort"}{organism !== "all" || genus !== "all" || care !== "all" || sort !== "catalogue" ? " •" : ""}</button>}
       <div id={mode === "catalogue" ? "ledger-filter-options" : undefined} className={`${styles.filterRow} ${mode === "catalogue" ? spotlight.collapsibleFilters : ""}`} hidden={mode === "catalogue" && !filtersOpen}>
         <label className={styles.filterPill} data-active={genus !== "all"}>
           <select className={styles.filterSelect} aria-label="Filter by genus" value={genus} onChange={(event) => setGenus(event.target.value)}>
