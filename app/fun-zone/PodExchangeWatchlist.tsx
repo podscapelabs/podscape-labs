@@ -57,7 +57,7 @@ export function PodExchangeWatchlist(){
   <span className={styles.eyebrow}>POD EXCHANGE</span><h2><DuckBuckIcon size={23}/> Market Watch</h2>
   <div className={styles.watchlistStats}>
    <span><small>Portfolio value</small><strong>{time===null||!portfolioAvailable||!currentMarket?"Syncing…":<DuckBucks amount={totalValue(portfolio,cycle,quote||undefined)}/>}</strong></span>
-   <span><small style={{display:"flex",alignItems:"center",gap:6}}><ExchangeCompanyIcon symbol="DUCK" size={17}/> DUCK · Rubber Ducky Inc.</small><strong>{time===null||!currentMarket?"Loading…":<DuckBucks amount={price}/>}</strong><small>{time===null?"1-minute market":(gain>=0?"+":"")+gain.toFixed(2)+"% this tick"}</small></span>
+   <span><small style={{display:"flex",alignItems:"center",gap:6}}><ExchangeCompanyIcon symbol="DUCK" size={17}/> DUCK · Rubber Ducky Inc.</small><strong>{time===null||!currentMarket?"Loading…":<DuckBucks amount={price}/>}</strong><small>{time===null||!currentMarket?"Syncing quotes":(gain>=0?"+":"")+gain.toFixed(2)+"% this tick"}</small></span>
   </div>
   <div className={styles.watchlistFoot}><span>{STOCKS.length} companies · 1-minute prices</span><Link href="/fun-zone/pod-exchange">Trade now →</Link></div>
  </section>;
