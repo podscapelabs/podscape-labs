@@ -19,3 +19,18 @@
 @media(max-width:720px){.jigsawCanvas{border-radius:12px}.jigsawStatus{padding:11px 12px}.jigsawShell{max-width:100%}}
 
 .nextPuzzle{display:inline-flex;align-items:center;justify-content:center;margin:12px 0 6px;padding:12px 18px;border-radius:999px;background:var(--accent);color:var(--accent-contrast);font-size:13px;font-weight:800;text-decoration:none}
+
+
+/* Final puzzle gameplay and mobile polish. */
+.jigsawSvg{touch-action:pan-y;overscroll-behavior:contain;-webkit-touch-callout:none}
+.jigsawPiece{touch-action:none;-webkit-touch-callout:none}
+.jigsawJustPlaced{cursor:default;filter:drop-shadow(0 0 7px var(--accent));animation:puzzle-piece-lock .34s ease-out}
+.snapAnnouncement{min-height:18px;font-size:11px;line-height:1.5;font-weight:700;color:var(--accent)}
+.victory{display:grid;justify-items:center;gap:9px;margin:14px 0;padding:19px 16px;border:1px solid var(--accent);border-radius:18px;background:var(--surface-raised,var(--surface));color:var(--text-primary);text-align:center}
+.victory>span{color:var(--accent);font-size:19px;letter-spacing:.14em}
+.victory h2{margin:0;font:500 clamp(22px,5vw,30px)/1.15 var(--display,Georgia,serif)}
+.victory p{margin:0;font-size:13px;color:var(--text-secondary)}
+.victory small{font-size:11px;color:var(--text-secondary)}
+.victoryArt{width:min(100%,290px);aspect-ratio:1;border:1px solid var(--border);border-radius:14px;background-position:center;background-size:cover;background-color:var(--surface-secondary)}
+@keyframes puzzle-piece-lock{0%{filter:drop-shadow(0 0 1px var(--accent));opacity:.74}60%{filter:drop-shadow(0 0 10px var(--accent))}100%{filter:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){.jigsawJustPlaced{animation:none}}
