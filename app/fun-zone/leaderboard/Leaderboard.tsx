@@ -136,7 +136,7 @@ export default function Leaderboard(){
     <span><PodscapeLineIcon name="achievement"/> Three-Peat <small>Hidden</small></span>
     <span><PodscapeLineIcon name="achievement"/> Arcade Legend <small>Hidden</small></span>
    </div>
-   <p className={styles.rewardRule}>Rewards require at least two eligible players on a board and verified first-time puzzle completions. No Pod Coins are awarded.</p>
+   <p className={styles.rewardRule}>Rewards require at least two eligible players on a board and verified first-time puzzle completions.</p>
    <div className={styles.rewardHistory}><h3>Your recent rewards</h3>
     {!board?.signedIn?<p>Sign in to see your ranking rewards and achievements.</p>:!board.awards?.length?<p>No podium rewards yet. The next completed rankings may be your first!</p>:
      <div className={styles.rewardHistoryList}>{board.awards.map((award,i)=><div key={award.period+"-"+award.board+"-"+award.date+"-"+i}>
