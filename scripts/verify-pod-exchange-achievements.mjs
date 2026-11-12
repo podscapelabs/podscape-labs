@@ -34,7 +34,7 @@ assert.match(route,/db\.auth\.getUser\(\)/);
 assert.match(route,/email_confirmed_at/);
 assert.match(route,/testerAccessStatus/);
 assert.match(route,/priceAt\(trade\.symbol,trade\.cycle\)!==trade\.unitPrice/);
-assert.match(route,/Math\.abs\(cycleAt\(Date\.now\(\)\)-trade\.cycle\)>0/);
+assert.match(route,/Math\.abs\(arcadeCycleAt\(Date\.now\(\)\)-trade\.cycle\)>0/,"Server validates one-minute tagged trade cycles");
 assert.match(route,/admin!\.rpc\("execute_member_exchange_order"/);
 assert.match(walletSql,/public\.record_member_exchange_trade\(/);
 assert.match(walletSql,/member_exchange_portfolios/);
