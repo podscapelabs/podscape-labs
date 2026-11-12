@@ -12,6 +12,18 @@ export type AchievementDefinition = {
 // Earnable achievements only reference events PodScape already records.
 // Active achievements grant EXP only. Historical unlocks remain intact.
 export const achievementCatalog: AchievementDefinition[] = [
+  {key:"collection_genera_10",title:"Many Branches",description:"Collect profiles from ten different genera.",exp:125,icon:"❧",href:"/ledger",status:"available"},
+  {key:"collection_genera_15",title:"A World of Genera",description:"Collect profiles from fifteen different genera.",exp:175,icon:"❧",href:"/ledger",status:"available"},
+  {key:"collection_morphs_2",title:"Another Shade",description:"Collect two distinct named morphs in one recorded species group.",exp:25,icon:"❧",href:"/ledger",status:"available"},
+  {key:"collection_morphs_3",title:"Colour Collector",description:"Collect three distinct named morphs in one recorded species group.",exp:40,icon:"❧",href:"/ledger",status:"available"},
+  {key:"collection_morphs_5",title:"Morph Specialist",description:"Collect five distinct named morphs in one recorded species group.",exp:75,icon:"❧",href:"/ledger",status:"available"},
+  {key:"collection_morphs_10",title:"The Full Spectrum",description:"Collect ten distinct named morphs in one recorded species group.",exp:125,icon:"❧",href:"/ledger",status:"available"},
+  {key:"collection_morph_sets_2",title:"Double Palette",description:"Collect at least two named morphs in each of two recorded species groups.",exp:40,icon:"❧",href:"/ledger",status:"available"},
+  {key:"collection_morph_sets_3",title:"Palette Curator",description:"Collect at least two named morphs in each of three recorded species groups.",exp:60,icon:"❧",href:"/ledger",status:"available"},
+  {key:"collection_morph_sets_5",title:"Living Colour Library",description:"Collect at least two named morphs in each of five recorded species groups.",exp:100,icon:"❧",href:"/ledger",status:"available"},
+  {key:"collection_species_diversity_10",title:"Beyond the Morphs",description:"Collect ten different named species, regardless of morph count.",exp:75,icon:"❧",href:"/ledger",status:"available"},
+  {key:"collection_species_diversity_25",title:"Species Diversity",description:"Collect twenty-five different named species, regardless of morph count.",exp:175,icon:"❧",href:"/ledger",status:"available"},
+  {key:"collection_species_diversity_50",title:"Biodiversity Curator",description:"Collect fifty different named species, regardless of morph count.",exp:250,icon:"❧",href:"/ledger",status:"available"},
   {key:"collection_springtail_1",title:"A Little Spring",description:"Collect your first springtail profile.",exp:15,icon:"❧",href:"/ledger",status:"available"},
   {key:"collection_springtail_3",title:"Springtail Starter",description:"Collect three different springtail profiles.",exp:25,icon:"❧",href:"/ledger",status:"available"},
   {key:"collection_springtail_5",title:"Tiny Ecosystem",description:"Collect five different springtail profiles.",exp:40,icon:"❧",href:"/ledger",status:"available"},

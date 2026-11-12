@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { achievementCatalog } from "@/data/achievement-catalog";
+import {collectionAchievementCatalog} from "@/lib/collection-achievements";
+import {getSpeciesRecords} from "@/lib/species-store";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import ProgressDashboard from "./ProgressDashboard";
@@ -39,6 +40,7 @@ export default async function ProgressPage() {
   const exp = Math.max(0,Number(progress?.total_exp||0));
   const level = Math.floor(Math.sqrt(exp/100))+1;
   const earned = new Map((achievements||[]).map(item=>[item.achievement_key,item.unlocked_at]));
+  const achievementCatalog=collectionAchievementCatalog(await getSpeciesRecords());
   const legacyObserver = earned.get("field_observer");
   if (legacyObserver && !earned.has("ledger_five_species")) earned.set("ledger_five_species",legacyObserver);
 

@@ -6,7 +6,7 @@ import { isSpeciesRecordActive } from "@/data/species";
 import { requireCustomerPreviewAccess } from "@/lib/customer-auth/access";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import { getSpeciesRecords } from "@/lib/species-store";
-import {achievementCatalog} from "@/data/achievement-catalog";
+import {collectionAchievementCatalog} from "@/lib/collection-achievements";
 
 export type CollectionMutationResult = { success: boolean; collected: boolean; error?: string; unlocked?:{id:string;title:string;description:string;exp:number}[] };
 export type CollectionDetailsResult = { success: boolean; error?: string };
@@ -245,6 +245,7 @@ export async function setSpeciesCollected(speciesId: string, collected: boolean,
     const {data:after,error}=await db.from("member_achievements").select("achievement_key").eq("user_id",user.id);
     if(!error){
       const previous=new Set((before.data||[]).map(row=>row.achievement_key));
+      const achievementCatalog=collectionAchievementCatalog(await getSpeciesRecords());
       unlocked=(after||[]).filter(row=>row.achievement_key.startsWith("collection_")&&!previous.has(row.achievement_key)).flatMap(row=>{
         const badge=achievementCatalog.find(entry=>entry.key===row.achievement_key);
         return badge?[{id:badge.key,title:badge.title,description:badge.description,exp:badge.exp}]:[];

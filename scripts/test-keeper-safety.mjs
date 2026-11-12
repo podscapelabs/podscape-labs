@@ -21,7 +21,7 @@ function load(path){
  const compiled=ts.transpileModule(readFileSync(path,"utf8"),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
  const module={exports:{}};
  vm.runInNewContext(compiled,{exports:module.exports,module,console,require(name){
-  if(name==="@/data/achievement-catalog")return{achievementCatalog:[]};
+  if(name==="@/lib/collection-achievements")return{collectionAchievementCatalog:()=>[]};
   if(name==="next/cache")return{revalidatePath(){}};
   if(name==="@/lib/keeper")return{keeperContext:async()=>({db,user})};
   if(name==="@/lib/customer-auth/access")return{requireCustomerPreviewAccess:async()=>{}};
