@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server";
 import {getSupabaseAdmin} from "@/lib/supabase-admin";
-import {STARTING_BUCKS,cycleAt,isValidPortfolioSnapshot,totalValue,type Portfolio} from "@/lib/pod-exchange";
+import {STARTING_BUCKS,arcadeCycleAt,isValidPortfolioSnapshot,totalValue,type Portfolio} from "@/lib/pod-exchange";
 export const dynamic="force-dynamic";
 // Once a week, only the server can create a baseline for next week's Movers board.
 // Do not generate a retrospective baseline from user-selected values.
@@ -13,7 +13,9 @@ export async function GET(request:Request){
   return NextResponse.json({skipped:true,reason:"Weekly snapshots run Monday at 00:10 UTC"});
  const admin=getSupabaseAdmin();
  if(!admin)return NextResponse.json({error:"Market storage unavailable"},{status:503});
- const weekStart=now.toISOString().slice(0,10),cycle=cycleAt(now.getTime());
+ // Snapshot the same minute-cycle quote shown to traders and live leaderboard viewers.
+ // Existing prior-week baselines are immutable and are never recalculated.
+ const weekStart=now.toISOString().slice(0,10),cycle=arcadeCycleAt(now.getTime());
  const previousWeek=new Date(now.getTime()-7*86400000).toISOString().slice(0,10);
  const candidates:Array<{userId:string;value:number;returnPct:number;weeklyPct:number|null}>=[];
  let created=0;
