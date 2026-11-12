@@ -17,4 +17,5 @@ export function publicMarketFrame(input:{secret:string;minute:number;openingPric
  major:{id:string;symbol:PsxSymbol;headline:string;detail:string;publishedMinute:number};
  bulletin:{id:string;symbol:PsxSymbol;headline:string;detail:string;publishedMinute:number};
  rumour:PsxRumour|null;
+ rumourResolution:{rumourId:string;majorEventId:string;resolution:"accurate"|"partial"|"false";confirmedSymbol:PsxSymbol;publishedHeadline:string}|null;
 };
