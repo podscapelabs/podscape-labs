@@ -106,8 +106,8 @@ export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,title,learn
  }
  return <div className={styles.jigsawShell}>
   <div className={styles.jigsawStatus}><strong>{solved} / {count} pieces placed</strong><span>{moves} snapped pieces</span></div>
-  <div className={styles.snapAnnouncement} role="status" aria-live="polite">{lastSnapped!==null?`Piece ${lastSnapped+1} locked in!`:""}</div>
-  <p className={styles.helper}>Drag interlocking pieces from the tray onto their matching positions. Pieces snap into place when close enough. On a keyboard, use arrow keys to move a focused piece and Enter to snap it.</p>
+  {solved!==count?<div className={styles.snapAnnouncement} role="status" aria-live="polite">{lastSnapped!==null?`Piece ${lastSnapped+1} locked in!`:""}</div>:null}
+  {solved!==count?<p className={styles.helper}>Drag interlocking pieces from the tray onto their matching positions. Pieces snap into place when close enough. On a keyboard, use arrow keys to move a focused piece and Enter to snap it.</p>:null}
   {solved!==count?<div className={styles.jigsawCanvas}>
    <svg ref={root} viewBox={`0 0 ${WIDTH} ${height}`} xmlns="http://www.w3.org/2000/svg" role="group" aria-label={"Interactive jigsaw of "+imageAlt} className={styles.jigsawSvg}>
     <defs>{outline.map((d,i)=><clipPath key={i} id={uid+"-p-"+i} clipPathUnits="userSpaceOnUse"><path d={d}/></clipPath>)}</defs>
@@ -129,6 +129,6 @@ export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,title,learn
   {solved===count?<div className={styles.victory} role="status"><span aria-hidden="true">✦ 🧩 ✦</span><h2>Picture complete!</h2><p className={styles.victoryTitle}>{title}</p><p>You placed all {count} pieces with {moves} successful snaps.</p><div className={styles.victoryArt} role="img" aria-label={imageAlt} style={{backgroundImage:`url("${imageUrl}")`}}/>{learningNote?<div className={styles.victoryDiscovery}><strong>Did you know?</strong><p>{learningNote}</p></div>:null}{artistCredit?<p className={styles.victoryCredit}>Original artwork by <strong>{artistCredit}</strong></p>:null}{previewMode?<small>Preview only · No EXP or progress recorded</small>:<small>Achievement EXP is awarded once for newly unlocked milestones.</small>}</div>:null}
   <div className={styles.controls}><button type="button" onClick={startOver}>Shuffle pieces again</button></div>
   {solved!==count?<details className={styles.jigsawReference}><summary>View original artwork</summary><div className={styles.fullImage} role="img" aria-label={imageAlt} style={{backgroundImage:`url("${imageUrl}")`}}/></details>:null}
-  <p className={styles.note}>The board starts blank: build the picture by fitting its interlocking pieces together. {previewMode?"Preview only: nothing is saved.":"Progress is saved on this device."}</p>
+  {solved!==count?<p className={styles.note}>The board starts blank: build the picture by fitting its interlocking pieces together. {previewMode?"Preview only: nothing is saved.":"Progress is saved on this device."}</p>:null}
  </div>;
 }
