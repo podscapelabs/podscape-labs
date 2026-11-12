@@ -206,3 +206,14 @@
  .catalogueToolbar .catalogueFilterButton span:not(.filterCount){display:none}
  .catalogueToolbar .catalogueFilterButton{width:40px;padding:8px}
 }
+
+
+/* Keep catalogue utility actions tidy beside the live result count. */
+.content :global(.v2-results-meta){flex-wrap:wrap;align-items:center;min-height:36px}
+.content :global(.v2-results-meta)>span{flex:none}
+.content :global(.v2-results-meta) :global(.requestEntry)>button{white-space:nowrap}
+@media(max-width:600px){
+ .content :global(.v2-results-meta){gap:7px;margin:3px 0 9px}
+ .content :global(.v2-results-meta) :global(.requestEntry)>button{min-height:33px}
+ .content :global(.v2-results-meta) :global(.requestEntry){flex:none}
+}
