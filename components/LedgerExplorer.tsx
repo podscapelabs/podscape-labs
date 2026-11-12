@@ -9,6 +9,7 @@ import spotlight from "@/app/ledger/discover.module.css";
 import Link from "next/link";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
 import {FirstActionEmptyState} from "./FirstActionEmptyState";
+import {SpeciesRequestButton} from "./SpeciesRequestForm";
 import {LEDGER_BROWSE_ORDER_KEY,LEDGER_EXPLORER_STATE_KEY,type LedgerExplorerSnapshot} from "@/lib/ledger-navigation";
 import type { ColonyStatus } from "@/data/collection";
 import { speciesDisplayName, speciesScientificName, speciesOrganismGroup, type SpeciesRecord } from "@/data/species";
@@ -150,6 +151,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
     <div className={heroMode && mode === "catalogue" ? spotlight.content : undefined}>
     <div className={heroMode && mode === "catalogue" ? "v2-container" : undefined} id={heroMode && mode === "catalogue" ? "ledger-directory" : undefined}>
     <section className="v2-ledger-explorer" aria-labelledby="ledger-directory-title">
+     {mode==="catalogue"&&signedIn?<SpeciesRequestButton/>:null}
      <div className={spotlight.organismTabs} role="group" aria-label="Browse organisms">
        {([["all","All organisms"],["isopod","Isopods"],["springtail","Springtails"]] as const).map(([key,label])=><button key={key} type="button" aria-pressed={organism===key} onClick={()=>{setOrganism(key);setGenus("all")}}>{label}</button>)}
      </div>
