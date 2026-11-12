@@ -11,6 +11,7 @@ import {BinSwitcher,type SwitchableBin} from "@/components/BinSwitcher";
 import {useUnsavedBinChanges} from "@/components/useUnsavedBinChanges";
 import {binDisplayName} from "@/lib/bin-identity";
 import {BinLifecycleControls} from "@/components/BinLifecycleControls";
+import {ManagerInlineCare} from "@/components/ManagerInlineCare";
 import styles from "./ColonyWorkspace.module.css";
 
 type CareEvent={id:string;kind:string;note:string;createdAt:string;quantityChange:number|null};
@@ -133,7 +134,7 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
   {created?<p className={styles.notice} role="status">Bin created. You’re ready to record care.</p>:null}
   <div className={styles.binToolbar}>
    <nav aria-label="Colony shortcuts">
-    {!colony.archived?<Link className={styles.quickCarePrimary} href={careUrl}><PodscapeLineIcon name="droplet"/> Quick Care</Link>:null}
+    {!colony.archived?<ManagerInlineCare binId={colony.id} binName={binDisplayName({id:colony.id,name:colony.name})}/>:null}
     <Link href={"/keeper/"+id+"/details"}><PodscapeLineIcon name="edit"/> Edit details</Link>
     <Link href={"/keeper/"+id+"/history"}><PodscapeLineIcon name="calendar"/> History</Link>
     {referenceUrl?<Link className={styles.referenceShortcut} href={referenceUrl}><PodscapeLineIcon name="leaf"/> Species guide</Link>:null}
