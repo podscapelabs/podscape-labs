@@ -8,6 +8,7 @@ import { listEnclosures } from "@/lib/keeper";
 import { getSpeciesRecords } from "@/lib/species-store";
 import { isSpeciesRecordActive } from "@/data/species";
 import styles from "./page.module.css";
+import {resolveCollectionView} from "@/lib/collection-views";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "My Colonies | PodScape Labs", robots: { index: false, follow: false } };
@@ -23,7 +24,8 @@ export default async function MyColoniesPage({searchParams}:{searchParams:Promis
     try { [records, bins] = await Promise.all([getSpeciesRecords(), listEnclosures()]); }
     catch { unavailable = true; }
   }
-  const archivedView=options.view==="archived";
+  const view=resolveCollectionView(options.view,options.species,bins);
+  const archivedView=view==="archived",savedView=view==="saved";
   const active = bins.filter(bin => archivedView?bin.isArchived:!bin.isArchived);
   const species = records.filter(record => record.kind === "species" && (isSpeciesRecordActive(record)||bins.some(bin=>bin.speciesId===record.id)));
   return <PlatformShell>
@@ -32,13 +34,13 @@ export default async function MyColoniesPage({searchParams}:{searchParams:Promis
         <nav className={styles.breadcrumb} aria-label="Breadcrumb"><Link href="/keeper">← Manager Dashboard</Link></nav>
         <header className={styles.heading}>
           <p className={styles.eyebrow}>MANAGER · YOUR COLLECTION</p>
-          <h1>My Colonies</h1>
-          <p>Your saved species and bins in one place.</p>
-          <nav aria-label="Collection views"><Link href="/ledger">Discover species</Link>{" · "}<Link href="/keeper/collection">Active collection</Link>{" · "}<Link href="/keeper/collection?view=archived">Archived bins</Link></nav>
+          <h1>{savedView?"Saved species":archivedView?"Archived bins":"My Colonies"}</h1>
+          <p>{savedView?"Species saved for reference. Add a bin when you start keeping them.":archivedView?"Review or restore bins you have archived.":"Your active bins, grouped by species."}</p>
+          <nav aria-label="Collection views"><Link href="/keeper/collection?view=active" aria-current={view==="active"?"page":undefined}>My Colonies</Link>{" · "}<Link href="/keeper/collection?view=saved" aria-current={savedView?"page":undefined}>Saved species</Link>{" · "}<Link href="/keeper/collection?view=archived" aria-current={archivedView?"page":undefined}>Archived bins</Link></nav>
         </header>
         {!member.signedIn ? <section className={styles.empty}><h2>Your colonies are private.</h2><p>Sign in to see and manage your records.</p><Link href="/account/login">Sign in →</Link></section>
           : unavailable ? <section className={styles.empty} role="alert"><h2>Colony records are unavailable.</h2><p>Try again when the Keeper database is available.</p></section>
-          : <ManagerColonies records={species} bins={active} collectedIds={member.ids} intent={intent} initialSpecies={options.species} archivedView={archivedView} />}
+          : <ManagerColonies key={view+":"+(options.species||"")} records={species} bins={active} allBins={bins.map(({speciesId,isArchived})=>({speciesId,isArchived}))} collectedIds={member.ids} intent={intent} initialSpecies={options.species} archivedView={archivedView} savedView={savedView} />}
       </div>
     </div>
     {member.signedIn ? <KeeperMobileNav active="keeper"/> : null}

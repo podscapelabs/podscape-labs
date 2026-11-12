@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+await import("./test-collection-views.mjs");
 import {readFileSync} from "node:fs";
 const read=p=>readFileSync(p,"utf8");
 const migration=read("supabase/migrations/202611110011_separate_collection_bookmarks_from_keeper_bins.sql");

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import {binDisplayName} from "@/lib/bin-identity";
+import {speciesMatchesCollectionView} from "@/lib/collection-views";
 import Image from "next/image";
 import Link from "next/link";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
@@ -11,15 +12,17 @@ import { speciesDisplayName, speciesScientificName, type SpeciesRecord } from "@
 import type { Enclosure } from "@/lib/keeper";
 import styles from "./ManagerColonies.module.css";
 
-export function ManagerColonies({ records, bins, collectedIds, intent, initialSpecies, archivedView=false }: {
+export function ManagerColonies({ records, bins, allBins=bins, collectedIds, intent, initialSpecies, archivedView=false, savedView=false }: {
   records: SpeciesRecord[];
   bins: Enclosure[];
   collectedIds: string[];
   intent?: "notes";
   initialSpecies?:string;
   archivedView?:boolean;
+  savedView?:boolean;
+  allBins?:{speciesId:string;isArchived:boolean}[];
 }) {
-  const [tab, setTab] = useState<"species" | "bins">(intent==="notes"?"bins":"species");
+  const [tab, setTab] = useState<"species" | "bins">(!savedView&&intent==="notes"?"bins":"species");
   const [query, setQuery] = useState("");
   const [expanded,setExpanded]=useState<string|null>(initialSpecies||null);
   const binHref=(id:string)=>"/keeper/"+id+(intent==="notes"?"?panel=observation#observation":"");
@@ -31,7 +34,7 @@ export function ManagerColonies({ records, bins, collectedIds, intent, initialSp
   const speciesTotals=new Map([...binsBySpecies].map(([id,group])=>[id,group.reduce((total,bin)=>total+bin.quantity,0)]));
   const recentFor=(record:SpeciesRecord)=>Math.max(Date.parse(record.updatedAt)||0,...(binsBySpecies.get(record.id)||[]).map(bin=>Date.parse(bin.updatedAt)||0));
   const saved = new Set(collectedIds);
-  const entries = records.filter(record => (!archivedView&&saved.has(record.id)) || binsBySpecies.has(record.id));
+  const entries = records.filter(record => speciesMatchesCollectionView(record.id,savedView?"saved":archivedView?"archived":"active",saved,allBins));
   const speciesMap = new Map(records.map(record => [record.id, record]));
   const genera = [...new Set(entries.map(record => record.genus).filter(Boolean))].sort();
   const careLevels = [...new Set(entries.map(record => record.careLevel).filter(Boolean))].sort();
@@ -49,10 +52,10 @@ export function ManagerColonies({ records, bins, collectedIds, intent, initialSp
   }).sort((a,b)=>sort==="name"?a.name.localeCompare(b.name):sort==="count"?b.quantity-a.quantity:Date.parse(b.updatedAt)-Date.parse(a.updatedAt));
   function reset(){setQuery("");setGenus("all");setCare("all");setSort("recent");}
   return <section id="colonies" className={styles.section} aria-label="My Colonies">
-    <div className={styles.titleRow}><h2>My Colonies</h2><div className={styles.tabs} role="group" aria-label="Browse collection by">
+    <div className={styles.titleRow}><h2>{savedView?"Saved for later":archivedView?"Archived bins":"Your colonies"}</h2>{!savedView?<div className={styles.tabs} role="group" aria-label="Browse collection by">
       <button type="button" className={tab==="species"?styles.selected:""} aria-pressed={tab==="species"} onClick={()=>{setTab("species");reset();}}>Species</button>
       <button type="button" className={tab==="bins"?styles.selected:""} aria-pressed={tab==="bins"} onClick={()=>{setTab("bins");reset();}}>Bins</button>
-    </div></div>
+    </div>:null}</div>
     {intent==="notes"?<p style={{color:"var(--text-secondary)",fontSize:".82rem",margin:"0 0 12px"}}>Select a bin to add a dated observation to its care history.</p>:null}
     <div className={styles.search}><PodscapeLineIcon name="scan" /><input type="search" value={query} onChange={e=>setQuery(e.target.value)} placeholder={tab==="species"?"Search species in your collection…":"Search your bins…"} aria-label="Search your colonies" /></div>
     <div className={styles.filters}>
@@ -74,7 +77,7 @@ export function ManagerColonies({ records, bins, collectedIds, intent, initialSp
           <span className={styles.photo}>{record.image?<Image src={record.image} alt="" fill sizes="(max-width:700px) 90px,130px" style={{objectFit:"cover",objectPosition:record.imagePositionX+"% "+record.imagePositionY+"%"}}/>:<PodscapeLineIcon name="leaf"/>}</span>
           <span className={styles.cardBody}><strong>{speciesDisplayName(record)}</strong><em>{speciesScientificName(record)}</em>
             <small>{owned.length?archivedView?"Archived bins":"Your active bins":"Saved species · No bins created"}</small>
-            <span className={styles.counts}><span><PodscapeLineIcon name="bin"/>{owned.length} {owned.length===1?"bin":"bins"}</span>{owned.length?<span><PodscapeLineIcon name="community"/>{total} recorded</span>:null}</span>
+            {!savedView?<span className={styles.counts}><span><PodscapeLineIcon name="bin"/>{owned.length} {owned.length===1?"bin":"bins"}</span>{owned.length?<span><PodscapeLineIcon name="community"/>{total} recorded</span>:null}</span>:null}
           </span>
           <span className={styles.expandArrow} aria-hidden="true">{open?"⌃":"⌄"}</span>
         </button>
@@ -101,7 +104,7 @@ export function ManagerColonies({ records, bins, collectedIds, intent, initialSp
         <span className={styles.status}>{bin.status.replaceAll("-"," ")}</span><span className={styles.arrow}>›</span>
       </Link>;
     })}
-    {((tab==="species" && !visibleSpecies.length)||(tab==="bins"&&!visibleBins.length))&&<div className={styles.empty}><p>{entries.length||bins.length?"No matching records.":"Your collection is ready for its first species."}</p>{entries.length||bins.length?<button onClick={reset} type="button">Clear filters</button>:<Link href="/ledger">Browse Leaf Ledger →</Link>}</div>}
+    {((tab==="species" && !visibleSpecies.length)||(tab==="bins"&&!visibleBins.length))&&<div className={styles.empty}><p>{entries.length?"No matching records.":savedView?"No saved species without bins. Save a species from Leaf Ledger to find it here.":archivedView?"No archived bins.":"No active colonies yet. Add a bin for a saved species to get started."}</p>{entries.length?<button onClick={reset} type="button">Clear filters</button>:<Link href={savedView?"/ledger":"/keeper/collection?view=saved"}>{savedView?"Browse Leaf Ledger →":"View saved species →"}</Link>}</div>}
     </div>
     <div className={styles.actions}><Link href="/keeper/new">＋ Add bin</Link><Link href="/keeper/import">Import spreadsheet</Link><Link href="/ledger">＋ Add species →</Link></div>
   </section>;
