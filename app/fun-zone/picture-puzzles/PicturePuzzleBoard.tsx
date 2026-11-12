@@ -52,9 +52,9 @@ function SlidingPuzzleBoard({userId,id,title,description,imageAlt,learningNote,a
  const [hydrated,setHydrated]=useState(false);
  const [initial,setInitial]=useState<number[]>([]);
  const [steps,setSteps]=useState<number[]>([]);
- const {saved,earnedExp,record,retry}=usePuzzleCompletion("picture-puzzles",id);
+ const {saved,earnedExp,record,clearAwardDisplay,retry}=usePuzzleCompletion("picture-puzzles",id);
  const key="podscape:picture-puzzle:v3:"+userId+":"+id+":"+puzzleType+":"+difficulty;
- const start=useCallback(()=>{const next=shuffledSliding(size);setTiles(next);setInitial(next);setSteps([]);setMoves(0);setFinished(false);setStarted(true);},[size]);
+ const start=useCallback(()=>{const next=shuffledSliding(size);setTiles(next);setInitial(next);setSteps([]);setMoves(0);setFinished(false);setStarted(true);clearAwardDisplay();},[size,clearAwardDisplay]);
  useEffect(()=>{if(previewMode){setHydrated(true);return;}try{
   const saved=localStorage.getItem(key);if(!saved)return;
   const v:unknown=JSON.parse(saved);
@@ -107,9 +107,9 @@ export function PicturePuzzleBoard(props:{userId:string;id:string;title:string;d
 }
 
 function RewardedJigsaw(props:{userId:string;id:string;title:string;description:string;imageAlt:string;learningNote:string;artistCredit?:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string;previewMode?:boolean}){
- const {saved,earnedExp,record,retry}=usePuzzleCompletion("picture-puzzles",props.id);
+ const {saved,earnedExp,record,clearAwardDisplay,retry}=usePuzzleCompletion("picture-puzzles",props.id);
  const [solved,setSolved]=useState(false);
- const onReset=useCallback(()=>setSolved(false),[]);
+ const onReset=useCallback(()=>{setSolved(false);clearAwardDisplay();},[clearAwardDisplay]);
  const onComplete=useCallback((proof:{placed:number[];moves:number})=>{setSolved(true);if(props.rewardsEnabled)void record(proof);},[record,props.rewardsEnabled]);
  return <>
   <InterlockingJigsawBoard key={props.id+props.difficulty} previewMode={props.previewMode} earnedExp={earnedExp} rewardSaved={saved==="saved"} userId={props.userId} id={props.id} imageUrl={props.imageUrl} imageAlt={props.imageAlt||props.title} title={props.title} learningNote={props.learningNote} artistCredit={props.artistCredit} size={DIFFICULTIES[props.difficulty].columns} onComplete={onComplete} onReset={onReset}/>
