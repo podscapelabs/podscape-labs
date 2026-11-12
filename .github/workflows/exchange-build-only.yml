@@ -31,6 +31,8 @@ jobs:
         run: pnpm run check:theme-system
       - name: Verify PodScape shared design system
         run: node scripts/verify-design-system.mjs
+      - name: Audit themed information sheets and CSS colour debt
+        run: node scripts/verify-info-sheet-theme.mjs
       - name: Verify Arcade and market automatic rankings
         run: |
           node scripts/verify-fun-zone-rankings.mjs
