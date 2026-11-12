@@ -69,7 +69,7 @@ export async function POST(request:Request){
  if(saveError){console.error("Experience achievement failed",saveError.code);return NextResponse.json({error:"Progress unavailable"},{status:503})}
  const unlocked=(Array.isArray(data)?data:[]).flatMap(row=>{
   const definition=achievementCatalog.find(item=>item.key===row.achievement_key&&item.status==="available");
-  return definition?[{id:definition.key,title:definition.title,description:definition.description,exp:definition.exp,coins:0,hidden:definition.hidden===true}]:[];
+  return definition?[{id:definition.key,title:definition.title,description:definition.description,exp:definition.exp,hidden:definition.hidden===true}]:[];
  });
  return NextResponse.json({saved:true,unlocked});
 }
