@@ -7,6 +7,7 @@ export const LEDGER_BROWSE_ORDER_KEY="podscape-ledger-browse-order-v1";
 export type LedgerExplorerSnapshot={
  query:string;
  genus:string;
+ organism?:"all"|"isopod"|"springtail";
  care:string;
  sort:"catalogue"|"common"|"scientific"|"recent";
  filtersOpen:boolean;
