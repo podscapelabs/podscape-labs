@@ -2,6 +2,8 @@
 import {useEffect,useMemo,useRef,useState} from "react";
 import {announceAchievement,type AchievementNotice} from "@/components/AchievementToast";
 import Link from "next/link";
+import {createPortal} from "react-dom";
+import {PodscapeInfoDialog} from "@/components/PodscapeInfoDialog";
 import styles from "./exchange.module.css";
 import {DuckBucks,DuckBuckIcon,duckBucksNumber} from "@/components/DuckBucks";
 import {ExchangeCompanyIcon} from "@/components/ExchangeCompanyIcon";
@@ -53,6 +55,9 @@ export function PodExchange(){
  const [message,setMessage]=useState("");
  const [view,setView]=useState<"market"|"wallet">("market");
  const [chartHours,setChartHours]=useState<2|24>(24);
+ const [rulesOpen,setRulesOpen]=useState(false);
+ const rulesTrigger=useRef<HTMLButtonElement>(null);
+ const closeRules=()=>{setRulesOpen(false);requestAnimationFrame(()=>rulesTrigger.current?.focus());};
  const tradeRef=useRef<HTMLElement|null>(null);
  const applyMode=(mode:StorageMode)=>{modeRef.current=mode;setStorageMode(mode)};
  useEffect(()=>{
@@ -284,17 +289,17 @@ export function PodExchange(){
    <span className={styles.marketLeadersArrow} aria-hidden="true">→</span>
   </Link>
   <div className={styles.rulesDock} aria-label="Market help">
-   <details className={styles.rules} id="exchange-rules">
-   <summary><span><PodscapeLineIcon name="book"/> How to Play</span><span className={styles.rulesHint}>The basics <span aria-hidden="true">⌄</span></span></summary>
-   <div className={styles.rulesBody}>
-    <p><strong>Start with 10,000 Duck Bucks.</strong> They&apos;re fictional game currency.</p>
-    <p><strong>Buy shares</strong> in any of the six companies. You can sell shares you own whenever you like.</p>
-    <p><strong>Prices change every minute</strong> with exaggerated company swings, five-minute headlines and six-hour market mayhem.</p>
-    <p><strong>Grow your portfolio</strong> by trading wisely. Its value is your remaining Duck Bucks plus the current value of your shares.</p>
-    <small>Beta rules: whole shares only, 0.5% fee per buy or sell. No real money or prizes. Signed-in wallets sync to your account.</small>
-   </div>
-  </details>
+   <button ref={rulesTrigger} type="button" className={styles.rulesShortcut}
+    onClick={()=>setRulesOpen(true)}><PodscapeLineIcon name="book"/> How to Play <span aria-hidden="true">→</span></button>
   </div>
+  {rulesOpen?createPortal(<PodscapeInfoDialog eyebrow="POD EXCHANGE · FIELD GUIDE" icon="gamepad" title="How to Play" description="A fictional, fast-paced parody stock market. No real money, prizes or purchases." onClose={closeRules}>
+   <div className={styles.gameRules}>
+    <div><strong>1. Start trading</strong><p>Every keeper begins with 10,000 Duck Bucks. Buy whole shares in any of the six companies.</p></div>
+    <div><strong>2. Watch the chaos</strong><p>Prices change every minute. The Leaf Street Journal creates a new headline every five minutes, with bigger six-hour market events.</p></div>
+    <div><strong>3. Buy low, sell high</strong><p>Choose 1, 5, 10 or MAX shares. Sell anything you own. Every trade has a 0.5% fee; no waiting or stamina.</p></div>
+    <div><strong>4. Climb the rankings</strong><p>Your portfolio is your cash plus the current value of owned shares. Cloud wallets sync to your account; guest wallets stay on this device.</p></div>
+   </div>
+  </PodscapeInfoDialog>,document.body):null}
   <footer className={styles.footer}><DuckBuckIcon size={15}/> Fictional currency only · No real money or prizes. Signed-in wallets sync to PodScape; guest wallets stay on this device. <Link href="/fun-zone">Fun Zone →</Link></footer>
  </div></main>;
 }
