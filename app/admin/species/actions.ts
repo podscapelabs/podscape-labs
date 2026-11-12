@@ -37,6 +37,7 @@ export async function createSpeciesRecord() {
     id,
     slug: `draft-${id.slice(-8)}`,
     kind: "species",
+    organismGroup: "isopod",
     status: "draft",
     identityStatus: "unassigned",
     commonName: "",
@@ -96,10 +97,12 @@ export async function saveSpeciesRecord(formData: FormData) {
   const publication = field(formData, "status", 20);
   const identityStatus = field(formData, "identityStatus", 20) as SpeciesIdentityStatus;
   const kind = field(formData, "kind", 20) as SpeciesRecordKind;
+  const organismGroup=field(formData,"organismGroup",20)||"isopod";
 
   if (!["draft", "published", "archived"].includes(publication)) studioRedirect(id, "error", "Invalid publication status", view);
   if (!["unassigned", "provisional", "verified"].includes(identityStatus)) studioRedirect(id, "error", "Invalid identity status", view);
   if (!["photo-test", "species"].includes(kind)) studioRedirect(id, "error", "Invalid record type", view);
+  if (!["isopod","springtail"].includes(organismGroup)) studioRedirect(id,"error","Invalid organism group",view);
   if (publication === "published" && (!commonName || !scientificName || identityStatus === "unassigned")) {
     studioRedirect(id, "error", "Published records need approved common and scientific names", view);
   }
@@ -144,6 +147,7 @@ export async function saveSpeciesRecord(formData: FormData) {
     ...current,
     slug,
     kind,
+    organismGroup:organismGroup as "isopod"|"springtail",
     status,
     archivedAt,
     identityStatus,
