@@ -1,5 +1,5 @@
 "use client";
-import {useEffect,useState} from "react";
+import {useEffect,useRef,useState} from "react";
 import {createPortal} from "react-dom";
 import {PicturePuzzleBoard} from "@/app/fun-zone/picture-puzzles/PicturePuzzleBoard";
 import {DIFFICULTIES,PUZZLE_TYPES,type Difficulty,type PuzzleType} from "@/lib/picture-puzzles-client";
@@ -10,15 +10,26 @@ export function PuzzlePreviewButton({imageUrl}:{imageUrl?:string}){
  const [preview,setPreview]=useState<Preview|null>(null);
  const [error,setError]=useState("");
  const [mounted,setMounted]=useState(false);
+ const dialog=useRef<HTMLElement>(null);
+ const trigger=useRef<HTMLButtonElement>(null);
  useEffect(()=>setMounted(true),[]);
  useEffect(()=>{
   if(!preview)return;
   const focus=document.activeElement as HTMLElement|null;
   const oldOverflow=document.body.style.overflow;
   document.body.style.overflow="hidden";
-  const onKey=(event:KeyboardEvent)=>{if(event.key==="Escape")setPreview(null)};
+  const onKey=(event:KeyboardEvent)=>{
+   if(event.key==="Escape"){event.preventDefault();setPreview(null);return;}
+   if(event.key!=="Tab"||!dialog.current)return;
+   const controls=Array.from(dialog.current.querySelectorAll<HTMLElement>('button:not(:disabled),a[href],input:not(:disabled),select:not(:disabled),textarea:not(:disabled),[tabindex="0"]'));
+   if(!controls.length)return;
+   const first=controls[0],last=controls[controls.length-1];
+   if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+   if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+  };
+  requestAnimationFrame(()=>dialog.current?.querySelector<HTMLElement>('button[aria-label="Close puzzle preview"]')?.focus({preventScroll:true}));
   document.addEventListener("keydown",onKey);
-  return ()=>{document.body.style.overflow=oldOverflow;document.removeEventListener("keydown",onKey);if(preview.blob)URL.revokeObjectURL(preview.imageUrl);focus?.focus?.()};
+  return ()=>{document.body.style.overflow=oldOverflow;document.removeEventListener("keydown",onKey);if(preview.blob)URL.revokeObjectURL(preview.imageUrl);(trigger.current||focus)?.focus?.()};
  },[preview]);
  const open=(event:React.MouseEvent<HTMLButtonElement>)=>{
   const form=event.currentTarget.closest("form");
@@ -43,11 +54,11 @@ export function PuzzlePreviewButton({imageUrl}:{imageUrl?:string}){
   });
  };
  return <>
-  <div className={styles.actions}><button type="button" className={styles.previewButton} onClick={open}>Preview &amp; play puzzle</button><span>Try the selected puzzle before saving. No progress or rewards are recorded.</span></div>
+  <div className={styles.actions}><button ref={trigger} type="button" className={styles.previewButton} onClick={open}>Preview &amp; play puzzle</button><span>Try the selected puzzle before saving. No progress or rewards are recorded.</span></div>
   {error?<p className={styles.error} role="alert">{error}</p>:null}
   {mounted&&preview?createPortal(
    <div className={styles.backdrop} onPointerDown={event=>{if(event.target===event.currentTarget)setPreview(null)}}>
-    <section className={styles.modal+" v2-site"} role="dialog" aria-modal="true" aria-label="Puzzle test preview">
+    <section ref={dialog} className={styles.modal+" v2-site"} role="dialog" aria-modal="true" aria-label="Puzzle test preview">
      <header className={styles.header}><div><small>OWNER STUDIO · UNSAVED PREVIEW</small><strong>Test your puzzle</strong><p>Play exactly as a member would. This preview never publishes or awards EXP.</p></div><button type="button" onClick={()=>setPreview(null)} aria-label="Close puzzle preview">×</button></header>
      <div className={styles.game}><PicturePuzzleBoard key={preview.id} id={preview.id} userId="owner-preview" title={preview.title} description={preview.description} imageAlt={preview.imageAlt} learningNote={preview.learningNote} imageUrl={preview.imageUrl} difficulty={preview.difficulty} puzzleType={preview.puzzleType} level={preview.level} rewardsEnabled={false} previewMode/></div>
      <footer className={styles.footer}><button type="button" onClick={()=>setPreview(null)}>Back to editing</button><span>Changes aren&apos;t saved until you submit the form.</span></footer>
