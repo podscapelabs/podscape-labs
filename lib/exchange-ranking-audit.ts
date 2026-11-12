@@ -1,6 +1,6 @@
 import "server-only";
 import {getSupabaseAdmin} from "@/lib/supabase-admin";
-import {STARTING_BUCKS,STOCKS,cycleAt,priceAt,tradeTotal} from "@/lib/pod-exchange";
+import {STARTING_BUCKS,STOCKS,arcadeCycleAt,priceAt,tradeTotal} from "@/lib/pod-exchange";
 type Order={symbol:string;side:string;shares:number;unit_price:number|string;cycle:number|string;created_at?:string};
 type Wallet={cash:number|string;holdings:Record<string,number>};
 const symbols=new Set(STOCKS.map(x=>x.symbol));
@@ -17,7 +17,7 @@ export function auditExchangeLedger(wallet:Wallet,orders:Order[]){
  let lastCycle=-Infinity;
  for(const order of ordered){
   const cycle=Number(order.cycle),shares=Number(order.shares),unit=Number(order.unit_price);
-  if(!Number.isSafeInteger(cycle)||cycle>cycleAt(Date.now())||
+  if(!Number.isSafeInteger(cycle)||cycle>arcadeCycleAt(Date.now())||
    cycle<lastCycle||!symbols.has(order.symbol)||!Number.isSafeInteger(shares)||
    shares<1||shares>1_000_000||(order.side!=="buy"&&order.side!=="sell")||
    !Number.isFinite(unit)||unit!==priceAt(order.symbol,cycle))
