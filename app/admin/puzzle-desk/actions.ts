@@ -42,6 +42,16 @@ export async function updatePicturePuzzle(form:FormData){
  const payload=fields(form);
  if(!/^[0-9a-f-]{36}$/i.test(id)||!payload)redirect(desk+"?error=invalid");
  const db=getWritableSupabaseAdmin();if(!db)redirect(desk+"?error=storage");
+ const {data:existing,error:lookupError}=await db.from("picture_puzzles").select("puzzle_type,difficulty").eq("id",id).maybeSingle();
+ if(lookupError||!existing)redirect(desk+"?error=database");
+ if(existing.puzzle_type!==payload.puzzle_type||existing.difficulty!==payload.difficulty){
+  // A completed puzzle's identity, difficulty, and gameplay must stay stable.
+  // Otherwise an existing completion could unlock a different challenge.
+  const {count,error:countError}=await db.from("member_puzzle_completions")
+   .select("puzzle_id",{head:true,count:"exact"}).eq("game_key","picture-puzzles").eq("puzzle_id",id);
+  if(countError)redirect(desk+"?error=database");
+  if((count||0)>0)redirect(desk+"?error=completed-immutable");
+ }
  const {error}=await db.from("picture_puzzles").update(payload).eq("id",id);
  if(error)redirect(desk+"?error=database");
  refresh(id);redirect(desk+"?saved=updated");
