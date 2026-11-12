@@ -16,7 +16,7 @@ assert.match(sql,/revoke all on public.member_exchange_weekly_snapshots from ano
 assert.match(sql,/primary key \(user_id, week_start\)/,"Weekly baselines are idempotent");
 assert.match(exchange,/eligible:!saved/,"Fresh wallets qualify; legacy wallets require audit");
 assert.match(exchange,/eligible:!saved/,"Fresh wallets become eligible; legacy wallets undergo automatic reconciliation");
-assert.match(api,/totalValue\(portfolio,cycle\)/,"Current wealth must be server-calculated");
+assert.match(api,/totalValue\(portfolio,cycle,quotes\)/,"Current wealth must use server-authenticated market prices");
 assert.match(api,/priceAt|totalValue/,"Market prices must not arrive from the client");
 assert.match(api,/public_enabled",true\)\.eq\("eligible",true\)/,"Public standings exclude ineligible and non-opted accounts");
 assert.match(api,/auditStoredExchangeWallet/,"Legacy market eligibility must be verified server-side");
@@ -27,7 +27,7 @@ assert.match(api,/positions|position:rank/,"Never rely on client-provided rank")
 assert.match(cron,/process\.env\.CRON_SECRET/,"Snapshot endpoint requires cron bearer secret");
 assert.match(cron,/now.getUTCDay\(\)!==1/,"Snapshots are captured on Mondays only");
 assert.match(cron,/ignoreDuplicates:true/,"A snapshot cannot be overwritten");
-assert.match(cron,/totalValue\(portfolio,cycle\)/,"Weekly baseline must use current server price");
+assert.match(cron,/totalValue\(portfolio,cycle,quotes\)/,"Weekly baseline must use current authoritative quote");
 assert.ok(vercel.crons.some(c=>c.path==="/api/cron/exchange-market-rankings"&&c.schedule==="10 0 * * 1"));
 assert.match(page,/The Rich List/);
 assert.match(page,/Top Investors/);
@@ -56,7 +56,7 @@ assert.match(cron,/bestWeekly>=5/,"Weekly market achievement needs meaningful gr
 assert.match(cron,/previousWeek/,"Weekly achievement must use a real prior-week baseline");
 assert.match(api,/auditStoredExchangeWallet/,"Automatic audits replace owner review requests");
 assert.doesNotMatch(api,/requestReview/,"No manual approval endpoint");
-assert.match(audit,/priceAt\(order.symbol,cycle\)/,"Legacy orders must match deterministic historical prices");
+assert.match(audit,/quoteForCycle\(active,symbol,cycle\)/,"Ledger audit must use legacy or V3 pricing by historic trade cycle");
 assert.match(audit,/STARTING_BUCKS\*100/,"Legacy cash reconciliation must start at 10,000");
 assert.match(exchangeWidgetStyles,/\.rankingsSpotlight/,"Rankings Spotlight should use themed widget styling");
 
