@@ -123,13 +123,14 @@ export function MoistureAndHumidityWidget({record}:{record:SpeciesRecord}){
  </section>;
 }
 export function BreedingDevelopmentWidget({record}:{record:SpeciesRecord}){
+ const springtail=record.organismGroup==="springtail";
  const avg=record.broodAverage?.trim(),min=record.broodMin?.trim(),max=record.broodMax?.trim();
  return <Details title="Breeding & Growth" rows={[
-  {label:"Average brood",value:avg?avg+" young":undefined},
-  {label:"Observed brood range",value:min&&max?min+"–"+max+" young":undefined},
-  {label:"Incubation / brooding",value:record.incubationPeriod},{label:"Age at maturity",value:record.maturityAge},
+  {label:"Average brood",value:!springtail&&avg?avg+" young":undefined},
+  {label:"Observed brood range",value:!springtail&&min&&max?min+"–"+max+" young":undefined},
+  {label:springtail?"Egg incubation":"Incubation / brooding",value:record.incubationPeriod},{label:"Age at maturity",value:record.maturityAge},
   {label:"Breeding season",value:record.breedingSeason}
- ]} note={has(record,["broodAverage","broodMin","broodMax"])?"Brood measurements depend on the studied population and conditions. Check Research & Sources for evidence scope.":undefined}/>;
+ ]} note={!springtail&&has(record,["broodAverage","broodMin","broodMax"])?"Brood measurements depend on the studied population and conditions. Check Research & Sources for evidence scope.":undefined}/>;
 }
 export function TaxonomyOriginWidget({record}:{record:SpeciesRecord}){
  return <Details title="Origins & Identity" rows={[

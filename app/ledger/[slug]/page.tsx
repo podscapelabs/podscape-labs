@@ -92,7 +92,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
   const moistureAvailable=(typeof record.moistureRangeStart==="number"&&typeof record.moistureRangeEnd==="number")
     ||Boolean(record.moistureProfile?.trim())
     ||hasResearch(["humidityMin","humidityMax","moistZoneCoverage","moistRefugeCondition","moistureGradientGuidance"]);
-  const breedingAvailable=hasResearch(["broodAverage","incubationPeriod","maturityAge","breedingSeason"])||(Boolean(record.broodMin?.trim())&&Boolean(record.broodMax?.trim()));
+  const breedingAvailable=hasResearch(["incubationPeriod","maturityAge","breedingSeason"])||(record.organismGroup!=="springtail"&&(hasResearch(["broodAverage"])||(Boolean(record.broodMin?.trim())&&Boolean(record.broodMax?.trim()))));
   const taxonomyAvailable=hasResearch(["taxonomicStatus","taxonomicSynonyms","nativeDistribution","morphOrigin","identificationNotes"]);
   const nutritionAvailable=Boolean(record.feeding?.trim())||hasResearch(["stapleDiet","proteinGuidance","calciumGuidance","dietaryCautions"]);
   const behaviourAvailable=hasResearch(["adultSizeMm","lifespan","defensiveBehaviour","visibilityNotes"]);

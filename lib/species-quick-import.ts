@@ -4,6 +4,7 @@ import {normalizeSpeciesTrait,SPECIES_TRAIT_REGISTRY} from "@/lib/species-traits
  * Never accept status, identity verification, record ID, slug, catalogue number or image uploads.
  */
 export const IMPORT_FIELDS=[
+ ["organismGroup","Organism group",20],
  ["commonName","Common name",120],
  ["scientificName","Scientific name",160],
  ["genus","Genus",100],
@@ -29,6 +30,7 @@ export type ImportEntry={field:ImportField;label:string;value:string;existing:st
 export type ParsedImport={values:Partial<Record<ImportField,string>>;warnings:string[];error:string|null};
 
 const options:Partial<Record<ImportField,readonly string[]>>={
+ organismGroup:["isopod","springtail"],
  careLevel:["Beginner","Intermediate","Advanced","Expert"],
  ventilation:["Low","Moderate","High"],
  activity:["Shy","Moderate","Active","Very Active"],
@@ -37,6 +39,7 @@ const options:Partial<Record<ImportField,readonly string[]>>={
 export const IMPORT_MAX_CHARACTERS=100000;
 export const IMPORT_RESEARCH_PROMPT=[
  "PodScape Leaf Ledger — COMPLETE species Quick Import research.",
+ "Set organismGroup to isopod or springtail. Springtails are Collembola. For springtails omit isopod brood fields (broodAverage, broodMin, broodMax) and do not copy isopod calcium guidance. Use incubationPeriod only for supported egg incubation; omit unsupported humidity numbers and reproduction measurements.",
  "Research EVERY applicable field listed below; return ONE valid JSON object using exactly these keys and allowed values.",
  "Research at least 15 relevant, independently checked sources. Prioritize taxonomy databases and peer-reviewed scientific studies, then reputable captive-care literature. Sources must be real, relevant, accessible HTTP(S) URLs, one per line in researchSources; do not invent links or pad with duplicates.",
  "Separate species-level science from hobby morph observations and breeder recommendations in evidenceNotes. Do not invent exact numerical ranges. Omit genuinely unsupported values; no placeholders, guesses or generic disclaimers inside temperature.",
@@ -50,6 +53,7 @@ export const IMPORT_RESEARCH_PROMPT=[
  "Skip record identity verification, photos, publication status, slug and catalogue ID. Imported values are reviewed before saving."
 ].join("\n");
 export const IMPORT_TEMPLATE=JSON.stringify({
+ organismGroup:"",
  commonName:"",scientificName:"",genus:"",species:"",morph:"",
  about:"",careLevel:"",temperature:"",ventilation:"",
  activity:"",reproduction:"",
