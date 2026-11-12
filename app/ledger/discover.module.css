@@ -77,16 +77,16 @@
  color:var(--portal-hero-text);
 }
 .heroPhoto{position:absolute;z-index:-2;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 48%}
-.heroShade{position:absolute;z-index:-1;inset:0;background:linear-gradient(90deg,rgba(9,31,23,.95) 0%,rgba(12,36,25,.85) 45%,rgba(14,38,26,.25) 100%)}
+.heroShade{position:absolute;z-index:-1;inset:0;background:linear-gradient(90deg,color-mix(in srgb,var(--portal-hero-start) 95%,transparent) 0%,color-mix(in srgb,var(--portal-hero-end) 85%,transparent) 45%,color-mix(in srgb,var(--portal-hero-end) 25%,transparent) 100%)}
 .heroInner{position:relative;width:100%;max-width:720px;padding:35px 36px 31px}
 .heroInner::after{display:none}
-.heroEyebrow{margin:0;color:#d3e3c8;font-size:.63rem;letter-spacing:.14em;font-weight:800}
-.hero h1{margin:9px 0 10px;font:400 clamp(2.9rem,6vw,4.6rem)/.98 var(--display);letter-spacing:-.045em;color:#fff8ec}
-.heroDescription{max-width:43ch;margin:0;color:#edf2e6;font-size:.86rem;line-height:1.48}
+.heroEyebrow{margin:0;color:var(--portal-hero-soft);font-size:.63rem;letter-spacing:.14em;font-weight:800}
+.hero h1{margin:9px 0 10px;font:400 clamp(2.9rem,6vw,4.6rem)/.98 var(--display);letter-spacing:-.045em;color:var(--portal-hero-text)}
+.heroDescription{max-width:43ch;margin:0;color:var(--portal-hero-muted);font-size:.86rem;line-height:1.48}
 .heroActions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:22px}
-.heroActions a{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:43px;padding:10px 16px;border:1px solid #e2e9d899;border-radius:999px;text-decoration:none;font-size:.72rem;font-weight:800;color:#fbf8ed;background:#153c2b88;white-space:nowrap}
-.heroActions a.heroActionPrimary{background:#f6f1e6;border-color:#f6f1e6;color:#173829}
-.heroActions a:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.heroActions a{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:43px;padding:10px 16px;border:1px solid color-mix(in srgb,var(--portal-hero-text) 35%,transparent);border-radius:999px;text-decoration:none;font-size:.72rem;font-weight:800;color:var(--portal-hero-text);background:color-mix(in srgb,var(--portal-hero-end) 68%,transparent);white-space:nowrap}
+.heroActions a.heroActionPrimary{background:var(--portal-hero-button-bg);border-color:var(--portal-hero-button-bg);color:var(--portal-hero-button-text)}
+.heroActions a:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
 .content{padding-top:18px}
 #ledger-directory{scroll-margin-top:18px}
 .content :global(.v2-ledger-explorer){scroll-margin-top:16px}
@@ -94,7 +94,7 @@
  .page{padding-top:0}
  .hero{width:calc(100% - 28px);min-height:0;margin-top:12px;border-radius:20px}
  .heroPhoto{object-position:62% center}
- .heroShade{background:linear-gradient(90deg,rgba(9,31,23,.96),rgba(12,36,25,.83) 61%,rgba(14,38,26,.49))}
+ .heroShade{background:linear-gradient(90deg,color-mix(in srgb,var(--portal-hero-start) 96%,transparent),color-mix(in srgb,var(--portal-hero-end) 83%,transparent) 61%,color-mix(in srgb,var(--portal-hero-end) 49%,transparent))}
  .heroInner{padding:23px 18px 20px}
  .heroEyebrow{font-size:.54rem}
  .hero h1{font-size:clamp(2.5rem,10vw,3.15rem);margin:7px 0 8px}
@@ -110,28 +110,28 @@
 .heroSearch{
  display:flex;align-items:center;gap:11px;
  width:min(100%,570px);min-height:50px;margin-top:20px;padding:5px 8px 5px 15px;
- border:1px solid #f8f4e7bf;border-radius:14px;
- background:#fffdf5;color:#173729;
- box-shadow:0 5px 18px #0e281b25;
+ border:1px solid var(--border);border-radius:14px;
+ background:var(--surface);color:var(--text-primary);
+ box-shadow:0 5px 18px color-mix(in srgb,var(--text-primary) 11%,transparent);
 }
-.heroSearch svg{width:21px;height:21px;flex:none;color:#315c45}
-.heroSearch input{width:100%;min-width:0;flex:1;min-height:38px;padding:0;border:0!important;outline:0!important;background:transparent;color:#163829;font:inherit;font-size:16px}
-.heroSearch input::placeholder{color:#69776a;opacity:1}
-.heroSearch button{width:35px;height:35px;flex:none;border:0;border-radius:10px;background:#e9eddf;color:#254734;font-size:22px;cursor:pointer}
-.heroSearch:focus-within{outline:2px solid #d9e9c1;outline-offset:2px}
+.heroSearch svg{width:21px;height:21px;flex:none;color:var(--accent)}
+.heroSearch input{width:100%;min-width:0;flex:1;min-height:38px;padding:0;border:0!important;outline:0!important;background:transparent;color:var(--text-primary);font:inherit;font-size:16px}
+.heroSearch input::placeholder{color:var(--text-secondary);opacity:1}
+.heroSearch button{width:35px;height:35px;flex:none;border:0;border-radius:10px;background:var(--surface-secondary);color:var(--accent);font-size:22px;cursor:pointer}
+.heroSearch:focus-within{outline:2px solid var(--focus);outline-offset:2px}
 .heroDestinations{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;width:min(100%,570px);margin-top:10px}
 .heroDestinations a{
  display:grid;grid-template-columns:30px minmax(0,1fr);align-content:center;
  gap:2px 9px;min-height:66px;padding:10px 13px;
- border:1px solid #d6e4d28a;border-radius:14px;
- background:#102d23b8;color:#f8f4e8;text-decoration:none;
+ border:1px solid color-mix(in srgb,var(--portal-hero-text) 30%,transparent);border-radius:14px;
+ background:color-mix(in srgb,var(--portal-hero-end) 80%,transparent);color:var(--portal-hero-text);text-decoration:none;
  backdrop-filter:blur(8px);
 }
-.heroDestinations a.heroDestinationActive{background:#f6f1e6;color:#193a2b;border-color:#f6f1e6}
+.heroDestinations a.heroDestinationActive{background:var(--portal-hero-button-bg);color:var(--portal-hero-button-text);border-color:var(--portal-hero-button-bg)}
 .heroDestinations a>span{grid-row:1/3;display:grid;place-items:center;align-self:center;font-size:23px}
 .heroDestinations a strong{font-size:.78rem;line-height:1.2}
 .heroDestinations a small{font-size:.64rem;line-height:1.2;opacity:.78}
-.heroDestinations a:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.heroDestinations a:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .catalogueFilterButton{
  align-self:flex-start;min-height:39px;padding:8px 13px;
  border:1px solid var(--border);border-radius:12px;
