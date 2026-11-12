@@ -6,6 +6,23 @@ import {logKeeperEvent,undoKeeperEvent} from "@/app/keeper/actions";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
 import styles from "./ManagerInlineCare.module.css";
 
+function synchronizeReminder(binId:string):string|null|undefined{
+ try{
+  const key="podscape-keeper-reminder-"+binId;
+  const old=localStorage.getItem(key);
+  if(!old)return undefined;
+  const parsed=JSON.parse(old);
+  if(!Number.isInteger(parsed?.intervalDays))return undefined;
+  const now=new Date();
+  const localDay=[now.getFullYear(),String(now.getMonth()+1).padStart(2,"0"),String(now.getDate()).padStart(2,"0")].join("-");
+  localStorage.setItem(key,JSON.stringify({...parsed,lastMisted:localDay,updatedAt:now.toISOString()}));
+  return old;
+ }catch{return undefined}
+}
+function restoreReminder(binId:string,old:string|null|undefined){
+ if(old===undefined)return;
+ try{const key="podscape-keeper-reminder-"+binId;if(old===null)localStorage.removeItem(key);else localStorage.setItem(key,old)}catch{}
+}
 const actions=[
  {label:"Misted",kind:"maintenance",icon:"droplet"},
  {label:"Fed",kind:"feeding",icon:"jar"},
@@ -18,7 +35,7 @@ export function ManagerInlineCare({binId,binName,compact=false}:{binId:string;bi
  const router=useRouter();
  const [open,setOpen]=useState(false);
  const [pending,start]=useTransition();
- const [saved,setSaved]=useState<{id:string;label:string}|null>(null);
+ const [saved,setSaved]=useState<{id:string;label:string;reminderBefore?:string|null}|null>(null);
  const [error,setError]=useState("");
  const [notice,setNotice]=useState("");
  function save(action:(typeof actions)[number]){
@@ -29,7 +46,7 @@ export function ManagerInlineCare({binId,binName,compact=false}:{binId:string;bi
    try{
     const result=await logKeeperEvent({id:binId,kind:action.kind,note:action.label});
     if(!result.success||!result.id){setError(result.error||"Could not save care.");return;}
-    setSaved({id:result.id,label:action.label});
+    setSaved({id:result.id,label:action.label,reminderBefore:action.label==="Misted"?synchronizeReminder(binId):undefined});
     setNotice(action.label+" recorded for "+binName);
     router.refresh();
    }catch{setError("Connection interrupted. Check care history before trying again.");}
@@ -43,6 +60,7 @@ export function ManagerInlineCare({binId,binName,compact=false}:{binId:string;bi
    try{
     const result=await undoKeeperEvent({id:previous.id,enclosureId:binId});
     if(!result.success){setError(result.error||"Could not undo this care entry.");return;}
+    restoreReminder(binId,previous.reminderBefore);
     setSaved(null);setNotice(previous.label+" undone");router.refresh();
    }catch{setError("Unable to undo. Review your care history.");}
   });
