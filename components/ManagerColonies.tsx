@@ -9,6 +9,7 @@ import Link from "next/link";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
 import {CollectionButton} from "./CollectionButton";
 import {SpeciesQuickCare} from "./SpeciesQuickCare";
+import {ManagerInlineCare} from "./ManagerInlineCare";
 import {QuickAddBin} from "@/components/QuickAddBin";
 import { speciesDisplayName, speciesScientificName, type SpeciesRecord } from "@/data/species";
 import type { Enclosure } from "@/lib/keeper";
@@ -134,11 +135,13 @@ export function ManagerColonies({ records, bins, allBins=bins, collectedIds, int
       </article>;
     }) : visibleBins.map(bin=>{
       const record=speciesMap.get(bin.speciesId);
-      return <Link className={styles.card} key={bin.id} href={binHref(bin.id)}>
-        <span className={styles.photo}>{record?.image?<Image src={record.image} alt="" fill sizes="(max-width:700px) 90px,130px" style={{objectFit:"cover"}}/>:<PodscapeLineIcon name="bin"/>}</span>
-        <span className={styles.cardBody}><strong>{binDisplayName({...bin,label:""})}</strong><em>{record?speciesDisplayName(record):"Species record"}</em><small>{bin.label||"Colony record"}</small><span className={styles.counts}><span><PodscapeLineIcon name="community"/>{bin.quantity} count</span></span></span>
-        <span className={styles.status}>{bin.status.replaceAll("-"," ")}</span><span className={styles.arrow}>›</span>
-      </Link>;
+      return <div className={styles.binRow} key={bin.id}>
+        <Link className={styles.binRowLink} href={binHref(bin.id)} aria-label={"Open "+binDisplayName({...bin,label:""})}>
+          <span className={styles.binRowPhoto}>{record?.image?<Image src={record.image} alt="" fill sizes="65px" style={{objectFit:"cover"}}/>:<PodscapeLineIcon name="bin"/>}</span>
+          <span className={styles.binRowDetails}><strong>{binDisplayName({...bin,label:""})}</strong><small>{record?speciesDisplayName(record):"Species record"} · {bin.label||"No location"}</small><small>{bin.quantity} recorded · {bin.status.replaceAll("-"," ")}</small></span><span aria-hidden="true" className={styles.arrow}>›</span>
+        </Link>
+        {!archivedView?<ManagerInlineCare binId={bin.id} binName={binDisplayName({...bin,label:""})} compact/>:null}
+      </div>;
     })}
     {((tab==="species" && !visibleSpecies.length)||(tab==="bins"&&!visibleBins.length))&&<div className={styles.empty}><p>{entries.length?"No matching records.":savedView?"No saved species without bins. Save a species from Leaf Ledger to find it here.":archivedView?"No archived bins.":"No active colonies yet. Add a bin for a saved species to get started."}</p>{entries.length?<button onClick={reset} type="button">Clear filters</button>:<Link href={savedView?"/ledger":"/keeper/collection?view=saved"}>{savedView?"Browse Leaf Ledger →":"View saved species →"}</Link>}</div>}
     </div>
