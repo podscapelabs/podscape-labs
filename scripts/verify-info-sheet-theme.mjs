@@ -39,7 +39,7 @@ const species=read("components/SpeciesProfile.module.css");
 const scanner=read("components/KeeperScanner.module.css");
 assert.match(ledger,/\.heroShade\{[^}]*var\(--portal-hero-start\)/,"Ledger hero overlay must inherit current theme");
 assert.match(ledger,/\.heroSearch\{[\s\S]*?background:var\(--surface\)/,"Ledger search must use a theme surface");
-assert.doesNotMatch(ledger,/#[0-9a-f]{3,8}\b/i,"Ledger page must not force an old green/cream palette");
+assert.doesNotMatch(ledger,/#(?!000(?:000)?\b)[0-9a-f]{3,8}\b/i,"Ledger page must not force an old green/cream palette; black photo masks are allowed");
 assert.match(manager,/\.card\{background:var\(--surface\)/,"Manager colony cards must match the selected theme");
 assert.doesNotMatch(manager,/#[0-9a-f]{3,8}\b/i,"Manager colony cards should not force a dark forest on every theme");
 assert.match(collection,/\.page\{[^}]*background:var\(--background\)/,"Collection page must inherit semantic background");
