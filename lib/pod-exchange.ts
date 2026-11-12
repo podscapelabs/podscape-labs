@@ -238,14 +238,22 @@ export function sanitizePortfolio(value:unknown):Portfolio{
    Number.isSafeInteger(t.cycle))).slice(0,50):[];
  return {cash:money(x.cash),holdings,trades};
 }
-export function totalValue(portfolio:Portfolio,cycle:number):number{
- return (Math.round(portfolio.cash*100)+STOCKS.reduce((sum,stock)=>sum+Math.round(priceAt(stock.symbol,cycle)*100)*(portfolio.holdings[stock.symbol]||0),0))/100;
+export function totalValue(portfolio:Portfolio,cycle:number,quotes?:Record<string,number>):number{
+ // The historical formula is untouched. Current V3 valuation optionally uses
+ // server-authenticated published quotes, never speculative client prices.
+ return (Math.round(portfolio.cash*100)+STOCKS.reduce((sum,stock)=>{
+  const quote=quotes?.[stock.symbol]??priceAt(stock.symbol,cycle);
+  return sum+Math.round(quote*100)*(portfolio.holdings[stock.symbol]||0);
+ },0))/100;
 }
 export type OrderResult={ok:true;portfolio:Portfolio}|{ok:false;error:string};
-export function executeOrder(portfolio:Portfolio,symbol:string,side:"buy"|"sell",shares:number,cycle:number):OrderResult{
+export function executeOrder(portfolio:Portfolio,symbol:string,side:"buy"|"sell",shares:number,cycle:number,serverQuote?:number):OrderResult{
  if(!STOCKS.some(s=>s.symbol===symbol))return {ok:false,error:"Unknown company."};
  if(!Number.isSafeInteger(shares)||shares<1||shares>1_000_000)return {ok:false,error:"Choose a valid number of whole shares."};
- const price=priceAt(symbol,cycle),subtotal=tradeSubtotal(price,shares),charge=tradeTotal(price,shares,side);
+ const price=serverQuote??priceAt(symbol,cycle);
+ if(!Number.isFinite(price)||price<=0||Math.round(price*100)/100!==price)
+  return {ok:false,error:"Market quote is unavailable."};
+ const subtotal=tradeSubtotal(price,shares),charge=tradeTotal(price,shares,side);
  if(!Number.isFinite(charge)||charge<=0||!Number.isFinite(subtotal)||subtotal<=0)return {ok:false,error:"Unable to price this trade."};
  const owned=portfolio.holdings[symbol]||0;
  if(side==="buy"&&charge>portfolio.cash)return {ok:false,error:"Not enough Duck Bucks for this trade."};
