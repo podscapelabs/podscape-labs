@@ -13,3 +13,15 @@
 .secondary{border:1px solid var(--line);background:var(--paper-strong);color:var(--forest)}
 .card a:focus-visible,.compact a:focus-visible{outline:3px solid var(--forest);outline-offset:3px}
 @media(max-width:450px){.card,.compact{padding:15px;gap:11px}.mark{width:41px;height:41px;border-radius:12px}.mark svg{width:23px;height:23px}.actions{gap:7px}.actions a{width:100%}}
+
+/* Shared onboarding CTA uses explicit semantic contrast across all five themes. */
+.card .primary,.compact .primary{
+ background:var(--theme-accent,var(--forest));
+ color:var(--theme-accent-contrast,#fff);
+ border:1px solid var(--theme-accent,var(--forest));
+ text-shadow:none;
+}
+.card .primary svg,.compact .primary svg{color:inherit;stroke:currentColor}
+.card .primary:hover,.compact .primary:hover{filter:brightness(.95)}
+.card .primary:focus-visible,.compact .primary:focus-visible{outline:3px solid var(--theme-focus,var(--forest));outline-offset:3px}
+.card .secondary,.compact .secondary{color:var(--theme-text-primary,var(--ink));background:var(--theme-surface-raised,var(--paper-strong))}
