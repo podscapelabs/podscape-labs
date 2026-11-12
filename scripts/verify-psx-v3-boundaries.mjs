@@ -5,6 +5,7 @@ const read=path=>readFileSync(path,"utf8");
 const engine=read("lib/psx-v3-prototype.mjs");
 const privateService=read("lib/psx-v3-preview-server.ts");
 const preview=read("app/api/fun-zone/pod-exchange/v3-preview/route.ts");
+const history=read("lib/psx-v3-history-server.ts");
 const migration=read("supabase/migrations/20261112180000_psx_v3_versioned_history.sql");
 const oldEngine=read("lib/pod-exchange.ts");
 const oldTrade=read("app/api/fun-zone/pod-exchange/route.ts");
@@ -12,6 +13,10 @@ const ledger=read("lib/exchange-ranking-audit.ts");
 const page=read("app/fun-zone/pod-exchange/PodExchange.tsx");
 
 assert.match(engine,/from "node:crypto"/,"V3 uses Node-only HMAC rather than public PRNG seeds");
+assert.match(history,/import "server-only"/,"V3 history persistence can only be called from trusted server code");
+assert.match(history,/cutoverCycle\+lastMinute>nowCycle/,"Never persist unreleased price frames");
+assert.match(history,/ignoreDuplicates:true/g,"Retries must preserve existing immutable history");
+assert.doesNotMatch(history,/member_exchange_portfolios|member_exchange_orders/,"History materializer cannot mutate investor wallets or orders");
 assert.match(privateService,/import "server-only"/,"Preview module never bundles into the client");
 assert.match(preview,/Owner access required/,"Only owner sees market prototype");
 assert.match(preview,/PSX_V3_PREVIEW_ENABLED/,"Preview can only be enabled by explicit server environment");
