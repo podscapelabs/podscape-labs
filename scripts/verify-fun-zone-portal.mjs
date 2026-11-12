@@ -54,7 +54,7 @@ assert.match(watchlist,/STORAGE_KEY/,"Watchlist must share exchange wallet stora
 assert.match(portal,/const defaultVisible:WidgetKey\[\]=\["featured","categories","rankings","exchange"\]/,"New dashboards should start with four purposeful widgets");
 assert.match(portal,/const defaultOrder:WidgetKey\[\]=\["featured","categories","rankings","exchange","favourites","progress"/,"Optional widgets must remain in the library");
 assert.match(portal,/<details className=\{styles\.learningTrail\}/,"Beginner lesson trail should be collapsible");
-assert.match(portal,/favouritesKey/,"Keep saved favourites scoped to each account");
+assert.match(portal,/favoritesKey/,"Keep saved favourites scoped to each account");
 assert.match(portal,/localStorage\.setItem\(layoutKey/,"Keep user-customized layouts saved");
 assert.match(watchlist,/Market Watch/,"Watchlist uses concise title");
 assert.doesNotMatch(watchlist,/marketRankingsShortcut/,"Do not repeat rankings navigation");
