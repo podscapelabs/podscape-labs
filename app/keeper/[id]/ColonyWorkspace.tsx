@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import {logKeeperEvent,undoKeeperEvent} from "@/app/keeper/actions";
 import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
+import {BinSwitcher,type SwitchableBin} from "@/components/BinSwitcher";
 import styles from "./ColonyWorkspace.module.css";
 
 type CareEvent={id:string;kind:string;note:string;createdAt:string;quantityChange:number|null};
@@ -15,8 +16,8 @@ function dayLabel(timestamp:string){
  const d=new Date(timestamp);
  return Number.isNaN(d.getTime())?"Date unavailable":d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
 }
-export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,referenceUrl,scope}:{
- colony:Colony;initialEvents:CareEvent[];careDates:Record<string,string>;initialPanel?:string;referenceUrl?:string;scope:string
+export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,referenceUrl,scope,navigationBins=[]}:{
+ colony:Colony;initialEvents:CareEvent[];careDates:Record<string,string>;initialPanel?:string;referenceUrl?:string;scope:string;navigationBins?:SwitchableBin[]
 }){
  const router=useRouter();
  const [events,setEvents]=useState(initialEvents);
@@ -126,6 +127,10 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
     <span>{colony.label||"No location assigned"} · {colony.status.replaceAll("-"," ")}{colony.archived?" · Archived":""}</span>
    </div>
   </header>
+  <BinSwitcher bins={navigationBins} currentId={colony.id} disabled={pending||undoing} onSelect={nextId=>{
+   if(observation.trim()&&!window.confirm("Leave this bin without saving your observation?"))return;
+   router.push("/keeper/"+nextId);
+  }}/>
   {colony.archived?<div className={styles.archivedNotice} role="status"><strong>Archived colony</strong><span>Your records are available to review. Restore this colony from Settings before recording new care.</span><Link href={"/keeper/"+id+"/details"}>Open settings →</Link></div>:null}
   <ColonyDashboardLayout scope={scope} colonyId={colony.id} widgets={widgets} forceVisible={initialPanel==="observation"?"observations":undefined}/>
   <div className={styles.colonyFooterLinks}>

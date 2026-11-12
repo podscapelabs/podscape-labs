@@ -2,7 +2,7 @@ import type {Metadata} from "next";
 import {notFound} from "next/navigation";
 import {PlatformShell} from "@/components/PlatformShell";
 import {KeeperMobileNav} from "@/components/KeeperMobileNav";
-import {getEnclosure,listQuickCareDates,keeperContext} from "@/lib/keeper";
+import {getEnclosure,listQuickCareDates,keeperContext,listEnclosures} from "@/lib/keeper";
 import {getSpeciesRecords} from "@/lib/species-store";
 import {speciesDisplayName} from "@/data/species";
 import {ColonyWorkspace} from "./ColonyWorkspace";
@@ -19,6 +19,8 @@ export default async function EnclosurePage({params,searchParams}:{params:Promis
  const data=await getEnclosure(id);
  if(!data)notFound();
  const {enclosure,events}=data;
+ let navigationBins:Awaited<ReturnType<typeof listEnclosures>>=[];
+ try{navigationBins=(await listEnclosures()).filter(bin=>!bin.isArchived);}catch{/* Navigation is optional when the list is unavailable. */}
  const {user}=await keeperContext();
  let careDates:Record<string,string>={};
  try{careDates=(await listQuickCareDates([id]))[id]||{};}catch{/* The workspace stays available if summary dates cannot load. */}
@@ -28,6 +30,7 @@ export default async function EnclosurePage({params,searchParams}:{params:Promis
   <ColonyWorkspace key={enclosure.id}
    colony={{id:enclosure.id,name:enclosure.name,label:enclosure.label,species:record?speciesDisplayName(record):"Unlinked species",image:record?.image||null,status:enclosure.status,breeding:enclosure.breeding,quantity:enclosure.quantity,archived:enclosure.isArchived,enclosureType:enclosure.enclosureType}}
    scope={user?.id||"guest"}
+   navigationBins={navigationBins.map(({id,name,speciesId,label})=>({id,name,speciesId,label}))}
    initialEvents={events}
    careDates={careDates}
    initialPanel={panel}

@@ -8,6 +8,7 @@ import { logKeeperEvent, undoKeeperEvent, logKeeperEventBatch, undoKeeperEventBa
 import styles from "./KeeperScanner.module.css";
 import {WorkspaceSectionHeader} from "./PodscapeWorkspaceUI";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
+import {BinSwitcher} from "./BinSwitcher";
 type Bin = { id:string; name:string; label:string; speciesId:string; species:string; quantity:number; status:string; breeding:string; image:string|null };
 type DetectedCode = { rawValue:string };
 type QRDetector = { detect:(source:HTMLVideoElement)=>Promise<DetectedCode[]> };
@@ -160,8 +161,9 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careMode=f
  }catch{setError("Unable to save care. Please retry.");}finally{saving.current=false;}});
  }
  function switchBin(bin:Bin){
-  setShowBinPicker(false);setShowHistory(false);
   if(pending||undoPending)return;
+  if(customNote.trim()&&!window.confirm("Leave this bin without saving your care note?"))return;
+  setShowBinPicker(false);setShowHistory(false);
   setSelected(bin);setNotice(lastOperation?"Previous care action available to undo.":"");setError("");setCustomNote("");setCustomDate("");setChosenBins([bin.id]);setConfirmAllCare(null);
  }
  function toggleMultiCare(){
@@ -240,6 +242,11 @@ export function KeeperScanner({bins,initialBinId="",startManual=false,careMode=f
     {selected.image?<div className={styles.careThumb}><Image src={selected.image} alt="" fill sizes="84px"/></div>:<div className={styles.careThumbFallback}><PodscapeLineIcon name="bin"/></div>}
     <div className={styles.careIdentityText}><h1>{selected.species}</h1><p><strong>{selected.name}</strong>{selected.label?" · "+selected.label:""}</p><span>{selected.status.replaceAll("-"," ")} · Breeding: {selected.breeding.replaceAll("-"," ")}</span></div>
    </div>
+   <BinSwitcher bins={bins} currentId={selected.id} disabled={pending||undoPending||multiCare} onSelect={id=>{
+    const bin=bins.find(item=>item.id===id);
+    if(!bin)return;
+    switchBin(bin);
+   }}/>
    <div className={styles.populationStrip} aria-label="Estimated population counts"><div><small>This bin</small><strong>~{selected.quantity.toLocaleString()}</strong></div><div><small>{selected.species} · {speciesBins.length} {speciesBins.length===1?"bin":"bins"}</small><strong>~{speciesPopulation.toLocaleString()} total</strong></div></div>
    <div className={styles.binPicker}>
     <WorkspaceSectionHeader title={multiCare?"Group care selection":"Your enclosure"} meta={multiCare?bins.length:speciesBins.length}
