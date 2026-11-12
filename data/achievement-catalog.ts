@@ -11,11 +11,10 @@ export type AchievementDefinition = {
 };
 
 // Earnable achievements only reference events PodScape already records.
-// The older Field Observer achievement keeps its historical reward label;
-// future achievements award EXP only, reserving Pod Coins for purchases.
+// Active achievements grant EXP only. Historical unlocks remain intact.
 export const achievementCatalog: AchievementDefinition[] = [
   { key:"ledger_first_species", title:"First Sighting", description:"Open your first species profile in the Leaf Ledger.", exp:10, coins:0, icon:"⌕", href:"/ledger", status:"available" },
-  { key:"ledger_five_species", title:"Field Observer", description:"Explore five different species in the Leaf Ledger.", exp:50, coins:25, icon:"⌕", href:"/ledger", status:"available" },
+  { key:"ledger_five_species", title:"Field Observer", description:"Explore five different species in the Leaf Ledger.", exp:50, coins:0, icon:"⌕", href:"/ledger", status:"available" },
   { key:"ledger_ten_species", title:"Species Scout", description:"Explore ten different species profiles.", exp:35, coins:0, icon:"✦", href:"/ledger", status:"available" },
   { key:"ledger_twenty_species", title:"Field Naturalist", description:"Explore twenty different species profiles.", exp:75, coins:0, icon:"❧", href:"/ledger", status:"available" },
   { key:"ledger_fifty_species", title:"Living Encyclopedia", description:"Explore fifty different species profiles.", exp:150, coins:0, icon:"✺", href:"/ledger", status:"available" },
