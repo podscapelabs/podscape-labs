@@ -28,10 +28,10 @@ function pathForPiece(r:number,c:number,size:number){
  edge(x,y+unit,x,y,c===0?0:-seedSign(r*(size-1)+c-1+79));
  return d+" Z";
 }
-function newPositions(size:number):PiecePosition[]{
+function newPositions(size:number,randomize=true):PiecePosition[]{
  const count=size*size,cols=size===3?3:4,unit=BOARD/size,stepX=WIDTH/cols,stepY=unit*1.38;
  const indices=Array.from({length:count},(_,i)=>i);
- for(let i=count-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[indices[i],indices[j]]=[indices[j],indices[i]];}
+ if(randomize)for(let i=count-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[indices[i],indices[j]]=[indices[j],indices[i]];}
  return indices.map(slot=>({x:stepX*(slot%cols)+(stepX-unit)/2,y:TRAY_Y+Math.floor(slot/cols)*stepY,placed:false}));
 }
 function isValidPositions(value:unknown,size:number):value is PiecePosition[]{
@@ -41,19 +41,20 @@ export function InterlockingJigsawBoard({id,imageUrl,imageAlt,size,onProgress,on
  const count=size*size,unit=BOARD/size,cols=size===3?3:4,rows=Math.ceil(count/cols);
  const height=TRAY_Y+rows*unit*1.38+35,root=useRef<SVGSVGElement>(null);
  const uid=useId().replace(/:/g,"");
- const [positions,setPositions]=useState<PiecePosition[]>(()=>newPositions(size));
+ const [positions,setPositions]=useState<PiecePosition[]>(()=>newPositions(size,false));
  const [ready,setReady]=useState(false);
  const [moves,setMoves]=useState(0);
  const [active,setActive]=useState<number|null>(null);
  const [help,setHelp]=useState(false);
  const completionSent=useRef(false);
  const drag=useRef<{index:number;pointerId:number;clientX:number;clientY:number;originX:number;originY:number;changed:boolean}|null>(null);
+ // Keep the first server and client renders deterministic to avoid hydration errors.
  const key="podscape:jigsaw:v1:"+id+":"+size;
  const solved=positions.filter(p=>p.placed).length;
  const outline=useMemo(()=>Array.from({length:count},(_,i)=>pathForPiece(Math.floor(i/size),i%size,size)),[count,size]);
  const order=useMemo(()=>[...Array.from({length:count},(_,i)=>i).filter(i=>i!==active),...(active===null?[]:[active])],[count,active]);
  useEffect(()=>{
-  try{const raw=localStorage.getItem(key);if(raw){const saved=JSON.parse(raw) as {positions:unknown;moves:number};if(isValidPositions(saved.positions,size)){setPositions(saved.positions);setMoves(Number.isSafeInteger(saved.moves)&&saved.moves>=0?saved.moves:0);}}}catch{/* Local storage is optional */}
+  try{const raw=localStorage.getItem(key);let restored=false;if(raw){const saved=JSON.parse(raw) as {positions:unknown;moves:number};if(isValidPositions(saved.positions,size)){setPositions(saved.positions);setMoves(Number.isSafeInteger(saved.moves)&&saved.moves>=0?saved.moves:0);restored=true;}}if(!restored)setPositions(newPositions(size));}catch{setPositions(newPositions(size));/* Local storage is optional */}
   setReady(true);
  },[key,size]);
  useEffect(()=>{if(!ready)return;try{localStorage.setItem(key,JSON.stringify({positions,moves}));}catch{/* Local storage is optional */}},[key,ready,positions,moves]);
