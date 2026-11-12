@@ -49,9 +49,9 @@ const activities: { icon: PodscapeIconName; title: string; description: string; 
 ];
 
 export default function ProgressDashboard({
-  exp, coins, level, levelStart, levelEnd, achievements, error, discoveries, collectionSpecies, puzzleCompletions,
+  exp, level, levelStart, levelEnd, achievements, error, discoveries, collectionSpecies, puzzleCompletions,
 }: {
-  exp: number; coins: number; level: number; levelStart: number; levelEnd: number;
+  exp: number; level: number; levelStart: number; levelEnd: number;
   achievements: Achievement[]; error: boolean; discoveries: number; collectionSpecies: number; puzzleCompletions: number|null;
 }) {
   const [view, setView] = useState<"achievements" | "explore" | "stats">("achievements");
@@ -90,14 +90,13 @@ export default function ProgressDashboard({
         <div className={styles.progressTrack} role="progressbar" aria-label="Progress toward next level" aria-valuemin={levelStart} aria-valuemax={levelEnd} aria-valuenow={exp}><span style={{width:percent+"%"}} /></div>
         <div className={styles.currencyGrid}>
           <div><span className={styles.currencyIcon} aria-hidden="true"><PodscapeLineIcon name="achievement" /></span><div><strong>{exp.toLocaleString("en-CA")}</strong><small>Lifetime EXP</small></div></div>
-          <div><span className={styles.currencyIcon} aria-hidden="true"><PodscapeLineIcon name="shop" /></span><div><strong>{coins.toLocaleString("en-CA")}</strong><small>Pod Coins</small></div></div>
         </div>
       </div>
     </section>
 
     <Link className={styles.lifetimeRankingLink} href="/account/progress/rankings">
       <span className={styles.lifetimeRankingIcon}><PodscapeLineIcon name="trophy"/></span>
-      <span><strong>Lifetime EXP Rankings</strong><small>See top keepers by total EXP and level · Optional public participation</small></span>
+      <span><strong>Lifetime EXP Rankings</strong><small>See top keepers by total EXP and level</small></span>
       <span className={styles.lifetimeRankingArrow} aria-hidden="true">→</span>
     </Link>
 
@@ -147,22 +146,22 @@ export default function ProgressDashboard({
           </span>
           <span className={styles.tileCopy}><span className={styles.tileStatus}>{a.unlockedAt ? "✓ Unlocked" : a.status === "planned" ? "Coming later" : "Locked"}</span>{a.hidden&&a.unlockedAt?<span className={styles.previouslyHidden}><PodscapeLineIcon name="achievement" /> Previously Hidden</span>:null}
             <strong>{a.hidden&&!a.unlockedAt?"Secret Achievement":a.title}</strong><span className={styles.tileDescription}>{a.hidden&&!a.unlockedAt?"A little surprise for curious keepers.":a.description}</span>
-            {(a.status==="available"&&(!a.hidden||Boolean(a.unlockedAt))) ? <span className={styles.tileReward}>{a.key.startsWith("ranking_")?"Podium achievement · EXP awarded per placement":`+${a.exp} EXP${a.coins ? ` · +${a.coins} Pod Coins (legacy)` : ""}`}</span> : <span className={styles.tileRewardMuted}>{a.hidden&&!a.unlockedAt?"Secret reward": "Rewards not finalized"}</span>}</span>
+            {(a.status==="available"&&(!a.hidden||Boolean(a.unlockedAt))) ? <span className={styles.tileReward}>{a.key.startsWith("ranking_")?"Podium achievement · EXP awarded per placement":`+${a.exp} EXP`}</span> : <span className={styles.tileRewardMuted}>{a.hidden&&!a.unlockedAt?"Secret reward": "Rewards not finalized"}</span>}</span>
 
          </button>)}
         </div>
       </div>)}
       </div>
       {!shown.length&&!error ? <div className={styles.empty} role="status"><strong>No achievements in this view yet.</strong><p>{filter==="unlocked"?"Nothing unlocked in this category yet. Try another category or explore a new activity.":"Try another achievement filter or category to see more."}</p><button type="button" onClick={()=>{setFilter("all");setCategory("all")}}>Show all achievements</button></div> : null}
-      <p className={styles.caption}>Early-access achievements unlock automatically from verified species discoveries, collection entries, completed tutorials, customization milestones, and Fun Zone challenges. Each eligible milestone pays EXP once; puzzle milestones do not award Pod Coins.</p>
+      <p className={styles.caption}>Early-access achievements unlock automatically from verified species discoveries, collection entries, completed tutorials, customization milestones, and Fun Zone challenges. Each eligible milestone awards EXP once.</p>
     </section> : null}
 
     {view === "explore" ? <section className={styles.explore} aria-labelledby="explore-title"><div className={styles.sectionHeading}><h2 id="explore-title">Explore PodScape</h2><span>Find something new</span></div><p className={styles.caption}>These are suggested destinations, not EXP-earning quests yet.</p><div className={styles.exploreGrid}>{activities.map(a=><Link href={a.href} className={styles.exploreTile} key={a.href}><span className={styles.exploreIcon} aria-hidden="true"><PodscapeLineIcon name={a.icon} /></span><strong>{a.title}</strong><small>{a.description}</small><span className={styles.exploreArrow} aria-hidden="true">↗</span></Link>)}</div></section> : null}
 
-    {view === "stats" ? <section className={styles.stats} aria-labelledby="stats-title"><div className={styles.sectionHeading}><h2 id="stats-title">Your Journey</h2><span>Member overview</span></div><div className={styles.statsGrid}><div><small>Current level</small><strong>{level}</strong></div><div><small>Lifetime EXP</small><strong>{exp.toLocaleString("en-CA")}</strong></div><div><small>Pod Coins</small><strong>{coins.toLocaleString("en-CA")}</strong></div><div><small>Recorded achievements</small><strong>{error ? "—" : unlockedCount}</strong></div><div><small>Species discovered</small><strong>{discoveries}</strong></div><div><small>Species collected</small><strong>{collectionSpecies}</strong></div><div><small>Fun Zone puzzles</small><strong>{puzzleCompletions===null?"—":`${puzzleCompletions} / 32`}</strong></div></div><p className={styles.caption}>EXP is permanent. Pod Coin redemption and additional reward milestones are still being developed.</p></section> : null}
+    {view === "stats" ? <section className={styles.stats} aria-labelledby="stats-title"><div className={styles.sectionHeading}><h2 id="stats-title">Your Journey</h2><span>Member overview</span></div><div className={styles.statsGrid}><div><small>Current level</small><strong>{level}</strong></div><div><small>Lifetime EXP</small><strong>{exp.toLocaleString("en-CA")}</strong></div><div><small>Recorded achievements</small><strong>{error ? "—" : unlockedCount}</strong></div><div><small>Species discovered</small><strong>{discoveries}</strong></div><div><small>Species collected</small><strong>{collectionSpecies}</strong></div><div><small>Fun Zone puzzles</small><strong>{puzzleCompletions===null?"—":`${puzzleCompletions} / 32`}</strong></div></div><p className={styles.caption}>Lifetime EXP is permanent and earned milestones remain in your achievement history.</p></section> : null}
 
 
-    <p className={styles.footerNote}>Your EXP stays with you. Future Pod Coin rewards and eligibility will be announced as the program develops.</p>
+    <p className={styles.footerNote}>Your lifetime EXP stays with you as your PodScape journey grows.</p>
   </div>
 
   {selectedAchievement ? <div className={styles.modalBackdrop} role="presentation" onClick={()=>setSelected(null)}><div className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="achievement-detail-title" onClick={e=>e.stopPropagation()}>
@@ -170,7 +169,7 @@ export default function ProgressDashboard({
     <div className={styles.modalEmblem} aria-hidden="true"><PodscapeLineIcon name={selectedAchievement.unlockedAt ? "achievement" : "lock"} /></div>
     <span className={styles.tileStatus}>{selectedAchievement.unlockedAt?"✓ Unlocked":selectedAchievement.status==="planned"?"Coming later":"Not yet unlocked"}</span>{selectedAchievement.hidden&&selectedAchievement.unlockedAt?<span className={styles.previouslyHidden}><PodscapeLineIcon name="achievement" /> Previously Hidden</span>:null}
     <h2 id="achievement-detail-title">{selectedAchievement.hidden&&!selectedAchievement.unlockedAt?"Secret Achievement":selectedAchievement.title}</h2><p>{selectedAchievement.hidden&&!selectedAchievement.unlockedAt?"A secret milestone is waiting to be discovered.":selectedAchievement.description}</p>
-    {selectedAchievement.status==="available"&&(!selectedAchievement.hidden||selectedAchievement.unlockedAt) ? <strong className={styles.modalReward}>{selectedAchievement.key.startsWith("ranking_")?"Permanent podium achievement · EXP rewards are paid separately":`+${selectedAchievement.exp} EXP${selectedAchievement.coins ? ` · +${selectedAchievement.coins} Pod Coins (legacy reward)` : ""}`}</strong> : <p>{selectedAchievement.hidden&&!selectedAchievement.unlockedAt?"Reward revealed when unlocked.":"Milestone and rewards are still being designed."}</p>}
+    {selectedAchievement.status==="available"&&(!selectedAchievement.hidden||selectedAchievement.unlockedAt) ? <strong className={styles.modalReward}>{selectedAchievement.key.startsWith("ranking_")?"Permanent podium achievement · EXP rewards are paid separately":`+${selectedAchievement.exp} EXP`}</strong> : <p>{selectedAchievement.hidden&&!selectedAchievement.unlockedAt?"Reward revealed when unlocked.":"Milestone and rewards are still being designed."}</p>}
     {selectedAchievement.unlockedAt ? <p>Earned {new Date(selectedAchievement.unlockedAt).toLocaleDateString("en-CA",{year:"numeric",month:"long",day:"numeric"})}</p> : null}
     {selectedAchievement.status==="available"&&!selectedAchievement.unlockedAt&&!selectedAchievement.hidden ? <Link href={selectedAchievement.href} onClick={()=>setSelected(null)}>Keep exploring →</Link> : null}
   </div></div> : null}
