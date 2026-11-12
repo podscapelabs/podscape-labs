@@ -71,6 +71,18 @@ export const achievementCatalog: AchievementDefinition[] = [
   { key:"picture_first_jigsaw", title:"Piece by Piece", description:"Complete your first interlocking jigsaw puzzle.", exp:20, icon:"▦", href:"/fun-zone/picture-puzzles", status:"available" },
   { key:"picture_first_sliding", title:"Slide Into Place", description:"Complete your first sliding picture puzzle.", exp:20, icon:"◇", href:"/fun-zone/picture-puzzles", status:"available" },
   { key:"picture_five", title:"Picture Perfect", description:"Finish five different picture puzzles.", exp:45, icon:"✦", href:"/fun-zone/picture-puzzles", status:"available" },
+
+  // The launch picture-puzzle collection has two puzzles in each type/difficulty tier.
+  { key:"picture_jigsaw_easy_pair", title:"Finding the Edges", description:"Complete two Easy jigsaw puzzles.", exp:25, icon:"▦", href:"/fun-zone/picture-puzzles", status:"available" },
+  { key:"picture_jigsaw_medium_pair", title:"Pieces of the Picture", description:"Complete two Medium jigsaw puzzles.", exp:40, icon:"▦", href:"/fun-zone/picture-puzzles", status:"available" },
+  { key:"picture_jigsaw_hard_pair", title:"The Final Piece", description:"Complete two Hard jigsaw puzzles.", exp:65, icon:"✦", href:"/fun-zone/picture-puzzles", status:"available" },
+  { key:"picture_sliding_easy_pair", title:"Making Moves", description:"Complete two Easy sliding puzzles.", exp:25, icon:"◇", href:"/fun-zone/picture-puzzles", status:"available" },
+  { key:"picture_sliding_medium_pair", title:"Tile Tactician", description:"Complete two Medium sliding puzzles.", exp:40, icon:"◇", href:"/fun-zone/picture-puzzles", status:"available" },
+  { key:"picture_sliding_hard_pair", title:"Master of the Slide", description:"Complete two Hard sliding puzzles.", exp:65, icon:"✦", href:"/fun-zone/picture-puzzles", status:"available" },
+  { key:"picture_all_six_jigsaw", title:"Jigsaw Specialist", description:"Complete six different jigsaw puzzles.", exp:90, icon:"▦", href:"/fun-zone/picture-puzzles", status:"available" },
+  { key:"picture_all_six_sliding", title:"Sliding Specialist", description:"Complete six different sliding puzzles.", exp:90, icon:"◇", href:"/fun-zone/picture-puzzles", status:"available" },
+  { key:"picture_all_twelve", title:"Picture Puzzle Master", description:"Complete twelve different picture puzzles.", exp:150, icon:"✺", href:"/fun-zone/picture-puzzles", status:"available" },
+
   { key:"exchange_first_trade", title:"First Quack on Wall Street", description:"Place your first trade on The Pod Exchange.", exp:15, icon:"◇", href:"/fun-zone/pod-exchange", status:"available" },
   { key:"exchange_first_sale", title:"Paper Wings", description:"Make your first sale in the fictional stock market.", exp:20, icon:"✧", href:"/fun-zone/pod-exchange", status:"available" },
   { key:"exchange_five_trades", title:"Tiny Trader", description:"Complete five Pod Exchange trades.", exp:30, icon:"▦", href:"/fun-zone/pod-exchange", status:"available" },
