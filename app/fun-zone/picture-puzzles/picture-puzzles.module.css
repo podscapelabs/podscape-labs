@@ -3,3 +3,17 @@
 .tile[data-blank=true]{background:var(--surface-secondary)!important;box-shadow:inset 0 0 0 2px var(--border);cursor:default}
 .lesson{border:1px solid var(--border);border-radius:13px;background:var(--surface);padding:13px 16px;color:var(--text-secondary);font-size:13px;line-height:1.6;margin:0 0 18px}
 .lesson strong{color:var(--text-primary)}
+
+/* Genuine interlocking jigsaw: SVG puzzle board and shuffled piece tray. */
+.jigsawShell{max-width:780px;margin:0 auto 36px}
+.jigsawStatus{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 16px;border:1px solid var(--border);border-radius:15px;background:var(--surface);font-size:13px}
+.jigsawStatus strong{color:var(--accent)}.jigsawStatus span{color:var(--text-secondary)}
+.jigsawCanvas{background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin:12px 0}
+.jigsawSvg{display:block;width:100%;height:auto;overflow:visible;user-select:none;-webkit-user-select:none}
+.jigsawPiece{cursor:grab;touch-action:none;outline:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}
+.jigsawPiece:focus-visible{filter:drop-shadow(0 0 4px var(--accent))}
+.jigsawPiece:active{cursor:grabbing;filter:drop-shadow(0 7px 7px rgba(0,0,0,.35))}
+.jigsawPlaced{cursor:default;filter:none}
+.jigsawShell .helper{margin:12px 0 6px}
+.jigsawShell .controls{margin-top:14px}
+@media(max-width:720px){.jigsawCanvas{border-radius:12px}.jigsawStatus{padding:11px 12px}.jigsawShell{max-width:100%}}
