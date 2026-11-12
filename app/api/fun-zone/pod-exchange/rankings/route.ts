@@ -1,7 +1,7 @@
 import {NextResponse} from "next/server";
 import {customerSupabase} from "@/lib/customer-auth/server";
 import {getSupabaseAdmin} from "@/lib/supabase-admin";
-import {STARTING_BUCKS,cycleAt,totalValue,isValidPortfolioSnapshot,type Portfolio} from "@/lib/pod-exchange";
+import {STARTING_BUCKS,arcadeCycleAt,totalValue,isValidPortfolioSnapshot,type Portfolio} from "@/lib/pod-exchange";
 import {auditStoredExchangeWallet} from "@/lib/exchange-ranking-audit";
 
 export const dynamic="force-dynamic";
@@ -68,7 +68,7 @@ export async function GET(){
       .eq("public_enabled",true).eq("eligible",true).order("user_id",{ascending:true}).range(from,to)
   );
   const participants:Participant[]=[];
-  const cycle=cycleAt(Date.now()),weekStart=monday(new Date());
+  const cycle=arcadeCycleAt(Date.now()),weekStart=monday(new Date());
   for(let from=0;from<preferences.length;from+=batchSize){
    const preferenceBatch=preferences.slice(from,from+batchSize);
    const hiddenIds=new Set(preferenceBatch.filter(x=>x.hide_username).map(x=>x.user_id));
