@@ -115,7 +115,7 @@ export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,size,previe
     <text x="18" y="570" fill="var(--text-secondary)" fontSize="19" fontWeight="700">YOUR PIECES</text>
     {order.map(i=>{
      const p=positions[i],to=target(i),tx=p.x-to.x,ty=p.y-to.y;
-     return <g key={i} transform={`translate(${tx} ${ty})`} role="button" tabIndex={p.placed?-1:0} aria-label={`Jigsaw piece ${i+1} of ${count}${p.placed?", placed":""}`} aria-disabled={p.placed} onPointerDown={e=>down(e,i)} onPointerMove={move} onPointerUp={up} onPointerCancel={()=>{drag.current=null;setActive(null);}} onKeyDown={e=>keyboard(e,i)} className={p.placed?(i===lastSnapped?styles.jigsawJustPlaced:styles.jigsawPlaced):styles.jigsawPiece}>
+     return <g key={i} transform={`translate(${tx} ${ty})`} role="button" tabIndex={p.placed?-1:0} aria-label={`Jigsaw piece ${i+1} of ${count}${p.placed?", placed":""}`} aria-disabled={p.placed} onPointerDown={e=>down(e,i)} onPointerMove={move} onPointerUp={up} onPointerCancel={()=>{const d=drag.current;if(d){setPositions(prev=>prev.map((piece,j)=>j===d.index?{...piece,x:d.originX,y:d.originY}:piece));}drag.current=null;setActive(null);}} onKeyDown={e=>keyboard(e,i)} className={p.placed?(i===lastSnapped?styles.jigsawJustPlaced:styles.jigsawPlaced):styles.jigsawPiece}>
       <g clipPath={`url(#${uid}-p-${i})`}>
        <image href={imageUrl} x={BOARD_X} y={BOARD_Y} width={BOARD} height={BOARD} preserveAspectRatio="xMidYMid slice" pointerEvents="none"/>
        <path d={outline[i]} fill="transparent" stroke="none"/>
