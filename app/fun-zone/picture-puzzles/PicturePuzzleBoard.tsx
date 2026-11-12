@@ -108,7 +108,7 @@ export function PicturePuzzleBoard(props:{userId:string;id:string;title:string;d
  </section>;
 }
 
-function RewardedJigsaw(props:{userId:string;id:string;title:string;description:string;imageAlt:string;learningNote:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string}){
+function RewardedJigsaw(props:{userId:string;id:string;title:string;description:string;imageAlt:string;learningNote:string;imageUrl:string;difficulty:Difficulty;puzzleType:Mode;level:number;rewardsEnabled:boolean;nextHref?:string;previewMode?:boolean}){
  const {saved,record,retry}=usePuzzleCompletion("picture-puzzles",props.id);
  const [solved,setSolved]=useState(false);
  const onReset=useCallback(()=>setSolved(false),[]);
