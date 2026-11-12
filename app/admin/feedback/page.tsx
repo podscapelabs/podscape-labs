@@ -10,7 +10,7 @@ export const dynamic="force-dynamic";
 export const metadata={title:"Feedback Desk | PodScape Owner Studio",robots:{index:false,follow:false}};
 type Category="bug"|"idea"|"general";
 type Status="new"|"reviewing"|"resolved";
-type Item={id:string;user_id:string;category:Category;status:Status;message:string;page_path:string;device_info:string;created_at:string;updated_at:string};
+type Item={id:string;user_id:string;category:Category;status:Status;message:string;page_path:string;device_info:string;owner_note:string;created_at:string;updated_at:string};
 const types:Record<Category,string>={bug:"Bug report",idea:"Idea",general:"General feedback"};
 const stateNames:Record<Status,string>={new:"New",reviewing:"Reviewing",resolved:"Resolved"};
 const statuses=["all","new","reviewing","resolved"] as const;
@@ -30,7 +30,7 @@ export default async function FeedbackDesk({searchParams}:{searchParams:Promise<
  let names:Record<string,string>={};
  if(!db)error="The feedback database isn't configured.";
  else{
-  let query=db.from("member_feedback").select("id,user_id,category,status,message,page_path,device_info,created_at,updated_at",{count:"exact"})
+  let query=db.from("member_feedback").select("id,user_id,category,status,message,page_path,device_info,owner_note,created_at,updated_at",{count:"exact"})
    .order("created_at",{ascending:false}).limit(75);
   if(status!=="all")query=query.eq("status",status);
   if(category!=="all")query=query.eq("category",category);
@@ -66,7 +66,8 @@ export default async function FeedbackDesk({searchParams}:{searchParams:Promise<
     <form action={updateFeedbackStatus} className={styles.actions}>
      <input type="hidden" name="id" value={item.id}/>
      <label>Progress<select name="status" defaultValue={item.status}><option value="new">New</option><option value="reviewing">Reviewing</option><option value="resolved">Resolved</option></select></label>
-     <button type="submit">Save status</button>
+     <label className={styles.ownerNote}>Private owner note<textarea name="owner_note" rows={2} maxLength={1000} defaultValue={item.owner_note||""} placeholder="Next steps, reproduce steps, or resolution notes…"/></label>
+     <button type="submit">Save changes</button>
     </form>
    </article>)}
    {!items.length?<div className={styles.empty}><PodscapeLineIcon name="note"/><strong>No feedback here yet.</strong><p>As testers submit reports, they’ll appear in this desk.</p></div>:null}
