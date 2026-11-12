@@ -39,6 +39,8 @@ jobs:
           node scripts/verify-ranking-name-privacy.mjs
           node scripts/verify-ranking-modal-refinement.mjs
           node scripts/verify-fun-zone-rankings-spotlight.mjs
+      - name: Verify retired currency cannot return to the platform
+        run: node scripts/verify-retired-currency.mjs
       - name: Verify safe signups and puzzle progression
         run: |
           node scripts/verify-unique-usernames.mjs
