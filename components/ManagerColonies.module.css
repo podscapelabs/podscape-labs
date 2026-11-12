@@ -54,3 +54,22 @@
 .card .status{background:color-mix(in srgb,var(--accent) 10%,var(--surface));color:var(--accent)}
 .card:hover{border-color:var(--border-strong)}
 .card:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+
+/* One collection surface: expand a species to reach every bin without a page hop. */
+.speciesGroup{overflow:hidden;border:1px solid var(--border);border-radius:var(--radius-medium);background:var(--surface);min-width:0}
+.speciesGroup>.card{width:100%;border:0;box-shadow:none;text-align:left;cursor:pointer;font-family:inherit}
+.speciesGroup>.card:hover{background:color-mix(in srgb,var(--accent) 4%,var(--surface))}
+.expandArrow{font-size:21px;color:var(--accent);align-self:center}
+.groupDetails{display:grid;gap:0;padding:0 13px 12px;border-top:1px solid var(--border)}
+.groupBin{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--border);min-width:0}
+.groupBin>a:first-child{display:grid;min-width:0;gap:4px;padding:12px 0;flex:1;color:var(--text-primary);text-decoration:none}
+.groupBin strong{font-size:13px;overflow:hidden;text-overflow:ellipsis}
+.groupBin small{font-size:11px;color:var(--text-secondary);line-height:1.35}
+.quickCare{display:inline-flex;align-items:center;gap:5px;min-height:42px;flex:none;padding:8px 10px;background:var(--surface-secondary);border:1px solid var(--border);border-radius:11px;color:var(--accent);font-size:12px;font-weight:750;text-decoration:none}
+.quickCare svg{width:17px;height:17px}
+.groupActions{display:flex;flex-wrap:wrap;gap:8px;padding:12px 0 0}
+.groupActions a{display:inline-flex;align-items:center;min-height:42px;padding:8px 12px;border:1px solid var(--border);border-radius:10px;color:var(--accent);font-size:12px;font-weight:750;text-decoration:none}
+.groupActions a:first-child{background:var(--accent);color:var(--accent-contrast);border-color:var(--accent)}
+.noBins{margin:14px 0 0;font-size:12px;color:var(--text-secondary)}
+.speciesGroup :is(button,a):focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+@media(max-width:600px){.groupDetails{padding:0 9px 11px}.groupActions{gap:6px}.groupActions a{flex:1;justify-content:center;padding-inline:8px}}
