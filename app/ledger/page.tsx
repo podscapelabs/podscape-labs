@@ -11,7 +11,10 @@ export const dynamic = "force-dynamic";
 
 export default async function LedgerPage() {
   const [speciesRecords, member] = await Promise.all([getSpeciesRecords(), getMemberCollectionState()]);
-  const records = speciesRecords.filter(isSpeciesRecordActive);
+  const records = speciesRecords.filter(record =>
+    isSpeciesRecordActive(record) && record.kind === "species" && record.status === "published" &&
+    record.identityStatus !== "unassigned" && Boolean(record.commonName.trim() || record.scientificName.trim())
+  );
   // Only showcase genuine, existing species photos; no placeholder or AI-generated media.
   const featured = records.find(record => record.kind === "species" && record.status === "published" && !!record.image && (record.image.startsWith("/") || record.image.startsWith("https://")));
   return <PlatformShell><main className={styles.page}>
