@@ -297,3 +297,19 @@
  .toolGrid strong{font-size:11px}
 }
 @media(max-width:390px){.binToolbar nav{flex:1 1 100%}.binToolbar nav a{flex:1;justify-content:center}}
+
+
+/* One-tap notes and care: input sits beside the colony, not on another screen. */
+.binToolbar nav .addNoteShortcut{display:inline-flex;align-items:center;gap:7px;min-height:42px;padding:9px 13px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text-primary);font:inherit;font-size:12px;font-weight:750;cursor:pointer;white-space:nowrap}
+.binToolbar nav .addNoteShortcut svg{width:17px;height:17px;color:var(--accent)}
+.binToolbar nav .addNoteShortcut[aria-expanded=true]{border-color:var(--accent);background:var(--surface-secondary)}
+.quickObservation{padding:14px;border:1px solid var(--border-strong);border-radius:15px;background:var(--surface-raised);box-shadow:0 4px 14px rgba(0,0,0,.035)}
+.quickObservation>div:first-child{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px}
+.quickObservation>div:first-child strong{font-size:13px}
+.quickObservation>div:first-child button{display:grid;place-items:center;width:30px;height:30px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text-primary);font-size:18px;cursor:pointer}
+.quickObservation .noteForm{margin:0;max-width:100%}
+.quickObservation .noteForm label{font-size:12px;font-weight:750}
+.quickObservation .noteForm textarea{width:100%;min-height:94px;box-sizing:border-box;padding:11px;border:1px solid var(--border-strong);border-radius:11px;background:var(--surface);color:var(--text-primary);font:inherit;font-size:16px}
+.quickObservation .noteForm button[type=submit]{min-height:40px;padding:10px 16px;border:0;border-radius:999px;background:var(--theme-accent,var(--accent));color:var(--theme-accent-contrast,#fff);font-size:12px;font-weight:800}
+.quickObservation :is(button,textarea):focus-visible,.binToolbar .addNoteShortcut:focus-visible{outline:2px solid var(--theme-focus,var(--accent));outline-offset:3px}
+@media(max-width:650px){.binToolbar nav .addNoteShortcut{min-height:40px;padding:8px 11px;font-size:11px}.quickObservation{padding:12px}.quickObservation .noteForm textarea{min-height:89px}}
