@@ -20,6 +20,6 @@ export const managerWidgetNames={
  care:"Care Schedule",
  tools:"Quick Tools",
  activity:"Recent Care",
- enclosures:"Recently Updated Bins",
+ enclosures:"Your Bins",
  insights:"Colony Insights",
 } as const;
