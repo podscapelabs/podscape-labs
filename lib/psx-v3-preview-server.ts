@@ -39,17 +39,22 @@ export async function getPsxV3Preview(range:PsxRange="30m",nowMs=Date.now()){
  const {data,error}=await admin.from("psx_market_versions")
   .select("version,state,cutover_cycle,opening_prices,seed_fingerprint")
   .eq("version",ENGINE_VERSION).eq("state","testing").maybeSingle();
- if(error||!data)return {available:false as const,reason:"No staged market version"};
- const row=data as VersionRow;
- const cutover=Number(row.cutover_cycle);
+ if(error&&!(error.code==="PGRST116"))return {available:false as const,reason:"Market preview storage unavailable"};
  const cycle=arcadeCycleAt(nowMs);
+ // A testing row uses its immutable future-cutover settings. If no testing
+ // version has been staged yet, offer an entirely read-only daily sandbox.
+ // The sandbox does not persist prices or expose a buy/sell capability.
+ const simulated=!data;
+ const midnight=new Date(nowMs);midnight.setUTCHours(0,0,0,0);
+ const cutover=simulated?arcadeCycleAt(midnight.getTime()):Number((data as VersionRow).cutover_cycle);
  if(!Number.isSafeInteger(cycle)||!Number.isSafeInteger(cutover)||cycle<cutover)
-  return {available:false as const,reason:"Market cutover not reached"};
+  return {available:false as const,reason:"Staged market cutover is in the future"};
  const minute=cycle-cutover;
  if(!Number.isSafeInteger(minute)||minute<0)return {available:false as const,reason:"Invalid market clock"};
- const secret=secretFor(row),openingPrices=priceMap(row.opening_prices);
- // The V3 opening quote must be exactly the final published legacy price.
- // Reject an accidental release configuration that would revalue existing shares.
+ const secret=simulated?process.env.PSX_V3_SECRET:secretFor(data as VersionRow);
+ if(!secret||secret.length<32)return {available:false as const,reason:"Private PSX seed unavailable"};
+ const openingPrices=simulated?Object.fromEntries(SYMBOLS.map(symbol=>[symbol,priceAt(symbol,cutover-1)])) as Record<PsxSymbol,number>:
+  priceMap((data as VersionRow).opening_prices);
  for(const symbol of SYMBOLS){
   if(openingPrices[symbol]!==priceAt(symbol,cutover-1))
    throw Error("PSX opening anchors disagree with historical closing prices");
@@ -63,7 +68,7 @@ export async function getPsxV3Preview(range:PsxRange="30m",nowMs=Date.now()){
   if(quotes.at(-1)?.minute!==minute)quotes.push({minute,price:frame.prices[symbol]});
   return [symbol,quotes];
  })) as Record<PsxSymbol,Array<{minute:number;price:number}>>;
- return {available:true as const,cycle,frame,history,range,clockSeconds:60};
+ return {available:true as const,cycle,frame,history,range,clockSeconds:60,simulated,tradable:false,disclaimer:"Owner-only fictional test market. No trades or portfolios are affected."};
 }
 export function isPsxRange(range:string):range is PsxRange{
  return range==="10m"||range==="30m"||range==="1h"||range==="24h";
