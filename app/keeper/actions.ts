@@ -84,6 +84,24 @@ export async function updateEnclosure(input: { id:string; name:string; label:str
  if (old.quantity !== input.quantity) await db.from("keeper_events").insert({user_id:user.id,enclosure_id:input.id,kind:"inventory",note:"Population updated",quantity_change:input.quantity-old.quantity});
  revalidatePath("/keeper"); revalidatePath("/keeper/"+input.id); revalidatePath("/account"); revalidatePath("/ledger/my-collection"); return {success:true};
 }
+/** Focused count edit for the Manager portal; no need to resubmit all enclosure settings. */
+export async function updateEnclosurePopulation(input:{id:string;quantity:number}):Promise<Result>{
+ await requireCustomerPreviewAccess();
+ if(!/^[a-f0-9-]{36}$/i.test(input?.id||"")||!Number.isInteger(input.quantity)||input.quantity<0||input.quantity>99999)
+  return{success:false,error:"Enter a valid population between 0 and 99,999."};
+ const {db,user}=await keeperContext();
+ if(!db||!user)return{success:false,error:"Sign in first."};
+ const {data:current,error:checkError}=await db.from("keeper_enclosures").select("id,quantity").eq("id",input.id).eq("user_id",user.id).eq("is_archived",false).maybeSingle();
+ if(checkError||!current)return{success:false,error:"Active bin not found."};
+ if(current.quantity===input.quantity)return{success:true};
+ const {data,error}=await db.from("keeper_enclosures").update({quantity:input.quantity,updated_at:new Date().toISOString()}).eq("id",input.id).eq("user_id",user.id).eq("is_archived",false).eq("quantity",current.quantity).select("id").maybeSingle();
+ if(error||!data)return{success:false,error:"Population changed elsewhere. Refresh before retrying."};
+ const {error:logError}=await db.from("keeper_events").insert({user_id:user.id,enclosure_id:input.id,kind:"inventory",note:"Population updated",quantity_change:input.quantity-current.quantity});
+ if(logError) return{success:false,error:"Count updated, but the change could not be added to history. Check your bin before retrying."};
+ revalidatePath("/keeper");revalidatePath("/keeper/"+input.id);revalidatePath("/keeper/collection");revalidatePath("/keeper/activity");
+ return{success:true};
+}
+
 export async function setEnclosureArchived(input:{id:string;archived:boolean}):Promise<Result>{
  await requireCustomerPreviewAccess();
  if(!/^[a-f0-9-]{36}$/i.test(input.id)||typeof input.archived!=="boolean")return{success:false,error:"Invalid enclosure."};
