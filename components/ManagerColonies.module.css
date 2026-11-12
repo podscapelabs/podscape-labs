@@ -3,7 +3,7 @@
 .titleRow h2 { margin: 0; font-family: var(--display); font-size: clamp(1.8rem,4vw,2.7rem); font-weight: 500; line-height: 1.1; }
 .tabs { display: flex; padding: 4px; border: 1px solid var(--border); border-radius: 99px; background: var(--surface); }
 .tabs button { padding: 9px 17px; border: 0; border-radius: 99px; background: transparent; color: var(--text-primary); cursor: pointer; font-size: .73rem; }
-.tabs .selected { background: var(--accent); color: var(--background); }
+.tabs .selected { background: var(--accent); color: var(--accent-contrast); }
 .search { display: flex; align-items: center; gap: 10px; padding: 12px 15px; border: 1px solid var(--border); border-radius: var(--radius-small); background: var(--surface); }
 .search svg { width: 21px; height: 21px; flex: none; color: var(--text-secondary); }
 .search input { min-width: 0; width: 100%; border: 0; outline: 0; background: transparent; color: var(--text-primary); font: inherit; font-size: .83rem; }
@@ -24,7 +24,7 @@
 .status { position: absolute; top: 12px; right: 29px; padding: 5px 10px; border-radius: 99px; background: color-mix(in srgb,var(--accent) 10%,var(--surface)); color: var(--accent); font-size: .63rem; text-transform: capitalize; }
 .arrow { align-self: end; padding-bottom: 14px; color: var(--accent); font-size: 1.5rem; }
 .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 15px; }
-.actions a:first-child { display: inline-flex; padding: 12px 19px; border-radius: 99px; background: var(--accent); color: var(--background); font-size: .77rem; font-weight: 750; }
+.actions a:first-child { display: inline-flex; padding: 12px 19px; border-radius: 99px; background: var(--accent); color: var(--accent-contrast); font-size: .77rem; font-weight: 750; }
 .actions a:not(:first-child) { align-self: center; color: var(--accent); font-size: .75rem; }
 .empty { padding: 26px 15px; border: 1px dashed var(--border-strong); border-radius: var(--radius-small); color: var(--text-secondary); text-align: center; }
 .empty button,.empty a { border: 0; background: none; color: var(--accent); font: inherit; text-decoration: underline; cursor: pointer; }
@@ -44,14 +44,13 @@
   .search { padding: 11px 12px; }
 }
 
-/* The species/bin cards intentionally have a dark forest surface in both themes.
-   Keep all text legible independent of the page's light-mode text variables. */
-.card{background:#10271e;border-color:#455f4e;color:#f6f1e5}
-.cardBody>strong{color:#f6f1e5}
-.cardBody em{color:#d7ddc9}
-.cardBody small{color:#aebcac}
-.card .counts>span{border-color:#46614f;color:#d7ddc9}
-.card .counts svg,.card .arrow{color:#b8cc8d}
-.card .status{background:#263d2c;color:#c6d99b}
-.card:hover{border-color:#8eab86}
-.card:focus-visible{outline:2px solid #b8cc8d;outline-offset:3px}
+/* Colony cards follow the same theme roles as Home and Manager widgets. */
+.card{background:var(--surface);border-color:var(--border);color:var(--text-primary)}
+.cardBody>strong{color:var(--text-primary)}
+.cardBody em,.card .counts>span{color:var(--text-secondary)}
+.cardBody small{color:var(--text-muted,var(--text-secondary))}
+.card .counts>span{border-color:var(--border)}
+.card .counts svg,.card .arrow{color:var(--accent)}
+.card .status{background:color-mix(in srgb,var(--accent) 10%,var(--surface));color:var(--accent)}
+.card:hover{border-color:var(--border-strong)}
+.card:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
