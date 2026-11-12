@@ -120,7 +120,7 @@ export function InterlockingJigsawBoard({id,imageUrl,imageAlt,size,onProgress}:P
   </div>
   {solved===count?<p className={styles.win} role="status">Jigsaw complete! Every piece has found its place. 🧩</p>:null}
   <div className={styles.controls}><button type="button" onClick={startOver}>Shuffle pieces again</button><button type="button" onClick={()=>setHelp(v=>!v)} aria-pressed={help}>{help?"Hide guide":"Show faint guide"}</button></div>
-  <details className={styles.jigsawReference}><summary>View original artwork</summary><img src={imageUrl} alt={imageAlt} loading="lazy"/></details>
+  <details className={styles.jigsawReference}><summary>View original artwork</summary><div className={styles.fullImage} role="img" aria-label={imageAlt} style={{backgroundImage:`url("${imageUrl}")`}}/></details>
   <p className={styles.note}>Progress is saved on this device. All pieces have genuine interlocking contours; exterior edges remain flat.</p>
  </div>;
 }
