@@ -1,0 +1,45 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+import {spawnSync} from "node:child_process";
+import {createHash} from "node:crypto";
+const read=path=>readFileSync(path,"utf8");
+const ui=read("app/fun-zone/pod-exchange/PodExchange.tsx");
+const styles=read("app/fun-zone/pod-exchange/exchange.module.css");
+const api=read("app/api/fun-zone/pod-exchange/route.ts");
+const market=read("lib/psx-v3-market-server.ts");
+assert.match(ui,/Leaf Street Exchange/,"The arcade release must have a distinct identity");
+assert.match(ui,/marketPulse/,"Players need an at-a-glance market summary");
+assert.match(ui,/Leaf Street Journal/,"Market news must be on the playable exchange");
+assert.match(ui,/intelligenceRumour/,"Rumour Mill must be part of the trading view");
+assert.doesNotMatch(ui,/Fictional market listings/,"Do not duplicate six-stock listings in one screen");
+assert.match(ui,/STOCKS\.map\(stock=>/,"All six companies must remain selectable");
+assert.match(ui,/requestAnimationFrame\(\(\)=>tradeRef/,"Stock tap must navigate toward trade controls");
+assert.match(ui,/disabled=\{!allowed\}/,"Trading controls must disable on stale quotes");
+assert.match(ui,/marketFeed\.mode==="v3"\?marketFeed\.quotes\[symbol\]/,"Trades must use published V3 prices");
+assert.match(ui,/if\(!saveLocalSnapshot\(result\.portfolio/,"Local trades must save safely");
+assert.match(ui,/!response\.ok\|\|!data\.exists\|\|!data\.portfolio/,"Cloud failures must not overwrite saved holdings");
+assert.match(api,/quoteForCycle\(engine,trade\.symbol,trade\.cycle\)/,"Server independently verifies trade prices");
+assert.match(market,/priceAt\(symbol,cycle\)/,"Historical prices remain reproducible");
+for(const className of ["marketPulse","intelligenceContent","intelligenceRumour","pulsePrimary"]){
+ assert.ok(styles.includes("."+className+"{"),"Missing themed arcade style: "+className);
+}
+assert.match(styles,/@media\(max-width:720px\)/,"The arcade must stay phone friendly");
+assert.match(styles,/var\(--surface\)/,"Use theme tokens, not theme-specific backgrounds");
+
+const secret="CI-ONLY-PSX-SEED-NOT-FOR-PRODUCTION-0123456789";
+const now=new Date(Date.now()+86_400_000);now.setUTCSeconds(0,0);
+const env={...process.env,CUTOVER_UTC:now.toISOString(),PSX_V3_SECRET:secret};
+const run=spawnSync(process.execPath,["scripts/prepare-psx-release.mjs"],{encoding:"utf8",env});
+assert.equal(run.status,0,"Release manifest generator must succeed: "+run.stderr);
+assert.ok(!run.stdout.includes(secret),"Secret must never appear in release manifest");
+const manifest=JSON.parse(run.stdout);
+assert.equal(manifest.version,"psx-v3-release-1");
+assert.equal(manifest.state,"testing","Never auto-activate the market in preflight");
+assert.equal(manifest.seed_fingerprint,createHash("sha256").update(secret).digest("hex"));
+assert.deepEqual(Object.keys(manifest.opening_prices).sort(),["BLUE","CLOWN","DUCK","MOO","PANDA","TITAN"]);
+for(const price of Object.values(manifest.opening_prices))assert.ok(Number.isFinite(price)&&price>0);
+const missing=spawnSync(process.execPath,["scripts/prepare-psx-release.mjs"],{encoding:"utf8",env:{...env,PSX_V3_SECRET:""}});
+assert.notEqual(missing.status,0,"Cannot stage without private seed");
+const past=spawnSync(process.execPath,["scripts/prepare-psx-release.mjs"],{encoding:"utf8",env:{...env,CUTOVER_UTC:"2020-01-01T00:00:00Z"}});
+assert.notEqual(past.status,0,"Past cutovers must be rejected");
+console.log("Leaf Street playable arcade UI, guarded trading, and no-write future release manifest verified.");
