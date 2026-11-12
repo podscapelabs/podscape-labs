@@ -7,11 +7,11 @@ export function TestAchievementButton(){
  return <div style={{display:"flex",flexWrap:"wrap",gap:9}}>
   <button type="button" style={style} onClick={()=>announceAchievement({
    id:"standard-visual-test-"+Date.now(),title:"Sample Achievement",
-   description:"A preview of the standard PodScape achievement banner.",exp:10,coins:0
+   description:"A preview of the standard PodScape achievement banner.",exp:10
   })}>Preview achievement</button>
   <button type="button" style={style} onClick={()=>announceAchievement({
    id:"hidden-visual-test-"+Date.now(),title:"Secret Unlocked",
-   description:"A preview of how a hidden discovery is revealed.",exp:20,coins:0,hidden:true
+   description:"A preview of how a hidden discovery is revealed.",exp:20,hidden:true
   })}>Preview hidden reveal</button>
  </div>;
 }
