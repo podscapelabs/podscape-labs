@@ -1,0 +1,9 @@
+.launch{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 15px;border:1px solid var(--border);background:var(--surface);color:var(--accent);border-radius:12px;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.form{display:grid;gap:14px;margin-top:20px}
+.label{display:grid;gap:8px;font-size:12px;font-weight:800;color:var(--ps-text,var(--text-primary))}
+.label input{width:100%;min-width:0;min-height:48px;padding:10px 13px;border:1px solid var(--ps-border,var(--border));border-radius:12px;background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-text,var(--text-primary));font:inherit;font-size:16px}
+.hint{margin:0;line-height:1.5;color:var(--ps-text-secondary,var(--text-secondary));font-size:12px}
+.error{margin:0;color:var(--danger,var(--text-primary));font-size:12px}
+.submit{min-height:48px;border:1px solid var(--ps-accent,var(--accent));border-radius:12px;background:var(--ps-accent,var(--accent));color:var(--ps-accent-text,var(--accent-contrast));font:inherit;font-size:13px;font-weight:850;cursor:pointer}
+.submit:disabled{opacity:.6;cursor:not-allowed}
+.form :is(input,button):focus-visible,.launch:focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:2px}
