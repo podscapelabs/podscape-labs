@@ -21,11 +21,10 @@ export default async function CustomerAccountPage({searchParams}:{searchParams:P
  if(!user)redirect("/account/login");
  const [profileResult,progressResult]=await Promise.all([
   db.from("customer_profiles").select("display_name,created_at").eq("id",user.id).maybeSingle(),
-  db.from("member_progress").select("total_exp,pod_coins").eq("user_id",user.id).maybeSingle()
+  db.from("member_progress").select("total_exp").eq("user_id",user.id).maybeSingle()
  ]);
  const profile=profileResult.data;
  const exp=Math.max(0,Number(progressResult.data?.total_exp||0));
- const coins=Math.max(0,Number(progressResult.data?.pod_coins||0));
  const level=Math.floor(Math.sqrt(exp/100))+1;
  const levelStart=100*(level-1)**2;
  const levelEnd=100*level**2;
@@ -47,7 +46,7 @@ export default async function CustomerAccountPage({searchParams}:{searchParams:P
    </div>
    <div className={styles.accountProgressLabels}><span>{(exp-levelStart).toLocaleString("en-CA")} / {(levelEnd-levelStart).toLocaleString("en-CA")} EXP to next level</span><Link href="/account/progress">My Progress →</Link></div>
    <div className={hub.track} role="progressbar" aria-label="Progress to next level" aria-valuemin={levelStart} aria-valuemax={levelEnd} aria-valuenow={exp}><span style={{width:pct+"%"}}/></div>
-   <div className={styles.accountBalances}><span><PodscapeLineIcon name="achievement" /> {exp.toLocaleString("en-CA")} EXP</span><span><PodscapeLineIcon name="shop" /> {coins.toLocaleString("en-CA")} Pod Coins</span></div>
+   <div className={styles.accountBalances}><span><PodscapeLineIcon name="achievement" /> {exp.toLocaleString("en-CA")} EXP</span></div>
   </section>
   <section className={styles.accountActions} aria-label="Account sections">
    <Link href="/app?onboarding=1"><span aria-hidden="true"><PodscapeLineIcon name="grid" /></span><strong>My Starting Layout</strong><small>Replay the welcome tour</small><b aria-hidden="true">↗</b></Link>
