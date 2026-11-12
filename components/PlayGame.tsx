@@ -148,7 +148,7 @@ export function PlayGame({game,challenge,learningNote,nextHref,nextTitle}:{game:
    <div className={styles.heroTitleRow}><div><h1>{challenge.puzzle.title}</h1><p>{challenge.puzzle.description}</p></div><span className={styles.difficulty}>{challenge.puzzle.difficulty}</span></div>
    <div className={styles.heroLinks}><Link href={`/fun-zone/${game.key}`}>All {game.title} puzzles</Link><Link href="/account/progress">Achievements</Link></div>
   </header>
-  <div className={styles.notice}>Early-access challenge · Unique completions count toward EXP achievements · No Pod Coins</div>
+  <div className={styles.notice}>Unique first-time completions count toward EXP achievements.</div>
   {learningNote?<aside className={styles.learningCard} aria-label="Learn before you play"><span><PodscapeLineIcon name="book"/></span><div><strong>Before you play</strong><p>{learningNote}</p></div></aside>:null}
   {challenge.mode==="connections"?<Connections puzzle={challenge.puzzle as ConnectionsPuzzle} onComplete={onComplete}/>:
     challenge.mode==="burrow"?<Burrow puzzle={challenge.puzzle as BurrowPuzzle} onComplete={onComplete}/>:
