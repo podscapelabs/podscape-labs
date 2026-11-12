@@ -49,7 +49,7 @@ export function PuzzlePreviewButton({imageUrl}:{imageUrl?:string}){
    <div className={styles.backdrop} onPointerDown={event=>{if(event.target===event.currentTarget)setPreview(null)}}>
     <section className={styles.modal+" v2-site"} role="dialog" aria-modal="true" aria-label="Puzzle test preview">
      <header className={styles.header}><div><small>OWNER STUDIO · UNSAVED PREVIEW</small><strong>Test your puzzle</strong><p>Play exactly as a member would. This preview never publishes or awards EXP.</p></div><button type="button" onClick={()=>setPreview(null)} aria-label="Close puzzle preview">×</button></header>
-     <div className={styles.game}><PicturePuzzleBoard key={preview.id} id={preview.id} userId="owner-preview" title={preview.title} description={preview.description} imageAlt={preview.imageAlt} learningNote={preview.learningNote} imageUrl={preview.imageUrl} difficulty={preview.difficulty} puzzleType={preview.puzzleType} level={preview.level} rewardsEnabled={false}/></div>
+     <div className={styles.game}><PicturePuzzleBoard key={preview.id} id={preview.id} userId="owner-preview" title={preview.title} description={preview.description} imageAlt={preview.imageAlt} learningNote={preview.learningNote} imageUrl={preview.imageUrl} difficulty={preview.difficulty} puzzleType={preview.puzzleType} level={preview.level} rewardsEnabled={false} previewMode/></div>
      <footer className={styles.footer}><button type="button" onClick={()=>setPreview(null)}>Back to editing</button><span>Changes aren&apos;t saved until you submit the form.</span></footer>
     </section>
    </div>,document.body):null}
