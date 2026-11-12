@@ -44,12 +44,11 @@ export function PodExchangeWatchlist(){
  const price=priceAt("DUCK",cycle);
  const gain=(price/priceAt("DUCK",cycle-1)-1)*100;
  return <section className={styles.exchangeWidget} aria-label="Duck Bucks watchlist">
-  <span className={styles.eyebrow}>POD EXCHANGE · BETA</span><h2><DuckBuckIcon size={27}/> Duck Bucks Watchlist</h2>
+  <span className={styles.eyebrow}>POD EXCHANGE</span><h2><DuckBuckIcon size={23}/> Market Watch</h2>
   <div className={styles.watchlistStats}>
    <span><small>Portfolio value</small><strong>{time===null||!portfolioAvailable?"Syncing…":<DuckBucks amount={totalValue(portfolio,cycle)}/>}</strong></span>
    <span><small style={{display:"flex",alignItems:"center",gap:6}}><ExchangeCompanyIcon symbol="DUCK" size={17}/> DUCK · Rubber Ducky Inc.</small><strong>{time===null?"Loading…":<DuckBucks amount={price}/>}</strong><small>{time===null?"5-minute market":(gain>=0?"+":"")+gain.toFixed(2)+"% this tick"}</small></span>
   </div>
-  <div className={styles.marketRankingsShortcut}><strong>See the top investors</strong><Link href="/fun-zone/pod-exchange/rankings">Market Rankings →</Link></div>
-  <div><span>{STOCKS.length} fictional companies</span><Link href="/fun-zone/pod-exchange">Open the Exchange →</Link></div>
+  <div className={styles.watchlistFoot}><span>{STOCKS.length} companies · 5-minute prices</span><Link href="/fun-zone/pod-exchange">Trade now →</Link></div>
  </section>;
 }
