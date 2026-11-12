@@ -24,7 +24,7 @@ export default async function PuzzleDesk({searchParams}:{searchParams:Promise<{s
   <Link href="/account/owner-tools" className={styles.back}>← Owner Studio</Link>
   <header className={styles.hero}><span>OWNER STUDIO / FUN ZONE</span><h1>Puzzle Desk</h1><p>One artwork library for two kinds of mobile puzzles. Set the Fun Zone level, game format and challenge complexity before publishing.</p></header>
   {params.saved?<p role="status" className={styles.notice}>Puzzle {params.saved==="updated"?"updated":params.saved==="draft"?"saved as draft":params.saved+" successfully"}.</p>:null}
-  {params.error?<p role="alert" className={styles.alert}>Could not save. Check required fields, image format, storage bucket, and database migrations.</p>:null}
+  {params.error?<p role="alert" className={styles.alert}>{params.error==="completed-immutable"?"This puzzle has saved completions. Its game format and difficulty are now locked to preserve player progress.": "Could not save. Check required fields, image format, storage bucket, and database migrations."}</p>:null}
   {puzzles===null?<p role="alert" className={styles.alert}>Puzzle storage is not ready. Apply the picture-puzzles migrations first.</p>:null}
   <section className={styles.card}><div className={styles.heading}><span>CREATE</span><h2>New picture puzzle</h2><p>Create a draft first. Jigsaw and Sliding Puzzle share PodScape&apos;s existing level progression.</p></div>
    <form action={createPicturePuzzle} className={styles.form}><Fields/>
