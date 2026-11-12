@@ -37,7 +37,7 @@ assert.doesNotMatch(page,/Leave rankings/,"Market has no leave action");
 assert.match(page,/Checking historical trades automatically/);
 assert.match(page,/No real money, prizes or cash-out/);
 assert.match(read("app/fun-zone/FunZoneRankingsSpotlight.tsx"),/kind==="wealth"\?"wealth"/,"Fun Zone Rankings Spotlight should surface ranked portfolios");
-assert.match(widget,/\/fun-zone\/pod-exchange\/rankings/);
+assert.doesNotMatch(widget,/\/fun-zone\/pod-exchange\/rankings/,"Watchlist must not duplicate Spotlight rankings");
 assert.doesNotMatch(api,/member_progress_events|member_achievements|exp_delta|pod_coins/,"Market scores must not silently mint rewards");
 
 const catalog=read("data/achievement-catalog.ts");
