@@ -77,3 +77,41 @@
 .groupActions>button{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:8px 12px;border:1px solid var(--accent);border-radius:10px;background:var(--accent);color:var(--accent-contrast);font-family:inherit;font-size:12px;font-weight:750;cursor:pointer}
 .groupActions a:first-of-type{background:var(--surface);color:var(--accent);border-color:var(--border)}
 @media(max-width:600px){.groupActions>button{flex:1;padding-inline:8px}}
+
+
+/* The everyday collection is a bin-first work list, not another dashboard. */
+.searchRow{display:flex;align-items:stretch;gap:8px;margin:12px 0 8px;min-width:0}
+.searchRow .search{flex:1;min-width:0;min-height:43px;padding:9px 12px;border-radius:13px}
+.searchRow .search input{font-size:16px}
+.filterToggle{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:43px;padding:9px 12px;flex:none;border:1px solid var(--border);border-radius:13px;background:var(--surface);color:var(--accent);font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.filterToggle svg{width:18px;height:18px}
+.filterToggle[aria-expanded=true]{border-color:var(--accent);background:var(--surface-secondary)}
+.filters[hidden]{display:none!important}
+.filters{padding:3px 0 8px;gap:7px}
+.binRow{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;padding:9px;border:1px solid var(--border);border-radius:15px;background:var(--surface);min-width:0}
+.binRowLink{display:grid;grid-template-columns:60px minmax(0,1fr) 11px;gap:11px;align-items:center;min-width:0;color:var(--text-primary);text-decoration:none}
+.binRowPhoto{position:relative;display:grid;place-items:center;overflow:hidden;width:60px;height:60px;background:var(--surface-secondary);color:var(--accent);border-radius:11px}
+.binRowPhoto svg{width:26px;height:26px}
+.binRowDetails{display:grid;gap:3px;min-width:0}
+.binRowDetails strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:500 19px/1.18 var(--display)}
+.binRowDetails small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-secondary);font-size:11px;line-height:1.35}
+.binRow .arrow{position:static;padding:0;align-self:center;font-size:19px}
+.binRow :is(a,button):focus-visible{outline:2px solid var(--theme-focus,var(--accent));outline-offset:3px}
+.actions{gap:10px;margin:15px 0 0}
+.actions a:first-child{border-radius:999px;background:var(--theme-accent,var(--accent));color:var(--theme-accent-contrast,var(--accent-contrast));padding:10px 14px;font-size:12px}
+.actions a:not(:first-child){font-size:12px}
+@media(max-width:600px){
+ .section{margin-top:14px;padding-bottom:8px}
+ .titleRow{align-items:center;margin-bottom:8px}
+ .titleRow h2{font-size:clamp(23px,6vw,30px)}
+ .tabs{padding:3px}
+ .tabs button{min-height:35px;padding:8px 11px;font-size:11px}
+ .searchRow{gap:6px}
+ .filterToggle{min-height:43px;padding:9px 10px;font-size:11px}
+ .binRow{padding:7px;gap:5px}
+ .binRowLink{grid-template-columns:46px minmax(0,1fr) 10px;gap:8px}
+ .binRowPhoto{width:46px;height:50px;border-radius:10px}
+ .binRowDetails strong{font-size:16px}
+ .binRowDetails small{font-size:10px}
+ .actions{gap:9px}
+}
