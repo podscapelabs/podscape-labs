@@ -15,6 +15,7 @@ export function FloatingFeedback({enabled}:{enabled:boolean}){
  const excluded=pathname==="/"||pathname==="/admin"||pathname.startsWith("/auth/")||pathname.startsWith("/account/login")||pathname.startsWith("/account/register")||pathname.startsWith("/account/reset")||pathname.startsWith("/early-access");
  useEffect(()=>setMounted(true),[]);
  useEffect(()=>{if(!open)return;const previous=document.activeElement as HTMLElement|null;
+  const triggerNode=trigger.current;
   const handle=(event:KeyboardEvent)=>{
    if(event.key==="Escape")setOpen(false);
    if(event.key!=="Tab"||!dialog.current)return;
@@ -26,7 +27,7 @@ export function FloatingFeedback({enabled}:{enabled:boolean}){
   };
   window.addEventListener("keydown",handle);document.body.style.overflow="hidden";
   requestAnimationFrame(()=>dialog.current?.querySelector<HTMLElement>("select")?.focus());
-  return ()=>{window.removeEventListener("keydown",handle);document.body.style.overflow="";(trigger.current||previous)?.focus()};
+  return ()=>{window.removeEventListener("keydown",handle);document.body.style.overflow="";(triggerNode||previous)?.focus()};
  },[open]);
  if(!mounted||!enabled||excluded)return null;
  const close=()=>{if(sending)return;setOpen(false)};
@@ -54,14 +55,14 @@ export function FloatingFeedback({enabled}:{enabled:boolean}){
     {success?<div className={styles.success} role="status"><PodscapeLineIcon name="check"/><p>Your feedback was received. Every bug report and idea helps shape the beta.</p><button type="button" onClick={close}>Back to PodScape</button><button type="button" className={styles.quiet} onClick={()=>{setSuccess(false);setCategory("bug")}}>Send another</button></div>:
     <form onSubmit={submit}>
      <p className={styles.description}>Found something odd? Have an idea? Tell us here without leaving the page.</p>
-     <label className={styles.field}>What's this about?
+     <label className={styles.field}>What&apos;s this about?
       <select value={category} onChange={event=>setCategory(event.target.value as Category)} disabled={sending}>
-       <option value="bug">Something isn't working</option><option value="idea">I have an idea</option><option value="general">General feedback</option>
+       <option value="bug">Something isn&apos;t working</option><option value="idea">I have an idea</option><option value="general">General feedback</option>
       </select></label>
      <label className={styles.field}>Tell us more
       <textarea value={message} onChange={event=>setMessage(event.target.value)} rows={5} maxLength={2000} minLength={10} required disabled={sending} placeholder="What happened, what did you expect, or what would you love to see?"/>
      </label>
-     <div className={styles.meta}><span>{message.length} / 2000</span><span>We'll include this page and basic device details to help investigate.</span></div>
+     <div className={styles.meta}><span>{message.length} / 2000</span><span>We&apos;ll include this page and basic device details to help investigate.</span></div>
      {error?<p className={styles.error} role="alert">{error}</p>:null}
      <button type="submit" className={styles.send} disabled={sending||message.trim().length<10}>{sending?"Sending…":"Send feedback →"}</button>
     </form>}
