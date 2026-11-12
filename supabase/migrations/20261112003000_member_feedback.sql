@@ -7,6 +7,7 @@ create table if not exists public.member_feedback (
  page_path text not null default '',
  device_info text not null default '',
  status text not null default 'new' check (status in ('new','reviewing','resolved')),
+ owner_note text not null default '' check (char_length(owner_note) <= 1000),
  created_at timestamptz not null default now(),
  updated_at timestamptz not null default now()
 );
