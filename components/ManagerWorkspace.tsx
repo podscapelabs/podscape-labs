@@ -12,6 +12,7 @@ import homeStyles from "./PodscapeHome.module.css";
 import {moveBlock,dropBlock,uniqueAllowed} from "./workspace-layout";
 import {WorkspaceEditToolbar,WorkspaceEditBlock,useWorkspaceDrag} from "./WorkspaceEditCanvas";
 import {ManagerCareOverview,ManagerActivityFeed,ManagerInsights,type ManagerBin,type ManagerEvent} from "./ManagerCareWidgets";
+import {ManagerWorkflowPanel,type ManagerWorkflow} from "./ManagerWorkflowPanel";
 import {managerWidgetNames} from "./workspace-widget-labels";
 import {WidgetLibraryFilter,WidgetLibraryEmptyState,widgetMatchesView,type WidgetLibraryView} from "./WidgetLibraryFilter";
 import {portalWidgetGroups,widgetAllowed,widgetGroup,widgetPurpose,widgetRequired} from "./workspace-widget-policy";
@@ -31,6 +32,8 @@ const library:Tool[]=[
  {id:"bulkqr",label:"Bulk QR labels",href:"/keeper/qr?mode=bulk",icon:"qr"},
  {id:"add",label:"Add bin",href:"/keeper/new",icon:"bin"},
  {id:"care",label:"Log care",href:"/keeper/scan?manual=1",icon:"droplet"},
+ {id:"bulkcare",label:"Multi-care",href:"/keeper/scan?manual=1",icon:"community"},
+ {id:"population",label:"Population",href:"/keeper/collection",icon:"community"},
  {id:"schedule",label:"Schedule",href:"/keeper/schedule",icon:"calendar"},
  {id:"notes",label:"Observations",href:"/keeper/collection?intent=notes",icon:"note"},
  {id:"colonies",label:"All colonies",href:"/keeper/collection",icon:"jar"},
@@ -64,11 +67,12 @@ function normalize(value:unknown):Layout{
  return {order,visible,tools:[...tools,...initial.tools.filter(id=>!tools.includes(id))].slice(0,6)};
 }
 
-function ManagerQuickShortcuts({ids,change,primaryHref,canvasEditing}:{ids:string[];change:(ids:string[])=>void;primaryHref:string;canvasEditing:boolean}){
+function ManagerQuickShortcuts({ids,change,primaryHref,canvasEditing,onWorkflow}:{ids:string[];change:(ids:string[])=>void;primaryHref:string;canvasEditing:boolean;onWorkflow:(mode:ManagerWorkflow)=>void}){
  const router=useRouter();
  const {editing,selected,setSelected,handlers,done}=useShortcutEditor(ids,change,canvasEditing);
  const current=library.find(tool=>tool.id===ids[selected])||library[0];
  const destination=(tool:Tool)=>tool.href;
+ const workflow=(id:string):ManagerWorkflow|null=>id==="care"?"care":id==="notes"?"notes":id==="population"?"population":id==="bulkcare"?"bulk":null;
  return <>
   {editing&&!canvasEditing?<div className={homeStyles.jiggleToolbar} role="region" aria-label="Customize Manager shortcuts">
     <span className={homeStyles.jiggleHint}><PodscapeLineIcon name="grip" /> <strong>Arrange your shortcuts</strong><small>Drag icons or use the move buttons. Tap one to replace it.</small></span>
@@ -96,7 +100,7 @@ function ManagerQuickShortcuts({ids,change,primaryHref,canvasEditing}:{ids:strin
     {ids.map((id,index)=>{const tool=library.find(item=>item.id===id);if(!tool)return null;const dragHandlers=handlers(index);
       return <button type="button" key={id} data-shortcut-index={index} className={`${homeStyles.shortcut} ${index%3===0?homeStyles.sand:index%3===1?homeStyles.sage:homeStyles.rose} ${editing?homeStyles.jiggling:""} ${editing&&selected===index?homeStyles.shortcutSelected:""}`}
        aria-label={editing?`Choose or drag ${tool.label}`:tool.label} style={editing?{animationDelay:`${index*-75}ms`}:undefined}
-       {...dragHandlers} onClick={event=>{dragHandlers.onClick(event);if(!event.defaultPrevented)router.push(destination(tool))}}>
+       {...dragHandlers} onClick={event=>{dragHandlers.onClick(event);if(!event.defaultPrevented&&!editing&&!canvasEditing){const mode=workflow(tool.id);if(mode)onWorkflow(mode);else router.push(destination(tool))}}}>
        <span className={homeStyles.shortcutIcon}><PodscapeLineIcon name={tool.icon}/></span><span>{tool.label}</span>
       </button>;
     })}
@@ -122,6 +126,9 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
  const dialogRef=useWorkspaceEditorDialog(editing,()=>{setEditing(false);setSlot(null)});
  const [query,setQuery]=useState("");
  const [showDirectory,setShowDirectory]=useState(false);
+ const [activeWorkflow,setActiveWorkflow]=useState<ManagerWorkflow|null>(null);
+ const [workflowBin,setWorkflowBin]=useState<string|null>(null);
+ const openWorkflow=(mode:ManagerWorkflow,id?:string)=>{setWorkflowBin(id||null);setActiveWorkflow(mode);requestAnimationFrame(()=>document.getElementById("manager-quick-workflow")?.scrollIntoView({behavior:"smooth",block:"nearest"}))};
  // Preserve the position of the section the user held while editor controls mount above it.
  const editAnchor=useRef<{id:Section;top:number}|null>(null);
  const enterCanvas=(id?:Section)=>{
@@ -172,6 +179,16 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
     <div className={styles.managerSearchField}><span aria-hidden="true"><PodscapeLineIcon name="search"/></span><input id="manager-collection-search" aria-label="Search your collection" type="search" enterKeyHint="search" value={query} onChange={event=>setQuery(event.target.value)} onKeyDown={event=>{if(event.key==="Escape"){setQuery("");event.currentTarget.blur()}else if(event.key==="Enter"&&searchResults.length){event.preventDefault();router.push("/keeper/"+searchResults[0].id)}}} placeholder="Find a species, bin or enclosure…" autoComplete="off"/>{query?<button type="button" onClick={()=>setQuery("")} aria-label="Clear collection search">×</button>:null}</div>
     {matching?<div className={styles.managerSearchResults} role="region" aria-live="polite" aria-label="Matching colonies">{searchResults.length?<p className={styles.managerSearchCount}>{matchingBins.length} matching {matchingBins.length===1?"colony":"colonies"}{matchingBins.length>8?" · Showing 8 most recently updated":""}</p>:null}{searchResults.length?searchResults.map(bin=><Link key={bin.id} href={`/keeper/${bin.id}`}><strong>{bin.species}</strong><span>{bin.name}{bin.label?" · "+bin.label:""} · {bin.quantity} recorded</span><b aria-hidden="true">→</b></Link>):<p>No colonies match “{query}”. <Link href="/keeper/collection">Browse all colonies →</Link></p>}</div>:null}
   </div></section>
+  <div className={styles.managerWorkflowEntry}>
+   <div className={styles.managerWorkflowLabel}><strong>Work from your portal</strong><span>Choose a task and stay right here.</span></div>
+   <div className={styles.managerWorkflowActions} role="group" aria-label="Quick Manager actions">
+    <button type="button" onClick={()=>openWorkflow("care")}><PodscapeLineIcon name="droplet"/> Log care</button>
+    <button type="button" onClick={()=>openWorkflow("notes")}><PodscapeLineIcon name="note"/> Add note</button>
+    <button type="button" onClick={()=>openWorkflow("population")}><PodscapeLineIcon name="community"/> Population</button>
+    <button type="button" onClick={()=>openWorkflow("bulk")}><PodscapeLineIcon name="bin"/> Multi-care</button>
+   </div>
+  </div>
+  {activeWorkflow?<div id="manager-quick-workflow"><ManagerWorkflowPanel key={activeWorkflow+":"+(workflowBin||"")} mode={activeWorkflow} bins={bins} onClose={()=>setActiveWorkflow(null)}/></div>:null}
   </>,
   stats,
   care:<ManagerCareOverview bins={bins}/>,
@@ -179,7 +196,7 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
   insights:<ManagerInsights bins={bins} events={events}/>,
   enclosures,
   tools:<section className={styles.section} key="tools"><header><h2>{labels.tools}</h2></header>
-    <ManagerQuickShortcuts ids={layout.tools} change={ids=>update({...layout,tools:ids})} primaryHref={primaryHref} canvasEditing={canvasEditing}/>
+    <ManagerQuickShortcuts ids={layout.tools} change={ids=>update({...layout,tools:ids})} primaryHref={primaryHref} canvasEditing={canvasEditing} onWorkflow={mode=>openWorkflow(mode)}/>
   </section>
  };
  return <HomeCanvasEditContext.Provider value={canvasEditing}><div className={`${styles.managerWorkspace} ${canvasEditing?homeStyles.homeCanvasEditing:""}`} data-workspace-root="manager" onPointerMove={event=>{if(canvasEditing)dragMove(event)}} onPointerUp={()=>{if(canvasEditing)stop()}} onPointerCancel={()=>{if(canvasEditing)stop()}}>
