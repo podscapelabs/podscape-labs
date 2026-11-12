@@ -265,9 +265,14 @@ export function PodExchange(){
  }
  return <main className={styles.page}><div className={styles.wrap}>
   <header className={styles.header}>
-   <div><p className={styles.eyebrow}><Link href="/fun-zone">Fun Zone</Link> / MARKET PARODY <span className={styles.beta}>BETA</span></p><h1>The Pod Exchange</h1><p>A little market. A lot of leaf drama.</p></div>
-   <div className={styles.marketStatus}><span><i aria-hidden="true"/> MARKET OPEN</span><small>{now===null?"Loading market…":`Next tick ${countdown(timeLeft)}`}</small></div>
+   <div><p className={styles.eyebrow}><Link href="/fun-zone">Fun Zone</Link> / PSX ARCADE <span className={styles.beta}>FICTIONAL MARKET</span></p><h1>Leaf Street Exchange</h1><p>Six tiny corporations. Ridiculous headlines. Real Duck Buck decisions.</p></div>
+   <div className={styles.marketStatus}><span><i aria-hidden="true"/> {feedFresh?"MARKET OPEN":"CONNECTING…"}</span><small>{feedFresh?`Next price tick ${countdown(timeLeft)}`:"Checking shared quotes"}</small></div>
   </header>
+  <div className={styles.marketPulse} aria-label="Market pulse">
+    <div className={styles.pulsePrimary}><span className={styles.pulseEyebrow}>MARKET PULSE · {v3?"NEW ARCADE ENGINE":"LIVE ARCADE"}</span><strong>{session.title}</strong><small>{session.detail}</small></div>
+    <div className={styles.pulseStat}><span>Featured company</span><strong><CompanyMark symbol={session.featured}/> {session.featured}</strong><small className={eventDelta>=0?styles.up:styles.down}>{eventDelta>=0?"+":""}{eventDelta.toFixed(1)}% {v3?"current tick":"event pressure"}</small></div>
+    <div className={styles.pulseStat}><span>Next bulletin</span><strong>{countdown(bulletinLeft)}</strong><small>Fresh corporate mischief every five minutes</small></div>
+  </div>
 
   {marketWarning?<div className={styles.walletAlert} role="alert">{marketWarning}</div>:null}
   {storageMode==="error"?<div className={styles.walletAlert} role="alert"><div><strong>Saved wallet unavailable</strong><p>{storageMessage} Your existing Duck Bucks and shares have not been reset.</p></div><button type="button" onClick={()=>window.location.reload()}>Retry loading</button></div>:null}
@@ -277,7 +282,7 @@ export function PodExchange(){
    <div><span>Companies owned</span><strong>{STOCKS.filter(s=>(portfolio.holdings[s.symbol]||0)>0).length}</strong><small>{portfolio.trades.length} recent trades</small></div>
   </section>
     <section className={styles.companyCarousel} aria-label="Swipe through market companies">
-   <div className={styles.carouselTop}><span className={styles.carouselKicker}>THE TRADING FLOOR · LIVE QUOTES</span><span>Swipe to explore <span aria-hidden="true">→</span></span></div>
+   <div className={styles.carouselTop}><span className={styles.carouselKicker}>THE TRADING FLOOR · SIX COMPANIES</span><span>Tap to trade · Swipe to explore <span aria-hidden="true">→</span></span></div>
    <div className={styles.carouselRail}>
     {STOCKS.map(stock=>{
      const current=quote(stock.symbol),before=priorQuote(stock.symbol);
@@ -293,29 +298,19 @@ export function PodExchange(){
     })}
    </div>
   </section>
-  <section className={styles.marketAgenda} aria-label="Market events">
-   <div className={styles.agendaNow}>
-    <div className={styles.agendaHeader}><small>MARKET MAYHEM · ACTIVE EVENT</small><span>Next story {countdown(bulletinLeft)}</span></div>
-    <strong>{session.title}</strong>
-    <p>{session.detail}</p>
-    <div className={styles.agendaFoot}><span><b>{session.featured}</b> · {eventDelta>=0?"+":""}{eventDelta.toFixed(1)}% {v3?"this tick":"pressure"}</span><span>{eventCountdown(sessionLeft)} left{nextSession?" · Next: "+nextSession.title:" · Next story not yet released"}</span></div>
-   </div>
-  </section>
-  <section className={styles.bulletin} aria-label="Market news"><span className={styles.newsLabel}>THE LEAF STREET JOURNAL</span><div><strong>{news?.headline||"Market bulletin loading…"}</strong><p>{news?.detail||"The next tiny market story is being prepared."}</p><small className={styles.newsEffect}>{news?`${news.symbol} · ${newsImpact>=0?"+":""}${(newsImpact*100).toFixed(1)}% ${v3?"market move":"news influence"} · ${newsAge===0?"Breaking":newsAge<=2?"Heating up":"Fading"}`:"New headline every 5 minutes"}</small></div><b style={{display:"inline-flex",alignItems:"center",gap:7}}>{news?<CompanyMark symbol={news.symbol}/>:null}{news?.symbol||"PODX"}</b></section>
-  {v3?.rumour?<section className={styles.marketAgenda} aria-label="The Rumour Mill"><div className={styles.agendaNow}><div className={styles.agendaHeader}><small>THE RUMOUR MILL · UNVERIFIED</small><span>Market gossip</span></div><strong>{v3.rumour.headline}</strong><p>{v3.rumour.detail}</p></div></section>:null}
-  {v3?.rumourResolution?<section className={styles.marketAgenda} aria-label="Rumour resolution"><div className={styles.agendaNow}><div className={styles.agendaHeader}><small>RUMOUR RESOLVED</small><span>{v3.rumourResolution.resolution}</span></div><strong>{v3.rumourResolution.confirmedSymbol} · {v3.rumourResolution.publishedHeadline}</strong></div></section>:null}
   <div className={styles.mobileSwitch}><button type="button" aria-pressed={view==="market"} onClick={()=>setView("market")}>Trade market</button><button type="button" aria-pressed={view==="wallet"} onClick={()=>setView("wallet")}>My holdings</button></div>
   <div className={`${styles.columns} ${view==="wallet"?styles.marketHiddenMobile:""}`}>
-   <section aria-label="Fictional market listings">
-    <div className={styles.panel}><div className={styles.panelHead}><div><h2>Market watch</h2><p>Six companies. Endless leaf drama.</p></div><small>1-minute ticks</small></div>
-     <div className={styles.list}>{STOCKS.map(stock=>{
-      const current=quote(stock.symbol),prior=priorQuote(stock.symbol),delta=(current/prior-1)*100;
-      return <button type="button" key={stock.symbol} aria-pressed={symbol===stock.symbol} className={styles.stock} onClick={()=>{setSymbol(stock.symbol);setMessage("");setView("market");if(window.matchMedia("(max-width:720px)").matches)requestAnimationFrame(()=>tradeRef.current?.scrollIntoView({behavior:"smooth",block:"start"}));}}>
-       <span className={styles.stockIcon} aria-hidden="true"><CompanyMark symbol={stock.symbol}/></span><span className={styles.stockName}><strong>{stock.name}</strong><small>{stock.symbol} · {stock.sector}</small></span>
-       <span className={styles.stockPrice}><strong><DuckBucks amount={current}/></strong><small className={delta>=0?styles.up:styles.down}>{change(delta)}</small></span>
-      </button>;
-     })}</div>
-    </div>
+   <section aria-label="Leaf Street intelligence" className={styles.intelligence}>
+     <div className={styles.panel}>
+      <div className={styles.panelHead}><div><h2>Leaf Street Journal</h2><p>The news behind the numbers.</p></div><small>LIVE BULLETIN</small></div>
+      <div className={styles.intelligenceContent}>
+       <div className={styles.intelligenceLead}><span className={styles.intelligenceKicker}>BREAKING · {news?.symbol||"PSX"}</span><strong>{news?.headline||"Market bulletin loading…"}</strong><p>{news?.detail||"Connecting to the shared newsroom…"}</p><small>{news?news.symbol+" · "+(newsImpact>=0?"+":"")+(newsImpact*100).toFixed(1)+"% "+(v3?"market move":"news pressure")+" · "+(newsAge===0?"Just published":newsAge<=2?"Developing":"Still in play"):"A new story every five minutes"}</small></div>
+       <div className={styles.intelligenceRow}><span>Active market event</span><strong>{session.title}</strong><small>{eventCountdown(sessionLeft)} remaining{nextSession?" · Upcoming: "+nextSession.title:""}</small></div>
+       {v3?.rumour?<div className={styles.intelligenceRumour}><span>THE RUMOUR MILL · UNCONFIRMED</span><strong>{v3.rumour.headline}</strong><p>{v3.rumour.detail}</p></div>:null}
+       {v3?.rumourResolution?<div className={styles.intelligenceRow}><span>RUMOUR RESOLVED · {v3.rumourResolution.resolution.toUpperCase()}</span><strong>{v3.rumourResolution.publishedHeadline}</strong></div>:null}
+       <div className={styles.intelligenceTip}><strong>Spot the opportunity</strong><p>Watch the chart, read the headline, and decide when to buy or sell. Duck Bucks are fictional; prices can rise or fall.</p></div>
+      </div>
+     </div>
    </section>
    <section ref={tradeRef} className={styles.tradeSection} aria-label="Trading desk">
     <div className={styles.panel}><div className={styles.tradeHeading}><span aria-hidden="true"><CompanyMark symbol={company.symbol}/></span><div><small>{company.symbol} / {company.sector}</small><h2>{company.name}</h2><p>{company.summary}</p></div></div>
