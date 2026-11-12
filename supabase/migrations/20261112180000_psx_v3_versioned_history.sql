@@ -90,6 +90,15 @@ begin
  if tg_op='DELETE' then
   raise exception 'Cannot delete a PSX market version with historical prices';
  end if;
+ if tg_op='INSERT' then
+  if new.state='active' and new.cutover_at<=pg_catalog.now() then
+   raise exception 'PSX activation must be scheduled before the future cutover';
+  end if;
+  return new;
+ end if;
+ if old.state<>'active' and new.state='active' and new.cutover_at<=pg_catalog.now() then
+  raise exception 'Cannot activate a PSX market version after its cutover';
+ end if;
  if new.version is distinct from old.version
    or new.cutover_cycle is distinct from old.cutover_cycle
    or new.cutover_at is distinct from old.cutover_at
@@ -105,7 +114,7 @@ begin
 end;
 $$;
 drop trigger if exists psx_version_pricing_immutable on public.psx_market_versions;
-create trigger psx_version_pricing_immutable before update or delete
+create trigger psx_version_pricing_immutable before insert or update or delete
  on public.psx_market_versions for each row
  execute function public.psx_guard_market_version_change();
 
