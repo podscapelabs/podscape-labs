@@ -28,16 +28,17 @@ function studioRedirect(record: string, key: "saved" | "created" | "error", mess
   redirect(`/admin/species?${params.toString()}`);
 }
 
-export async function createSpeciesRecord() {
+export async function createSpeciesRecord(formData:FormData) {
   if (!(await isAdminAuthenticated())) redirect("/admin");
   const records = await getSpeciesRecords();
+  const group=formData.get("organismGroup")==="springtail"?"springtail":"isopod";
   const id = `species-${randomUUID()}`;
   const sequence = records.filter((record) => record.kind === "species").length + 1;
   const record: SpeciesRecord = {
     id,
     slug: `draft-${id.slice(-8)}`,
     kind: "species",
-    organismGroup: "isopod",
+    organismGroup: group,
     status: "draft",
     identityStatus: "unassigned",
     commonName: "",
@@ -45,7 +46,7 @@ export async function createSpeciesRecord() {
     genus: "",
     species: "",
     morph: "",
-    catalogueNumber: `LL-${String(sequence).padStart(3, "0")}`,
+    catalogueNumber: group==="springtail"?`ST-${String(records.filter(record=>record.kind==="species"&&record.organismGroup==="springtail").length+1).padStart(3,"0")}`:`LL-${String(sequence).padStart(3, "0")}`,
     image: null,
     imageAlt: "",
     imagePositionX: 50,
