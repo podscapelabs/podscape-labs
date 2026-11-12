@@ -24,12 +24,17 @@ function validateOpeningPrices(value:unknown,cutoverCycle:number){
  }
  return prices;
 }
+/** Keep previously published V3 quotes verifiable even if the release is retired.
+ * A future scheduled version must never displace the currently published one.
+ */
 export async function getActivePsxV3():Promise<ActivePsxV3|null>{
  const admin=getSupabaseAdmin();
  if(!admin)return null;
  const {data,error}=await admin.from("psx_market_versions")
   .select("version,state,cutover_cycle,opening_prices,seed_fingerprint")
-  .eq("version",ENGINE_VERSION).eq("state","active").maybeSingle();
+  .eq("version",ENGINE_VERSION).in("state",["active","retired"])
+  .lte("cutover_cycle",arcadeCycleAt(Date.now())).order("cutover_cycle",{ascending:false})
+  .limit(1).maybeSingle();
  // Backward compatible while the opt-in additive migration has not been applied.
  if(error&&["42P01","PGRST205","PGRST116"].includes(error.code||""))return null;
  if(error)throw Error("PSX market version storage unavailable");
