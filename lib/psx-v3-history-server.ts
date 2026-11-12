@@ -1,7 +1,7 @@
 import "server-only";
 import {getSupabaseAdmin} from "@/lib/supabase-admin";
 import {ARCADE_CYCLE_TAG} from "@/lib/pod-exchange";
-import {ENGINE_VERSION,SYMBOLS,quoteAt,publicMarketFrame,type PsxSymbol} from "@/lib/psx-v3-prototype.mjs";
+import {ENGINE_VERSION,SYMBOLS,publicMarketFrame,type PsxSymbol} from "@/lib/psx-v3-prototype.mjs";
 
 type HistoryInput={
  secret:string;version:string;cutoverCycle:number;
@@ -38,11 +38,12 @@ export async function persistPublishedPsxV3Window(input:HistoryInput){
   const rows:Array<{version:string;market_cycle:number;minute_index:number;symbol:string;price:number;observed_at:string}>=[];
   for(let minute=start;minute<=finish;minute++){
    const cycle=cutoverCycle+minute,observedAt=atTime(cycle);
+   // One authoritative frame per minute: avoid recalculating six HMAC quotes.
+   const frame=publicMarketFrame({secret,minute,openingPrices});
    for(const symbol of SYMBOLS)rows.push({
     version,market_cycle:cycle,minute_index:minute,symbol,
-    price:quoteAt({secret,symbol,minute,openingPrice:openingPrices[symbol]}),observed_at:observedAt
+    price:frame.prices[symbol],observed_at:observedAt
    });
-   const frame=publicMarketFrame({secret,minute,openingPrices});
    const add=(id:string,kind:string,symbol:string,headline:string,details:string,releaseMinute:number,relatedId?:string,resolution?:string)=>{
     const publishedCycle=cutoverCycle+releaseMinute;
     if(publishedCycle>nowCycle)throw Error("Unreleased PSX event materialization blocked");
