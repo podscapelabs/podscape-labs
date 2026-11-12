@@ -1,5 +1,6 @@
 import "server-only";
 import {getSupabaseAdmin} from "@/lib/supabase-admin";
+import {getActivePsxV3} from "@/lib/psx-v3-market-server";
 import {ARCADE_CYCLE_TAG} from "@/lib/pod-exchange";
 import {ENGINE_VERSION,SYMBOLS,publicMarketFrame,type PsxSymbol} from "@/lib/psx-v3-prototype.mjs";
 
@@ -74,4 +75,28 @@ export async function persistPublishedPsxV3Window(input:HistoryInput){
   }
  }
  return {ok:true,storedMinutes,eventCount:summaries.size,version};
+}
+
+/** Bounded, resumable catch-up. Called after responses and by optional cron.
+ * The canonical market clock is not dependent on this worker succeeding.
+ */
+export async function catchUpPublishedPsxV3History(nowMs=Date.now(),maxMinutes=30){
+ const config=await getActivePsxV3();
+ if(!config)return {active:false as const,storedMinutes:0};
+ const nowCycle=ARCADE_CYCLE_TAG+Math.floor(nowMs/60_000);
+ if(nowCycle<config.cutoverCycle)return {active:false as const,storedMinutes:0};
+ const db=getSupabaseAdmin();
+ if(!db)throw Error("Market history storage unavailable");
+ const {data,error}=await db.from("psx_market_price_history").select("minute_index")
+  .eq("version",config.version).order("minute_index",{ascending:false}).limit(1).maybeSingle();
+ if(error)throw Error("Market history resume cursor unavailable");
+ const start=data?Number(data.minute_index)+1:0;
+ const current=nowCycle-config.cutoverCycle;
+ if(start>current)return {active:true as const,storedMinutes:0};
+ const end=Math.min(current,start+Math.max(1,Math.min(MAX_MINUTES_PER_REQUEST,maxMinutes))-1);
+ const result=await persistPublishedPsxV3Window({secret:config.secret,
+  version:config.version,cutoverCycle:config.cutoverCycle,
+  openingPrices:config.openingPrices,firstMinute:start,lastMinute:end,nowCycle});
+ return {active:true as const,storedMinutes:result.storedMinutes,
+  remainingMinutes:current-end};
 }
