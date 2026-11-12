@@ -30,9 +30,10 @@ function EditorFields({entry}:{entry?:PicturePuzzle}){
    </div>
   </section>
   <section className={styles.fieldSection} aria-label="Learning and accessibility">
-   <div className={styles.sectionIntro}><span className={styles.step}>03</span><div><h3>Learning details</h3><p>Add a fun educational cue and describe the artwork for accessibility.</p></div></div>
+   <div className={styles.sectionIntro}><span className={styles.step}>03</span><div><h3>Learning details</h3><p>Credit the original artist, add an educational cue, and describe the artwork for accessibility.</p></div></div>
    <div className={styles.formFields}>
     <label className={styles.full}>Learning cue <small>Optional</small><textarea name="learning_note" maxLength={300} rows={2} defaultValue={entry?.learning_note||""} placeholder="Look for distinctive patterns on this isopod's body."/></label>
+    <label className={styles.full}>Original artist credit <small>Required · Publicly displayed beneath the puzzle</small><input name="artist_credit" minLength={2} maxLength={120} required defaultValue={entry?.artist_credit||""} placeholder="e.g., Ola — original PodBound artwork"/></label>
     <label className={styles.full}>Artwork description <small>Required for accessibility</small><input name="image_alt" minLength={3} maxLength={180} required defaultValue={entry?.image_alt||""} placeholder="Illustration of a Rubber Ducky isopod on moss."/></label>
    </div>
   </section>
@@ -56,7 +57,7 @@ export default async function PuzzleDesk({searchParams}:{searchParams:Promise<{s
    </div>
   </header>
   {params.saved?<p role="status" className={styles.notice}>Puzzle {params.saved==="updated"?"updated":params.saved==="draft"?"saved as draft":params.saved+" successfully"}.</p>:null}
-  {params.error?<p role="alert" className={styles.alert}>{params.error==="completed-immutable"?"This puzzle already has completions. Its format, difficulty and level cannot change without affecting player progress.":"Could not save. Check the required fields, artwork, storage and database."}</p>:null}
+  {params.error?<p role="alert" className={styles.alert}>{params.error==="completed-immutable"?"This puzzle already has completions. Its format, difficulty and level cannot change without affecting player progress.":params.error==="artist-credit"?"Add an original artist credit before publishing this puzzle.":"Could not save. Check the required fields, artwork, storage and database."}</p>:null}
   {puzzles===null?<p role="alert" className={styles.alert}>Puzzle storage is unavailable. Check the picture puzzle database configuration.</p>:null}
 
   <section className={styles.card} aria-labelledby="create-puzzle-heading">
@@ -83,6 +84,7 @@ export default async function PuzzleDesk({searchParams}:{searchParams:Promise<{s
      <strong>{p.title}</strong>
      <small>{PUZZLE_TYPES[p.puzzle_type]||"Jigsaw"} · {levelLabel(p.level)} · {DIFFICULTIES[p.difficulty].label}</small>
      <span className={styles.gridHint}>{gridDescription(p.puzzle_type,p.difficulty)}</span>
+     <span className={styles.gridHint}>Art by {p.artist_credit||"Artist credit needed"}</span>
      <Link href={`/fun-zone/picture-puzzles/${p.id}`}>Play saved puzzle →</Link>
     </div>
     <form className={styles.statusForm} action={setPicturePuzzleStatus}>
