@@ -1,4 +1,5 @@
 "use client";
+import {WidgetLibraryHeading,WidgetLibrarySummary} from "@/components/WidgetLibraryChrome";
 import {PortalActionRail} from "@/components/PortalActionRail";
 
 import {useEffect,useLayoutEffect,useRef,useState,type ReactNode} from "react";
@@ -208,10 +209,10 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
   {canvasEditing?<WorkspaceEditToolbar title="Arrange Manager" description="Drag sections to arrange your workspace. Quick Tools stay grouped." onAdd={()=>{finishCanvas();setEditing(true);setSlot(null)}} onReset={resetToDefault} onDone={finishCanvas}/>:null}
   {editing?<div className={homeStyles.homeEditorOverlay} onPointerDown={e=>{if(e.target===e.currentTarget){setEditing(false);setSlot(null)}}}>
    <div className={`${homeStyles.widgetEditor} ${homeStyles.widgetLibrary}`} ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="manager-widget-title">
-    <div className={homeStyles.homeEditorHead}><div><small>YOUR WORKSPACE, YOUR WAY</small><h2 id="manager-widget-title">Widget Library</h2></div><button type="button" onClick={()=>{setEditing(false);setSlot(null)}}>Done</button></div>
+    <WidgetLibraryHeading eyebrow="YOUR WORKSPACE, YOUR WAY" titleId="manager-widget-title" onDone={()=>{setEditing(false);setSlot(null)}}/>
     <p>Keep your bins and care upfront. Tools are optional widgets and remain available in the Manager tool directory.</p>
     <div className={styles.managerPresets} role="group" aria-label="Dashboard starting layouts"><button type="button" onClick={()=>applyPreset("compact")}>Everyday Manager <small>Your bins and care first, without extra shortcut rows</small></button><button type="button" onClick={()=>applyPreset("detailed")}>Detailed dashboard <small>All collection widgets</small></button></div>
-    <div className={homeStyles.widgetLibraryActions}><span>{layout.visible.length} of {defaults.length} sections shown</span><button type="button" onClick={()=>{setEditing(false);setSlot(null);setCanvasEditing(true)}}>Arrange Manager</button></div>
+    <WidgetLibrarySummary added={defaults.filter(id=>layout.visible.includes(id)).length} total={defaults.length} arrangeLabel="Arrange Manager" onArrange={()=>{setEditing(false);setSlot(null);setCanvasEditing(true)}}/>
     <WidgetLibraryFilter view={libraryView} onChange={setLibraryView} added={defaults.filter(id=>layout.visible.includes(id)).length} total={defaults.length}/>
     {slot!==null?<div className={styles.managerEditor}><div className={styles.managerPickerTitle}><h3>Replace Quick Tool {slot+1}</h3><button type="button" onClick={()=>setSlot(null)} aria-label="Close tool picker">×</button></div><div className={styles.managerToolLibrary}>{library.filter(tool=>tool.id!=="activity"||layout.tools.includes("activity")).map(tool=><button type="button" key={tool.id} onClick={()=>swap(tool.id)}><PodscapeLineIcon name={tool.icon}/><span>{tool.label}</span>{layout.tools[slot]===tool.id?" ✓":""}</button>)}</div></div>:<>
     {!defaults.some(id=>widgetMatchesView(layout.visible.includes(id),libraryView))?<WidgetLibraryEmptyState view={libraryView}/>:null}
