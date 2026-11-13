@@ -6,7 +6,7 @@ import {useEffect,useState} from "react";
 import Link from "next/link";
 import styles from "@/app/keeper/page.module.css";
 
-export type ManagerBin={id:string;name:string;label:string;species:string;quantity:number;status:string;breeding:string;createdAt:string;updatedAt:string};
+export type ManagerBin={id:string;name:string;label:string;species:string;displayName:string;scientificName:string;binDetail:string;quantity:number;status:string;breeding:string;createdAt:string;updatedAt:string};
 export type ManagerEvent={id:string;enclosureId:string;enclosureName:string;kind:string;note:string;createdAt:string;quantityChange:number|null};
 type Reminder={intervalDays:number;lastMisted:string};
 type DueBin=ManagerBin&{days:number|null;intervalDays:number|null};
@@ -45,7 +45,7 @@ export function ManagerCareOverview({bins}:{bins:ManagerBin[]}){
    :!loaded?<p className={styles.managerModuleEmpty}>Loading saved schedules…</p>
    :due.length?<div className={styles.managerAttention}>
      <div className={styles.managerAttentionCount}><strong>{due.length}</strong><span>{due.length===1?"bin needs attention":"bins need attention"}</span></div>
-     <div className={styles.managerModuleList}>{due.slice(0,3).map(bin=><div className={styles.managerDueRow} key={bin.id}><Link href={"/keeper/"+bin.id}><span><strong>{bin.name}</strong><small>{bin.species} · {dueLabel(bin.days)}</small></span></Link><ManagerInlineCare binId={bin.id} binName={bin.name} compact/></div>)}</div>
+     <div className={styles.managerModuleList}>{due.slice(0,3).map(bin=><div className={styles.managerDueRow} key={bin.id}><Link href={"/keeper/"+bin.id}><span><strong>{bin.displayName}</strong><small>{bin.scientificName}</small><small>{[bin.binDetail,dueLabel(bin.days)].filter(Boolean).join(" · ")}</small></span></Link><ManagerInlineCare binId={bin.id} binName={bin.displayName} compact/></div>)}</div>
      <Link className={styles.managerAttentionAction} href="/keeper/schedule">Open care schedule →</Link>
     </div>
    :<div className={styles.managerAttentionEmpty}><strong>{configured>0?"All scheduled care is up to date":"Your care schedule is ready to set up"}</strong><p>{configured>0?"Nothing is currently due.":"Build your own care routine, at your pace."}</p><Link href="/keeper/schedule">{configured>0?"View care schedule →":"Set up schedules →"}</Link></div>}
