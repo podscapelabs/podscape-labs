@@ -4,7 +4,7 @@ const read=path=>readFileSync(new URL("../"+path,import.meta.url),"utf8");
 
 // Keep source-level checks intentionally conservative: next build is still the final gate.
 const labels=read("components/workspace-widget-labels.ts");
-for(const name of ['Recently Updated','Favorites','Recently Updated Bins','Care Schedule','Recent Care'])
+for(const name of ['Recently Updated','Favorites','Your Bins','Care Schedule','Recent Care'])
  assert.ok(labels.includes(name),"Missing canonical widget name: "+name);
 const home=read("components/HomeWidgets.tsx");
 const manager=read("components/ManagerWorkspace.tsx");
