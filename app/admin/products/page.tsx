@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {OwnerDeskHeader} from "@/components/OwnerDeskFoundation";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { formatProductPrice, isProductLowStock, productCategories, productStockQuantity } from "@/data/products";
@@ -37,11 +38,7 @@ export default async function ProductDeskPage({ searchParams }: { searchParams: 
 
   return (
     <main className={`admin-shell ${styles.shell}`}>
-      <header className={styles.header}>
-        <Link className={styles.back} href="/account/owner-tools" aria-label="Return to Owner Studio">←</Link>
-        <div className={styles.heading}><p className="eyebrow">OWNER STUDIO · SHOP</p><h1>Product Desk</h1><p>Manage your catalogue, pricing, and inventory.</p></div>
-        <form className={styles.create} action={createProductRecord}><button type="submit"><span aria-hidden="true">＋</span> New product</button></form>
-      </header>
+      <OwnerDeskHeader area="Commerce" title="Product Desk" description="Manage product records, prices, inventory and publishing." icon="shop" actions={[{href:"/shop",label:"Shop preview",icon:"shop",external:true}]} aside={<form className={styles.create} action={createProductRecord}><button type="submit"><span aria-hidden="true">＋</span> New product</button></form>}/>
       {params.deleted === "1" ? <p className="admin-save-message is-success" role="status">Product deleted permanently. Your Leaf Ledger is unchanged.</p> : null}
       <section className={styles.stats} aria-label="Shop summary">
         <Link href="/admin/products?status=all"><strong>{records.filter((product) => !product.archivedAt).length}</strong><span>Products</span></Link>
