@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {OwnerDeskHeader} from "@/components/OwnerDeskFoundation";
 import { redirect } from "next/navigation";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getSpotlightOptions, getSpotlightSelection } from "@/lib/podscape-spotlights";
@@ -14,7 +15,7 @@ export default async function SpotlightDesk({searchParams}:{searchParams:Promise
   const optionHrefs=new Set(options.map(item=>item.href));
   const missing=selected?.filter(href=>!optionHrefs.has(href))||[];
   return <main className={styles.page}><div className={styles.wrap}>
-    <header className={styles.header}><div className={styles.heroCopy}><p>OWNER STUDIO · HOMEPAGE</p><h1>Spotlight Desk</h1><span>Curate the highlights your visitors see first.</span><Link className={styles.back} href="/account/owner-tools">← Owner Studio</Link></div></header>
+    <OwnerDeskHeader area="Homepage" title="Spotlight Desk" description="Choose which published highlights members see first." icon="creative" actions={[{href:"/app",label:"View homepage",icon:"home",external:true}]}/>
     {query.saved&&<p role="status" className={styles.success}>Spotlight selection saved. The homepage reads these exact choices; new content does not replace them.</p>}
     {query.error&&<p role="alert" className={styles.error}>Could not save Spotlights. Check for duplicate choices and ensure the database migration is installed.</p>}
     {missing.length>0?<p role="status" className={styles.error}>{missing.length} saved highlight(s) are unavailable or unpublished. Select replacements and save; PodScape will not automatically substitute new content.</p>:null}
