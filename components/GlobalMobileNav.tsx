@@ -1,4 +1,5 @@
 "use client";
+import {isStandaloneAccessRoute} from "@/lib/interface-route-policy";
 import {usePathname,useRouter} from "next/navigation";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
 import {choiceById,availableNavigationChoices,navigationGroups,moveNavigationSlot,swapNavigationSlot} from "./navigation-customization";
@@ -12,9 +13,7 @@ export function GlobalMobileNav({isOwner=false}:{isOwner?:boolean}){
   const router=useRouter();
   const {ids,change,reset}=useNavigationPreferences("bottom",isOwner);
   const {editing,selected,setSelected,handlers,done}=useShortcutEditor(ids,change);
-  // Access/recovery screens have their own focused layout and should not display the member toolbar.
-  const authPaths=["/account/login","/account/sign-up","/account/register","/account/forgot-password","/account/change-password","/account/reset-password","/admin","/admin/forgot-password","/admin/reset-password"];
-  const excluded=pathname==="/"||pathname.startsWith("/auth/")||authPaths.some(path=>pathname===path||pathname.startsWith(path+"/"));
+  const excluded=isStandaloneAccessRoute(pathname);
   if(excluded)return null;
   const accessibleChoices=availableNavigationChoices(isOwner);
   const items=ids.map(id=>choiceById.get(id)).filter((x):x is NonNullable<typeof x>=>Boolean(x));
