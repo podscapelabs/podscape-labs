@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect,useState } from "react";
-import {binCardIdentity,organismDisplayName} from "@/lib/bin-identity";
+import {binCardIdentity,binCardSummary,organismDisplayName} from "@/lib/bin-identity";
 import {speciesMatchesCollectionView} from "@/lib/collection-views";
 import Image from "next/image";
 import Link from "next/link";
@@ -118,7 +118,7 @@ export function ManagerColonies({ records, bins, allBins=bins, collectedIds, int
         </button>
         {open?<div id={"species-bins-"+record.id} className={styles.groupDetails}>
           {owned.length?owned.map(bin=><div className={styles.groupBin} key={bin.id}>
-            <Link href={binHref(bin.id)}><strong>{binCardIdentity(bin,record).title}</strong><small>{binCardIdentity(bin,record).scientific}</small><small>{[binCardIdentity(bin,record).binName,bin.label||"No location",`${bin.quantity} recorded`,bin.status.replaceAll("-"," ")].filter(Boolean).join(" · ")}</small></Link>
+            <Link href={binHref(bin.id)}><strong>{binCardIdentity(bin,record).title}</strong><small>{binCardIdentity(bin,record).scientific}</small><small>{binCardSummary(bin,record)}</small></Link>
             {!archivedView?<Link href={"/keeper/scan?bin="+bin.id+"&mode=care"} className={styles.quickCare} aria-label={"Quick Care for "+binCardIdentity(bin,record).title}><PodscapeLineIcon name="droplet"/> Care</Link>:null}
           </div>):<p className={styles.noBins}>This species is saved for reference. No enclosure has been created.</p>}
 
@@ -136,7 +136,7 @@ export function ManagerColonies({ records, bins, allBins=bins, collectedIds, int
       return <div className={styles.binRow} key={bin.id}>
         <Link className={styles.binRowLink} href={binHref(bin.id)} aria-label={"Open "+binCardIdentity(bin,record).title}>
           <span className={styles.binRowPhoto}>{record?.image?<Image src={record.image} alt="" fill sizes="65px" style={{objectFit:"cover"}}/>:<PodscapeLineIcon name="bin"/>}</span>
-          <span className={styles.binRowDetails}><strong>{binCardIdentity(bin,record).title}</strong><small>{binCardIdentity(bin,record).scientific}</small><small>{[binCardIdentity(bin,record).binName,bin.label||"No location",`${bin.quantity} recorded`,bin.status.replaceAll("-"," ")].filter(Boolean).join(" · ")}</small></span><span aria-hidden="true" className={styles.arrow}>›</span>
+          <span className={styles.binRowDetails}><strong>{binCardIdentity(bin,record).title}</strong><small>{binCardIdentity(bin,record).scientific}</small><small>{binCardSummary(bin,record)}</small></span><span aria-hidden="true" className={styles.arrow}>›</span>
         </Link>
         {!archivedView?<ManagerInlineCare binId={bin.id} binName={binCardIdentity(bin,record).title} compact/>:null}
       </div>;
