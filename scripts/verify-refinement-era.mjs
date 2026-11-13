@@ -17,7 +17,7 @@ const species=read("components/SpeciesCollectionHub.tsx");
 const collected=read("components/CollectionButton.tsx");
 check(species,"!unavailable?<QuickAddBin","Database failures must not create duplicate species bins");
 check(species,"aria-label=\"Your collection and bins\"","Species dashboard should expose direct keeper flow");
-check(collected,"window.confirm","Uncollecting must require explicit confirmation");
+check(collected,"PodscapeConfirmDialog","Uncollecting must use the shared accessible confirmation sheet");
 check(collected,"Bins, including archived bins, must be removed separately","Uncollect must not destroy a member's bins");
 const keeper=read("components/KeeperCollectionHub.tsx");
 check(keeper,"/keeper/collection?view=saved","Keeper widget must link saved species without bins");
