@@ -61,6 +61,8 @@ for(const task of ['openWorkflow("care")','openWorkflow("notes")','openWorkflow(
 assert.match(keeper,/PortalActionRail/);
 const workflow=read("components/ManagerWorkflowPanel.tsx");
 assert.match(workflow,/initialBinId/,"Manager Quick Care must accept a selected bin identifier");
+assert.match(workflow,/const bin=matches\.find\(item=>item\.id===selected\)/,"Care must never target a hidden nonmatching bin");
+assert.match(workflow,/Choose a matching bin before saving/,"Search must explain hidden selections");
 assert.match(workflow,/bins\.find\(item=>item\.id===initialBinId\)/,"Manager Quick Care must resolve only an owned available bin");
 assert.match(keeper,/initialBinId=\{workflowBin\}/,"Selected search result must reach in-page Quick Care");
 assert.match(keeper,/Log care for \$\{bin\.name\}/,"Search results must expose accessible direct Care");
