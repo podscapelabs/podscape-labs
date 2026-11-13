@@ -1,4 +1,5 @@
 "use client";
+import {WidgetLibraryHeading,WidgetLibrarySummary} from "@/components/WidgetLibraryChrome";
 import {PortalActionRail} from "@/components/PortalActionRail";
 import {useEffect,useLayoutEffect,useRef,useState} from "react";
 import Link from "next/link";
@@ -162,12 +163,9 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp}:{us
   {hydrated&&!editing?<div className={homeEditStyles.addWidgetFooter}><button type="button" className={homeEditStyles.addWidgetButton} onClick={()=>setLibraryOpen(true)}><span aria-hidden="true">＋</span> Add Widget</button></div>:null}
   {libraryOpen?<div className={homeEditStyles.homeEditorOverlay} onPointerDown={event=>{if(event.target===event.currentTarget)setLibraryOpen(false)}}>
    <div className={`${homeEditStyles.widgetEditor} ${homeEditStyles.widgetLibrary}`} ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="arcade-widget-title">
-    <div className={homeEditStyles.homeEditorHead}>
-     <div><small>YOUR ARCADE, YOUR WAY</small><h2 id="arcade-widget-title">Widget Library</h2></div>
-     <button type="button" onClick={()=>setLibraryOpen(false)}>Done</button>
-    </div>
+    <WidgetLibraryHeading eyebrow="YOUR ARCADE, YOUR WAY" titleId="arcade-widget-title" onDone={()=>setLibraryOpen(false)}/>
     <p>Choose what belongs in your arcade. Your arrangement stays saved on this device.</p>
-    <div className={homeEditStyles.widgetLibraryActions}><span>{layout.visible.length} of {defaultOrder.length} widgets added</span><button type="button" onClick={()=>{setLibraryOpen(false);enterCanvas()}}>Arrange Fun Zone</button></div>
+    <WidgetLibrarySummary added={defaultOrder.filter(id=>layout.visible.includes(id)).length} total={defaultOrder.length} arrangeLabel="Arrange Fun Zone" onArrange={()=>{setLibraryOpen(false);enterCanvas()}}/>
     <WidgetLibraryFilter view={libraryView} onChange={setLibraryView} added={defaultOrder.filter(id=>layout.visible.includes(id)).length} total={defaultOrder.length}/>
     {!defaultOrder.some(id=>widgetMatchesView(layout.visible.includes(id),libraryView))?<WidgetLibraryEmptyState view={libraryView}/>:null}
           <div className={homeEditStyles.widgetLibraryGroups}>
