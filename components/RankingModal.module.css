@@ -1,10 +1,10 @@
-.trigger,.triggerSubtle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:43px;padding:9px 13px;border:1px solid var(--ps-border,var(--border));border-radius:11px;background:var(--ps-surface,var(--surface));color:var(--ps-accent,var(--accent));font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+/* Rankings use the same native information sheet as the rest of PodScape.
+   This stylesheet owns only the launching controls, not a competing dialog. */
+.trigger,.triggerSubtle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:9px 13px;border:1px solid var(--ps-border,var(--border));border-radius:var(--ps-radius-control,11px);background:var(--ps-surface,var(--surface));color:var(--ps-accent,var(--accent));font:inherit;font-size:12px;font-weight:800;cursor:pointer}
 .trigger svg,.triggerSubtle svg{width:18px;height:18px}
 .trigger>span:last-child,.triggerSubtle>span:last-child{font-size:16px}
 .trigger:hover,.triggerSubtle:hover{border-color:var(--ps-accent,var(--accent));background:var(--ps-surface-muted,var(--surface-secondary))}
-.triggerSubtle{min-height:36px;padding:7px 10px;font-size:11px;background:var(--ps-surface-muted,var(--surface-secondary))}
+.triggerSubtle{min-height:44px;padding:7px 10px;font-size:11px;background:var(--ps-surface-muted,var(--surface-secondary))}
 .triggerSubtle svg{width:16px;height:16px}
-.trigger:focus-visible,.triggerSubtle:focus-visible,.header button:focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:3px}
-
-/* Dialog content is rendered by the shared PodscapeInfoDialog. */
-.trigger,.triggerSubtle{min-height:44px}
+.trigger:focus-visible,.triggerSubtle:focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:3px}
+@media(max-width:600px){.trigger,.triggerSubtle{font-size:11px}}
