@@ -65,11 +65,11 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
           <ManagerWorkspace hero={<section className={styles.managerHero} aria-label="Manager portal">
             {heroSpecies?.image?<div className={styles.managerHeroPhoto}><Image src={heroSpecies.image} alt="" fill sizes="(max-width: 720px) 100vw, 1100px" style={{objectFit:"cover",objectPosition:`${heroSpecies.imagePositionX}% ${heroSpecies.imagePositionY}%`}}/></div>:null}
             <div className={styles.managerHeroContent}><span>MANAGER · YOUR WORKSPACE</span><h1>Your colonies</h1><p>Everything you need to keep your colonies organized.</p><div className={styles.managerHeroActions}><Link href={firstBinHref}>{recent.length?"Open latest bin":"Create your first bin"} <span aria-hidden="true">→</span></Link>{recent.length?<Link className={styles.heroSecondaryAction} href="/keeper/collection?view=active">Browse all bins</Link>:null}</div></div>
-          </section>} scope={managerUser?.id || "guest"} primaryHref={firstBinHref} bins={managerBins} events={activity} activityAvailable={activityAvailable} stats={<section className={styles.managerAtAGlance} aria-label="Manager at a Glance"><header className={styles.managerAtAGlanceHeading}><span>MANAGER · SNAPSHOT</span><h2>At a Glance</h2></header><div className={styles.metrics} role="group" aria-label={managerWidgetNames.stats}>
+          </section>} scope={managerUser?.id || "guest"} primaryHref={firstBinHref} bins={managerBins} events={activity} activityAvailable={activityAvailable} stats={<div className={styles.metrics} role="group" aria-label="Manager collection snapshot">
             <Link href="/keeper/collection"><PodscapeLineIcon name="leaf" /><strong>{uniqueSpecies}</strong><span>Species</span><b>›</b></Link>
             <Link href="/keeper/collection"><PodscapeLineIcon name="bin" /><strong>{active.length}</strong><span>Bins</span><b>›</b></Link>
             <Link href="/keeper/collection"><PodscapeLineIcon name="community" /><strong>{totalPopulation}</strong><span>Recorded population</span><b>›</b></Link>
-          </div></section>} enclosures={<section className={styles.section}>
+          </div>} enclosures={<section className={styles.section}>
             <header><h2>Your bins</h2><Link href="/keeper/collection?view=active">View all <span>→</span></Link></header>
             {recent.length ? <div className={styles.attentionList}>{recent.map(enclosure => {
               const record = speciesById.get(enclosure.speciesId);
