@@ -18,3 +18,14 @@
 .root button:focus-visible{outline:2px solid var(--theme-accent);outline-offset:3px}
 @media(min-width:800px){.root{bottom:24px;left:18px}}
 @media(max-width:390px){.panel{padding:12px}.swatch{width:32px;height:32px}.option{font-size:9px}.trigger{min-height:40px}}
+
+/* Reduce the owner-only tester bubble's mobile footprint.
+   The full palette remains available inside Owner Tools. */
+@media(max-width:799px){
+ .root{left:max(10px,env(safe-area-inset-left,0px));bottom:calc(102px + env(safe-area-inset-bottom,0px))}
+ .bubbleRow{gap:3px}
+ .trigger{width:42px;min-width:42px;height:42px;min-height:42px;padding:0;justify-content:center;border-radius:50%}
+ .trigger span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+ .dismiss{width:25px;height:25px;font-size:17px}
+ .panel{max-height:min(70dvh,460px);overflow-y:auto}
+}
