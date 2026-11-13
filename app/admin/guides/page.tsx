@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {OwnerDeskHeader} from "@/components/OwnerDeskFoundation";
 import { redirect } from "next/navigation";
 import { GuideSectionsEditor } from "@/components/GuideSectionsEditor";
 import { GuideDeskNavigator } from "./GuideDeskNavigator";
@@ -25,18 +26,7 @@ export default async function GuideDeskPage({ searchParams }: { searchParams: Pr
   const draftCount = activeRecords.length - publishedCount;
   return <main className={styles.page}>
     <div className={styles.workspace}>
-      <header className={styles.hero}>
-        <div className={styles.heroCopy}>
-          <p className={styles.eyebrow}>OWNER STUDIO / FIELD GUIDE</p>
-          <h1>Guide Desk</h1>
-          <p>Write, organize and publish keeper resources from one compact workspace.</p>
-          <div className={styles.heroActions}>
-            <Link href="/account/owner-tools" className={styles.heroSecondary}><PodscapeLineIcon name="arrow-right"/> Owner Tools</Link>
-            <Link href="/field-guide" target="_blank" rel="noopener noreferrer" className={styles.heroPrimary}>View Field Guide <PodscapeLineIcon name="arrow-right"/></Link>
-          </div>
-        </div>
-        <div className={styles.heroIcon} aria-hidden="true"><PodscapeLineIcon name="book"/></div>
-      </header>
+      <OwnerDeskHeader area="Field Guide" title="Guide Desk" description="Write, organize and publish keeper resources in one workspace." icon="book" actions={[{href:"/field-guide",label:"View Field Guide",icon:"book",external:true}]}/>
       <div className={styles.metrics} aria-label="Guide overview">
         <a href="#guide-records"><strong>{activeRecords.length}</strong><span>Active guides</span></a>
         <a href="#guide-records"><strong>{publishedCount}</strong><span>Published</span></a>
