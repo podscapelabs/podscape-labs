@@ -161,7 +161,7 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp}:{us
   {label:"Picture puzzles",icon:"grid",href:"/fun-zone/picture-puzzles"}
  ]}/>
    {shortcutPanel&&!active.includes(shortcutPanel)?<div className={styles.shortcutContent} role="region" aria-label={shortcutPanel==="categories"?"Browse game categories":"Your saved games"}>
-    <button type="button" className={styles.shortcutClose} onClick={()=>setShortcutPanel(null)} aria-label="Close shortcut details">Close <PodscapeLineIcon name="x"/></button>
+    <button type="button" className={styles.shortcutClose} onClick={()=>setShortcutPanel(null)} aria-label="Close shortcut details">Close <PodscapeLineIcon name="close"/></button>
     {renderWidget(shortcutPanel)}
    </div>:null}</section>
   {editing?<WorkspaceEditToolbar title="Arrange Fun Zone" description="Drag the handles or use arrows to reorder games and widgets." onAdd={()=>{finishCanvas();setLibraryOpen(true)}} onReset={reset} onDone={finishCanvas}/>:null}
