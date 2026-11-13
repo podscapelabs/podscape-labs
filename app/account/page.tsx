@@ -56,6 +56,7 @@ export default async function CustomerAccountPage({searchParams}:{searchParams:P
    <details id="owner-tools">
     <summary><span className={styles.accountOwnerMark} aria-hidden="true"><PodscapeLineIcon name="manager" /></span><span><strong>Owner Tools</strong><small>Your private PodScape workspace</small></span><span className={styles.chevron} aria-hidden="true">⌄</span></summary>
     <div className={styles.accountOwnerBody}>
+     <Link href="/account/owner-tools" className={styles.ownerStudioLink}><PodscapeLineIcon name="grid"/> Open Owner Studio <PodscapeLineIcon name="arrow-right"/></Link>
      <p className={styles.accountGroupLabel}>Content desks</p>
      <nav className={styles.accountOwnerGrid} aria-label="Owner desks">
       {ownerDesks.map(desk=><Link href={desk.href} key={desk.href}><span aria-hidden="true"><PodscapeLineIcon name={desk.icon} /></span><strong>{desk.title}</strong><small>{desk.label}</small></Link>)}
