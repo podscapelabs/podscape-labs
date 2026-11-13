@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {OwnerDeskHeader} from "@/components/OwnerDeskFoundation";
 import {redirect} from "next/navigation";
 import {isAdminAuthenticated} from "@/lib/admin-auth";
 import {getAllUpdates,updateCategories,validDestination,type UpdateRecord} from "@/lib/podscape-updates";
@@ -32,7 +33,7 @@ export default async function UpdatesDesk({searchParams}:{searchParams:Promise<{
  const published=(rows||[]).filter(x=>x.status==="published");
  return <main className={styles.page}><div className={styles.wrap}>
   <Link href="/account/owner-tools" className={styles.back}>← Owner Studio</Link>
-  <header className={styles.hero}><p>OWNER STUDIO · COMMUNICATIONS</p><h1>Updates Desk</h1><span>Make meaningful progress visible. Draft first, then announce improvements after they are live.</span></header>
+  <OwnerDeskHeader area="Communications" title="Updates Desk" description="Draft improvements, review announcements, and publish when they are live." icon="news" actions={[{href:"/updates",label:"View updates",icon:"news",external:true}]}/>
   {params.saved?<p role="status" className={styles.success}>Update saved successfully.</p>:null}
   {params.error?<p role="alert" className={styles.error}>{params.error==="details"?"Add at least one fix or improvement before publishing.": "Could not save the update. Check the brief description, individual fix lines and destination, then retry."}</p>:null}
   {rows===null?<p role="alert" className={styles.error}>Updates storage is unavailable. Check the updates database migration.</p>:null}
