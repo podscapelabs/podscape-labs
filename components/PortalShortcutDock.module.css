@@ -21,3 +21,11 @@
 .dock[data-portal-shortcuts="leaf-ledger"] .shortcut{background:color-mix(in srgb,var(--portal-hero-start) 73%,transparent);color:var(--portal-hero-text);border-color:color-mix(in srgb,var(--portal-hero-text) 36%,transparent)}
 .dock[data-portal-shortcuts="leaf-ledger"] .shortcut svg{color:var(--portal-hero-soft)}
 .dock[data-portal-shortcuts="leaf-ledger"] .editor{background:var(--portal-hero-start);color:var(--portal-hero-text);border-color:color-mix(in srgb,var(--portal-hero-text) 36%,transparent)}
+
+/* Adaptive spans avoid the orphaned last shortcut when users choose 2, 4 or 5. */
+.grid{grid-template-columns:repeat(6,minmax(0,1fr))}
+.grid>.shortcut{grid-column:span 2}
+.grid[data-count="1"]>.shortcut{grid-column:span 6}
+.grid[data-count="2"]>.shortcut,.grid[data-count="4"]>.shortcut{grid-column:span 3}
+.grid[data-count="5"]>.shortcut:nth-child(n+4){grid-column:span 3}
+@media(max-width:600px){.grid{grid-template-columns:repeat(6,minmax(0,1fr))}}
