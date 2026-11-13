@@ -12,3 +12,15 @@
 .dialog :is(button,a):focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:3px}
 @media(max-width:600px){.dialog{width:100%;max-height:calc(91dvh - env(safe-area-inset-top,0px));margin:auto 0 0;border-radius:23px 23px 0 0;border-bottom:0}.content{max-height:calc(91dvh - env(safe-area-inset-top,0px))}.header{padding:15px 19px 10px}.body{padding:4px 19px calc(25px + env(safe-area-inset-bottom,0px))}.body h2{font-size:clamp(24px,7vw,32px)}}
 @media(prefers-reduced-motion:no-preference){.dialog[open]{animation:podscapeSheetRise .2s ease-out}@keyframes podscapeSheetRise{from{opacity:.7;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}}
+
+/* Confirmations share the information-sheet surface, but expose explicit safe and irreversible choices. */
+.confirmBody{margin:12px 0 22px;font-size:13px;line-height:1.6;color:var(--ps-text-secondary,var(--text-secondary))}
+.confirmBody p{margin:0 0 10px}
+.confirmBody strong{color:var(--ps-text,var(--text-primary))}
+.confirmActions{display:flex;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:10px;padding-top:12px;border-top:1px solid var(--ps-border,var(--border))}
+.confirmActions button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:11px 18px;border:1px solid var(--ps-border,var(--border));border-radius:var(--ps-radius-control,11px);font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.confirmCancel{background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-text,var(--text-primary))}
+.confirmPrimary{border-color:var(--ps-accent,var(--accent))!important;background:var(--ps-accent,var(--accent));color:var(--ps-accent-text,var(--accent-contrast))}
+.confirmDanger{border-color:var(--theme-danger,var(--ps-accent,var(--accent)))!important;background:var(--theme-danger,var(--ps-accent,var(--accent)));color:var(--theme-danger-contrast,var(--ps-accent-text,var(--accent-contrast)))}
+.confirmActions button:disabled{opacity:.55;cursor:progress}
+@media(max-width:600px){.confirmActions{flex-direction:column-reverse}.confirmActions button{width:100%}}
