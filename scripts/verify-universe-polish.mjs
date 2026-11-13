@@ -115,7 +115,7 @@ assert.match(fun,/renderWidget\(shortcutPanel\)/,"When optional arcade widgets a
 assert.match(fun,/\/fun-zone\/pod-exchange/);
 assert.match(fun,/\/fun-zone\/picture-puzzles/);
 const shop=read("app/shop/page.tsx");
-assert.match(shop,/PortalActionRail/,"Shop uses shared contextual actions");
+assert.match(shop,/<PortalShortcutDock portal="shop"/,"Shop uses customizable shortcut navigation");
 assert.match(shop,/Storefront preview · Checkout not yet available/,"Shop must not imply checkout works");
 for(const path of ["app/podbound/page.tsx","app/podbound/cards/page.tsx","app/podbound/cards/[id]/page.tsx","app/menu/page.tsx"]){
  const source=read(path);
