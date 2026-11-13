@@ -63,6 +63,7 @@ jobs:
         run: node scripts/verify-stabilization-boundaries.mjs
       - name: Universe-wide Owner Studio and contextual navigation checks
         run: node scripts/verify-universe-polish.mjs
+          node scripts/verify-universe-consistency-audit.mjs
           node scripts/verify-universe-interactions.mjs
       - name: Build Next.js application
         run: pnpm run build
