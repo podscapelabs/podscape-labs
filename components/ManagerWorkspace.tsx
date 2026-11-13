@@ -25,7 +25,7 @@ import {managerStorageKey} from "@/lib/ui-preferences";
 
 type Section="hero"|"stats"|"care"|"tools"|"activity"|"enclosures"|"insights";
 type Tool={id:string;label:string;href:string;icon:PodscapeIconName};
-const defaults:Section[]=["hero","tools","enclosures","care","stats","activity","insights"];
+const defaults:Section[]=["hero","stats","tools","enclosures","care","activity","insights"];
 const required:Section[]=["hero"];
 const labels:Record<Section,string>=managerWidgetNames;
 const library:Tool[]=[
@@ -43,7 +43,7 @@ const library:Tool[]=[
  {id:"activity",label:"Recent activity",href:"/keeper/activity",icon:"note"}
 ];
 type Layout={order:Section[];visible:Section[];tools:string[]};
-const initial:Layout={order:defaults,visible:["hero","tools","enclosures","care"],tools:["scan","add","colonies","schedule","qr","bulkqr"]};
+const initial:Layout={order:defaults,visible:["hero","stats","tools","enclosures","care"],tools:["scan","add","colonies","schedule","qr","bulkqr"]};
 const detailed:Layout={order:defaults,visible:[...defaults],tools:[...initial.tools]};
 function normalize(value:unknown):Layout{
  if(!value||typeof value!=="object")return initial;
