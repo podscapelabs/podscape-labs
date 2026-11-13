@@ -1,4 +1,5 @@
 "use client";
+import {OwnerDeskUnsavedGuard} from "@/components/OwnerDeskUnsavedGuard";
 import { useState } from "react";
 import { deleteProductRecord, saveProductRecord, toggleProductArchive } from "@/app/admin/products/actions";
 import { ProductPhotoEditor } from "@/components/ProductPhotoEditor";
@@ -63,6 +64,7 @@ export function ProductEditor({ product, speciesOptions, variants, adjustments, 
       <input type="hidden" name="id" value={product.id} />
       <input type="hidden" name="tagsMode" value={tagsEdited ? "manual" : "suggested"} />
       <input type="hidden" name="slugMode" value={newDraft && !slugEdited ? "auto" : "manual"} />
+      <OwnerDeskUnsavedGuard label="product"/>
       <nav className={styles.sectionNav} aria-label="Jump to product sections">
         <a href="#product-ledger">01 Species</a>
         <a href="#product-basics">02 Listing</a>
