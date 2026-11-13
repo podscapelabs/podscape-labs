@@ -1,5 +1,5 @@
 import {redirect} from "next/navigation";
-import {OwnerDeskHeader,OwnerDeskSection} from "@/components/OwnerDeskFoundation";
+import {OwnerDeskHeader,OwnerDeskSection,OwnerDeskNotice} from "@/components/OwnerDeskFoundation";
 import {isAdminAuthenticated} from "@/lib/admin-auth";
 import {getSupabaseAdmin} from "@/lib/supabase-admin";
 import {addEarlyAccessTester,revokeEarlyAccessTester} from "./actions";
@@ -15,10 +15,10 @@ export default async function EarlyAccessManager({searchParams}:{searchParams:Pr
  const activeCount=testers.filter(t=>t.active).length;
  return <main className={styles.page}>
   <OwnerDeskHeader area="Access" title="Early Access" description="Approve a tester’s email before registration. Every editing desk remains owner-only." icon="community"/>
-  {params.added?<p className={styles.success} role="status">Tester approved. You can share the Early Access link.</p>:null}
-  {params.revoked?<p className={styles.success} role="status">Tester access revoked.</p>:null}
-  {params.error?<p className={styles.error} role="alert">Unable to update tester access. Check the email and try again.</p>:null}
-  {error?<p className={styles.error} role="alert">The tester database is unavailable. Check the early-access migration.</p>:null}
+  {params.added?<OwnerDeskNotice kind="success">Tester approved. You can share the Early Access link.</OwnerDeskNotice>:null}
+  {params.revoked?<OwnerDeskNotice kind="success">Tester access revoked.</OwnerDeskNotice>:null}
+  {params.error?<OwnerDeskNotice kind="error">Unable to update tester access. Check the email and try again.</OwnerDeskNotice>:null}
+  {error?<OwnerDeskNotice kind="error">The tester database is unavailable. Check the early-access migration.</OwnerDeskNotice>:null}
   <div className={styles.sections}>
    <OwnerDeskSection title="Approve a tester" description="Add their registration email; approval does not send an automatic invitation.">
     <form action={addEarlyAccessTester} className={styles.form}>
