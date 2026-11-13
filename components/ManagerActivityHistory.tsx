@@ -19,7 +19,10 @@ export function ManagerActivityHistory({events,unavailable,embedded=false}:{even
     <label>Activity type<select value={kind} onChange={event=>setKind(event.target.value)}><option value="all">All activities</option>{types.map(type=><option value={type} key={type}>{type.replaceAll("-"," ")}</option>)}</select></label>
   </div>:null}
   {unavailable?<p role="alert">Care activity is not available right now. Existing records have not been changed.</p>
-   :filtered.length?<div className={styles.managerHistoryList}>{filtered.map(event=><Link href={"/keeper/"+event.enclosureId+"/history"} key={event.id}>
+   :filtered.length?<div className={styles.managerHistoryList}>{filtered.map(event=>embedded?<details key={event.id} className={styles.managerHistoryEntry}>
+    <summary><span><strong>{event.kind.replaceAll("-"," ")}</strong><small>{event.enclosureName}</small></span><time dateTime={event.createdAt}>{new Date(event.createdAt).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}</time></summary>
+    <div><p>{event.note||"No additional note recorded."}</p><Link href={"/keeper/"+event.enclosureId+"/history"}>Full bin history →</Link></div>
+   </details>:<Link href={"/keeper/"+event.enclosureId+"/history"} key={event.id}>
     <span><strong>{event.kind.replaceAll("-"," ")}</strong><small>{event.enclosureName}{event.note?" · "+event.note:""}</small></span>
     <time dateTime={event.createdAt}>{new Date(event.createdAt).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}</time>
    </Link>)}</div>
