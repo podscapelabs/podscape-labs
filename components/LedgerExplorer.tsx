@@ -149,13 +149,14 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
           {query ? <button type="button" onClick={()=>setQuery("")} aria-label="Clear species search">×</button> : null}
         </div>
         <PortalShortcutDock portal="leaf-ledger" label="Leaf Ledger shortcuts"
-          defaults={["discover","collection","guide"]}
+          defaults={["discover","collection","colonies","guide","request","games"]}
           features={[
            {id:"discover",label:"Discover",icon:"leaf",href:"#ledger-directory"},
            {id:"collection",label:"My Collection",icon:"bookmark",href:signedIn?"/keeper/collection?view=saved":"/account/login"},
            {id:"colonies",label:"My Colonies",icon:"jar",href:signedIn?"/keeper/collection":"/account/login"},
            {id:"guide",label:"Care Guides",icon:"book",href:"/field-guide"},
-           {id:"request",label:"Request Species",icon:"note",href:signedIn?"#ledger-request-species":"/account/login"}
+           {id:"request",label:"Request Species",icon:"note",href:signedIn?"#ledger-request-species":"/account/login"},
+           {id:"games",label:"Fun Zone",icon:"gamepad",href:"/fun-zone"}
           ]}/>
       </div>
     </header> : null}
