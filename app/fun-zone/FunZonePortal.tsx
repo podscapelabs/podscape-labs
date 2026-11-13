@@ -154,7 +154,7 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp}:{us
   <header className={styles.hero}><div><span className={styles.heroEyebrow}>PODSCAPE / FUN ZONE</span><h1>Your little arcade.</h1><p>Games, puzzles and a little market drama.</p></div></header>
   <section className={styles.quickStart} aria-label="Explore Fun Zone"><div className={styles.quickStartHeading}><strong>Explore the arcade</strong><span>Everything one tap away</span></div>
    <PortalShortcutDock portal="fun-zone" label="Fun Zone shortcuts" scope={scopeKey}
-    defaults={["categories","favourites","rankings","exchange","picture"]}
+    defaults={["categories","favourites","rankings","exchange","picture","progress"]}
     features={[
      {id:"categories",label:"Game categories",icon:"grid",...(active.includes("categories")?{href:"#arcade-games"}:{onClick:()=>setShortcutPanel(value=>value==="categories"?null:"categories")})},
      {id:"favourites",label:"My games",icon:"bookmark",...(active.includes("favourites")?{href:"#arcade-favourites"}:{onClick:()=>setShortcutPanel(value=>value==="favourites"?null:"favourites")})},
