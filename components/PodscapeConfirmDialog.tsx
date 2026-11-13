@@ -36,7 +36,7 @@ export function PodscapeConfirmDialog({title,eyebrow="CONFIRM ACTION",children,c
  return <dialog ref={ref} role="alertdialog" aria-label={title} aria-busy={pending} className={styles.dialog}
   onMouseDown={event=>{if(event.target===event.currentTarget&&!pendingRef.current)closeRef.current()}}>
   <div className={styles.content}>
-   <div className={styles.header}><span className={styles.eyebrow}><PodscapeLineIcon name={danger?"warning":"note"}/>{eyebrow}</span></div>
+   <div className={styles.header}><span className={styles.eyebrow}><PodscapeLineIcon name={danger?"lock":"note"}/>{eyebrow}</span></div>
    <div className={styles.body}>
     <h2>{title}</h2>
     <div className={styles.confirmBody}>{children}</div>
