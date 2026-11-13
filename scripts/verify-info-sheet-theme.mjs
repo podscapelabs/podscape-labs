@@ -53,7 +53,8 @@ assert.match(collection,/\.page\{[^}]*background:var\(--background\)/,"Collectio
 assert.doesNotMatch(collection,/#[0-9a-f]{3,8}\b/i,"Old collection colour literals are obsolete");
 assert.match(shop,/\.hero\{[\s\S]*?var\(--portal-hero-glow\)/,"Shop hero must follow shared palette");
 assert.doesNotMatch(shop,/#[0-9a-f]{3,8}\b/i,"Remove dead fixed-green Shop colours");
-assert.match(species,/\.researchDialog::backdrop\{background:color-mix\(in srgb,var\(--ps-bg/,"Research dialog must use current theme overlay");
+assert.match(read("components/SpeciesResearchWidgets.tsx"),/PodscapeInfoDialog/,"Leaf Ledger research uses the canonical theme-safe modal");
+assert.doesNotMatch(species,/\.researchDialog::backdrop/,"Remove redundant research-specific dialog backdrop");
 assert.match(scanner,/\.binHero\{[^}]*var\(--portal-hero-start\)/,"Keeper scanner result hero must follow theme");
 assert.ok(!["#102d23","#153c2b","#f6f1e6","#fffdf5"].some(token=>ledgerCss.toLowerCase().includes(token)),"Ledger hero and search must not use fixed green/cream palette");
 assert.ok(ledgerCss.includes("var(--portal-hero-button-bg)"),"Ledger primary navigation uses theme palette");
