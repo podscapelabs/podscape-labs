@@ -8,9 +8,9 @@ export type OwnerDeskAction={href:string;label:string;icon?:PodscapeIconName;ext
 /** One owner interface contract: same structure, focus states and actions in every desk.
  * Desk-specific editors and data lifecycles stay in their current owners.
  */
-export function OwnerDeskHeader({area,title,description,icon,actions=[],aside,backHref="/account/owner-tools"}:{
+export function OwnerDeskHeader({area,title,description,icon,actions=[],aside,backHref="/account/owner-tools",backLabel="Owner Studio"}:{
  area:string;title:string;description:string;icon?:PodscapeIconName;
- actions?:OwnerDeskAction[];aside?:ReactNode;backHref?:string;
+ actions?:OwnerDeskAction[];aside?:ReactNode;backHref?:string;backLabel?:string;
 }){
  return <header className={styles.hero} aria-label={title}>
   <div className={styles.identity}>
@@ -18,7 +18,7 @@ export function OwnerDeskHeader({area,title,description,icon,actions=[],aside,ba
    <h1>{title}</h1>
    <p className={styles.description}>{description}</p>
    <nav className={styles.actions} aria-label={title+" actions"}>
-    <Link className={styles.back} href={backHref}><span aria-hidden="true">←</span> Owner Studio</Link>
+    <Link className={styles.back} href={backHref}><span aria-hidden="true">←</span> {backLabel}</Link>
     {actions.map(action=><Link className={styles.action} key={action.href} href={action.href} target={action.external?"_blank":undefined} rel={action.external?"noopener noreferrer":undefined}>{action.icon?<PodscapeLineIcon name={action.icon}/>:null}{action.label}<PodscapeLineIcon name="arrow-right"/></Link>)}
    </nav>
    {aside?<div className={styles.aside}>{aside}</div>:null}
