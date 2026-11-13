@@ -53,6 +53,14 @@ check(gamedesk,"Watch trading fees","Exchange beginner guide should explain tran
 const sql=read("supabase/migrations/20261113010500_trigger_only_function_privileges.sql");
 for(const fn of ["capture_content_revision","create_customer_profile","ensure_arcade_ranking_preference","ensure_exp_ranking_preference"])check(sql,"revoke execute on function public."+fn+"() from public,anon,authenticated;","Remove PUBLIC direct execution of trigger-only "+fn);
 assert.ok(!/\b(?:delete from|truncate|drop table|update public\.member_exchange_portfolios)\b/i.test(sql),"Security migration must not erase member data");
+const watchlist=read("app/fun-zone/PodExchangeWatchlist.tsx");
+check(watchlist,'document.visibilityState!=="visible"',"Hidden tabs must not fetch portfolio snapshots repeatedly");
+check(watchlist,'window.addEventListener("focus",update)',"Returning to watchlist must refresh wallet and quotes");
+check(watchlist,'window.removeEventListener("focus",update)',"Focus handler should clean up");
+const marketRoute=read("app/api/fun-zone/pod-exchange/market/route.ts");
+check(marketRoute,"lastScheduledHistoryCycle","Market history persistence is scheduled once per server minute");
+check(marketRoute,"catchUpPublishedPsxV3History","Immutable published V3 history remains on");
+check(marketRoute,"getPsxLiveMarket","The API must still serve authoritative market quotes");
 const cssFiles=[...readdirSync(join(root,"components")).filter(n=>n.endsWith(".css")), ...readdirSync(join(root,"app")).filter(n=>n.endsWith(".css"))];
 console.log("Refinement checks passed: mobile dock, 5-theme collection UI, saved species flow, bulk care, widget standards, Owner Studio, PSX and additive security.");
 console.log("Audited "+cssFiles.length+" root/first-level stylesheets; detailed theme scan runs separately.");
