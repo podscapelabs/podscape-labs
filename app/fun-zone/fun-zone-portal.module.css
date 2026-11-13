@@ -425,3 +425,11 @@
 .shortcutClose{display:flex;align-items:center;gap:6px;margin:0 0 8px auto;padding:7px 11px;min-height:40px;border:1px solid var(--border);border-radius:10px;background:var(--surface-secondary);color:var(--text-primary);font:750 12px/1.25 var(--sans);cursor:pointer}
 .shortcutClose svg{width:16px;height:16px}
 .shortcutClose:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+/* Fun Zone shortcuts use the same compact dashboard rhythm as Home & Manager.
+   The portal heading can differ; the tiles, spacing and editing behavior cannot. */
+.quickStart{margin:12px 0 20px;padding:0;border:0;border-radius:0;background:transparent}
+.quickStartHeading{display:flex;align-items:center;justify-content:space-between;gap:8px 15px;margin:0 0 9px;flex-wrap:wrap}
+.quickStartHeading strong{font:500 clamp(1.2rem,3vw,1.45rem)/1.2 var(--display)}
+.quickStartHeading span{font-size:11px}
+@media(max-width:720px){.quickStart{margin:10px 0 16px;padding:0;border:0;border-radius:0;background:transparent}.quickStartHeading{margin-bottom:8px}.quickStartHeading strong{font-size:1.2rem}.quickStartHeading span{font-size:10px}}
