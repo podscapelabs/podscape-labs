@@ -190,7 +190,7 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
   activity:<ManagerActivityFeed events={events} available={activityAvailable}/>,
   insights:<ManagerInsights bins={bins} events={events}/>,
   enclosures,
-  tools:<section className={styles.section} key="tools"><header><h2>{labels.tools}</h2>{!canvasEditing?<button type="button" className={styles.managerEditShortcuts} onClick={()=>{setEditing(true);setLibraryView("added");setSlot(0)}} aria-label="Customize Manager Quick Tools shortcuts"><PodscapeLineIcon name="edit"/> Edit shortcuts</button>:null}</header>
+  tools:<section className={styles.section} key="tools"><header><h2>{labels.tools}</h2></header>
     <ManagerQuickShortcuts ids={layout.tools} change={ids=>update({...layout,tools:ids})} primaryHref={primaryHref} canvasEditing={canvasEditing} onWorkflow={mode=>openWorkflow(mode)}/>
     {activeWorkflow&&!canvasEditing?<div id="manager-quick-workflow" className={styles.managerInlineWorkflow}><ManagerWorkflowPanel key={activeWorkflow+":"+(workflowBin||"")} mode={activeWorkflow} bins={bins} initialBinId={workflowBin} onClose={()=>setActiveWorkflow(null)}/></div>:null}
   
