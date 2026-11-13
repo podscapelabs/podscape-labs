@@ -15,6 +15,7 @@ export function FloatingFeedback({enabled}:{enabled:boolean}){
  const heading=useId(),dialog=useRef<HTMLDivElement>(null),trigger=useRef<HTMLButtonElement>(null);
  const excluded=!feedbackAllowedOnRoute(pathname);
  useEffect(()=>setMounted(true),[]);
+ useEffect(()=>{setOpen(false)},[pathname]);
  useEffect(()=>{if(!open)return;const previous=document.activeElement as HTMLElement|null;
   const triggerNode=trigger.current;
   const handle=(event:KeyboardEvent)=>{
