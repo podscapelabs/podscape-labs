@@ -24,8 +24,8 @@
 @media(max-width:799px){
  .root{left:max(10px,env(safe-area-inset-left,0px));bottom:calc(102px + env(safe-area-inset-bottom,0px))}
  .bubbleRow{gap:3px}
- .trigger{width:42px;min-width:42px;height:42px;min-height:42px;padding:0;justify-content:center;border-radius:50%}
+ .trigger{width:44px;min-width:44px;height:44px;min-height:44px;padding:0;justify-content:center;border-radius:50%}
  .trigger span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
- .dismiss{width:25px;height:25px;font-size:17px}
+ .dismiss{width:44px;height:44px;min-width:44px;min-height:44px;font-size:20px}
  .panel{max-height:min(70dvh,460px);overflow-y:auto}
 }
