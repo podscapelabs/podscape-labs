@@ -40,7 +40,7 @@ export default async function MyColoniesPage({searchParams}:{searchParams:Promis
           <nav className={styles.views} aria-label="Collection views"><Link href="/keeper/collection?view=active" aria-current={view==="active"?"page":undefined}>Active bins</Link><Link href="/keeper/collection?view=saved" aria-current={savedView?"page":undefined}>Saved species</Link><Link href="/keeper/collection?view=archived" aria-current={archivedView?"page":undefined}>Archived</Link></nav>
         </header>
         {member.signedIn&&!unavailable?<section className={styles.overview} aria-label="Collection overview and tools">
-          <div className={styles.overviewHeader}><div><span className={styles.overviewEyebrow}>YOUR KEEPER SPACE</span><h2>At a Glance</h2></div></div>
+          <h2 className={styles.overviewLabel}>Collection snapshot</h2>
           <div className={styles.overviewStats}>
             <div><strong>{bins.filter(bin=>!bin.isArchived).length}</strong><span>Active bins</span></div>
             <div><strong>{member.ids.length}</strong><span>In collection</span></div>
