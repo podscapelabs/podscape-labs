@@ -66,6 +66,7 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp}:{us
  const [category,setCategory]=useState<ArcadeCategory>("Word Games");
  const [editing,setEditing]=useState(false);
  const [libraryOpen,setLibraryOpen]=useState(false);
+ const [shortcutPanel,setShortcutPanel]=useState<"categories"|"favourites"|null>(null);
  const [libraryView,setLibraryView]=useState<WidgetLibraryView>("available");
  const dialogRef=useWorkspaceEditorDialog(libraryOpen,()=>setLibraryOpen(false));
  const editAnchor=useRef<{id:WidgetKey;top:number}|null>(null);
@@ -153,12 +154,16 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp}:{us
   <header className={styles.hero}><div><span className={styles.heroEyebrow}>PODSCAPE / FUN ZONE</span><h1>Your little arcade.</h1><p>Games, puzzles and a little market drama.</p></div></header>
   <section className={styles.quickStart} aria-label="Explore Fun Zone"><div className={styles.quickStartHeading}><strong>Explore the arcade</strong><span>Everything one tap away</span></div>
    <PortalActionRail label="Fun Zone shortcuts" compact layout="grid" actions={[
-  {label:"Game categories",icon:"grid",...(active.includes("categories")?{href:"#arcade-games"}:{onClick:()=>setLibraryOpen(true),description:"Open Widget Library to add Game Categories"})},
-  {label:"My games",icon:"bookmark",...(active.includes("favourites")?{href:"#arcade-favourites"}:{onClick:()=>setLibraryOpen(true),description:"Open Widget Library to add My Games"})},
+  {label:"Game categories",icon:"grid",...(active.includes("categories")?{href:"#arcade-games"}:{onClick:()=>setShortcutPanel(value=>value==="categories"?null:"categories"),description:"Browse available games by category"})},
+  {label:"My games",icon:"bookmark",...(active.includes("favourites")?{href:"#arcade-favourites"}:{onClick:()=>setShortcutPanel(value=>value==="favourites"?null:"favourites"),description:"View your saved games"})},
   {label:"Rankings",icon:"trophy",href:active.includes("rankings")?"#rankings-spotlight":"/fun-zone/leaderboard"},
   {label:"Pod Exchange",icon:"gamepad",href:"/fun-zone/pod-exchange"},
   {label:"Picture puzzles",icon:"grid",href:"/fun-zone/picture-puzzles"}
- ]}/></section>
+ ]}/>
+   {shortcutPanel&&!active.includes(shortcutPanel)?<div className={styles.shortcutContent} role="region" aria-label={shortcutPanel==="categories"?"Browse game categories":"Your saved games"}>
+    <button type="button" className={styles.shortcutClose} onClick={()=>setShortcutPanel(null)} aria-label="Close shortcut details">Close <PodscapeLineIcon name="x"/></button>
+    {renderWidget(shortcutPanel)}
+   </div>:null}</section>
   {editing?<WorkspaceEditToolbar title="Arrange Fun Zone" description="Drag the handles or use arrows to reorder games and widgets." onAdd={()=>{finishCanvas();setLibraryOpen(true)}} onReset={reset} onDone={finishCanvas}/>:null}
   <div className={styles.widgets}>{active.map((id,i)=><div key={id} id={id==="rankings"?"rankings-spotlight":id==="categories"?"arcade-games":id==="favourites"?"arcade-favourites":undefined}><WorkspaceEditBlock id={id} scope="fun-zone" label={label(id)} index={i} count={active.length} editing={editing} dragging={dragging===id} required={false} onMove={move} onRemove={remove} begin={beginDrag} move={moveDrag} stop={stopDrag} onLongPress={()=>enterCanvas(id)}>{renderWidget(id)}</WorkspaceEditBlock></div>)}</div>
   {hydrated&&!editing?<div className={homeEditStyles.addWidgetFooter}><button type="button" className={homeEditStyles.addWidgetButton} onClick={()=>setLibraryOpen(true)}><span aria-hidden="true">＋</span> Add Widget</button></div>:null}
