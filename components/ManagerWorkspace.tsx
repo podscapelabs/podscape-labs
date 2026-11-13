@@ -184,16 +184,6 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
     <div className={styles.managerSearchField}><span aria-hidden="true"><PodscapeLineIcon name="search"/></span><input id="manager-collection-search" aria-label="Search your collection" type="search" enterKeyHint="search" value={query} onChange={event=>setQuery(event.target.value)} onKeyDown={event=>{if(event.key==="Escape"){setQuery("");event.currentTarget.blur()}else if(event.key==="Enter"&&searchResults.length){event.preventDefault();router.push("/keeper/"+searchResults[0].id)}}} placeholder="Find a species, bin or enclosure…" autoComplete="off"/>{query?<button type="button" onClick={()=>setQuery("")} aria-label="Clear collection search">×</button>:null}</div>
     {matching?<div className={styles.managerSearchResults} role="region" aria-live="polite" aria-label="Matching colonies">{searchResults.length?<p className={styles.managerSearchCount}>{matchingBins.length} matching {matchingBins.length===1?"colony":"colonies"}{matchingBins.length>8?" · Showing 8 most recently updated":""}</p>:null}{searchResults.length?searchResults.map(bin=><div className={styles.managerResultRow} key={bin.id}><Link href={`/keeper/${bin.id}`} aria-label={`Open ${bin.displayName}`}><strong>{bin.displayName}</strong><span>{bin.scientificName}</span><span>{[bin.binDetail,bin.label,`${bin.quantity} recorded`].filter(Boolean).join(" · ")}</span><b aria-hidden="true">→</b></Link><button type="button" onClick={()=>{setQuery("");openWorkflow("care",bin.id)}} aria-label={`Log care for ${bin.displayName}`}><PodscapeLineIcon name="droplet"/> Care</button></div>):<p>No colonies match “{query}”. <Link href="/keeper/collection">Browse all colonies →</Link></p>}</div>:null}
   </div></section>
-  {!canvasEditing?<div className={styles.managerWorkflowEntry}>
-   <div className={styles.managerWorkflowLabel}><strong>Work from your portal</strong><span>Choose a task and stay right here.</span></div>
-   <PortalActionRail label="Quick Manager actions" actions={[
-  {label:"Log care",icon:"droplet",onClick:()=>openWorkflow("care")},
-  {label:"Add note",icon:"note",onClick:()=>openWorkflow("notes")},
-  {label:"Population",icon:"community",onClick:()=>openWorkflow("population")},
-  {label:"Multi-care",icon:"bin",onClick:()=>openWorkflow("bulk")}
- ]}/>
-  </div>:null}
-  {activeWorkflow&&!canvasEditing?<div id="manager-quick-workflow"><ManagerWorkflowPanel key={activeWorkflow+":"+(workflowBin||"")} mode={activeWorkflow} bins={bins} initialBinId={workflowBin} onClose={()=>setActiveWorkflow(null)}/></div>:null}
   </>,
   stats,
   care:<ManagerCareOverview bins={bins}/>,
@@ -202,6 +192,16 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
   enclosures,
   tools:<section className={styles.section} key="tools"><header><h2>{labels.tools}</h2></header>
     <ManagerQuickShortcuts ids={layout.tools} change={ids=>update({...layout,tools:ids})} primaryHref={primaryHref} canvasEditing={canvasEditing} onWorkflow={mode=>openWorkflow(mode)}/>
+  {!canvasEditing?<details className={styles.managerWorkflowEntry}><summary>More care and record actions <PodscapeLineIcon name="arrow-down"/></summary><div className={styles.managerWorkflowExtra}>
+   <div className={styles.managerWorkflowLabel}><strong>Work from your portal</strong><span>Choose a task and stay right here.</span></div>
+   <PortalActionRail label="Quick Manager actions" actions={[
+  {label:"Log care",icon:"droplet",onClick:()=>openWorkflow("care")},
+  {label:"Add note",icon:"note",onClick:()=>openWorkflow("notes")},
+  {label:"Population",icon:"community",onClick:()=>openWorkflow("population")},
+  {label:"Multi-care",icon:"bin",onClick:()=>openWorkflow("bulk")}
+ ]}/>
+  </div></details>:null}
+  {activeWorkflow&&!canvasEditing?<div id="manager-quick-workflow"><ManagerWorkflowPanel key={activeWorkflow+":"+(workflowBin||"")} mode={activeWorkflow} bins={bins} initialBinId={workflowBin} onClose={()=>setActiveWorkflow(null)}/></div>:null}
   </section>
  };
  return <HomeCanvasEditContext.Provider value={canvasEditing}><div className={`${styles.managerWorkspace} ${canvasEditing?homeStyles.homeCanvasEditing:""}`} data-workspace-root="manager" onPointerMove={event=>{if(canvasEditing)dragMove(event)}} onPointerUp={()=>{if(canvasEditing)stop()}} onPointerCancel={()=>{if(canvasEditing)stop()}}>
