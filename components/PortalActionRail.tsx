@@ -9,8 +9,9 @@ export function PortalActionRail({label,actions,compact=false}:{label:string;act
  return <nav className={[styles.rail,compact?styles.compact:""].filter(Boolean).join(" ")} aria-label={label}>
   {actions.filter(action=>Boolean(action.href)||Boolean(action.onClick)).map(action=>{
    const body=<><PodscapeLineIcon name={action.icon}/><span>{action.label}</span></>;
+   if(action.disabled)return <span key={action.label+(action.href||"")} className={styles.disabled} aria-disabled="true" title={action.description}>{body}</span>;
    return action.href?<Link href={action.href} key={action.label+action.href} className={styles.action} aria-label={action.description?action.label+": "+action.description:action.label} title={action.description}>{body}</Link>:
-    <button key={action.label} type="button" disabled={action.disabled} className={styles.action} onClick={action.onClick} title={action.description}>{body}</button>;
+    <button key={action.label} type="button" className={styles.action} onClick={action.onClick} title={action.description}>{body}</button>;
   })}
  </nav>;
 }
