@@ -33,6 +33,33 @@ const guides=read("app/admin/guides/page.tsx");
 assert.match(guides,/createGuideRecord/);
 assert.match(guides,/saveGuideRecord/);
 assert.match(guides,/toggleGuideArchive/);
+const recordBrowser=read("components/OwnerDeskRecordBrowser.tsx");
+const browserCss=read("components/OwnerDeskRecordBrowser.module.css");
+for(const token of ["OwnerDeskRecordFilters","OwnerDeskRecordCount","searchLabel","clearHref","hiddenFields","role=\"search\""]){
+ assert.ok(recordBrowser.includes(token),"Shared owner record browser contract: "+token);
+}
+for(const token of ["--ps-surface","--ps-accent","--ps-focus","@media(max-width:650px)","min-height:44px"]){
+ assert.ok(browserCss.includes(token),"Record browser must follow themes and touch sizing: "+token);
+}
+for(const path of ["app/admin/products/page.tsx","app/admin/podbound/page.tsx"]){
+ const source=read(path);
+ assert.match(source,/OwnerDeskRecordFilters/,"Owner catalogue uses common search/filters: "+path);
+ assert.match(source,/OwnerDeskRecordCount/,"Owner catalogue uses consistent result count: "+path);
+}
+const cardDesk=read("app/admin/podbound/page.tsx");
+assert.match(cardDesk,/aria-current=\{category===c\?"page":undefined\}/,"Card Desk category state accessible");
+assert.match(cardDesk,/new URLSearchParams/,"Card Desk category switches preserve existing query filters");
+const guideNav=read("app/admin/guides/GuideDeskNavigator.tsx");
+assert.match(guideNav,/initialQuery/,"Guide Desk should restore query when switching records");
+assert.match(guideNav,/initialCategory/,"Guide Desk should restore category when switching records");
+assert.match(guideNav,/initialStatus/,"Guide Desk should restore publication status");
+assert.match(guideNav,/recordHref\(item\.id\)/,"Guide selection retains URL-based filters");
+assert.match(guideNav,/Clear filters/,"Guide filters must be resettable");
+const guidePage=read("app/admin/guides/page.tsx");
+assert.match(guidePage,/initialQuery=\{/,"Guide Desk server route must restore filters into navigator");
+for(const path of ["app/admin/species/page.tsx","app/admin/guides/page.tsx","app/admin/products/page.tsx"]){
+ assert.match(read(path),/OwnerDeskNotice/,"Owner save/error messages must look consistent in "+path);
+}
 const products=read("app/admin/products/page.tsx");
 assert.match(products,/aside=\{<form className=\{styles\.create\} action=\{createProductRecord\}/,"New product still available in common hero");
 const cards=read("app/admin/podbound/page.tsx");
