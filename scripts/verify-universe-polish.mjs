@@ -120,6 +120,23 @@ assert.match(cardGallery,/getPodBoundCards\(\)/,"Card catalogue must still query
 assert.match(cardGallery,/status==="published"/,"Card catalogue must hide draft cards");
 assert.match(cardDetail,/card\.status!=="published"/,"Card detail must remain unavailable for drafts");
 assert.match(cardDetail,/getPodBoundArtworkUrl/,"Card details must keep authored artwork");
+const unsavedGuard=read("components/OwnerDeskUnsavedGuard.tsx");
+assert.match(unsavedGuard,/beforeunload/,"Owner forms must warn before losing unsaved edits");
+assert.match(unsavedGuard,/form\.addEventListener\("input",changed\)/,"Changes in native editor inputs must be tracked");
+assert.match(unsavedGuard,/form\.addEventListener\("change",changed\)/,"Selects and checkboxes must be tracked");
+assert.match(unsavedGuard,/event\.target===form/,"Saving the current form must not prompt a leave warning");
+for(const path of ["app/admin/guides/page.tsx","components/ProductEditor.tsx"]){
+ assert.match(read(path),/OwnerDeskUnsavedGuard/,"Editor must guard unsaved changes: "+path);
+}
+for(const path of ["app/admin/products/[id]/page.tsx","app/admin/podbound/[id]/page.tsx"]){
+ const source=read(path);
+ assert.match(source,/<OwnerDeskHeader/,"Nested editor must use unified owner hierarchy: "+path);
+ assert.match(source,/backHref="\/admin\//,"Nested editor must return to its owning catalogue");
+ assert.match(source,/form="(?:product-editor-form|card-editor)"/,"Nested editor must preserve direct Save");
+}
+assert.match(read("components/ProductEditor.tsx"),/OwnerDeskNotice/,"Product save/error feedback is theme-safe");
+assert.match(read("app/admin/podbound/CardEditorForm.tsx"),/OwnerDeskNotice/,"Card upload feedback is theme-safe");
+assert.doesNotMatch(read("app/admin/podbound/CardEditorForm.tsx"),/#b85c51/i,"No hardcoded alert color in Card Desk upload");
 const migrations=[
  read("supabase/migrations/20261113010500_trigger_only_function_privileges.sql"),
  read("supabase/migrations/20261113013000_universe_performance_fk_indexes.sql")
