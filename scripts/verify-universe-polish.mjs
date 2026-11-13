@@ -98,7 +98,7 @@ assert.match(workflow,/const bin=matches\.find\(item=>item\.id===selected\)/,"Ca
 assert.match(workflow,/Choose a matching bin before saving/,"Search must explain hidden selections");
 assert.match(workflow,/bins\.find\(item=>item\.id===initialBinId\)/,"Manager Quick Care must resolve only an owned available bin");
 assert.match(keeper,/initialBinId=\{workflowBin\}/,"Selected search result must reach in-page Quick Care");
-assert.match(keeper,/Log care for \$\{bin\.name\}/,"Search results must expose accessible direct Care");
+assert.match(keeper,/Log care for \$\{bin\.displayName\}/,"Search results must expose accessible direct Care using the displayed morph name");
 assert.match(keeper,/openWorkflow\("care",bin\.id\)/,"Search result Care must preselect its bin");
 const collection=read("app/keeper/collection/page.tsx");
 for(const path of ["/keeper/scan?manual=1","/keeper/new","/keeper/import","/ledger"])
