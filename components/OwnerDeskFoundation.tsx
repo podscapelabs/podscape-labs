@@ -18,7 +18,7 @@ export function OwnerDeskHeader({area,title,description,icon,actions=[],aside,ba
    <h1>{title}</h1>
    <p className={styles.description}>{description}</p>
    <nav className={styles.actions} aria-label={title+" actions"}>
-    <Link className={styles.back} href={backHref}><PodscapeLineIcon name="arrow-left"/> Owner Studio</Link>
+    <Link className={styles.back} href={backHref}><span aria-hidden="true">←</span> Owner Studio</Link>
     {actions.map(action=><Link className={styles.action} key={action.href} href={action.href} target={action.external?"_blank":undefined} rel={action.external?"noopener noreferrer":undefined}>{action.icon?<PodscapeLineIcon name={action.icon}/>:null}{action.label}<PodscapeLineIcon name="arrow-right"/></Link>)}
    </nav>
    {aside?<div className={styles.aside}>{aside}</div>:null}
