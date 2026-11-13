@@ -48,6 +48,16 @@ const ledger=read("components/LedgerExplorer.tsx");
 assert.match(ledger,/<PortalShortcutDock portal="leaf-ledger"/,"Leaf Ledger must have customizable shortcuts");
 assert.match(ledger,/href:"\/field-guide"/,"Leaf Ledger shortcuts must lead to real guide route");
 assert.match(ledger,/heroSearch/,"Species searching must remain primary");
+assert.match(ledger,/className=\{spotlight\.heroDiscovery\}/,"Search and organism filtering must share one discovery area");
+assert.match(ledger,/\{catalogueToolbar\}/,"Organism and filter controls must be near search, not below shortcuts");
+assert.match(ledger,/className=\{spotlight\.shortcutStrip\}/,"Leaf Ledger shortcuts must sit outside its hero");
+assert.match(ledger,/id:"request",label:"Request Species"[\s\S]*?onClick:\(\)=>setRequestLaunch/,"Request Species shortcut must directly open the form");
+assert.match(ledger,/SpeciesRequestButton launchSignal=\{requestLaunch\} hideTrigger/,"Request form must be accessible from shortcut");
+assert.doesNotMatch(ledger,/ledger-request-species/,"Request Species should not appear as a redundant catalogue CTA");
+const ledgerCss=read("app/ledger/discover.module.css");
+assert.match(ledgerCss,/\.shortcutStrip\{/,"Shortcut row must have its own spacing outside the hero");
+assert.match(ledgerCss,/\.heroDiscovery\{/,"Hero search and filters must have unified spacing");
+
 const bound=read("app/podbound/page.tsx");
 assert.match(bound,/<PortalShortcutDock portal="podbound"/,"PodBound must have customizable feature shortcuts");
 assert.match(bound,/id:"cards"/,"Card Gallery must remain accessible");
