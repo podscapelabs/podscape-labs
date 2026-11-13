@@ -29,6 +29,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
 }) {
   const [query, setQuery] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [requestLaunch,setRequestLaunch]=useState(0);
   const [genus, setGenus] = useState("all");
   const [organism,setOrganism]=useState<"all"|"isopod"|"springtail">("all");
   const [care, setCare] = useState("all");
@@ -189,10 +190,11 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
            {id:"collection",label:"My Collection",icon:"bookmark",href:signedIn?"/keeper/collection?view=saved":"/account/login"},
            {id:"colonies",label:"My Colonies",icon:"jar",href:signedIn?"/keeper/collection":"/account/login"},
            {id:"guide",label:"Care Guides",icon:"book",href:"/field-guide"},
-           {id:"request",label:"Request Species",icon:"note",href:signedIn?"#ledger-request-species":"/account/login"},
+           {id:"request",label:"Request Species",icon:"note",...(signedIn?{onClick:()=>setRequestLaunch(value=>value+1)}:{href:"/account/login"})},
            {id:"games",label:"Fun Zone",icon:"gamepad",href:"/fun-zone"}
           ]}/>
     </div>:null}
+    {heroMode&&mode==="catalogue"&&signedIn?<SpeciesRequestButton launchSignal={requestLaunch} hideTrigger/>:null}
     <div className={heroMode && mode === "catalogue" ? spotlight.content : undefined}>
     <div className={heroMode && mode === "catalogue" ? "v2-container" : undefined} id={heroMode && mode === "catalogue" ? "ledger-directory" : undefined}>
     <section className="v2-ledger-explorer" aria-labelledby="ledger-directory-title">
@@ -213,7 +215,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
     <div className={`v2-results-meta ${styles.resultMeta}`}>
       <span id="ledger-directory-title" role="status" aria-live="polite" aria-atomic="true">{results.length} {results.length === 1 ? "record" : "records"}</span>
       <div className={styles.metaActions}>
-        {mode==="catalogue"&&signedIn?<span id="ledger-request-species"><SpeciesRequestButton/></span>:null}
+        {mode==="catalogue"&&signedIn&&!heroMode?<SpeciesRequestButton/>:null}
         {filtersActive ? <button type="button" onClick={clear}>Clear filters</button> : null}
         {mode === "catalogue" ? <details className={styles.legend}>
           <summary>Leaf colour guide</summary>
