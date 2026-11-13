@@ -115,3 +115,9 @@
  .binRowDetails small{font-size:10px}
  .actions{gap:9px}
 }
+
+/* Morph-first bin hierarchy: title, verified genus/species, then enclosure details. */
+.binRowDetails small:first-of-type{color:var(--text-secondary);font-size:12px;font-style:italic;white-space:normal;overflow-wrap:anywhere}
+.binRowDetails small:last-of-type{color:var(--text-muted,var(--text-secondary));white-space:normal;overflow-wrap:anywhere}
+.groupBin>a:first-child small:first-of-type{font-style:italic;color:var(--text-secondary)}
+@media(max-width:600px){.binRowDetails small:first-of-type{font-size:11px}.binRowDetails small:last-of-type{font-size:10px}}
