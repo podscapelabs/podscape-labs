@@ -6,6 +6,7 @@ on:
       - codex/psx-news-first-hierarchy-rules-20261112
       - codex/podscape-refinement-era-20261112
       - codex/podscape-universe-polish-20261112
+  pull_request:
   workflow_dispatch:
 permissions:
   contents: read
