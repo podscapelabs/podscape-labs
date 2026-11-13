@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {OwnerDeskRecordFilters,OwnerDeskRecordCount} from "@/components/OwnerDeskRecordBrowser";
 import {OwnerDeskHeader} from "@/components/OwnerDeskFoundation";
 import Image from "next/image";
 import { redirect } from "next/navigation";
@@ -48,18 +49,15 @@ export default async function ProductDeskPage({ searchParams }: { searchParams: 
       </section>
       <section className={styles.catalogue} aria-labelledby="catalogue-title">
         <div className={styles.catalogueHead}><div><p className="admin-kicker">YOUR CATALOGUE</p><h2 id="catalogue-title">Product records</h2></div><Link href="/shop" target="_blank">Shop preview ↗</Link></div>
-        <form className={styles.filters} action="/admin/products" method="get">
-          <label className={styles.search}><span className="sr-only">Search products</span><span aria-hidden="true"><PodscapeLineIcon name="search"/></span><input type="search" name="q" defaultValue={params.q} placeholder="Search products, SKUs or tags…" /></label>
-          <input type="hidden" name="category" value={category} />
-          <label><span className="sr-only">Status</span><select name="status" defaultValue={status}><option value="all">Active products</option><option value="published">Published</option><option value="draft">Draft</option><option value="low-stock">Low stock</option><option value="archived">Archived</option></select></label>
-          <label><span className="sr-only">Sort by</span><select name="sort" defaultValue={sort}><option value="recent">Recently updated</option><option value="name">Product name</option><option value="stock">Stock: lowest first</option></select></label>
-          <button className={styles.filterButton} type="submit" aria-label="Apply product filters">↳</button>
-        </form>
+        <OwnerDeskRecordFilters action="/admin/products" searchLabel="Search products" searchPlaceholder="Search products, SKUs or tags…" searchValue={params.q||""} clearHref="/admin/products" hiddenFields={[{name:"category",value:category||"all"}]} filters={[
+          {name:"status",label:"Publication",value:status||"all",options:[{value:"all",label:"Active products"},{value:"published",label:"Published"},{value:"draft",label:"Draft"},{value:"low-stock",label:"Low stock"},{value:"archived",label:"Archived"}]},
+          {name:"sort",label:"Sort by",value:sort,options:[{value:"recent",label:"Recently updated"},{value:"name",label:"Product name"},{value:"stock",label:"Lowest stock first"}]}
+        ]}/>
         <nav className={styles.categoryChips} aria-label="Product categories">
           <Link className={category === "all" ? styles.activeChip : ""} href={`/admin/products?${new URLSearchParams({ ...(params.q ? { q: params.q } : {}), status: status || "all", sort }).toString()}`}>All</Link>
           {productCategories.map((item) => <Link className={category === item ? styles.activeChip : ""} href={`/admin/products?${new URLSearchParams({ ...(params.q ? { q: params.q } : {}), category: item, status: status || "all", sort }).toString()}`} key={item}>{item}</Link>)}
         </nav>
-        <p className={styles.resultCount} aria-live="polite">Showing {visibleRecords.length} of {records.filter((product) => status === "archived" ? Boolean(product.archivedAt) : !product.archivedAt).length} products · {sort === "recent" ? "Newest updates first" : sort === "name" ? "A to Z" : "Lowest inventory first"}</p>
+        <OwnerDeskRecordCount shown={visibleRecords.length} total={records.filter(product=>status==="archived"?Boolean(product.archivedAt):!product.archivedAt).length} noun="products" detail={sort==="recent"?"Newest updates first":sort==="name"?"A to Z":"Lowest inventory first"}/>
         <div className={styles.tableHead} aria-hidden="true"><span>Product</span><span>Status</span><span>Inventory</span><span>Price</span><span /></div>
         <div className={styles.productList}>
           {visibleRecords.map((product) => {
