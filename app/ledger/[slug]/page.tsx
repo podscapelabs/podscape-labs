@@ -134,6 +134,11 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
           </div>
         </header>
         </SpeciesProfileNavigator>
+        <form className={styles.ledgerSearchBar} role="search" action="/ledger" method="get">
+          <label htmlFor="species-profile-search">Search the Leaf Ledger</label>
+          <div><input id="species-profile-search" name="q" type="search" placeholder="Species, genus or morph…" autoComplete="off" aria-label="Search species, genus or morph" required /><button type="submit"><PodscapeLineIcon name="search"/> Search</button></div>
+        </form>
+
 
         <div className={styles.dashboardBody}>
           {record.kind==="species"&&record.status==="published"?<SpeciesCollectionHub key={record.id+":"+Boolean(collectionEntry)} speciesId={record.id} speciesName={displayName} collected={Boolean(collectionEntry)} signedIn={member.signedIn} bins={speciesBins.map(({id,name,label,quantity,isArchived})=>({id,name,label,quantity,isArchived}))} unavailable={binsUnavailable}/>:null}
