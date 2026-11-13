@@ -126,3 +126,12 @@
  .page{padding-bottom:125px}
 }
 @media(max-width:420px){.metrics{gap:7px}.heroCopy{padding:18px}.hero h1{font-size:2.05rem}.metrics strong{font-size:1.55rem}}
+
+/* Editor/library filters are shared workflow controls, not separate visual islands. */
+.publicationFilter{display:grid;gap:5px;padding:0 15px 10px;color:var(--ps-text-secondary,var(--text-secondary));font-size:11px;font-weight:750}
+.publicationFilter select{min-height:44px;width:100%;padding:9px 12px;border:1px solid var(--ps-border,var(--border));border-radius:var(--ps-radius-control,10px);background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-text,var(--text-primary));font:inherit;font-size:13px}
+.categoryRow button{border-color:var(--ps-border,var(--border));background:var(--ps-surface,var(--surface));color:var(--ps-text-secondary,var(--text-secondary));min-height:40px}
+.categoryRow .activeCategory{background:var(--ps-surface-muted,var(--surface-secondary));border-color:var(--ps-accent,var(--accent));color:var(--ps-accent,var(--accent))}
+.resultsMeta{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px;border-color:var(--ps-border,var(--border));color:var(--ps-text-secondary,var(--text-secondary))}
+.clearFilters{min-height:38px;padding:6px 10px;border-radius:10px;border:1px solid var(--ps-border,var(--border));color:var(--ps-accent,var(--accent));background:var(--ps-surface,var(--surface));font:inherit;font-size:11px;font-weight:750;cursor:pointer}
+.publicationFilter select:focus-visible,.categoryRow button:focus-visible,.clearFilters:focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:2px}
