@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {OwnerDeskRecordFilters,OwnerDeskRecordCount} from "@/components/OwnerDeskRecordBrowser";
 import {OwnerDeskHeader,OwnerDeskNotice} from "@/components/OwnerDeskFoundation";
 import {redirect} from "next/navigation";
 import {isAdminAuthenticated} from "@/lib/admin-auth";
@@ -26,11 +27,17 @@ function UpdateForm({entry}:{entry?:UpdateRecord}){
   {entry?.status==="published"?<p className={styles.hint}>Saving as a draft will unpublish this announcement. Publishing changes immediately affects the public feed.</p>:null}
  </form>;
 }
-export default async function UpdatesDesk({searchParams}:{searchParams:Promise<{saved?:string;error?:string}>}){
+export default async function UpdatesDesk({searchParams}:{searchParams:Promise<{saved?:string;error?:string;q?:string;status?:string}>}){
  if(!(await isAdminAuthenticated()))redirect("/admin");
  const [rows,params]=await Promise.all([getAllUpdates(),searchParams]);
  const drafts=(rows||[]).filter(x=>x.status==="draft");
  const published=(rows||[]).filter(x=>x.status==="published");
+ const search=(params.q||"").trim().toLocaleLowerCase("en-CA").slice(0,100);
+ const status=["all","draft","published"].includes(params.status||"")?params.status||"all":"all";
+ const filtered=(rows||[]).filter(x=>
+  (status==="all"||x.status===status)&&
+  (!search||[x.title,x.summary,x.category,x.href,...x.details].join(" ").toLocaleLowerCase("en-CA").includes(search))
+ );
  return <main className={styles.page}><div className={styles.wrap}>
   <OwnerDeskHeader area="Communications" title="Updates Desk" description="Draft improvements, review announcements, and publish when they are live." icon="news" actions={[{href:"/updates",label:"View updates",icon:"news",external:true}]}/>
   {params.saved?<OwnerDeskNotice kind="success">Update saved successfully.</OwnerDeskNotice>:null}
@@ -41,8 +48,10 @@ export default async function UpdatesDesk({searchParams}:{searchParams:Promise<{
    <UpdateForm/>
   </section>
   <section className={styles.panel}><div className={styles.sectionHead}><h2>Manage announcements</h2><span>Most recently edited first</span></div>
-   {!rows?.length?<p className={styles.empty}>No announcements yet. Create your first draft above.</p>:null}
-   <div className={styles.list}>{(rows||[]).map(entry=><details key={entry.id} className={styles.entry}>
+   <OwnerDeskRecordFilters action="/admin/updates" searchLabel="Search announcements" searchPlaceholder="Search headlines, changes or destinations…" searchValue={params.q||""} clearHref="/admin/updates" filters={[{name:"status",label:"Publication",value:status,options:[{value:"all",label:"All announcements"},{value:"draft",label:"Drafts"},{value:"published",label:"Published"}]}]}/>
+   <OwnerDeskRecordCount shown={filtered.length} total={rows?.length||0} noun="announcements"/>
+   {!filtered.length?<p className={styles.empty}>{rows?.length?"No announcements match those filters. Clear them to see everything.":"No announcements yet. Create your first draft above."}</p>:null}
+   <div className={styles.list}>{filtered.map(entry=><details key={entry.id} className={styles.entry}>
     <summary><span><small>{updateCategories.find(c=>c.id===entry.category)?.label||entry.category} · {entry.status==="published"?"Published":"Draft"}</small><strong>{entry.title}</strong></span><span aria-hidden="true">Edit +</span></summary>
     <p>{entry.summary}</p>
     <p className={styles.hint}>Destination: {validDestination(entry.href)?<Link href={entry.href}>{entry.href}</Link>:entry.href}{entry.published_at?" · Published "+new Date(entry.published_at).toLocaleDateString("en-CA"):null}</p>
