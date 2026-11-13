@@ -119,3 +119,20 @@
  .heroActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
  .heroActions>a{min-width:0;justify-content:center;padding:10px 8px;text-align:center}
 }
+
+/* Universe polish: owner landing and nested desks share one semantic surface scale. */
+.page{background:var(--ps-bg,var(--background));color:var(--ps-text,var(--text-primary));padding-bottom:calc(108px + env(safe-area-inset-bottom,0px))}
+.sectionHeading h2{font-family:var(--ps-font-display,var(--display));font-size:clamp(1.13rem,3.2vw,1.36rem);font-weight:550;color:var(--ps-text,var(--text-primary))}
+.sectionHeading .eyebrow{color:var(--ps-accent,var(--accent))}
+.sectionHint,.quickCard small,.links small,.qa p,.qa summary span{color:var(--ps-text-secondary,var(--text-secondary))}
+.quickCard,.links{border-color:var(--ps-border,var(--border));background:var(--ps-surface,var(--surface));color:var(--ps-text,var(--text-primary));box-shadow:none}
+.quickCard{min-height:66px;border-radius:var(--ps-radius-control,13px)}
+.quickIcon,.symbol{background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-accent,var(--accent))}
+.quickCard>svg,.links strong svg,.links b,.qa summary svg{color:var(--ps-accent,var(--accent))}
+.quickCard:hover,.links a:hover{border-color:var(--ps-accent,var(--accent));background:var(--ps-surface-muted,var(--surface-secondary))}
+.quickCard:focus-visible,.links a:focus-visible,.qa summary:focus-visible,.signOut button:focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:3px}
+.links a{min-height:58px;color:var(--ps-text,var(--text-primary));border-color:var(--ps-border,var(--border))}
+.qa{border-color:var(--ps-border,var(--border))}
+.qa summary{min-height:48px}
+.quickCard strong,.links strong{color:var(--ps-text,var(--text-primary))}
+@media(max-width:600px){.page{padding-top:12px}.quickCard{min-height:70px;padding:12px}.quickCard small{font-size:11px}}
