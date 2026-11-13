@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { setSpeciesCollected } from "@/app/ledger/collection/actions";
+import {PodscapeConfirmDialog} from "./PodscapeConfirmDialog";
 import styles from "./CollectionControls.module.css";
 import {announceAchievement} from "./AchievementToast";
 
@@ -25,6 +26,7 @@ export function CollectionButton({ speciesId, speciesName, initialCollected, sig
   const [collected, setCollected] = useState(initialCollected);
   const [animation, setAnimation] = useState<"sprout" | "wither" | null>(null);
   const [feedback,setFeedback]=useState("");
+  const [confirmOpen,setConfirmOpen]=useState(false);
   const [error, setError] = useState("");
   const [pending, startTransition] = useTransition();
   const router = useRouter();
@@ -44,10 +46,9 @@ export function CollectionButton({ speciesId, speciesName, initialCollected, sig
       : <Link className={`${styles.action} ${detail ? styles.detail : ""}`} href="/account/login">Sign in to collect →</Link>;
   }
 
-  const toggle = () => {
-    if (pending) return;
-    // Removing a saved species also removes its keeper details, so guard the smaller control against accidental taps.
-    if (collected && !window.confirm(`Remove ${speciesName} from My Collection?\n\nThis deletes the saved species bookmark and its species-level notes. Bins, including archived bins, must be removed separately first; PodScape will block this action if any bin records exist.\n\nContinue?`)) return;
+  const applyChange = () => {
+    if(pending)return;
+    setConfirmOpen(false);
     setError("");
     startTransition(async () => {
       try {
@@ -67,12 +68,23 @@ export function CollectionButton({ speciesId, speciesName, initialCollected, sig
     });
   };
 
+  const toggle = () => {
+    if(pending)return;
+    if(collected){setConfirmOpen(true);return;}
+    applyChange();
+  };
+  const confirmation=confirmOpen?<PodscapeConfirmDialog title={`Remove ${speciesName} from My Collection?`} eyebrow="MY COLLECTION / REMOVE" confirmLabel="Remove species" cancelLabel="Keep species" pending={pending}
+   onConfirm={applyChange} onCancel={()=>setConfirmOpen(false)}>
+    <p>This removes the saved species bookmark and its species-level notes.</p>
+    <p><strong>Bins, including archived bins, must be removed separately first.</strong> PodScape blocks this action if any bin records still exist, so care history is not silently lost.</p>
+   </PodscapeConfirmDialog>:null;
   if (compact) {
     return <div className={styles.ownershipControl}>
       <button type="button" className={styles.ownershipToggle} data-collected={collected} data-animation={animation || undefined} disabled={pending}
         onClick={toggle} aria-pressed={collected} aria-label={title} title={title}>
         <OwnershipLeaf filled={collected} />
       </button>
+      {confirmation}
       {feedback?<span role="status" className={styles.srOnly}>{feedback}</span>:null}
       {error ? <p className={styles.toggleError} role="alert">{error}</p> : null}
       <span className={styles.srOnly} role="status" aria-live="polite">{pending ? "Updating collection" : error ? error : collected ? "Saved to My Collection" : "Not in My Collection"}</span>
@@ -85,6 +97,7 @@ export function CollectionButton({ speciesId, speciesName, initialCollected, sig
       <span>{pending ? "Updating…" : collected && detail ? "Remove from collection" : collected ? "✓ In Collection" : "+ Add to Collection"}</span>
       <span aria-hidden="true">{collected ? "−" : "→"}</span>
     </button>
+    {confirmation}
     {feedback?<p role="status">{feedback}</p>:null}
     {error ? <p className={styles.error} role="alert">{error}</p> : null}
   </div>;
