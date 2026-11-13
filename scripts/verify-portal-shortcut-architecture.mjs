@@ -74,6 +74,21 @@ assert.match(workflow,/NewBinForm species=\{speciesOptions\} embedded/,"Add Bin 
 const newBinForm=read("app/keeper/new/NewBinForm.tsx");
 assert.match(newBinForm,/if\(embedded\)\{onCreated\?\.\(/,"Embedded Add Bin should stay on Manager and refresh instead of redirecting");
 assert.match(read("app/keeper/page.tsx"),/speciesOptions=\{speciesOptions\}/,"Server must supply published species and reserved bin names");
+for(const id of ["schedule","history","activity","colonies"])assert.ok(manager.includes('id==="'+id+'"'),"Manager "+id+" shortcut must remain in the portal");
+assert.match(manager,/id==="schedule"\?"schedule"/,"Schedule must open inline");
+assert.match(manager,/id==="history"\|\|id==="activity"\?"history"/,"Both history shortcuts must open inline");
+assert.match(manager,/id==="colonies"\?"colonies"/,"All Colonies must open inline");
+assert.match(workflow,/KeeperCareSchedule bins=\{bins\.map/,"Manager schedule must reuse existing scheduler");
+assert.match(workflow,/ManagerActivityHistory events=\{events\}/,"Manager history must reuse existing searchable history");
+assert.match(workflow,/onSwitchWorkflow\?\.\("care",item\.id\)/,"All Colonies quick care must stay in Manager");
+assert.match(read("app/keeper/page.tsx"),/listManagerActivity\(30\)/,"Inline history should receive the latest 30 records");
+const scheduler=read("components/KeeperCareSchedule.tsx");
+assert.match(scheduler,/function saveInterval\(/,"Schedule should support saving intervals in Manager");
+assert.match(scheduler,/podscape-keeper-reminder-/,"Scheduler must reuse existing per-device reminder keys");
+const history=read("components/ManagerActivityHistory.tsx");
+assert.match(history,/embedded\?<details/,"Care History entries should expand inline");
+assert.match(manager,/useShortcutEditor\(ids,change,canvasEditing\)/,"Manager must preserve its approved six-slot editor");
+
 
 assert.match(manager,/tools:\["care","notes","population","bulkcare"/,"Care, notes, population and multi-care are valid starter shortcuts");
 assert.doesNotMatch(manager,/Work from your portal/,"Do not bring back a duplicate fixed Manager action block");
