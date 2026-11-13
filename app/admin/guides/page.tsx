@@ -12,7 +12,7 @@ import { createGuideRecord, saveGuideRecord, toggleGuideArchive } from "./action
 
 export const dynamic = "force-dynamic";
 
-export default async function GuideDeskPage({ searchParams }: { searchParams: Promise<{ record?: string; view?: string; saved?: string; created?: string; error?: string }> }) {
+export default async function GuideDeskPage({ searchParams }: { searchParams: Promise<{ record?: string; view?: string; saved?: string; created?: string; error?: string; q?: string; category?: string; status?: string }> }) {
   if (!(await isAdminAuthenticated())) redirect("/admin");
   const params = await searchParams;
   const records = await getGuideRecords();
@@ -43,7 +43,7 @@ export default async function GuideDeskPage({ searchParams }: { searchParams: Pr
         <aside className={styles.sidebar} id="guide-records">
           <div className={styles.sidebarHead}><div><p className={styles.eyebrow}>YOUR LIBRARY</p><h2>Guide records</h2></div><span className={styles.count}>{visibleRecords.length}</span></div>
           <div className={styles.views}><Link className={!archivedView ? styles.selectedView : ""} href="/admin/guides">Active · {activeRecords.length}</Link><Link className={archivedView ? styles.selectedView : ""} href="/admin/guides?view=archived">Archived · {archivedRecords.length}</Link></div>
-          <GuideDeskNavigator records={visibleRecords.map(item => ({id:item.id,title:item.title,summary:item.summary,category:item.category,status:item.status,archived:Boolean(item.archivedAt)}))} selectedId={selected?.id} archivedView={archivedView}/>
+          <GuideDeskNavigator records={visibleRecords.map(item => ({id:item.id,title:item.title,summary:item.summary,category:item.category,status:item.status,archived:Boolean(item.archivedAt)}))} selectedId={selected?.id} archivedView={archivedView} initialQuery={(params.q||"").slice(0,100)} initialCategory={params.category||"all"} initialStatus={params.status||"all"}/>
           {!archivedView ? <form action={createGuideRecord} className={styles.createForm}><button type="submit"><PodscapeLineIcon name="edit"/> New blank guide</button></form> : null}
         </aside>
       {selected ? <section className={styles.editor} id="guide-editor"><header className={styles.editorHead}><div><p className="admin-kicker">Permanent ID · {selected.id}</p><h2>{selected.title}</h2><p>{selected.category} · {selected.status} · Last saved {new Date(selected.updatedAt).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" })}</p></div><div className={styles.editorIcon} aria-hidden="true"><PodscapeLineIcon name="book"/></div></header>{params.saved ? <OwnerDeskNotice kind="success">Guide saved. The Field Guide and search index now use this version.</OwnerDeskNotice> : null}{params.created ? <OwnerDeskNotice kind="success">Blank guide created. Its permanent ID will not change.</OwnerDeskNotice> : null}{params.error ? <OwnerDeskNotice kind="error">{params.error}</OwnerDeskNotice> : null}
