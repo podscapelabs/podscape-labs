@@ -26,7 +26,7 @@ export function ManagerColonies({ records, bins, allBins=bins, collectedIds, int
   savedView?:boolean;
   allBins?:{speciesId:string;isArchived:boolean}[];
 }) {
-  const [tab, setTab] = useState<"species" | "bins">(savedView?"species":"bins");
+  const [tab, setTab] = useState<"species" | "bins">(savedView||Boolean(initialSpecies)?"species":"bins");
   const [query, setQuery] = useState("");
   const [expanded,setExpanded]=useState<string|null>(initialSpecies||null);
   const binHref=(id:string)=>"/keeper/"+id+(intent==="notes"?"?panel=observation#observation":"");
