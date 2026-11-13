@@ -43,7 +43,12 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
   useEffect(()=>{
     if(mode!=="catalogue"||didRestoreRef.current)return;
     didRestoreRef.current=true;
-    try{
+    const requestedQuery=new URLSearchParams(window.location.search).get("q");
+    if(requestedQuery!==null){
+      setQuery(requestedQuery.slice(0,120));
+      setGenus("all");setCare("all");setOrganism("all");
+      pendingScrollRef.current=null;
+    }else try{
       const raw=sessionStorage.getItem(LEDGER_EXPLORER_STATE_KEY);
       if(raw){
         const saved=JSON.parse(raw) as Partial<LedgerExplorerSnapshot>;
