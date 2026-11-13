@@ -597,3 +597,8 @@
 .managerResultRow>button svg{width:16px;height:16px;color:var(--ps-accent,var(--accent))}
 .managerResultRow>a:focus-visible,.managerResultRow>button:focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:2px}
 @media(max-width:390px){.managerResultRow>button{padding:8px;font-size:10px}}
+
+/* Every Manager card uses the same morph -> taxonomy -> bin metadata hierarchy. */
+.directBinMain small:first-of-type,.managerDueRow>a small:first-of-type,.managerResultRow>a span:first-of-type{font-style:italic;color:var(--text-secondary);white-space:normal;overflow-wrap:anywhere}
+.directBinMain small:last-of-type,.managerDueRow>a small:last-of-type,.managerResultRow>a span:last-of-type{color:var(--text-muted,var(--text-secondary));white-space:normal;overflow-wrap:anywhere}
+.managerResultRow>a b{grid-row:1/4}
