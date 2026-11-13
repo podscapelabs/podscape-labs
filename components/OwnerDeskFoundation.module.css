@@ -24,5 +24,5 @@
 
 .notice{display:flex;align-items:center;gap:9px;margin:10px 0 14px;padding:12px 14px;border:1px solid var(--ps-border,var(--border));border-left:3px solid var(--ps-accent,var(--accent));border-radius:12px;background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-text,var(--text-primary));font-size:12px;line-height:1.5;overflow-wrap:anywhere}
 .noticeSuccess{border-left-color:var(--theme-success,var(--ps-accent,var(--accent)))}
-.noticeError{border-left-color:var(--theme-danger,#b55151)}
+.noticeError{border-left-color:var(--theme-danger,var(--ps-accent,var(--accent)))}
 .notice a{color:var(--ps-accent,var(--accent));font-weight:750}
