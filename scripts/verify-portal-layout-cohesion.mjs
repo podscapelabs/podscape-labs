@@ -19,7 +19,8 @@ assert.match(funZone,/label:"Rankings",icon:/, "Keep Rankings shortcut");
 assert.match(funZone,/label:"Picture puzzles"/, "Fun Zone must keep a direct puzzle entry point");
 assert.match(funZone,/label:"Pod Exchange"/, "Fun Zone must keep a direct market entry point");
 assert.match(funZone,/active\.includes\("rankings"\)\?"#rankings-spotlight":"\/fun-zone\/leaderboard"/, "Rankings shortcut must work even if the widget is hidden");
-assert.match(funZone,/onClick:\(\)=>setLibraryOpen\(true\)/, "Hidden optional widgets must use library fallback rather than dead routes");
+assert.match(funZone,/onClick:\(\)=>setShortcutPanel\(/, "Hidden widget shortcuts must reveal real content, not the customization library");
+assert.match(funZone,/renderWidget\(shortcutPanel\)/, "Hidden widget shortcuts must render the selected content");
 assert.doesNotMatch(funZone,/\/fun-zone\/games/, "Shortcuts must not use nonexistent games route");
 assert.match(funZone,/data-workspace-root="fun-zone"/, "Fun Zone customization must survive the shortcut redesign");
 
