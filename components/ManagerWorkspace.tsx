@@ -181,7 +181,7 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
   hero:<>{hero}
   <section className={styles.managerPrimarySearch} role="search" aria-label="Search your colonies"><div className={styles.managerFinder}>
     <div className={styles.managerSearchField}><span aria-hidden="true"><PodscapeLineIcon name="search"/></span><input id="manager-collection-search" aria-label="Search your collection" type="search" enterKeyHint="search" value={query} onChange={event=>setQuery(event.target.value)} onKeyDown={event=>{if(event.key==="Escape"){setQuery("");event.currentTarget.blur()}else if(event.key==="Enter"&&searchResults.length){event.preventDefault();router.push("/keeper/"+searchResults[0].id)}}} placeholder="Find a species, bin or enclosure…" autoComplete="off"/>{query?<button type="button" onClick={()=>setQuery("")} aria-label="Clear collection search">×</button>:null}</div>
-    {matching?<div className={styles.managerSearchResults} role="region" aria-live="polite" aria-label="Matching colonies">{searchResults.length?<p className={styles.managerSearchCount}>{matchingBins.length} matching {matchingBins.length===1?"colony":"colonies"}{matchingBins.length>8?" · Showing 8 most recently updated":""}</p>:null}{searchResults.length?searchResults.map(bin=><Link key={bin.id} href={`/keeper/${bin.id}`}><strong>{bin.species}</strong><span>{bin.name}{bin.label?" · "+bin.label:""} · {bin.quantity} recorded</span><b aria-hidden="true">→</b></Link>):<p>No colonies match “{query}”. <Link href="/keeper/collection">Browse all colonies →</Link></p>}</div>:null}
+    {matching?<div className={styles.managerSearchResults} role="region" aria-live="polite" aria-label="Matching colonies">{searchResults.length?<p className={styles.managerSearchCount}>{matchingBins.length} matching {matchingBins.length===1?"colony":"colonies"}{matchingBins.length>8?" · Showing 8 most recently updated":""}</p>:null}{searchResults.length?searchResults.map(bin=><div className={styles.managerResultRow} key={bin.id}><Link href={`/keeper/${bin.id}`} aria-label={`Open ${bin.name}`}><strong>{bin.species}</strong><span>{bin.name}{bin.label?" · "+bin.label:""} · {bin.quantity} recorded</span><b aria-hidden="true">→</b></Link><button type="button" onClick={()=>{setQuery("");openWorkflow("care",bin.id)}} aria-label={`Log care for ${bin.name}`}><PodscapeLineIcon name="droplet"/> Care</button></div>):<p>No colonies match “{query}”. <Link href="/keeper/collection">Browse all colonies →</Link></p>}</div>:null}
   </div></section>
   {!canvasEditing?<div className={styles.managerWorkflowEntry}>
    <div className={styles.managerWorkflowLabel}><strong>Work from your portal</strong><span>Choose a task and stay right here.</span></div>
@@ -192,7 +192,7 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
   {label:"Multi-care",icon:"bin",onClick:()=>openWorkflow("bulk")}
  ]}/>
   </div>:null}
-  {activeWorkflow&&!canvasEditing?<div id="manager-quick-workflow"><ManagerWorkflowPanel key={activeWorkflow+":"+(workflowBin||"")} mode={activeWorkflow} bins={bins} onClose={()=>setActiveWorkflow(null)}/></div>:null}
+  {activeWorkflow&&!canvasEditing?<div id="manager-quick-workflow"><ManagerWorkflowPanel key={activeWorkflow+":"+(workflowBin||"")} mode={activeWorkflow} bins={bins} initialBinId={workflowBin} onClose={()=>setActiveWorkflow(null)}/></div>:null}
   </>,
   stats,
   care:<ManagerCareOverview bins={bins}/>,
