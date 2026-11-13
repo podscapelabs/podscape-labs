@@ -34,7 +34,7 @@ export function PortalShortcutDock({portal,label,features,defaults,scope="device
  // Storage scope changes must reload that portal's own choices, not another user's.
  },[storageKey]);
  const update=(next:string[])=>{const valid=normalized(next,available,defaults);setIds(valid);try{localStorage.setItem(storageKey,JSON.stringify(valid))}catch{}};
- const {editing,selected,setSelected,handlers,done}=useShortcutEditor(ids,update);
+ const {editing,setEditing,selected,setSelected,handlers,done}=useShortcutEditor(ids,update);
  const current=features.find(item=>item.id===ids[selected])||features[0];
  const replace=(id:string)=>{
   const next=[...ids],found=next.indexOf(id);
