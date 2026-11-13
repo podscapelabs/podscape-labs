@@ -44,3 +44,13 @@
 .overview :is(a,summary):focus-visible{outline:3px solid var(--focus);outline-offset:3px}
 @media(max-width:600px){.overview{padding:12px;gap:11px;border-radius:18px;margin:11px 0 15px}.overviewStats{gap:6px}.overviewStats>div{padding:9px;min-height:66px}.overviewStats strong{font-size:23px}.overviewStats span{font-size:10px}.primaryTools a{font-size:12px;min-height:47px;padding:9px 7px}.moreTools nav a{font-size:11px}}
 @media(max-width:350px){.overviewStats span{font-size:9px}.moreTools nav{grid-template-columns:1fr}}
+
+/* The collection route inherits the portal hero language used by Manager and Fun Zone. */
+.heading{padding:18px 19px;border:1px solid var(--border);border-radius:20px;background:linear-gradient(112deg,var(--portal-hero-start),var(--portal-hero-end));color:var(--portal-hero-text);margin-bottom:13px}
+.heading h1{color:var(--portal-hero-text)}
+.heading .eyebrow{color:var(--portal-hero-soft)}
+.heading p:not(.eyebrow){color:var(--portal-hero-muted)}
+.heading .views{margin-top:12px}
+.heading .views a{background:color-mix(in srgb,var(--portal-hero-text) 8%,transparent);border-color:color-mix(in srgb,var(--portal-hero-text) 25%,transparent);color:var(--portal-hero-text)}
+.heading .views a[aria-current="page"]{background:var(--portal-hero-button-bg);border-color:var(--portal-hero-button-bg);color:var(--portal-hero-button-text)}
+@media(max-width:600px){.heading{padding:16px;border-radius:18px}.heading h1{font-size:clamp(28px,8vw,34px)}.heading .views{gap:6px}.heading .views a{min-height:40px;padding:9px 11px;font-size:11px}}
