@@ -42,14 +42,19 @@ export function ManagerColonies({ records, bins, allBins=bins, collectedIds, int
       // Route decides the collection view. A remembered previous tab must never redirect users away from active bins.
       sessionStorage.setItem("podscape-colony-view:"+scope,view);
       const raw=sessionStorage.getItem(storageKey),saved=raw?JSON.parse(raw):null;
-      if(saved&&typeof saved==="object"){
+      if(initialSpecies){
+        // Explicit species deep links always take precedence over remembered search/filter state.
+        // Otherwise a previous query can make the requested colony appear to be missing.
+        setTab("species");setExpanded(initialSpecies);
+        setQuery("");setGenus("all");setCare("all");setSort("recent");
+      }else if(saved&&typeof saved==="object"){
         if(typeof saved.query==="string")setQuery(saved.query.slice(0,200));
         if(!explicitView&&!savedView&&["species","bins"].includes(saved.tab))setTab(saved.tab);
         if(typeof saved.genus==="string")setGenus(saved.genus);
         if(typeof saved.care==="string")setCare(saved.care);
         if(["recent","name","count"].includes(saved.sort))setSort(saved.sort);
-        if(!initialSpecies&&typeof saved.expanded==="string")setExpanded(saved.expanded);
-        if(!initialSpecies&&Number.isFinite(saved.scrollY))requestAnimationFrame(()=>window.scrollTo(0,Math.max(0,saved.scrollY)));
+        if(typeof saved.expanded==="string")setExpanded(saved.expanded);
+        if(Number.isFinite(saved.scrollY))requestAnimationFrame(()=>window.scrollTo(0,Math.max(0,saved.scrollY)));
       }
     }catch{/* Browser memory is optional. */}
     setMemoryReady(true);
