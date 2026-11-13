@@ -1,4 +1,5 @@
 "use client";
+import {PortalActionRail} from "@/components/PortalActionRail";
 import {useEffect,useLayoutEffect,useRef,useState} from "react";
 import Link from "next/link";
 import {PodscapeLineIcon,type PodscapeIconName} from "@/components/PodscapeLineIcon";
@@ -149,7 +150,13 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp}:{us
  };
  return <div className={`${styles.portal} ${editing?homeEditStyles.homeCanvasEditing:""}`} data-workspace-root="fun-zone" onPointerMove={e=>{if(editing)moveDrag(e)}} onPointerUp={()=>{if(editing)stopDrag()}} onPointerCancel={()=>{if(editing)stopDrag()}}>
   <header className={styles.hero}><div><span className={styles.heroEyebrow}>PODSCAPE / FUN ZONE</span><h1>Your little arcade.</h1><p>Games, puzzles and a little market drama.</p></div></header>
-  <nav className={styles.quickLinks} aria-label="Fun Zone shortcuts"><a href="#arcade-games"><PodscapeLineIcon name="grid"/> Categories</a><a href="#arcade-favourites"><PodscapeLineIcon name="bookmark"/> My Games</a><a href="#rankings-spotlight"><PodscapeLineIcon name="trophy"/> Rankings</a><Link href="/fun-zone/pod-exchange"><PodscapeLineIcon name="gamepad"/> Pod Exchange</Link><Link href="/fun-zone/picture-puzzles"><PodscapeLineIcon name="grid"/> Picture Puzzles</Link></nav>
+  <PortalActionRail label="Fun Zone shortcuts" compact actions={[
+  ...(active.includes("categories")?[{label:"Game categories",icon:"grid" as const,href:"#arcade-games"}]:[]),
+  ...(active.includes("favourites")?[{label:"My games",icon:"bookmark" as const,href:"#arcade-favourites"}]:[]),
+  {label:"Rankings",icon:"trophy",href:active.includes("rankings")?"#rankings-spotlight":"/fun-zone/leaderboard"},
+  {label:"Pod Exchange",icon:"gamepad",href:"/fun-zone/pod-exchange"},
+  {label:"Picture puzzles",icon:"grid",href:"/fun-zone/picture-puzzles"}
+ ]}/>
   {editing?<WorkspaceEditToolbar title="Arrange Fun Zone" description="Drag the handles or use arrows to reorder games and widgets." onAdd={()=>{finishCanvas();setLibraryOpen(true)}} onReset={reset} onDone={finishCanvas}/>:null}
   <div className={styles.widgets}>{active.map((id,i)=><div key={id} id={id==="rankings"?"rankings-spotlight":id==="categories"?"arcade-games":id==="favourites"?"arcade-favourites":undefined}><WorkspaceEditBlock id={id} scope="fun-zone" label={label(id)} index={i} count={active.length} editing={editing} dragging={dragging===id} required={false} onMove={move} onRemove={remove} begin={beginDrag} move={moveDrag} stop={stopDrag} onLongPress={()=>enterCanvas(id)}>{renderWidget(id)}</WorkspaceEditBlock></div>)}</div>
   {hydrated&&!editing?<div className={homeEditStyles.addWidgetFooter}><button type="button" className={homeEditStyles.addWidgetButton} onClick={()=>setLibraryOpen(true)}><span aria-hidden="true">＋</span> Add Widget</button></div>:null}
