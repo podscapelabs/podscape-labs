@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { Header } from "@/components/Header";
+import { PlatformShell } from "@/components/PlatformShell";
 import { getPodBoundCard, getPodBoundArtworkUrl } from "@/lib/podbound-cards";
 import { getSpeciesRecords } from "@/lib/species-store";
 import styles from "./detail.module.css";
@@ -20,8 +20,7 @@ export default async function CardDetail({params}:{params:Promise<{id:string}>})
     const related=records.find(c=>c.id===card.species_record_id&&c.status==="published");
     speciesUrl=related?"/ledger/"+related.slug:null;
   }
-  return <div className={styles.site}>
-    <Header/>
+  return <PlatformShell><div className={styles.site}>
     <main className={styles.main}>
       <nav className={styles.crumbs} aria-label="Breadcrumb"><Link href="/podbound">PodBound</Link><span>/</span><Link href="/podbound/cards">Card Catalogue</Link><span>/</span><span>{card.title}</span></nav>
       <Link className={styles.back} href="/podbound/cards">← Back to Card Catalogue</Link>
@@ -42,5 +41,5 @@ export default async function CardDetail({params}:{params:Promise<{id:string}>})
       </div>
       <Link className={styles.last} href="/podbound/cards">← Explore more PodBound cards</Link>
     </main>
-  </div>;
+  </div></PlatformShell>;
 }
