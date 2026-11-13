@@ -4,7 +4,7 @@ import {PlatformShell} from "@/components/PlatformShell";
 import {KeeperMobileNav} from "@/components/KeeperMobileNav";
 import {getEnclosure,listQuickCareDates,keeperContext,listEnclosures} from "@/lib/keeper";
 import {getSpeciesRecords} from "@/lib/species-store";
-import {speciesDisplayName} from "@/data/species";
+import {organismDisplayName,binCardIdentity} from "@/lib/bin-identity";
 import {ColonyWorkspace} from "./ColonyWorkspace";
 import styles from "./ColonyWorkspace.module.css";
 
@@ -29,10 +29,10 @@ export default async function EnclosurePage({params,searchParams}:{params:Promis
  const record=species.find(item=>item.id===enclosure.speciesId);
  return <PlatformShell><main className={styles.page}>
   <ColonyWorkspace key={enclosure.id}
-   colony={{id:enclosure.id,name:enclosure.name,speciesId:enclosure.speciesId,label:enclosure.label,species:record?speciesDisplayName(record):"Unlinked species",image:record?.image||null,status:enclosure.status,breeding:enclosure.breeding,quantity:enclosure.quantity,archived:enclosure.isArchived,enclosureType:enclosure.enclosureType}}
+   colony={{id:enclosure.id,name:enclosure.name,speciesId:enclosure.speciesId,label:enclosure.label,species:record?organismDisplayName(record):"Unlinked species",scientificName:binCardIdentity(enclosure,record).scientific,image:record?.image||null,status:enclosure.status,breeding:enclosure.breeding,quantity:enclosure.quantity,archived:enclosure.isArchived,enclosureType:enclosure.enclosureType}}
    created={options.created==="1"}
    scope={user?.id||"guest"}
-   navigationBins={navigationBins.map(({id,name,speciesId,label})=>({id,name,speciesId,label,species:species.find(record=>record.id===speciesId)?speciesDisplayName(species.find(record=>record.id===speciesId)!):"Unlinked species"}))}
+   navigationBins={navigationBins.map(({id,name,speciesId,label})=>({id,name,speciesId,label,species:species.find(record=>record.id===speciesId)?organismDisplayName(species.find(record=>record.id===speciesId)!):"Unlinked species"}))}
    initialEvents={events}
    careDates={careDates}
    initialPanel={panel}
