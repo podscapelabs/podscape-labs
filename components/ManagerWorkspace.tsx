@@ -1,4 +1,5 @@
 "use client";
+import {PortalActionRail} from "@/components/PortalActionRail";
 
 import {useEffect,useLayoutEffect,useRef,useState,type ReactNode} from "react";
 import Link from "next/link";
@@ -184,12 +185,12 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
   </div></section>
   {!canvasEditing?<div className={styles.managerWorkflowEntry}>
    <div className={styles.managerWorkflowLabel}><strong>Work from your portal</strong><span>Choose a task and stay right here.</span></div>
-   <div className={styles.managerWorkflowActions} role="group" aria-label="Quick Manager actions">
-    <button type="button" onClick={()=>openWorkflow("care")}><PodscapeLineIcon name="droplet"/> Log care</button>
-    <button type="button" onClick={()=>openWorkflow("notes")}><PodscapeLineIcon name="note"/> Add note</button>
-    <button type="button" onClick={()=>openWorkflow("population")}><PodscapeLineIcon name="community"/> Population</button>
-    <button type="button" onClick={()=>openWorkflow("bulk")}><PodscapeLineIcon name="bin"/> Multi-care</button>
-   </div>
+   <PortalActionRail label="Quick Manager actions" actions={[
+  {label:"Log care",icon:"droplet",onClick:()=>openWorkflow("care")},
+  {label:"Add note",icon:"note",onClick:()=>openWorkflow("notes")},
+  {label:"Population",icon:"community",onClick:()=>openWorkflow("population")},
+  {label:"Multi-care",icon:"bin",onClick:()=>openWorkflow("bulk")}
+ ]}/>
   </div>:null}
   {activeWorkflow&&!canvasEditing?<div id="manager-quick-workflow"><ManagerWorkflowPanel key={activeWorkflow+":"+(workflowBin||"")} mode={activeWorkflow} bins={bins} onClose={()=>setActiveWorkflow(null)}/></div>:null}
   </>,
