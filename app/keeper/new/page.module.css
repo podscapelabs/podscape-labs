@@ -86,3 +86,15 @@
  .modePicker button{padding:12px;min-height:99px}
  .submit{width:100%}
 }
+
+/* Embedded Add Bin shares Manager's compact Quick Workflow panel. */
+.embeddedForm{padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;gap:11px}
+.embeddedForm .searchPicker{margin-top:0}
+.embeddedForm .searchResults{max-height:168px}
+.embeddedForm .modePicker button{min-height:84px;padding:10px 12px;gap:4px}
+.embeddedForm .modePicker button>svg{width:19px;height:19px}
+.embeddedForm .preview{padding:10px}
+.embeddedForm .preview ul{max-height:90px}
+.embeddedForm .field input{min-height:43px;padding:9px 12px}
+.embeddedForm .submit{width:100%;min-height:44px;margin:2px 0 0}
+.embeddedForm>.helper{margin-top:0}
