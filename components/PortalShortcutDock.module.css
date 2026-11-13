@@ -15,3 +15,9 @@
 @media(max-width:600px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.shortcut{flex-direction:column;gap:5px;min-height:68px;padding:8px 5px;font-size:11px}.shortcut svg{width:21px;height:21px}}
 @media(max-width:345px){.shortcut{font-size:10px;min-height:65px}}
 @media(prefers-reduced-motion:reduce){.jiggling{animation:none}}
+
+/* Leaf Ledger shortcuts live inside the photo hero, so inherit its ink/surface. */
+.dock[data-portal-shortcuts="leaf-ledger"]{max-width:570px}
+.dock[data-portal-shortcuts="leaf-ledger"] .shortcut{background:color-mix(in srgb,var(--portal-hero-start) 73%,transparent);color:var(--portal-hero-text);border-color:color-mix(in srgb,var(--portal-hero-text) 36%,transparent)}
+.dock[data-portal-shortcuts="leaf-ledger"] .shortcut svg{color:var(--portal-hero-soft)}
+.dock[data-portal-shortcuts="leaf-ledger"] .editor{background:var(--portal-hero-start);color:var(--portal-hero-text);border-color:color-mix(in srgb,var(--portal-hero-text) 36%,transparent)}
