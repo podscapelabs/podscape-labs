@@ -69,6 +69,14 @@ assert.match(fun,/\/fun-zone\/picture-puzzles/);
 const shop=read("app/shop/page.tsx");
 assert.match(shop,/PortalActionRail/,"Shop uses shared contextual actions");
 assert.match(shop,/Storefront preview · Checkout not yet available/,"Shop must not imply checkout works");
+for(const path of ["app/podbound/page.tsx","app/menu/page.tsx"]){
+ const source=read(path);
+ assert.match(source,/PlatformShell/,"All themed worlds should use the universal platform shell: "+path);
+ assert.ok(!source.includes("<Header/>"),"Remove duplicated local header: "+path);
+}
+for(const path of ["app/admin/updates/page.tsx","app/admin/feedback/page.tsx","app/admin/puzzle-desk/page.tsx","app/admin/vendors/page.tsx"]){
+ assert.doesNotMatch(read(path),/<Link[^>]+className=\{styles\.back\}[^>]+Owner Studio<\/Link>/,"Shared owner header must not duplicate Back to Studio");
+}
 const migrations=[
  read("supabase/migrations/20261113010500_trigger_only_function_privileges.sql"),
  read("supabase/migrations/20261113013000_universe_performance_fk_indexes.sql")
