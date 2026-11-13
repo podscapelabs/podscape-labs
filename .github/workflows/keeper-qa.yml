@@ -68,5 +68,6 @@ jobs:
           node scripts/verify-universe-interactions.mjs
           node scripts/verify-interface-route-consistency.mjs
           node scripts/verify-visual-refinement.mjs
+          node scripts/verify-keeper-bin-labels.mjs
       - name: Build Next.js application
         run: pnpm run build
