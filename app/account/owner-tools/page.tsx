@@ -4,7 +4,8 @@ import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import { signOutAdmin } from "@/app/admin/actions";
 import styles from "./page.module.css";
-import { ownerOperations } from "@/data/owner-desks";
+import { ownerOperations,ownerDesks } from "@/data/owner-desks";
+import {PortalShortcutDock} from "@/components/PortalShortcutDock";
 import { OwnerDeskDirectory } from "@/components/OwnerDeskDirectory";
 import { TestAchievementButton } from "@/components/TestAchievementButton";
 import { OwnerThemeRestoreButton } from "@/components/OwnerThemeRestoreButton";
@@ -27,18 +28,10 @@ export default async function OwnerToolsPage() {
 
       <section className={styles.quickSection} aria-label="Owner quick access">
         <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>RIGHT AT HAND</p><h2>Quick actions</h2></div></div>
-        <div className={styles.quickGrid}>
-          {[
-            { title:"Analytics", subtitle:"Platform pulse", href:"/account/owner-tools/analytics", icon:"community" as const },
-            { title:"Feedback", subtitle:"Member reports", href:"/admin/feedback", icon:"note" as const },
-            { title:"Puzzles", subtitle:"Build & preview", href:"/admin/puzzle-desk", icon:"grid" as const },
-            { title:"Testers", subtitle:"Early access", href:"/admin/early-access", icon:"community" as const },
-          ].map(item=><Link href={item.href} className={styles.quickCard} key={item.href}>
-            <span className={styles.quickIcon}><PodscapeLineIcon name={item.icon}/></span>
-            <span><strong>{item.title}</strong><small>{item.subtitle}</small></span>
-            <PodscapeLineIcon name="arrow-right" />
-          </Link>)}
-        </div>
+        <PortalShortcutDock portal="owner-studio" label="Owner Studio shortcuts"
+          defaults={["/account/owner-tools/analytics","/admin/feedback","/admin/puzzle-desk","/admin/early-access"]}
+          features={[...ownerOperations,...ownerDesks].map(item=>({id:item.href,label:item.title,icon:item.icon,href:item.href}))}/>
+
       </section>
 
       <OwnerDeskDirectory />
