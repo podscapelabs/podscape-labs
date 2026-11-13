@@ -14,6 +14,7 @@
 .dock .grid>.shortcut:hover{border-color:var(--ps-accent,var(--accent,var(--forest)))}
 .dock .grid>.shortcut:focus-visible,.editor :is(button,select):focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:2px}
 .jiggling{animation:portalShortcutJiggle .24s ease-in-out infinite alternate}
+.dock .grid>.shortcut.jiggling{touch-action:none;-webkit-touch-callout:none;cursor:grab}
 .dock .grid>.selected{outline:2px solid var(--ps-accent,var(--accent,var(--forest)));outline-offset:2px;background:var(--ps-surface-muted,var(--surface-secondary))}
 @keyframes portalShortcutJiggle{from{transform:rotate(-.5deg)}to{transform:rotate(.5deg)}}
 .editor{display:grid;gap:9px;padding:12px;margin-bottom:10px;border:1px solid var(--ps-border,var(--border));border-radius:13px;background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-text,var(--text-primary))}
