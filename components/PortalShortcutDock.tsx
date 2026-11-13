@@ -63,7 +63,9 @@ export function PortalShortcutDock({portal,label,features,defaults,scope="device
     const gesture=handlers(index);
     return <button type="button" key={id} data-shortcut-index={index} className={[styles.shortcut,editing?styles.jiggling:"",editing&&selected===index?styles.selected:""].filter(Boolean).join(" ")}
      aria-label={editing?"Choose or drag "+item.label:item.label}
-     {...gesture} onClick={e=>{gesture.onClick(e);if(!e.defaultPrevented&&!editing){if(item.onClick)item.onClick();else if(item.href)router.push(item.href)}}}>
+     aria-description="Press and hold to rearrange or replace. Keyboard: F2."
+     {...gesture} onKeyDown={e=>{if(e.key==="F2"){e.preventDefault();setSelected(index);setEditing(true)}}}
+     onClick={e=>{gesture.onClick(e);if(!e.defaultPrevented&&!editing){if(item.onClick)item.onClick();else if(item.href)router.push(item.href)}}}>
      <PodscapeLineIcon name={item.icon}/><span>{item.label}</span>
     </button>
    })}
