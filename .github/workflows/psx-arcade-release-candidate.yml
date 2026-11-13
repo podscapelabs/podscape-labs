@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - codex/psx-arcade-ui-release-ready-20261112
+      - codex/psx-news-first-hierarchy-rules-20261112
   workflow_dispatch:
 permissions:
   contents: read
