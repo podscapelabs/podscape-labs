@@ -36,7 +36,7 @@ export function KeeperCareSchedule({bins,embedded=false}:{bins:Bin[];embedded?:b
     <span><strong>{bin.species} · {bin.name}</strong><small>{bin.label||"No location"} · {days===null?"Not scheduled":days<0?"Past scheduled date":days===0?"Due today":"In "+days+" days"}</small></span>
     <label className={styles.condition}>Interval <select aria-label={"Misting interval for "+bin.species+" "+bin.name} value={bin.record?.intervalDays||0} onChange={event=>saveInterval(bin.id,Number(event.target.value))}>
      <option value={0}>Not set</option>
-     {[1,2,3,4,5,7,10,14,21,30,45,60,90].map(n=><option value={n} key={n}>Every {n}d</option>)}
+     {[...new Set([1,2,3,4,5,7,10,14,21,30,45,60,90,...(bin.record?.intervalDays?[bin.record.intervalDays]:[])])].sort((a,b)=>a-b).map(n=><option value={n} key={n}>Every {n}d</option>)}
     </select></label>
    </div>
   }):<p className={styles.empty}>No bins yet. Use Add Bin in your shortcuts to create one.</p>}</div>
