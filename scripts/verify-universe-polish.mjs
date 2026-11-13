@@ -46,6 +46,12 @@ for(const path of ["app/admin/products/page.tsx","app/admin/podbound/page.tsx"])
  assert.match(source,/OwnerDeskRecordFilters/,"Owner catalogue uses common search/filters: "+path);
  assert.match(source,/OwnerDeskRecordCount/,"Owner catalogue uses consistent result count: "+path);
 }
+const updatesBrowser=read("app/admin/updates/page.tsx");
+assert.match(updatesBrowser,/OwnerDeskRecordFilters/,"Updates Desk must be searchable using shared Owner Studio controls");
+assert.match(updatesBrowser,/OwnerDeskRecordCount/,"Updates Desk must show consistent filtered record totals");
+assert.match(updatesBrowser,/filtered\.map\(entry=>/,"Editing list should show only matching announcements");
+assert.match(updatesBrowser,/status==="all"\|\|x\.status===status/,"Status filter must work without changing stored publication state");
+assert.match(updatesBrowser,/changePlatformUpdateStatus/,"Publishing and unpublishing must remain available");
 const cardDesk=read("app/admin/podbound/page.tsx");
 assert.match(cardDesk,/aria-current=\{category===c\?"page":undefined\}/,"Card Desk category state accessible");
 assert.match(cardDesk,/new URLSearchParams/,"Card Desk category switches preserve existing query filters");
