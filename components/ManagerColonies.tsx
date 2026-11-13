@@ -86,10 +86,11 @@ export function ManagerColonies({ records, bins, allBins=bins, collectedIds, int
   }).sort((a,b)=>sort==="name"?a.name.localeCompare(b.name):sort==="count"?b.quantity-a.quantity:Date.parse(b.updatedAt)-Date.parse(a.updatedAt));
   function reset(){setQuery("");setGenus("all");setCare("all");setSort("recent");}
   return <section id="colonies" className={styles.section} aria-label="My Colonies">
-    <div className={styles.titleRow}><h2>{savedView?"Saved for later":archivedView?"Archived bins":"Your bins"}</h2>{!savedView?<div className={styles.tabs} role="group" aria-label="Browse collection by">
+    <div className={styles.titleRow}><div><span className={styles.browserEyebrow}>YOUR COLLECTION</span><h2>{savedView?"Saved for later":archivedView?"Archived bins":"Your bins"}</h2></div><span className={styles.browserCount}>{savedView?visibleSpecies.length:tab==="species"?visibleSpecies.length:visibleBins.length} {tab==="species"||savedView?"species":"bins"}</span></div>
+    {!savedView?<div className={styles.browseMode}><span>Group by</span><div className={styles.tabs} role="group" aria-label="Group collection by">
       <button type="button" className={tab==="species"?styles.selected:""} aria-pressed={tab==="species"} onClick={()=>{setTab("species");reset();}}>Species</button>
       <button type="button" className={tab==="bins"?styles.selected:""} aria-pressed={tab==="bins"} onClick={()=>{setTab("bins");reset();}}>Bins</button>
-    </div>:null}</div>
+    </div></div>:null}
     {intent==="notes"?<p style={{color:"var(--text-secondary)",fontSize:".82rem",margin:"0 0 12px"}}>Select a bin to add a dated observation to its care history.</p>:null}
     <div className={styles.searchRow}><div className={styles.search}><PodscapeLineIcon name="search" /><input type="search" value={query} onChange={e=>setQuery(e.target.value)} placeholder={tab==="species"?"Find a species…":"Find a bin or species…"} aria-label="Search your colonies" /></div><button type="button" className={styles.filterToggle} aria-expanded={filtersOpen} aria-controls="colony-collection-filters" onClick={()=>setFiltersOpen(v=>!v)}><PodscapeLineIcon name="filter"/> Filters</button></div>
     <div id="colony-collection-filters" className={styles.filters} hidden={!filtersOpen}>
@@ -142,6 +143,6 @@ export function ManagerColonies({ records, bins, allBins=bins, collectedIds, int
     })}
     {((tab==="species" && !visibleSpecies.length)||(tab==="bins"&&!visibleBins.length))&&<div className={styles.empty}><p>{entries.length?"No matching records.":savedView?"No saved species without bins. Save a species from Leaf Ledger to find it here.":archivedView?"No archived bins.":"No active colonies yet. Add a bin for a saved species to get started."}</p>{entries.length?<button onClick={reset} type="button">Clear filters</button>:<Link href={savedView?"/ledger":"/keeper/collection?view=saved"}>{savedView?"Browse Leaf Ledger →":"View saved species →"}</Link>}</div>}
     </div>
-    <div className={styles.actions}><Link href="/keeper/new">+ Add bins</Link><Link href="/keeper/import">Import spreadsheet</Link><Link href="/ledger">Browse species →</Link></div>
+
   </section>;
 }
