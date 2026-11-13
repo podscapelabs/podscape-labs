@@ -9,6 +9,7 @@ import { OwnerDeskDirectory } from "@/components/OwnerDeskDirectory";
 import { TestAchievementButton } from "@/components/TestAchievementButton";
 import { OwnerThemeRestoreButton } from "@/components/OwnerThemeRestoreButton";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
+import {OwnerDeskHeader} from "@/components/OwnerDeskFoundation";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Owner Studio | PodScape Labs", robots: { index: false, follow: false } };
@@ -22,18 +23,7 @@ export default async function OwnerToolsPage() {
   const security = ownerOperations.find(item => item.href.includes("reset-password"));
   return <main className={styles.page}>
     <div className={styles.inner}>
-      <header className={styles.heading}>
-        <div className={styles.heroCopy}>
-          <p className={styles.eyebrow}>PODSCAPE LABS · PRIVATE WORKSPACE</p>
-          <h1>Owner Studio</h1>
-          <p>Manage the platform, publish content, and keep your beta moving—without digging through menus.</p>
-          <div className={styles.heroActions}>
-            <Link href={user ? "/account" : "/app"} className={styles.back}>← Back to PodScape</Link>
-            {analytics ? <Link href={analytics.href} className={styles.heroAction}>Platform analytics <PodscapeLineIcon name="arrow-right" /></Link> : null}
-          </div>
-        </div>
-        <span className={styles.heroArt} aria-hidden="true"><PodscapeLineIcon name="grid" /></span>
-      </header>
+      <OwnerDeskHeader area="Platform" title="Owner Studio" description="Manage content, member feedback, analytics and operations from one workspace." icon="grid" backHref={user?"/account":"/app"} backLabel="Back to PodScape" actions={analytics?[{href:analytics.href,label:"Platform analytics",icon:"community"}]:[]}/>
 
       <section className={styles.quickSection} aria-label="Owner quick access">
         <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>RIGHT AT HAND</p><h2>Quick actions</h2></div></div>
