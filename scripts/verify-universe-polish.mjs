@@ -89,9 +89,11 @@ assert.match(rail,/action\.href\?<Link/,"Links must support portal-to-portal nav
 assert.match(rail,/<button key=\{action\.label\}/,"Actions must support in-place workflows");
 assert.match(read("components/PortalActionRail.module.css"),/min-height:44px/,"Touch controls at least 44px");
 const keeper=read("components/ManagerWorkspace.tsx");
-for(const task of ['openWorkflow("care")','openWorkflow("notes")','openWorkflow("population")','openWorkflow("bulk")'])
- assert.ok(keeper.includes(task),"In-place Manager action preserved: "+task);
-assert.match(keeper,/PortalActionRail/);
+for(const [id,mode] of [["care","care"],["notes","notes"],["population","population"],["bulkcare","bulk"]])
+ assert.ok(keeper.includes('id:"'+id+'"')&&keeper.includes('id==="'+id+'"?')&&keeper.includes('"'+mode+'"'),"In-place Manager Quick Tool preserved: "+id);
+assert.doesNotMatch(keeper,/Work from your portal/,"Do not create a second non-customizable Manager task rail");
+assert.match(keeper,/useShortcutEditor\(ids,change,canvasEditing\)/,"Quick Tools must keep press-and-hold jiggle editing");
+assert.match(keeper,/managerHomeShortcuts/,"Manager shortcuts must remain visible");
 const workflow=read("components/ManagerWorkflowPanel.tsx");
 assert.match(workflow,/initialBinId/,"Manager Quick Care must accept a selected bin identifier");
 assert.match(workflow,/const bin=matches\.find\(item=>item\.id===selected\)/,"Care must never target a hidden nonmatching bin");
