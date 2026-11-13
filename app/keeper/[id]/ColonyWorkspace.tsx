@@ -129,7 +129,7 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
    <nav aria-label="Colony shortcuts">
     {!colony.archived?<ManagerInlineCare binId={colony.id} binName={colony.species}/>:null}
     {!colony.archived?<button type="button" className={styles.addNoteShortcut} aria-expanded={notesOpen} aria-controls="colony-note-panel" onClick={()=>setNotesOpen(v=>!v)}><PodscapeLineIcon name="note"/> {notesOpen?"Close note":"Add note"}</button>:null}
-    <Link href={"/keeper/"+id+"/details"}><PodscapeLineIcon name="edit"/> Edit details</Link>
+    <Link href={"/keeper/"+id+"/details?panel=bin#bin-details"}><PodscapeLineIcon name="edit"/> Edit bin name & details</Link>
     <Link href={"/keeper/"+id+"/history"}><PodscapeLineIcon name="calendar"/> History</Link>
     {referenceUrl?<Link className={styles.referenceShortcut} href={referenceUrl}><PodscapeLineIcon name="leaf"/> Species guide</Link>:null}
    </nav>
