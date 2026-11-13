@@ -4,7 +4,7 @@
 .header{display:flex;align-items:center;justify-content:space-between;flex:none;gap:16px;padding:18px 23px 11px}
 .eyebrow{display:inline-flex;align-items:center;gap:9px;color:var(--ps-accent,var(--accent));font-size:11px;font-weight:850;letter-spacing:.065em}
 .eyebrow svg{width:20px;height:20px}
-.close{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:50%;border:1px solid var(--ps-border,var(--border));background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-text,var(--text-primary));cursor:pointer}
+.close{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;border-radius:50%;border:1px solid var(--ps-border,var(--border));background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-text,var(--text-primary));cursor:pointer}
 .close svg{width:19px;height:19px}
 .body{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:6px 23px 26px}
 .body h2{margin:0;font:500 clamp(25px,5vw,35px)/1.12 var(--ps-font-display,var(--display));letter-spacing:-.025em;overflow-wrap:anywhere}
