@@ -13,6 +13,9 @@ assert.match(dock,/portal\+"\:"\+scope/,"Preference storage must be scoped by po
 assert.match(dock,/confirmWorkspaceReset\("portal-shortcuts"\)/,"Reset must only affect portal shortcuts");
 assert.doesNotMatch(dock,/>Edit shortcuts<|>Customize shortcuts</,"No extra edit button: hold-to-jiggle is primary");
 assert.match(css,/@media\(max-width:600px\)/,"Shortcut blocks must fit phones");
+assert.match(css,/data-count="4"/,"Four visible shortcuts must form balanced rows");
+assert.match(css,/data-count="5"/,"Five visible shortcuts must form balanced rows");
+assert.match(dock,/onKeyDown=\{e=>\{if\(e\.key==="F2"\)/,"Keyboard users must have a non-visual shortcut editing gesture");
 assert.match(css,/prefers-reduced-motion:reduce/,"Respect reduced motion");
 
 const fun=read("app/fun-zone/FunZonePortal.tsx");
