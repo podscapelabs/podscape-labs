@@ -26,6 +26,14 @@ assert.match(rail,/<Link href=\{action\.href\}/,"Working shortcuts remain naviga
 assert.match(rail,/<button key=\{action\.label\}/,"In-place workflows remain usable");
 const railCss=read("components/PortalActionRail.module.css");
 assert.match(railCss,/\.action,\.disabled\{flex:1 1 calc\(50% - 7px\)/,"Disabled and enabled actions keep equal mobile dimensions");
+const feedbackCss=read("components/FloatingFeedback.module.css");
+const testerCss=read("components/OwnerThemeQuickSwitcher.module.css");
+assert.match(feedbackCss,/background:color-mix\(in srgb,var\(--theme-background\) 80%,transparent\)/,"Feedback must use active-theme backdrops");
+assert.doesNotMatch(feedbackCss,/background:rgba\(10,20,16,\.75\)/,"Feedback cannot retain a fixed-green backdrop");
+assert.match(feedbackCss,/width:44px;height:44px;max-width:44px/,"Floating feedback button must have a 44px mobile target");
+assert.match(testerCss,/\.trigger\{width:44px;min-width:44px;height:44px;min-height:44px/,"Owner theme button must have a 44px target");
+assert.match(testerCss,/\.dismiss\{width:44px;height:44px;min-width:44px;min-height:44px/,"Owner tester dismiss must be accessible on phones");
+assert.match(feedback,/sendingRef\.current/,"Pending feedback cannot be dismissed with Escape");
 const guard=read("components/OwnerDeskUnsavedGuard.tsx");
 assert.match(guard,/No unsaved edits/,"Unsaved-edit guard must not falsely claim a save");
 assert.match(guard,/Unsaved changes/,"Dirty edits must be visible");
