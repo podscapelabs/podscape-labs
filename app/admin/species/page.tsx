@@ -1,5 +1,5 @@
 import Link from "next/link";
-import {OwnerDeskHeader} from "@/components/OwnerDeskFoundation";
+import {OwnerDeskHeader,OwnerDeskNotice} from "@/components/OwnerDeskFoundation";
 import { redirect } from "next/navigation";
 import { AdminPhotoEditor } from "@/components/AdminPhotoEditor";
 import { LedgerUnsavedGuard } from "@/components/LedgerUnsavedGuard";
@@ -61,9 +61,9 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
 
       {selected ? <section className={`admin-record-editor ${styles.editor}`} key={selected.id}>
         <header className="admin-record-editor-head"><div><p className="admin-kicker">Permanent ID · {selected.id}</p><h2>{speciesDisplayName(selected)}</h2><p>{speciesRecordLabel(selected)} · Last saved {new Date(selected.updatedAt).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" })}</p></div><SpecimenLeaf image={selected.image} alt={selected.imageAlt} number={selected.catalogueNumber} size="card" positionX={selected.imagePositionX} positionY={selected.imagePositionY} zoom={selected.imageZoom} /></header>
-        {params.saved ? <p className="admin-save-message is-success">Record saved. The Ledger and search index now use this version.</p> : null}
-        {params.created ? <p className="admin-save-message is-success">Blank record created. Its permanent ID will not change.</p> : null}
-        {params.error ? <p className="admin-save-message is-error">{params.error}</p> : null}
+        {params.saved ? <OwnerDeskNotice kind="success">Record saved. The Ledger and search index now use this version.</OwnerDeskNotice> : null}
+        {params.created ? <OwnerDeskNotice kind="success">Blank record created. Its permanent ID will not change.</OwnerDeskNotice> : null}
+        {params.error ? <OwnerDeskNotice kind="error">{params.error}</OwnerDeskNotice> : null}
         <form id="ledger-species-editor" className={`admin-species-form ${styles.speciesForm}`} action={saveSpeciesRecord} key={selected.id}>
           <LedgerUnsavedGuard />
           <input type="hidden" name="id" value={selected.id} />
