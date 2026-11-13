@@ -43,4 +43,11 @@ assert.equal(binCardSummary({name:"BC Maple · Bin 01",label:"",quantity:0,statu
 assert.equal(binCardSummary({name:"Rack A",label:"Top shelf",quantity:14,status:"breeding"},source),"Rack A · Top shelf · 14 recorded · Breeding");
 assert.match(read("components/ManagerInlineCare.tsx"),/compact\?"Care":"Quick Care"/, "Compact bin care must remain a short action without removing accessibility");
 
+const managerWorkspace=read("components/ManagerWorkspace.tsx");
+const heroSection=managerWorkspace.split("hero:<>")[1]?.split("  </>,")[0] || "";
+const toolsSection=managerWorkspace.split("tools:<section")[1]?.split("</section>")[0] || "";
+assert.ok(heroSection.includes("managerPrimarySearch"),"Manager hero must retain its primary search");
+assert.ok(!heroSection.includes("managerWorkflowEntry"),"Required Manager hero must not contain extra workflow buttons");
+assert.ok(toolsSection.includes("ManagerQuickShortcuts"),"Manager tools must retain customizable shortcuts");
+assert.ok(toolsSection.includes("managerWorkflowEntry"),"Extra Manager workflows should be within the optional Tools widget");
 console.log("Portal cohesion QA passed: Home, Ledger, Fun Zone, Manager, deep links, outage states and bin metadata.");
