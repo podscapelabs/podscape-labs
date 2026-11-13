@@ -132,7 +132,7 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
  const [showDirectory,setShowDirectory]=useState(false);
  const [activeWorkflow,setActiveWorkflow]=useState<ManagerWorkflow|null>(null);
  const [workflowBin,setWorkflowBin]=useState<string|null>(null);
- useEffect(()=>{if(activeWorkflow)document.getElementById("manager-quick-workflow")?.scrollIntoView({behavior:"smooth",block:"nearest"})},[activeWorkflow]);
+ useEffect(()=>{if(activeWorkflow)document.getElementById("manager-quick-workflow")?.scrollIntoView({behavior:"smooth",block:"nearest"})},[activeWorkflow,workflowBin]);
  const openWorkflow=(mode:ManagerWorkflow,id?:string)=>{setWorkflowBin(id||null);setActiveWorkflow(mode)};
  // Preserve the position of the section the user held while editor controls mount above it.
  const editAnchor=useRef<{id:Section;top:number}|null>(null);
