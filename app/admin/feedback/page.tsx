@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {OwnerDeskHeader} from "@/components/OwnerDeskFoundation";
 import {redirect} from "next/navigation";
 import {isAdminAuthenticated} from "@/lib/admin-auth";
 import {getSupabaseAdmin} from "@/lib/supabase-admin";
@@ -51,7 +52,7 @@ export default async function FeedbackDesk({searchParams}:{searchParams:Promise<
  }
  return <main className={styles.page}><div className={styles.wrap}>
   <Link href="/account/owner-tools" className={styles.back}>← Owner Studio</Link>
-  <header className={styles.hero}><span>OWNER STUDIO / COMMUNITY</span><h1>Feedback Desk</h1><p>Every bug, idea, and improvement request from your beta testers—organized in one place.</p></header>
+  <OwnerDeskHeader area="Community" title="Feedback Desk" description="Review member bugs, ideas, and improvement requests in one organized queue." icon="note"/>
   {params.notice==="updated"?<p className={styles.notice} role="status">Feedback status updated.</p>:null}
   {params.notice==="invalid"||params.notice==="unavailable"?<p className={styles.error} role="alert">That update could not be saved. Please try again.</p>:null}
   {error?<p className={styles.error} role="alert">{error}</p>:null}
