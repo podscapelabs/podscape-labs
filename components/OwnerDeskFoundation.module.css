@@ -26,3 +26,7 @@
 .noticeSuccess{border-left-color:var(--theme-success,var(--ps-accent,var(--accent)))}
 .noticeError{border-left-color:var(--theme-danger,var(--ps-accent,var(--accent)))}
 .notice a{color:var(--ps-accent,var(--accent));font-weight:750}
+
+/* Owner hero actions must retain the theme-defined contrast on mobile. */
+.actions a.action{color:var(--portal-hero-button-text,var(--ps-accent-text,#17382a));background:var(--portal-hero-button-bg,var(--ps-accent));border-color:transparent}
+.actions a.action svg{color:inherit;stroke:currentColor}
