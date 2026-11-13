@@ -77,7 +77,7 @@ assert.match(fun,/\/fun-zone\/picture-puzzles/);
 const shop=read("app/shop/page.tsx");
 assert.match(shop,/PortalActionRail/,"Shop uses shared contextual actions");
 assert.match(shop,/Storefront preview · Checkout not yet available/,"Shop must not imply checkout works");
-for(const path of ["app/podbound/page.tsx","app/menu/page.tsx"]){
+for(const path of ["app/podbound/page.tsx","app/podbound/cards/page.tsx","app/podbound/cards/[id]/page.tsx","app/menu/page.tsx"]){
  const source=read(path);
  assert.match(source,/PlatformShell/,"All themed worlds should use the universal platform shell: "+path);
  assert.ok(!source.includes("<Header/>"),"Remove duplicated local header: "+path);
@@ -85,6 +85,12 @@ for(const path of ["app/podbound/page.tsx","app/menu/page.tsx"]){
 for(const path of ["app/admin/updates/page.tsx","app/admin/feedback/page.tsx","app/admin/puzzle-desk/page.tsx","app/admin/vendors/page.tsx"]){
  assert.doesNotMatch(read(path),/<Link[^>]+className=\{styles\.back\}[^>]+Owner Studio<\/Link>/,"Shared owner header must not duplicate Back to Studio");
 }
+const cardGallery=read("app/podbound/cards/page.tsx");
+const cardDetail=read("app/podbound/cards/[id]/page.tsx");
+assert.match(cardGallery,/getPodBoundCards\(\)/,"Card catalogue must still query published cards");
+assert.match(cardGallery,/status==="published"/,"Card catalogue must hide draft cards");
+assert.match(cardDetail,/card\.status!=="published"/,"Card detail must remain unavailable for drafts");
+assert.match(cardDetail,/getPodBoundArtworkUrl/,"Card details must keep authored artwork");
 const migrations=[
  read("supabase/migrations/20261113010500_trigger_only_function_privileges.sql"),
  read("supabase/migrations/20261113013000_universe_performance_fk_indexes.sql")
