@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {OwnerDeskHeader} from "@/components/OwnerDeskFoundation";
 import { redirect } from "next/navigation";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getOwnerAnalyticsStats } from "@/lib/owner-analytics";
@@ -22,15 +23,7 @@ export default async function OwnerAnalyticsPage() {
     {label:"Active bins",value:stats.activeBins,icon:"jar" as const,description:"Includes owner/test bins"},
   ];
   return <main className={styles.page}><div className={styles.wrap}>
-    <header className={styles.hero}>
-      <div className={styles.heroCopy}>
-        <p className={styles.kicker}>OWNER STUDIO · PRIVATE ANALYTICS</p>
-        <h1>Platform pulse</h1>
-        <p>A clear view of your community and the activity behind PodScape.</p>
-        <Link href="/account/owner-tools" className={styles.back}>← Owner Studio</Link>
-      </div>
-      <div className={styles.heroIcon} aria-hidden="true"><PodscapeLineIcon name="community"/></div>
-    </header>
+    <OwnerDeskHeader area="Analytics" title="Platform pulse" description="A clear view of the community and the activity behind PodScape." icon="community"/>
 
     <section className={styles.section} aria-labelledby="overview-title">
       <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>OVERVIEW</p><h2 id="overview-title">At a glance</h2></div><span className={styles.detail}>Live database snapshot</span></div>
