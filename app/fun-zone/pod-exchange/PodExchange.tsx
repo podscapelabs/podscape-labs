@@ -268,7 +268,17 @@ export function PodExchange(){
    <div><p className={styles.eyebrow}><Link href="/fun-zone">Fun Zone</Link> / PSX ARCADE <span className={styles.beta}>FICTIONAL MARKET</span></p><h1>Leaf Street Exchange</h1><p>Six tiny corporations. Ridiculous headlines. Real Duck Buck decisions.</p></div>
    <div className={styles.marketStatus}><span><i aria-hidden="true"/> {feedFresh?"MARKET OPEN":"CONNECTING…"}</span><small>{feedFresh?`Next price tick ${countdown(timeLeft)}`:"Checking shared quotes"}</small></div>
   </header>
-  <div className={styles.marketPulse} aria-label="Market pulse">
+  <section aria-label="Leaf Street intelligence" className={styles.intelligence}>
+     <div className={styles.panel}>
+      <div className={styles.panelHead}><div><h2>Leaf Street Journal</h2><p>News first. Check the market. Then make your move.</p></div><button type="button" className={styles.journalHelp} onClick={()=>setRulesOpen(true)}><PodscapeLineIcon name="book"/> How to play</button></div>
+      <div className={styles.intelligenceContent}>
+       <div className={styles.intelligenceLead}><span className={styles.intelligenceKicker}>BREAKING · {news?.symbol||"PSX"}</span><strong>{news?.headline||"Market bulletin loading…"}</strong><p>{news?.detail||"Connecting to the shared newsroom…"}</p><small>{news?news.symbol+" · "+(newsImpact>=0?"+":"")+(newsImpact*100).toFixed(1)+"% "+(v3?"market move":"news pressure")+" · "+(newsAge===0?"Just published":newsAge<=2?"Developing":"Still in play"):"A new story every five minutes"}</small></div>
+              {v3?.rumour?<div className={styles.intelligenceRumour}><span>THE RUMOUR MILL · UNCONFIRMED</span><strong>{v3.rumour.headline}</strong><p>{v3.rumour.detail}</p></div>:null}
+       {v3?.rumourResolution?<div className={styles.intelligenceRow}><span>RUMOUR RESOLVED · {v3.rumourResolution.resolution.toUpperCase()}</span><strong>{v3.rumourResolution.publishedHeadline}</strong></div>:null}
+             </div>
+     </div>
+   </section>
+   <div className={styles.marketPulse} aria-label="Market pulse">
     <div className={styles.pulsePrimary}><span className={styles.pulseEyebrow}>MARKET PULSE · {v3?"NEW ARCADE ENGINE":"LIVE ARCADE"}</span><strong>{session.title}</strong><small>{session.detail}</small></div>
     <div className={styles.pulseStat}><span>Featured company</span><strong><CompanyMark symbol={session.featured}/> {session.featured}</strong><small className={eventDelta>=0?styles.up:styles.down}>{eventDelta>=0?"+":""}{eventDelta.toFixed(1)}% {v3?"current tick":"event pressure"}</small></div>
     <div className={styles.pulseStat}><span>Next bulletin</span><strong>{countdown(bulletinLeft)}</strong><small>Fresh corporate mischief every five minutes</small></div>
@@ -276,12 +286,7 @@ export function PodExchange(){
 
   {marketWarning?<div className={styles.walletAlert} role="alert">{marketWarning}</div>:null}
   {storageMode==="error"?<div className={styles.walletAlert} role="alert"><div><strong>Saved wallet unavailable</strong><p>{storageMessage} Your existing Duck Bucks and shares have not been reset.</p></div><button type="button" onClick={()=>window.location.reload()}>Retry loading</button></div>:null}
-  <section className={styles.balances} aria-label="Duck Bucks portfolio">
-   <div><span>Portfolio value</span><strong>{ready&&now!==null?<DuckBucks amount={worth}/>:"Loading…"}</strong><small className={gain>=0?styles.up:styles.down}>{ready&&now!==null?<><DuckBucks amount={gain} showSign/> overall</>:"Saved on this device"}</small></div>
-   <div><span>Duck Bucks available</span><strong>{ready?<DuckBucks amount={portfolio.cash}/>:"—"}</strong><small>Virtual currency only</small></div>
-   <div><span>Companies owned</span><strong>{STOCKS.filter(s=>(portfolio.holdings[s.symbol]||0)>0).length}</strong><small>{portfolio.trades.length} recent trades</small></div>
-  </section>
-    <section className={styles.companyCarousel} aria-label="Swipe through market companies">
+  <section className={styles.companyCarousel} aria-label="Swipe through market companies">
    <div className={styles.carouselTop}><span className={styles.carouselKicker}>THE TRADING FLOOR · SIX COMPANIES</span><span>Tap to trade · Swipe to explore <span aria-hidden="true">→</span></span></div>
    <div className={styles.carouselRail}>
     {STOCKS.map(stock=>{
@@ -298,20 +303,13 @@ export function PodExchange(){
     })}
    </div>
   </section>
-  <div className={styles.mobileSwitch}><button type="button" aria-pressed={view==="market"} onClick={()=>setView("market")}>Trade market</button><button type="button" aria-pressed={view==="wallet"} onClick={()=>setView("wallet")}>My holdings</button></div>
+  <section className={styles.balances} aria-label="Duck Bucks portfolio">
+   <div><span>Portfolio value</span><strong>{ready&&now!==null?<DuckBucks amount={worth}/>:"Loading…"}</strong><small className={gain>=0?styles.up:styles.down}>{ready&&now!==null?<><DuckBucks amount={gain} showSign/> overall</>:"Saved on this device"}</small></div>
+   <div><span>Duck Bucks available</span><strong>{ready?<DuckBucks amount={portfolio.cash}/>:"—"}</strong><small>Virtual currency only</small></div>
+   <div><span>Companies owned</span><strong>{STOCKS.filter(s=>(portfolio.holdings[s.symbol]||0)>0).length}</strong><small>{portfolio.trades.length} recent trades</small></div>
+  </section>
+    <div className={styles.mobileSwitch} aria-label="Trade or portfolio view"><button type="button" aria-pressed={view==="market"} onClick={()=>setView("market")}>Trade market</button><button type="button" aria-pressed={view==="wallet"} onClick={()=>setView("wallet")}>My holdings</button></div>
   <div className={`${styles.columns} ${view==="wallet"?styles.marketHiddenMobile:""}`}>
-   <section aria-label="Leaf Street intelligence" className={styles.intelligence}>
-     <div className={styles.panel}>
-      <div className={styles.panelHead}><div><h2>Leaf Street Journal</h2><p>The news behind the numbers.</p></div><small>LIVE BULLETIN</small></div>
-      <div className={styles.intelligenceContent}>
-       <div className={styles.intelligenceLead}><span className={styles.intelligenceKicker}>BREAKING · {news?.symbol||"PSX"}</span><strong>{news?.headline||"Market bulletin loading…"}</strong><p>{news?.detail||"Connecting to the shared newsroom…"}</p><small>{news?news.symbol+" · "+(newsImpact>=0?"+":"")+(newsImpact*100).toFixed(1)+"% "+(v3?"market move":"news pressure")+" · "+(newsAge===0?"Just published":newsAge<=2?"Developing":"Still in play"):"A new story every five minutes"}</small></div>
-       <div className={styles.intelligenceRow}><span>Active market event</span><strong>{session.title}</strong><small>{eventCountdown(sessionLeft)} remaining{nextSession?" · Upcoming: "+nextSession.title:""}</small></div>
-       {v3?.rumour?<div className={styles.intelligenceRumour}><span>THE RUMOUR MILL · UNCONFIRMED</span><strong>{v3.rumour.headline}</strong><p>{v3.rumour.detail}</p></div>:null}
-       {v3?.rumourResolution?<div className={styles.intelligenceRow}><span>RUMOUR RESOLVED · {v3.rumourResolution.resolution.toUpperCase()}</span><strong>{v3.rumourResolution.publishedHeadline}</strong></div>:null}
-       <div className={styles.intelligenceTip}><strong>Spot the opportunity</strong><p>Watch the chart, read the headline, and decide when to buy or sell. Duck Bucks are fictional; prices can rise or fall.</p></div>
-      </div>
-     </div>
-   </section>
    <section ref={tradeRef} className={styles.tradeSection} aria-label="Trading desk">
     <div className={styles.panel}><div className={styles.tradeHeading}><span aria-hidden="true"><CompanyMark symbol={company.symbol}/></span><div><small>{company.symbol} / {company.sector}</small><h2>{company.name}</h2><p>{company.summary}</p></div></div>
      <div className={styles.quote}><strong><DuckBucks amount={price}/></strong><span className={movement>=0?styles.up:styles.down}>{change(movement)} this tick</span></div>
@@ -333,7 +331,7 @@ export function PodExchange(){
    <div className={styles.panelHead}><div><h2>My duck portfolio</h2><p>{storageMessage||"Loading your saved portfolio…"}</p></div></div>
    {STOCKS.filter(stock=>(portfolio.holdings[stock.symbol]||0)>0).length===0?
    <div className={styles.empty}><DuckBuckIcon size={22}/> Your duck wallet is full, but you don&apos;t own any shares yet. Select a company and make your first trade!</div>:
-   <div className={styles.holdings}>{STOCKS.filter(stock=>(portfolio.holdings[stock.symbol]||0)>0).map(stock=><div key={stock.symbol}><span className={styles.holdingIdentity}><span className={styles.holdingIcon}><CompanyMark symbol={stock.symbol}/></span><strong>{stock.symbol}</strong> <small>× {portfolio.holdings[stock.symbol]}</small></span><strong><DuckBucks amount={(portfolio.holdings[stock.symbol]||0)*priceAt(stock.symbol,cycle)}/></strong></div>)}</div>}
+   <div className={styles.holdings}>{STOCKS.filter(stock=>(portfolio.holdings[stock.symbol]||0)>0).map(stock=><div key={stock.symbol}><span className={styles.holdingIdentity}><span className={styles.holdingIcon}><CompanyMark symbol={stock.symbol}/></span><strong>{stock.symbol}</strong> <small>× {portfolio.holdings[stock.symbol]}</small></span><strong><DuckBucks amount={(portfolio.holdings[stock.symbol]||0)*quote(stock.symbol)}/></strong></div>)}</div>}
    {storageMode==="cloud"&&performance?.available?<div className={styles.performance} aria-label="Verified market profit and loss">
     <div><small>Realized profit / loss</small><strong className={(performance.realized||0)>=0?styles.up:styles.down}><DuckBucks amount={performance.realized||0} showSign/></strong></div>
     <div><small>Unrealized profit / loss</small><strong className={(performance.unrealized||0)>=0?styles.up:styles.down}><DuckBucks amount={performance.unrealized||0} showSign/></strong></div>
@@ -351,12 +349,15 @@ export function PodExchange(){
    <button ref={rulesTrigger} type="button" className={styles.rulesShortcut}
     onClick={()=>setRulesOpen(true)}><PodscapeLineIcon name="book"/> How to Play <span aria-hidden="true">→</span></button>
   </div>
-  {rulesOpen?createPortal(<PodscapeInfoDialog eyebrow="POD EXCHANGE · FIELD GUIDE" icon="gamepad" title="How to Play" description="A fictional, fast-paced parody stock market. No real money, prizes or purchases." onClose={closeRules}>
+  {rulesOpen?createPortal(<PodscapeInfoDialog eyebrow="POD EXCHANGE · FIELD GUIDE" icon="gamepad" title="How to Play" description="Read headlines, spot opportunities, buy and sell imaginary stocks, and grow your Duck Buck portfolio. No real money or prizes." onClose={closeRules}>
    <div className={styles.gameRules}>
-    <div><strong>1. Start trading</strong><p>Every keeper begins with 10,000 Duck Bucks. Buy whole shares in any of the six companies.</p></div>
-    <div><strong>2. Watch the chaos</strong><p>Prices change every minute. The Leaf Street Journal creates a new headline every five minutes, with bigger six-hour market events.</p></div>
-    <div><strong>3. Buy low, sell high</strong><p>Choose 1, 5, 10 or MAX shares. Sell anything you own. Every trade has a 0.5% fee; no waiting or stamina.</p></div>
-    <div><strong>4. Climb the rankings</strong><p>Your portfolio is your cash plus the current value of owned shares. Cloud wallets sync to your account; guest wallets stay on this device.</p></div>
+    <div><strong>1. Know your Duck Bucks</strong><p>New players start with 10,000 fictional Duck Bucks. Available cash is what you can spend; portfolio value is your cash plus the current value of your shares. You can be up overall but have very little cash left.</p></div>
+    <div><strong>2. Read the news first</strong><p>The Leaf Street Journal publishes corporate headlines every five minutes. Market Pulse highlights longer six-hour events. News, company personalities and rumours are clues, not promises; rumours can be wrong.</p></div>
+    <div><strong>3. Find a company</strong><p>Swipe the six company cards, then tap one to open its trading desk. Green means a price rose; red means it fell over the comparison shown. Switch between 10-minute, 30-minute, one-hour and 24-hour charts to see more history.</p></div>
+    <div><strong>4. Buy and sell</strong><p>Select Buy, enter a whole number of shares, or choose 1, 5, 10 or MAX. You can only spend your available cash. Select Sell to sell shares you already own; ALL selects your entire holding in that company.</p></div>
+    <div><strong>5. Watch trading fees</strong><p>Each purchase and sale has a 0.5% trading fee, rounded to cents with a one-cent minimum. The price must rise enough to cover both fees for a round trip to earn a profit. Review the Pay or Receive total before confirming.</p></div>
+    <div><strong>6. Build your strategy</strong><p>Quotes refresh every minute, around the clock. You can wait for opportunities; there is no stamina requirement. Buying low and selling higher can earn Duck Bucks, but stocks can also keep falling. Holding some cash gives you more choices.</p></div>
+    <div><strong>7. Save your progress</strong><p>Signed-in wallets, trades and achievements save to your PodScape account. Guest wallets stay on that device. Rankings are just for fun: there is no real money, purchase or prize.</p></div>
    </div>
   </PodscapeInfoDialog>,document.body):null}
   <footer className={styles.footer}><DuckBuckIcon size={15}/> Fictional currency only · No real money or prizes. Signed-in wallets sync to PodScape; guest wallets stay on this device. <Link href="/fun-zone">Fun Zone →</Link></footer>
