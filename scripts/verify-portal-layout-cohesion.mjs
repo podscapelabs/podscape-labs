@@ -18,6 +18,7 @@ assert.match(funZone,/label:"My games",icon:/, "Keep My Games shortcut");
 assert.match(funZone,/label:"Rankings",icon:/, "Keep Rankings shortcut");
 assert.match(funZone,/label:"Picture puzzles"/, "Fun Zone must keep a direct puzzle entry point");
 assert.match(funZone,/label:"Pod Exchange"/, "Fun Zone must keep a direct market entry point");
+assert.match(funZone,/active\.includes\("rankings"\)\?"#rankings-spotlight":"\/fun-zone\/leaderboard"/, "Rankings shortcut must work even if the widget is hidden");
 assert.match(funZone,/onClick:\(\)=>setLibraryOpen\(true\)/, "Hidden optional widgets must use library fallback rather than dead routes");
 assert.doesNotMatch(funZone,/\/fun-zone\/games/, "Shortcuts must not use nonexistent games route");
 assert.match(funZone,/data-workspace-root="fun-zone"/, "Fun Zone customization must survive the shortcut redesign");
@@ -37,6 +38,7 @@ assert.match(collection,/In collection/, "Summary count should not confuse colle
 assert.doesNotMatch(collection,/PortalActionRail/, "My Colonies should not have an extra unstructured shortcut rail");
 assert.match(collection,/styles\.moreTools/, "Secondary import/discovery actions belong in progressive disclosure");
 assert.match(browser,/savedView\|\|Boolean\(initialSpecies\)\?"species":"bins"/, "Ledger species deep links must open species grouping");
+assert.match(browser,/if\(initialSpecies\)\{[\s\S]*?setTab\("species"\);setExpanded\(initialSpecies\);[\s\S]*?setQuery\(""\);setGenus\("all"\);setCare\("all"\)/, "A deep-linked species must not be hidden by previously saved filters");
 assert.match(browser,/styles\.browseMode/, "Species/Bins must be a subordinate group-by control");
 assert.doesNotMatch(browser,/className=\{styles\.actions\}><Link href="\/keeper\/new"/, "No duplicated Add bin/Import/Discover footer");
 assert.match(browser,/binCardSummary\(bin,record\)/, "Both colony browsers must use consistent compact bin metadata");
@@ -54,7 +56,7 @@ assert.equal(binCardSummary({name:"Rack A",label:"Top shelf",quantity:14,status:
 assert.match(read("components/ManagerInlineCare.tsx"),/compact\?"Care":"Quick Care"/, "Compact bin care must remain a short action without removing accessibility");
 
 const managerWorkspace=read("components/ManagerWorkspace.tsx");
-assert.match(managerWorkspace,/const defaults:Section\[\]=\["hero","stats","enclosures","care","tools"/, "New Manager dashboards should show bins and care before the full tools grid");
+assert.match(managerWorkspace,/const defaults:Section\[\]=\["hero","stats","tools","enclosures","care"/, "Manager shortcuts must be discoverable above detailed bin and care widgets");
 const heroSection=managerWorkspace.split("hero:<>")[1]?.split("  </>,")[0] || "";
 const toolsSection=managerWorkspace.split("tools:<section")[1]?.split("</section>")[0] || "";
 assert.ok(heroSection.includes("managerPrimarySearch"),"Manager hero must retain its primary search");
