@@ -1,0 +1,3 @@
+.status{display:inline-flex;align-items:center;min-height:35px;max-width:100%;padding:7px 10px;border:1px solid var(--ps-border,var(--border));border-radius:var(--ps-radius-control,10px);background:var(--ps-surface-muted,var(--surface-secondary));font-size:11px;font-weight:750;line-height:1.3;color:var(--ps-text-secondary,var(--text-secondary))}
+.status[data-dirty="true"]{border-color:var(--ps-accent,var(--accent));color:var(--ps-accent,var(--accent))}
+@media(max-width:600px){.status{font-size:11px}}
