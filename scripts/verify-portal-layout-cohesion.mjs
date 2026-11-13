@@ -11,13 +11,15 @@ assert.match(home,/scroll-snap-type:x mandatory/, "Mobile home rails must snap c
 const portalActions=read("components/PortalActionRail.tsx");
 const funZone=read("app/fun-zone/FunZonePortal.tsx");
 assert.match(portalActions,/layout\?:"inline"\|"grid"/, "Shared portal actions should support a deliberate grid");
-assert.match(funZone,/aria-label="Quick play"/, "Fun Zone needs one clear direct-play block");
+assert.match(funZone,/aria-label="Explore Fun Zone"/, "Fun Zone must preserve the full shortcut block");
 assert.match(funZone,/compact layout="grid"/, "Fun Zone direct-play links should not wrap as stray pills");
-assert.doesNotMatch(funZone,/label:"Game categories",icon:/, "Top shortcuts must not duplicate the game category widget");
-assert.doesNotMatch(funZone,/label:"My games",icon:/, "Top shortcuts must not duplicate My Games");
-assert.doesNotMatch(funZone,/label:"Rankings",icon:/, "Top shortcuts must not duplicate the rankings widget");
+assert.match(funZone,/label:"Game categories",icon:/, "Keep Game Categories shortcut");
+assert.match(funZone,/label:"My games",icon:/, "Keep My Games shortcut");
+assert.match(funZone,/label:"Rankings",icon:/, "Keep Rankings shortcut");
 assert.match(funZone,/label:"Picture puzzles"/, "Fun Zone must keep a direct puzzle entry point");
 assert.match(funZone,/label:"Pod Exchange"/, "Fun Zone must keep a direct market entry point");
+assert.match(funZone,/onClick:\(\)=>setLibraryOpen\(true\)/, "Hidden optional widgets must use library fallback rather than dead routes");
+assert.doesNotMatch(funZone,/\/fun-zone\/games/, "Shortcuts must not use nonexistent games route");
 assert.match(funZone,/data-workspace-root="fun-zone"/, "Fun Zone customization must survive the shortcut redesign");
 
 const profile=read("app/ledger/[slug]/page.tsx");
