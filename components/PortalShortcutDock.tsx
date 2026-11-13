@@ -54,7 +54,7 @@ export function PortalShortcutDock({portal,label,features,defaults,scope="device
    <div className={styles.move} role="group" aria-label="Move selected shortcut">
     <button type="button" disabled={selected===0} onClick={()=>{update(moveNavigationSlot(ids,selected,selected-1));setSelected(selected-1)}}>← Left</button>
     <button type="button" disabled={selected>=ids.length-1} onClick={()=>{update(moveNavigationSlot(ids,selected,selected+1));setSelected(selected+1)}}>Right →</button>
-    <button type="button" onClick={()=>{if(confirmWorkspaceReset(portal+"-shortcuts")){update(defaults);setSelected(0)}}}>Reset</button>
+    <button type="button" onClick={()=>{if(confirmWorkspaceReset("portal-shortcuts")){update(defaults);setSelected(0)}}}>Reset</button>
    </div>
   </div>:null}
   <nav className={styles.grid} aria-label={label}>
