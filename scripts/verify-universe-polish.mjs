@@ -109,7 +109,7 @@ assert.match(fun,/id==="favourites"\?"arcade-favourites":/,"Favorites anchor mus
 assert.match(fun,/id==="rankings"\?"rankings-spotlight":/,"Rankings anchor must belong to a rendered Rankings widget");
 assert.match(fun,/active\.includes\("categories"\)\?\{href:"#arcade-games"\}/,"Categories shortcut links to the section only if the widget is visible");
 assert.match(fun,/active\.includes\("favourites"\)\?\{href:"#arcade-favourites"\}/,"My Games shortcut links to the section only if the widget is visible");
-assert.match(fun,/onClick:\(\)=>setLibraryOpen\(true\)/,"When optional arcade widgets are hidden, shortcuts open their widget library");
+assert.match(fun,/renderWidget\(shortcutPanel\)/,"When optional arcade widgets are hidden, shortcuts still show the actual content");
 assert.match(fun,/\/fun-zone\/pod-exchange/);
 assert.match(fun,/\/fun-zone\/picture-puzzles/);
 const shop=read("app/shop/page.tsx");
