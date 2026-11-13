@@ -14,7 +14,7 @@ import { ManagerInlineCare } from "@/components/ManagerInlineCare";
 import { getMemberCollectionState } from "@/lib/member-collection";
 import { listEnclosures, listManagerActivity } from "@/lib/keeper";
 import { getSpeciesRecords } from "@/lib/species-store";
-import { speciesDisplayName, speciesScientificName } from "@/data/species";
+import { speciesDisplayName, speciesScientificName, isSpeciesRecordActive } from "@/data/species";
 import {binCardIdentity} from "@/lib/bin-identity";
 import styles from "./page.module.css";
 
@@ -38,7 +38,7 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
   const selected = (await searchParams).species;
   const selectedRecord = species.find((record) => record.id === selected && record.kind === "species");
   const speciesById = new Map(species.map((record) => [record.id, record]));
-  const speciesOptions=species.filter(record=>record.kind==="species"&&record.status==="published"&&!record.archivedAt).map(record=>({id:record.id,name:speciesDisplayName(record),scientific:speciesScientificName(record),existingNames:enclosures.filter(bin=>bin.speciesId===record.id).map(bin=>bin.name)})).sort((a,b)=>a.name.localeCompare(b.name));
+  const speciesOptions=species.filter(record=>record.kind==="species"&&record.status==="published"&&isSpeciesRecordActive(record)).map(record=>({id:record.id,name:speciesDisplayName(record),scientific:speciesScientificName(record),existingNames:enclosures.filter(bin=>bin.speciesId===record.id).map(bin=>bin.name)})).sort((a,b)=>a.name.localeCompare(b.name));
   const active = enclosures.filter((enclosure) => !enclosure.isArchived);
   const archived = enclosures.filter((enclosure) => enclosure.isArchived);
   const uniqueSpecies = new Set(active.map(enclosure => enclosure.speciesId)).size;
