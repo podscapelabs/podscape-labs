@@ -44,11 +44,13 @@ export default async function PodBoundHome() {
 
       <section className={styles.section} aria-labelledby="explore-title">
         <div className={styles.heading}><h2 id="explore-title">Explore PodBound</h2><span>One little world. Plenty to discover.</span></div>
-        <PortalShortcutDock portal="podbound" label="PodBound shortcuts" defaults={["game","cards","shop","ledger"]} features={[
+        <PortalShortcutDock portal="podbound" label="PodBound shortcuts" defaults={["game","cards","shop","ledger","arcade","fullshop"]} features={[
           {id:"game",label:"The Game",icon:"podbound",href:"#the-game"},
           {id:"cards",label:"Card Gallery",icon:"book",href:"/podbound/cards"},
           {id:"shop",label:"PodBound Shop",icon:"shop",href:"#shop-title"},
-          {id:"ledger",label:"Real Species",icon:"leaf",href:"#ledger-title"}
+          {id:"ledger",label:"Real Species",icon:"leaf",href:"#ledger-title"},
+          {id:"arcade",label:"Fun Zone",icon:"gamepad",href:"/fun-zone"},
+          {id:"fullshop",label:"Explore Shop",icon:"shop",href:"/shop"}
         ]}/>
 
       </section>
