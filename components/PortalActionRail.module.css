@@ -1,0 +1,10 @@
+.rail{display:flex;align-items:stretch;flex-wrap:wrap;gap:8px;min-width:0;margin:12px 0 15px}
+.action{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;min-width:0;padding:10px 13px;border:1px solid var(--ps-border,var(--border));border-radius:var(--ps-radius-control,12px);background:var(--ps-surface,var(--surface));color:var(--ps-text,var(--text-primary));font:750 12px/1.25 var(--ps-font-ui,var(--sans));text-decoration:none;cursor:pointer;transition:border-color .15s,background .15s;overflow-wrap:anywhere}
+.action svg{width:19px;height:19px;flex:none;color:var(--ps-accent,var(--accent))}
+.action:hover{background:var(--ps-surface-muted,var(--surface-secondary));border-color:var(--ps-accent,var(--accent))}
+.action:focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:3px}
+.action:disabled{cursor:not-allowed;opacity:.5}
+.compact{gap:6px;margin:9px 0}
+.compact .action{padding:9px 11px;font-size:11px}
+@media(max-width:600px){.rail{gap:7px;margin:10px 0 12px}.action{flex:1 1 calc(50% - 7px);padding:10px;min-height:45px;font-size:11px}.action svg{width:18px;height:18px}.compact .action{flex:0 1 auto;font-size:11px}}
+@media(prefers-reduced-motion:reduce){.action{transition:none}}
