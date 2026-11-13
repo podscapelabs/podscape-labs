@@ -155,7 +155,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
            {id:"collection",label:"My Collection",icon:"bookmark",href:signedIn?"/keeper/collection?view=saved":"/account/login"},
            {id:"colonies",label:"My Colonies",icon:"jar",href:signedIn?"/keeper/collection":"/account/login"},
            {id:"guide",label:"Care Guides",icon:"book",href:"/field-guide"},
-           {id:"request",label:"Request Species",icon:"note",href:"#ledger-directory-title"}
+           {id:"request",label:"Request Species",icon:"note",href:signedIn?"#ledger-request-species":"/account/login"}
           ]}/>
       </div>
     </header> : null}
@@ -203,7 +203,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
     <div className={`v2-results-meta ${styles.resultMeta}`}>
       <span id="ledger-directory-title" role="status" aria-live="polite" aria-atomic="true">{results.length} {results.length === 1 ? "record" : "records"}</span>
       <div className={styles.metaActions}>
-        {mode==="catalogue"&&signedIn?<SpeciesRequestButton/>:null}
+        {mode==="catalogue"&&signedIn?<span id="ledger-request-species"><SpeciesRequestButton/></span>:null}
         {filtersActive ? <button type="button" onClick={clear}>Clear filters</button> : null}
         {mode === "catalogue" ? <details className={styles.legend}>
           <summary>Leaf colour guide</summary>
