@@ -51,7 +51,6 @@ export default async function FeedbackDesk({searchParams}:{searchParams:Promise<
   }
  }
  return <main className={styles.page}><div className={styles.wrap}>
-  <Link href="/account/owner-tools" className={styles.back}>← Owner Studio</Link>
   <OwnerDeskHeader area="Community" title="Feedback Desk" description="Review member bugs, ideas, and improvement requests in one organized queue." icon="note"/>
   {params.notice==="updated"?<p className={styles.notice} role="status">Feedback status updated.</p>:null}
   {params.notice==="invalid"||params.notice==="unavailable"?<p className={styles.error} role="alert">That update could not be saved. Please try again.</p>:null}
