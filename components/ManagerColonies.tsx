@@ -122,14 +122,13 @@ export function ManagerColonies({ records, bins, allBins=bins, collectedIds, int
             {!archivedView?<Link href={"/keeper/scan?bin="+bin.id+"&mode=care"} className={styles.quickCare} aria-label={"Quick Care for "+binCardIdentity(bin,record).title}><PodscapeLineIcon name="droplet"/> Care</Link>:null}
           </div>):<p className={styles.noBins}>This species is saved for reference. No enclosure has been created.</p>}
 
-        </div>:null}
-        <div className={styles.groupActions}>
+          <div className={styles.groupActions}>
           {!archivedView?<QuickAddBin speciesId={record.id} speciesName={speciesDisplayName(record)} existingNames={owned.map(bin=>bin.name)}/>:null}
-          {!archivedView&&owned.length?<SpeciesQuickCare bins={owned.map(({id,name,label})=>({id,name,label}))} speciesName={speciesDisplayName(record)}/>:null}
-          {owned.length===1?<Link href={"/keeper/"+owned[0].id}>Open bin</Link>:null}
+          {!archivedView&&owned.length>1?<SpeciesQuickCare bins={owned.map(({id,name,label})=>({id,name,label}))} speciesName={speciesDisplayName(record)}/>:null}
           {record.status==="published"&&!record.archivedAt?<Link href={"/ledger/"+record.slug}>Species reference</Link>:null}
           {!archivedView?<CollectionButton speciesId={record.id} speciesName={speciesDisplayName(record)} initialCollected={saved.has(record.id)} signedIn compact/>:null}
-        </div>
+          </div>
+        </div>:null}
       </article>;
     }) : visibleBins.map(bin=>{
       const record=speciesMap.get(bin.speciesId);
