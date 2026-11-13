@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {OwnerDeskRecordFilters,OwnerDeskRecordCount} from "@/components/OwnerDeskRecordBrowser";
-import {OwnerDeskHeader} from "@/components/OwnerDeskFoundation";
+import {OwnerDeskHeader,OwnerDeskNotice} from "@/components/OwnerDeskFoundation";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { formatProductPrice, isProductLowStock, productCategories, productStockQuantity } from "@/data/products";
@@ -40,7 +40,7 @@ export default async function ProductDeskPage({ searchParams }: { searchParams: 
   return (
     <main className={`admin-shell ${styles.shell}`}>
       <OwnerDeskHeader area="Commerce" title="Product Desk" description="Manage product records, prices, inventory and publishing." icon="shop" actions={[{href:"/shop",label:"Shop preview",icon:"shop",external:true}]} aside={<form className={styles.create} action={createProductRecord}><button type="submit"><span aria-hidden="true">＋</span> New product</button></form>}/>
-      {params.deleted === "1" ? <p className="admin-save-message is-success" role="status">Product deleted permanently. Your Leaf Ledger is unchanged.</p> : null}
+      {params.deleted === "1" ? <OwnerDeskNotice kind="success">Product deleted permanently. Your Leaf Ledger is unchanged.</OwnerDeskNotice> : null}
       <section className={styles.stats} aria-label="Shop summary">
         <Link href="/admin/products?status=all"><strong>{records.filter((product) => !product.archivedAt).length}</strong><span>Products</span></Link>
         <Link href="/admin/products?status=published"><strong>{publishedCount}</strong><span>Published</span></Link>
@@ -48,7 +48,7 @@ export default async function ProductDeskPage({ searchParams }: { searchParams: 
         <Link className={lowStockCount ? styles.attention : ""} href="/admin/products?status=low-stock"><strong>{lowStockCount}</strong><span>Low stock</span></Link>
       </section>
       <section className={styles.catalogue} aria-labelledby="catalogue-title">
-        <div className={styles.catalogueHead}><div><p className="admin-kicker">YOUR CATALOGUE</p><h2 id="catalogue-title">Product records</h2></div><Link href="/shop" target="_blank">Shop preview ↗</Link></div>
+        <div className={styles.catalogueHead}><div><p className="admin-kicker">YOUR CATALOGUE</p><h2 id="catalogue-title">Product records</h2></div></div>
         <OwnerDeskRecordFilters action="/admin/products" searchLabel="Search products" searchPlaceholder="Search products, SKUs or tags…" searchValue={params.q||""} clearHref="/admin/products" hiddenFields={[{name:"category",value:category||"all"}]} filters={[
           {name:"status",label:"Publication",value:status||"all",options:[{value:"all",label:"Active products"},{value:"published",label:"Published"},{value:"draft",label:"Draft"},{value:"low-stock",label:"Low stock"},{value:"archived",label:"Archived"}]},
           {name:"sort",label:"Sort by",value:sort,options:[{value:"recent",label:"Recently updated"},{value:"name",label:"Product name"},{value:"stock",label:"Lowest stock first"}]}
