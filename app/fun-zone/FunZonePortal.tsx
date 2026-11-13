@@ -153,8 +153,8 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp}:{us
   <header className={styles.hero}><div><span className={styles.heroEyebrow}>PODSCAPE / FUN ZONE</span><h1>Your little arcade.</h1><p>Games, puzzles and a little market drama.</p></div></header>
   <section className={styles.quickStart} aria-label="Explore Fun Zone"><div className={styles.quickStartHeading}><strong>Explore the arcade</strong><span>Everything one tap away</span></div>
    <PortalActionRail label="Fun Zone shortcuts" compact layout="grid" actions={[
-  {label:"Game categories",icon:"grid",href:active.includes("categories")?"#arcade-games":"/fun-zone/games"},
-  {label:"My games",icon:"bookmark",href:active.includes("favourites")?"#arcade-favourites":"/fun-zone/games"},
+  {label:"Game categories",icon:"grid",...(active.includes("categories")?{href:"#arcade-games"}:{onClick:()=>setLibraryOpen(true),description:"Open Widget Library to add Game Categories"})},
+  {label:"My games",icon:"bookmark",...(active.includes("favourites")?{href:"#arcade-favourites"}:{onClick:()=>setLibraryOpen(true),description:"Open Widget Library to add My Games"})},
   {label:"Rankings",icon:"trophy",href:active.includes("rankings")?"#rankings-spotlight":"/fun-zone/leaderboard"},
   {label:"Pod Exchange",icon:"gamepad",href:"/fun-zone/pod-exchange"},
   {label:"Picture puzzles",icon:"grid",href:"/fun-zone/picture-puzzles"}
