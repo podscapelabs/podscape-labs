@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {OwnerDeskHeader} from "@/components/OwnerDeskFoundation";
 import { redirect } from "next/navigation";
 import { AdminPhotoEditor } from "@/components/AdminPhotoEditor";
 import { LedgerUnsavedGuard } from "@/components/LedgerUnsavedGuard";
@@ -42,10 +43,7 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
   const readiness = selected ? speciesReadiness(selected) : null;
 
   return <main className={`admin-shell admin-ledger-desk ${styles.ownerSpeciesPage}`}>
-    <header className={`admin-dashboard-head admin-ledger-head ${styles.ownerHero}`}>
-      <div><p className="eyebrow">OWNER STUDIO · LEAF LEDGER</p><h1>Species Desk</h1><p>Build and maintain your curated species catalogue.</p></div>
-      <div className="admin-dashboard-actions"><Link className="button button-outline" href="/account/owner-tools">Owner Studio</Link><Link className="button button-primary" href="/ledger" target="_blank">Open Leaf Ledger</Link></div>
-    </header>
+    <OwnerDeskHeader area="Leaf Ledger" title="Species Desk" description="Curate species records, imagery, and research in one place." icon="leaf" actions={[{href:"/ledger",label:"Open Leaf Ledger",icon:"book",external:true}]}/>
 
     <div className="admin-ledger-layout">
       <aside className="admin-record-list">
