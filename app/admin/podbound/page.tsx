@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {OwnerDeskHeader} from "@/components/OwnerDeskFoundation";
 import Image from "next/image";
 import {redirect} from "next/navigation";
 import {isAdminAuthenticated} from "@/lib/admin-auth";
@@ -18,7 +19,7 @@ export default async function CardDesk({searchParams}:{searchParams:Promise<{q?:
   const visible=cards.filter(c=>(!q||[c.title,c.card_number,c.set_name,c.category,c.summary].join(" ").toLowerCase().includes(q))&&(category==="all"||c.category===category)&&(status==="all"?c.status!=="archived":c.status===status));
   const imageUrls=await Promise.all(visible.map(c=>getPodBoundArtworkUrl(c.core_art_path)));
   return <main className={styles.shell}>
-    <header className={styles.top}><Link href="/account/owner-tools" className={styles.back} aria-label="Owner Studio">←</Link><div><p className={styles.eyebrow}>OWNER STUDIO / PODBOUND</p><h1>Card Desk</h1><p>Artwork, mechanics, and your card catalogue in one place.</p></div><form action={createPodBoundCard}><button className={styles.primary}>＋ New card</button></form></header>
+    <OwnerDeskHeader area="PodBound" title="Card Desk" description="Manage artwork, mechanics, and your card catalogue." icon="podbound" actions={[{href:"/podbound/cards",label:"View cards",icon:"podbound",external:true}]} aside={<form action={createPodBoundCard}><button className={styles.primary} type="submit">＋ New card</button></form>}/>
     <section className={styles.stats}><Link href="/admin/podbound"><strong>{cards.filter(c=>c.status!=="archived").length}</strong><span>Active cards</span></Link><Link href="/admin/podbound?status=draft"><strong>{cards.filter(c=>c.status==="draft").length}</strong><span>Drafts</span></Link><Link href="/admin/podbound?status=published"><strong>{cards.filter(c=>c.status==="published").length}</strong><span>Published</span></Link><Link href="/admin/podbound?status=archived"><strong>{cards.filter(c=>c.status==="archived").length}</strong><span>Archived</span></Link></section>
     <section className={styles.panel}>
       <div className={styles.panelHead}><div><p className={styles.eyebrow}>THE COLLECTION</p><h2>Card records</h2></div><small>Browse and edit your collection</small></div>
