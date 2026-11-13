@@ -36,3 +36,10 @@ export function OwnerDeskSection({title,description,children,id,actions}:{
   {children}
  </section>;
 }
+
+/** One consistent feedback contract for server-action redirects and desk loading failures. */
+export function OwnerDeskNotice({kind="info",children}:{
+ kind?:"info"|"success"|"error";children:ReactNode;
+}){
+ return <p role={kind==="error"?"alert":"status"} className={[styles.notice,kind==="error"?styles.noticeError:kind==="success"?styles.noticeSuccess:""].filter(Boolean).join(" ")}>{children}</p>;
+}
