@@ -54,6 +54,11 @@ const heroSection=managerWorkspace.split("hero:<>")[1]?.split("  </>,")[0] || ""
 const toolsSection=managerWorkspace.split("tools:<section")[1]?.split("</section>")[0] || "";
 assert.ok(heroSection.includes("managerPrimarySearch"),"Manager hero must retain its primary search");
 assert.ok(!heroSection.includes("managerWorkflowEntry"),"Required Manager hero must not contain extra workflow buttons");
+assert.ok(heroSection.includes('id="manager-quick-workflow"'),"Search-initiated care must remain available when Tools widget is hidden");
 assert.ok(toolsSection.includes("ManagerQuickShortcuts"),"Manager tools must retain customizable shortcuts");
 assert.ok(toolsSection.includes("managerWorkflowEntry"),"Extra Manager workflows should be within the optional Tools widget");
+assert.ok(!toolsSection.includes('id="manager-quick-workflow"'),"Task panel cannot be mounted solely inside a hideable widget");
+const speciesGroup=browser.split('{open?<div id={"species-bins-"')[1]?.split("</article>")[0] || "";
+assert.ok(speciesGroup.includes("styles.groupActions"),"Expanded groups should contain management actions");
+assert.ok(speciesGroup.includes("</div>:null}"),"Management actions must disappear when species group is collapsed");
 console.log("Portal cohesion QA passed: Home, Ledger, Fun Zone, Manager, deep links, outage states and bin metadata.");
