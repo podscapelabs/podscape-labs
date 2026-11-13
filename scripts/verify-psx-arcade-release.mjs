@@ -10,6 +10,16 @@ const market=read("lib/psx-v3-market-server.ts");
 assert.match(ui,/Leaf Street Exchange/,"The arcade release must have a distinct identity");
 assert.match(ui,/marketPulse/,"Players need an at-a-glance market summary");
 assert.match(ui,/Leaf Street Journal/,"Market news must be on the playable exchange");
+assert.ok(ui.indexOf('aria-label="Leaf Street intelligence"')<ui.indexOf('className={styles.marketPulse}'),"Journal must appear before market pulse");
+assert.ok(ui.indexOf('className={styles.marketPulse}')<ui.indexOf('className={styles.companyCarousel}'),"Market pulse before stock choices");
+assert.ok(ui.indexOf('className={styles.companyCarousel}')<ui.indexOf('className={styles.balances}'),"Portfolio summary follows stocks, not news");
+assert.ok(ui.indexOf('className={styles.balances}')<ui.indexOf('className={styles.tradeSection}'),"Trading desk remains after portfolio overview");
+assert.match(ui,/className=\{styles\.journalHelp\} onClick=\{\(\)=>setRulesOpen\(true\)\}/,"Help must be available near the top");
+assert.match(ui,/\*quote\(stock\.symbol\)/,"Holding values must use shared PSX 2.0 quotes");
+for(const topic of ["Know your Duck Bucks","Read the news first","Find a company","Buy and sell","Watch trading fees","Build your strategy","Save your progress"]){
+ assert.ok(ui.includes(topic),"New beginner field guide must explain: "+topic);
+}
+
 assert.match(ui,/intelligenceRumour/,"Rumour Mill must be part of the trading view");
 assert.doesNotMatch(ui,/Fictional market listings/,"Do not duplicate six-stock listings in one screen");
 assert.match(ui,/STOCKS\.map\(stock=>/,"All six companies must remain selectable");

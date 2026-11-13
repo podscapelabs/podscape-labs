@@ -1,0 +1,18 @@
+.browser{min-width:0;display:grid;gap:10px;margin:12px 0 14px}
+.form{display:flex;flex-wrap:wrap;align-items:end;gap:9px;padding:12px;border:1px solid var(--ps-border,var(--border));border-radius:var(--ps-radius-card,15px);background:var(--ps-surface,var(--surface))}
+.search{display:flex;align-items:center;gap:9px;flex:1 1 235px;min-width:170px}
+.search svg{flex:none;width:18px;height:18px;color:var(--ps-accent,var(--accent))}
+.search input{width:100%;min-width:0}
+.filter{display:grid;gap:5px;flex:1 1 135px;max-width:230px}
+.filter>span{font-size:11px;font-weight:750;color:var(--ps-text-secondary,var(--text-secondary))}
+.search input,.filter select{box-sizing:border-box;min-height:44px;padding:9px 12px;border:1px solid var(--ps-border,var(--border));border-radius:var(--ps-radius-control,10px);background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-text,var(--text-primary));font-family:inherit;font-size:13px}
+.submit,.clear{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:9px 13px;border:1px solid var(--ps-border,var(--border));border-radius:var(--ps-radius-control,10px);font-size:12px;font-weight:750;font-family:inherit;white-space:nowrap;text-decoration:none;cursor:pointer}
+.submit{border-color:var(--ps-accent,var(--accent));background:var(--ps-accent,var(--accent));color:var(--ps-accent-text,var(--accent-contrast))}
+.submit svg{width:15px;height:15px}
+.clear{background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-text,var(--text-primary))}
+.form :is(input,select,button,a):focus-visible,.extra a:focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:2px}
+.extra{min-width:0;overflow-x:auto}
+.count{font-size:12px;color:var(--ps-text-secondary,var(--text-secondary));margin:8px 0 12px;font-variant-numeric:tabular-nums}
+.srOnly{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+@media(max-width:650px){.form{padding:10px;gap:8px}.search{flex-basis:100%}.filter{flex:1 1 calc(50% - 8px);max-width:none}.submit,.clear{flex:1 1 calc(50% - 8px)}}
+@media(max-width:360px){.filter{flex-basis:100%}}

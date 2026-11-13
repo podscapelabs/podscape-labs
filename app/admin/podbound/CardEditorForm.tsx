@@ -1,4 +1,5 @@
 "use client";
+import {OwnerDeskNotice} from "@/components/OwnerDeskFoundation";
 
 import { useState, type FormEvent, type ReactNode } from "react";
 import { createClient } from "@supabase/supabase-js";
@@ -46,8 +47,8 @@ export function CardEditorForm({cardId,children,className}:{cardId:string;childr
   }
 
   return <>
-    {error&&<p role="alert" style={{padding:"12px 16px",border:"1px solid #b85c51",borderRadius:12,color:"#b85c51",marginBottom:14}}>{error}</p>}
-    {uploading&&<p role="status" style={{padding:"12px 16px",border:"1px solid var(--line)",borderRadius:12,color:"var(--forest)",marginBottom:14}}>Uploading artwork securely… Please keep this page open.</p>}
+    {error&&<OwnerDeskNotice kind="error">{error}</OwnerDeskNotice>}
+    {uploading&&<OwnerDeskNotice kind="info">Uploading artwork securely… Please keep this page open.</OwnerDeskNotice>}
     <form id="card-editor" action={savePodBoundCard} className={className} onSubmit={onSubmit} aria-busy={uploading}>
       <input type="hidden" name="uploaded_core_path" defaultValue=""/>
       <input type="hidden" name="uploaded_alternate_path" defaultValue=""/>

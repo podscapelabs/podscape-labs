@@ -1,0 +1,28 @@
+.hero{display:flex;align-items:center;justify-content:space-between;gap:clamp(12px,3vw,28px);padding:clamp(18px,3.5vw,32px);margin:0 0 18px;min-width:0;position:relative;overflow:hidden;isolation:isolate;border:1px solid var(--ps-border,var(--border));border-radius:var(--ps-radius-card,20px);background:linear-gradient(120deg,var(--portal-hero-start,var(--ps-surface)),var(--portal-hero-end,var(--ps-surface-muted)));color:var(--portal-hero-text,var(--ps-text))}
+.hero::after{content:"";position:absolute;inset:auto -48px -90px auto;width:260px;height:200px;border:1px solid color-mix(in srgb,var(--portal-hero-text,var(--ps-text)) 15%,transparent);border-radius:80% 20% 70% 30%;transform:rotate(-20deg);pointer-events:none;z-index:-1}
+.identity{position:relative;z-index:1;min-width:0;flex:1}
+.eyebrow{margin:0 0 7px;font-size:10px;font-weight:850;letter-spacing:.12em;text-transform:uppercase;color:var(--portal-hero-soft,var(--portal-hero-muted,var(--ps-text-secondary)))}
+.identity h1{margin:0;color:inherit;font:550 clamp(1.7rem,4vw,2.7rem)/1.1 var(--ps-font-display,var(--display));letter-spacing:-.03em}
+.description{margin:8px 0 0;color:var(--portal-hero-muted,var(--ps-text-secondary));font-size:clamp(.76rem,2vw,.88rem);line-height:1.55;max-width:63ch}
+.actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:17px}
+.actions a{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:9px 12px;border-radius:var(--ps-radius-control,11px);border:1px solid color-mix(in srgb,var(--portal-hero-text,var(--ps-text)) 25%,transparent);font-size:12px;font-weight:750;text-decoration:none;white-space:normal}
+.actions svg{width:15px;height:15px;flex:none}
+.back{color:var(--portal-hero-text,var(--ps-text));background:color-mix(in srgb,var(--portal-hero-text,var(--ps-text)) 7%,transparent)}
+.action{background:var(--portal-hero-button-bg,var(--ps-accent));color:var(--portal-hero-button-text,var(--ps-accent-text));border-color:transparent!important}
+.actions a:hover{filter:brightness(1.08)}
+.actions a:focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:3px}
+.icon{display:grid;place-items:center;flex:none;width:clamp(62px,10vw,108px);height:clamp(62px,10vw,108px);border:1px solid color-mix(in srgb,var(--portal-hero-text,var(--ps-text)) 18%,transparent);border-radius:25%;background:color-mix(in srgb,var(--portal-hero-text,var(--ps-text)) 8%,transparent);color:var(--portal-hero-text,var(--ps-text));opacity:.75}
+.icon svg{width:55%;height:55%}
+.aside{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+.section{padding:clamp(14px,2.5vw,22px);border-radius:var(--ps-radius-card,17px);border:1px solid var(--ps-border,var(--border));background:var(--ps-surface,var(--surface));color:var(--ps-text,var(--text-primary));min-width:0}
+.sectionHeader{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.sectionHeader h2{font:550 clamp(1.15rem,3vw,1.45rem)/1.2 var(--ps-font-display,var(--display));margin:0}
+.sectionHeader p{margin:4px 0 0;color:var(--ps-text-secondary,var(--text-secondary));font-size:.76rem;line-height:1.4}
+.sectionActions{display:flex;gap:8px;align-items:center}
+@media(max-width:650px){.hero{margin-bottom:12px;padding:16px 14px;border-radius:17px}.icon{display:none}.identity h1{font-size:clamp(1.65rem,8vw,2.1rem)}.description{font-size:12px}.actions{margin-top:12px}.actions a{min-height:44px;padding:8px 10px;font-size:11px}.section{padding:14px}.sectionHeader{align-items:start}}
+@media(prefers-reduced-motion:reduce){.actions a{transition:none}}
+
+.notice{display:flex;align-items:center;gap:9px;margin:10px 0 14px;padding:12px 14px;border:1px solid var(--ps-border,var(--border));border-left:3px solid var(--ps-accent,var(--accent));border-radius:12px;background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-text,var(--text-primary));font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.noticeSuccess{border-left-color:var(--theme-success,var(--ps-accent,var(--accent)))}
+.noticeError{border-left-color:var(--theme-danger,var(--ps-accent,var(--accent)))}
+.notice a{color:var(--ps-accent,var(--accent));font-weight:750}

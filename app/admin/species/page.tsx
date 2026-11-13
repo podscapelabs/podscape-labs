@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {OwnerDeskHeader,OwnerDeskNotice} from "@/components/OwnerDeskFoundation";
 import { redirect } from "next/navigation";
 import { AdminPhotoEditor } from "@/components/AdminPhotoEditor";
 import { LedgerUnsavedGuard } from "@/components/LedgerUnsavedGuard";
@@ -42,10 +43,7 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
   const readiness = selected ? speciesReadiness(selected) : null;
 
   return <main className={`admin-shell admin-ledger-desk ${styles.ownerSpeciesPage}`}>
-    <header className={`admin-dashboard-head admin-ledger-head ${styles.ownerHero}`}>
-      <div><p className="eyebrow">OWNER STUDIO · LEAF LEDGER</p><h1>Species Desk</h1><p>Build and maintain your curated species catalogue.</p></div>
-      <div className="admin-dashboard-actions"><Link className="button button-outline" href="/account/owner-tools">Owner Studio</Link><Link className="button button-primary" href="/ledger" target="_blank">Open Leaf Ledger</Link></div>
-    </header>
+    <OwnerDeskHeader area="Leaf Ledger" title="Species Desk" description="Curate species records, imagery, and research in one place." icon="leaf" actions={[{href:"/ledger",label:"Open Leaf Ledger",icon:"book",external:true}]}/>
 
     <div className="admin-ledger-layout">
       <aside className="admin-record-list">
@@ -63,9 +61,9 @@ export default async function SpeciesDeskPage({ searchParams }: SpeciesDeskProps
 
       {selected ? <section className={`admin-record-editor ${styles.editor}`} key={selected.id}>
         <header className="admin-record-editor-head"><div><p className="admin-kicker">Permanent ID · {selected.id}</p><h2>{speciesDisplayName(selected)}</h2><p>{speciesRecordLabel(selected)} · Last saved {new Date(selected.updatedAt).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" })}</p></div><SpecimenLeaf image={selected.image} alt={selected.imageAlt} number={selected.catalogueNumber} size="card" positionX={selected.imagePositionX} positionY={selected.imagePositionY} zoom={selected.imageZoom} /></header>
-        {params.saved ? <p className="admin-save-message is-success">Record saved. The Ledger and search index now use this version.</p> : null}
-        {params.created ? <p className="admin-save-message is-success">Blank record created. Its permanent ID will not change.</p> : null}
-        {params.error ? <p className="admin-save-message is-error">{params.error}</p> : null}
+        {params.saved ? <OwnerDeskNotice kind="success">Record saved. The Ledger and search index now use this version.</OwnerDeskNotice> : null}
+        {params.created ? <OwnerDeskNotice kind="success">Blank record created. Its permanent ID will not change.</OwnerDeskNotice> : null}
+        {params.error ? <OwnerDeskNotice kind="error">{params.error}</OwnerDeskNotice> : null}
         <form id="ledger-species-editor" className={`admin-species-form ${styles.speciesForm}`} action={saveSpeciesRecord} key={selected.id}>
           <LedgerUnsavedGuard />
           <input type="hidden" name="id" value={selected.id} />

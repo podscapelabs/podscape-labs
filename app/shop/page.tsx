@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+import {PortalActionRail} from "@/components/PortalActionRail";
 import type {Metadata} from "next";
 import Link from "next/link";
 import {PlatformShell} from "@/components/PlatformShell";
@@ -39,7 +40,7 @@ export default async function ShopPage({searchParams}:{searchParams:Promise<{cat
  return <PlatformShell><main className={styles.page}><div className={styles.wrap}>
   <section className={styles.hero} aria-labelledby="shop-title"><div className={styles.heroCopy}><p className={styles.eyebrow}>PodScape Labs / Shop</p><h1 id="shop-title">The PodScape Shop</h1><p>Curated goods, supplies and creative finds for curious keepers.</p><span className={styles.previewTag}>Storefront preview · Checkout not yet available</span></div></section>
   <form className={styles.search} action="/shop" method="get" role="search" aria-label="Search Shop products"><span aria-hidden="true"><PodscapeLineIcon name="search" /></span><input name="q" type="search" aria-label="Search Shop products" placeholder="Search products…" defaultValue={query} maxLength={100} autoComplete="off"/>{selectedCategory?<input type="hidden" name="category" value={selectedCategory}/>:null}<button type="submit" className={styles.searchSubmit} aria-label="Search products">Search →</button></form>
-  <nav className={styles.paths} aria-label="Shop discovery">{paths.map(item=><Link className={styles.path} href={item.href} key={item.label}><span className={styles.pathIcon} aria-hidden="true"><PodscapeLineIcon name={item.icon} /></span><strong>{item.label}</strong></Link>)}</nav>
+  <PortalActionRail label="Shop discovery" actions={paths.map(item=>({label:item.label,icon:item.icon,href:item.href}))}/>
   <section className={styles.section} id="featured"><WorkspaceSectionHeader title="From the PodScape collection" description="Our featured finds and latest creative projects."/>
    {featured.length?<div className={styles.products}>{featured.map(p=><ShopProductCard product={p} key={p.id}/>)}</div>:<div className={styles.feature}><div><small>Made for curious keepers</small><h2>Something is growing.</h2><p>Our first products and collections are being prepared.</p><Link href="#products">Explore the catalogue →</Link></div></div>}
   </section>

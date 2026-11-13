@@ -1,4 +1,5 @@
 "use client";
+import {isStandaloneAccessRoute} from "@/lib/interface-route-policy";
 import {usePathname,useRouter} from "next/navigation";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
 import {choiceById,availableNavigationChoices,navigationGroups,moveNavigationSlot,swapNavigationSlot} from "./navigation-customization";
@@ -12,7 +13,7 @@ export function GlobalMobileNav({isOwner=false}:{isOwner?:boolean}){
   const router=useRouter();
   const {ids,change,reset}=useNavigationPreferences("bottom",isOwner);
   const {editing,selected,setSelected,handlers,done}=useShortcutEditor(ids,change);
-  const excluded=pathname==="/"||pathname==="/admin"||pathname.startsWith("/account/login")||pathname.startsWith("/account/register")||pathname.startsWith("/account/reset")||pathname.startsWith("/auth/");
+  const excluded=isStandaloneAccessRoute(pathname);
   if(excluded)return null;
   const accessibleChoices=availableNavigationChoices(isOwner);
   const items=ids.map(id=>choiceById.get(id)).filter((x):x is NonNullable<typeof x>=>Boolean(x));

@@ -51,7 +51,8 @@ for(const match of searches){
 const words=[...puzzles.matchAll(/burrow\("([a-z0-9-]+)","[^"]+","([A-Z]{5})"/g)].map(m=>m[2]);
 assert.equal(new Set(words).size,words.length,"Do not recycle Word Burrow answers");
 assert.match(listPage,/getFunZoneLearningNote\(game\.key,index\)/);
-assert.match(playPage,/getFunZoneLearningNote\(game,getPuzzles\(game\)\.findIndex/);
+assert.match(playPage,/const index=ordered\.findIndex\(entry=>entry\.puzzle\.id===puzzle\)/,"Lesson index must use ordered puzzle sequence");
+assert.match(playPage,/getFunZoneLearningNote\(game,index\)/,"Learning notes must use that same challenge index");
 assert.match(library,/Your learning path/);
 assert.match(play,/Before you play/);
 assert.match(portal,/Start simple\. Learn as you play/);

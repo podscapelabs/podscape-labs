@@ -190,3 +190,31 @@
 .accountSummaryTop a.accountLevel:hover,
 .accountSummaryTop a.accountLevel:focus-visible,
 .accountSummaryTop a.accountLevel strong{color:var(--ps-accent-text)}
+
+/* Universe polish: account uses the same semantic surfaces as other member workspaces. */
+.page{background:var(--ps-bg,var(--background));color:var(--ps-text,var(--text-primary));padding-bottom:calc(108px + env(safe-area-inset-bottom,0px))}
+.inner{width:min(900px,calc(100% - 28px));max-width:none;padding:12px 0 30px}
+.accountMark{width:54px;height:54px;border:1px solid var(--ps-border,var(--border));border-radius:17px;background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-accent,var(--accent))}
+.accountMark svg{width:29px;height:29px}
+.accountSummary,.accountOwner,.accountSettings .accordions{border:1px solid var(--ps-border,var(--border));border-radius:var(--ps-radius-card,18px);background:var(--ps-surface,var(--surface));color:var(--ps-text,var(--text-primary));box-shadow:none}
+.accountSummary{background:linear-gradient(125deg,var(--ps-surface,var(--surface)),var(--ps-surface-muted,var(--surface-secondary)))}
+.accountSummaryTop h2{font-family:var(--ps-font-display,var(--display));font-weight:550}
+.accountSummaryTop small,.accountBalances,.accountGroupLabel,.accountProgressLabels a{color:var(--ps-accent,var(--accent))}
+.accountSummaryTop p,.accountProgressLabels,.accountActions small,.accountOwner summary small,.accountOwnerGrid small,.accountSettings .accordions small{color:var(--ps-text-secondary,var(--text-secondary))}
+.accountSummaryTop a.accountLevel,.accountSummaryTop a.accountLevel:visited,.accountSummaryTop a.accountLevel:hover,.accountSummaryTop a.accountLevel:focus-visible,.accountSummaryTop a.accountLevel strong{color:var(--ps-accent-text,var(--accent-contrast));background:var(--ps-accent,var(--accent))}
+.accountActions>a,.accountOwnerGrid>a,.accountOwnerOperations>a{border-color:var(--ps-border,var(--border));border-radius:var(--ps-radius-control,13px);background:var(--ps-surface,var(--surface));color:var(--ps-text,var(--text-primary));text-decoration:none}
+.accountActions>a:hover,.accountOwnerGrid>a:hover,.accountOwnerOperations>a:hover{border-color:var(--ps-accent,var(--accent));background:var(--ps-surface-muted,var(--surface-secondary))}
+.accountActions>a>span,.accountActions b,.accountOwnerGrid>a>span,.accountOwnerOperations>a>span:first-child,.accountOwnerOperations>a>span:last-child,.accountOwnerMark{color:var(--ps-accent,var(--accent))}
+.accountOwnerMark{background:var(--ps-surface-muted,var(--surface-secondary))}
+.accountOwnerGrid>a,.accountOwnerOperations>a{background:var(--ps-surface-muted,var(--surface-secondary))}
+.accountActions strong,.accountOwner summary strong,.accountOwnerGrid strong,.accountSettings .accordions strong{font-family:var(--ps-font-display,var(--display));font-weight:550}
+.accountOwner summary,.accountSettings .accordions summary{min-height:54px}
+.accountOwnerBody{border-color:var(--ps-border,var(--border))}
+.accountActions>a:focus-visible,.accountOwner a:focus-visible,.accountOwner summary:focus-visible,.accountSettings summary:focus-visible,.accountSettings a:focus-visible,.accountSettings button:focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:3px}
+.accountSettings .accordions{overflow:hidden}
+@media(max-width:700px){.inner{width:calc(100% - 24px)}.accountMark{width:44px;height:44px}.accountActions>a{min-height:102px}.accountOwnerGrid>a{min-height:97px}}
+
+.ownerStudioLink{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px;padding:11px 13px;margin-top:14px;border:1px solid var(--ps-border,var(--border));border-radius:var(--ps-radius-control,11px);background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-accent,var(--accent));font-size:13px;font-weight:800;text-decoration:none}
+.ownerStudioLink svg{width:20px;height:20px;flex:none}
+.ownerStudioLink:hover{border-color:var(--ps-accent,var(--accent))}
+.ownerStudioLink:focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:3px}

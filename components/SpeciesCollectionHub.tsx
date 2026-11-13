@@ -14,11 +14,11 @@ export function SpeciesCollectionHub({speciesId,speciesName,collected,signedIn,b
  return <section id="your-species" className={styles.hub} aria-label="Your collection and bins">
   <div className={styles.heading}><strong>Your collection</strong><CollectionButton speciesId={speciesId} speciesName={speciesName} initialCollected={collected} signedIn={signedIn}/></div>
   {!signedIn?<p><Link href="/account/login">Sign in to save this species and manage your bins →</Link></p>:<>
-   <p>{unavailable?"Your bin list is temporarily unavailable.":active.length?active.length+" active "+(active.length===1?"bin":"bins")+" · "+active.reduce((sum,item)=>sum+item.quantity,0).toLocaleString()+" recorded":collected?"Saved for reference · No active bins":"Save for reference, or add your first bin."}</p>
+   <p role={unavailable?"alert":undefined}>{unavailable?"Your bin list is temporarily unavailable. Adding a bin is paused to avoid duplicates until records reconnect.":active.length?active.length+" active "+(active.length===1?"bin":"bins")+" · "+active.reduce((sum,item)=>sum+item.quantity,0).toLocaleString()+" recorded":collected?"Saved for reference · No active bins":"Save for reference, or add your first bin."}</p>
    {active.length>1?<label>Choose your bin<select value={bin?.id||""} onChange={event=>setSelected(event.target.value)}>{active.map(item=><option key={item.id} value={item.id}>{binDisplayName(item)}</option>)}</select></label>:bin?<small>{binDisplayName(bin)}</small>:null}
    <div className={styles.actions}>
     {bin?<><Link href={"/keeper/"+bin.id}>Open bin</Link><Link href={"/keeper/scan?bin="+bin.id+"&mode=care"}>Quick Care</Link></>:null}
-    <QuickAddBin speciesId={speciesId} speciesName={speciesName} existingNames={bins.map(bin=>bin.name)}/>
+    {!unavailable?<QuickAddBin speciesId={speciesId} speciesName={speciesName} existingNames={bins.map(bin=>bin.name)}/>:null}
     <Link href={collectionUrl+"#colonies"}>My Colonies</Link>
     {archived.length?<Link href={collectionUrl+"&view=archived#colonies"}>Archived bins ({archived.length})</Link>:null}
    </div>

@@ -9,7 +9,6 @@ export const ownerDesks = [
   { title: "Product Desk", label: "Shop", icon: "shop" as PodscapeIconName, description: "Manage listings, prices and inventory.", href: "/admin/products", symbol: "▣" },
   { title: "Vendor Desk", label: "Vendor Directory", icon: "vendor" as PodscapeIconName, description: "Add and publish businesses or review vendor applications.", href: "/admin/vendors", symbol: "" },
   { title: "Guide Desk", label: "Field Guide", icon: "book" as PodscapeIconName, description: "Write and publish care guides.", href: "/admin/guides", symbol: "▤" },
-  { title: "Lab Desk", label: "From the Lab", icon: "note" as PodscapeIconName, description: "Manage studio notes and updates.", href: "/admin/lab", symbol: "✧" },
   { title: "Feedback Desk", label: "Community", icon: "note" as PodscapeIconName, description: "Review member bug reports, suggestions, and ideas.", href: "/admin/feedback", symbol: "" },
   { title: "Puzzle Desk", label: "Fun Zone", icon: "grid" as PodscapeIconName, description: "Create and publish picture puzzles from PodBound artwork and photos.", href: "/admin/puzzle-desk", symbol: "" },
   { title: "PodBound Card Desk", label: "PodBound", icon: "podbound" as PodscapeIconName, description: "Manage game cards and artwork.", href: "/admin/podbound", symbol: "✦" },

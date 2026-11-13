@@ -3,6 +3,10 @@ on:
   push:
     branches:
       - codex/psx-arcade-ui-release-ready-20261112
+      - codex/psx-news-first-hierarchy-rules-20261112
+      - codex/podscape-refinement-era-20261112
+      - codex/podscape-universe-polish-20261112
+  pull_request:
   workflow_dispatch:
 permissions:
   contents: read
@@ -32,5 +36,21 @@ jobs:
           node scripts/verify-release-readiness.mjs
           node scripts/verify-manager-workspaces.mjs
           node scripts/verify-collection-ledger-flow.mjs
+          node scripts/verify-refinement-era.mjs
+          node scripts/verify-universe-polish.mjs
+          node scripts/verify-universe-consistency-audit.mjs
+          node scripts/verify-universe-interactions.mjs
+          node scripts/verify-interface-route-consistency.mjs
+          node scripts/verify-visual-refinement.mjs
+          node scripts/verify-keeper-bin-labels.mjs
+          node scripts/verify-design-system.mjs
+          node scripts/verify-theme-system.mjs
+          node scripts/verify-info-sheet-theme.mjs
+          node scripts/verify-onboarding-personalization.mjs
+          node scripts/verify-fun-zone-learning.mjs
+          node scripts/verify-fun-zone-completion-flow.mjs
+          node scripts/verify-fun-zone-portal.mjs
+          node scripts/verify-ui-preferences.mjs
+          node scripts/verify-ranking-name-privacy.mjs
       - name: Production Next.js build
         run: pnpm run build

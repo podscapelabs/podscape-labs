@@ -1,4 +1,5 @@
 "use client";
+import {isStandaloneAccessRoute} from "@/lib/interface-route-policy";
 import {useEffect,useRef,useState} from "react";
 import {usePathname} from "next/navigation";
 import {THEMES,isThemeId,type ThemeId} from "@/lib/theme-registry";
@@ -37,7 +38,7 @@ export function OwnerThemeQuickSwitcher(){
  },[open]);
  function change(theme:ThemeId){try{chooseThemePreference(theme);setSelected(theme)}catch{/* Device storage may be disabled. */}}
  function dismiss(){try{sessionStorage.setItem(SESSION_KEY,"1")}catch{}setOpen(false);setDismissed(true)}
- if(dismissed)return null;
+ if(dismissed||isStandaloneAccessRoute(pathname))return null;
  return <div className={styles.root}>
   {open?<div ref={panel} id="owner-theme-selector" className={styles.panel} role="region" aria-label="Owner theme tester">
    <div className={styles.header}><strong>Owner Theme Tester</strong><button type="button" className={styles.close} onClick={()=>setOpen(false)} aria-label="Close theme selector">×</button></div>

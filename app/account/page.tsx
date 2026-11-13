@@ -11,6 +11,7 @@ import styles from "./account-dashboard.module.css";
 import hub from "./my-podscape.module.css";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
 import { AccountPanelLink } from "./AccountPanelLink";
+import {WorkspaceHeader,WorkspaceSectionHeader} from "@/components/PodscapeWorkspaceUI";
 
 export const dynamic="force-dynamic";
 
@@ -34,10 +35,7 @@ export default async function CustomerAccountPage({searchParams}:{searchParams:P
  const isOwner=await isAdminAuthenticated();
  const {verified}=await searchParams;
  return <main className={styles.page}><div className={styles.inner}>
-  <header className={styles.accountHeader}>
-   <div><p className={styles.eyebrow}>PODSCAPE LABS / YOUR ACCOUNT</p><h1>My Account</h1><p>Your profile, progress and preferences.</p></div>
-   <span className={styles.accountMark} aria-hidden="true"><PodscapeLineIcon name="community" /></span>
-  </header>
+  <WorkspaceHeader section="PODSCAPE LABS / YOUR ACCOUNT" title="My Account" description="Your profile, progress and preferences." aside={<span className={styles.accountMark} aria-hidden="true"><PodscapeLineIcon name="community"/></span>}/>
   {verified==="1"?<p role="status" className={styles.notice}>Email confirmed. Welcome to PodScape.</p>:null}
   <section className={styles.accountSummary} aria-label="Your membership">
    <div className={styles.accountSummaryTop}>
@@ -58,6 +56,7 @@ export default async function CustomerAccountPage({searchParams}:{searchParams:P
    <details id="owner-tools">
     <summary><span className={styles.accountOwnerMark} aria-hidden="true"><PodscapeLineIcon name="manager" /></span><span><strong>Owner Tools</strong><small>Your private PodScape workspace</small></span><span className={styles.chevron} aria-hidden="true">⌄</span></summary>
     <div className={styles.accountOwnerBody}>
+     <Link href="/account/owner-tools" className={styles.ownerStudioLink}><PodscapeLineIcon name="grid"/> Open Owner Studio <PodscapeLineIcon name="arrow-right"/></Link>
      <p className={styles.accountGroupLabel}>Content desks</p>
      <nav className={styles.accountOwnerGrid} aria-label="Owner desks">
       {ownerDesks.map(desk=><Link href={desk.href} key={desk.href}><span aria-hidden="true"><PodscapeLineIcon name={desk.icon} /></span><strong>{desk.title}</strong><small>{desk.label}</small></Link>)}
@@ -70,7 +69,7 @@ export default async function CustomerAccountPage({searchParams}:{searchParams:P
    </details>
   </section>:null}
   <section className={styles.accountSettings} aria-label="Account settings">
-   <div className={styles.accountSettingsHeading}><h2>Settings</h2><p>Everything else, neatly tucked away.</p></div>
+   <WorkspaceSectionHeader title="Settings" description="Appearance, account details, security and installation."/>
    <div className={styles.accordions}>
     <details id="account-preferences"><summary><span className={styles.symbol}><PodscapeLineIcon name="menu" /></span><span><strong>Preferences</strong><small>Appearance and app installation</small></span><span className={styles.chevron}>⌄</span></summary><div className={styles.panel}><AppearancePreference/><p><Link href="/app?onboarding=1">Replay welcome tour and choose a starter layout →</Link></p><InstallPodscape variant="settings"/></div></details>
     <details id="account-personal"><summary><span className={styles.symbol}><PodscapeLineIcon name="community" /></span><span><strong>Personal Information</strong><small>Username, email and account security</small></span><span className={styles.chevron}>⌄</span></summary><div className={styles.panel}><p className={styles.label}>Username</p><CustomerAccountForm kind="profile" initialName={profile?.display_name||""}/><p className={styles.label}>Email</p><p>{user.email}</p><h3>Account security</h3><Link href="/account/change-password">Change password →</Link><Link href="/account/forgot-password">Password recovery →</Link><form action={signOutCustomer}><button type="submit" className={styles.signout}>Sign out</button></form></div></details>

@@ -22,15 +22,17 @@ export function PodscapeInfoDialog({title,eyebrow,icon,description,onClose,child
  useEffect(()=>{
   const dialog=ref.current;
   if(!dialog)return;
+  const previousFocus=document.activeElement instanceof HTMLElement?document.activeElement:null;
   const previousOverflow=document.body.style.overflow;
   document.body.style.overflow="hidden";
-  dialog.showModal();
+  if(!dialog.open)dialog.showModal();
   const onCancel=(event:Event)=>{event.preventDefault();closeRef.current()};
   dialog.addEventListener("cancel",onCancel);
   return()=>{
    dialog.removeEventListener("cancel",onCancel);
    if(dialog.open)dialog.close();
    document.body.style.overflow=previousOverflow;
+   requestAnimationFrame(()=>{if(previousFocus?.isConnected)previousFocus.focus()});
   };
  },[]);
  return <dialog ref={ref} className={styles.dialog} aria-label={title}

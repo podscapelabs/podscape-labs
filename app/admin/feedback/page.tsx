@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {OwnerDeskHeader,OwnerDeskNotice} from "@/components/OwnerDeskFoundation";
 import {redirect} from "next/navigation";
 import {isAdminAuthenticated} from "@/lib/admin-auth";
 import {getSupabaseAdmin} from "@/lib/supabase-admin";
@@ -50,11 +51,10 @@ export default async function FeedbackDesk({searchParams}:{searchParams:Promise<
   }
  }
  return <main className={styles.page}><div className={styles.wrap}>
-  <Link href="/account/owner-tools" className={styles.back}>← Owner Studio</Link>
-  <header className={styles.hero}><span>OWNER STUDIO / COMMUNITY</span><h1>Feedback Desk</h1><p>Every bug, idea, and improvement request from your beta testers—organized in one place.</p></header>
-  {params.notice==="updated"?<p className={styles.notice} role="status">Feedback status updated.</p>:null}
-  {params.notice==="invalid"||params.notice==="unavailable"?<p className={styles.error} role="alert">That update could not be saved. Please try again.</p>:null}
-  {error?<p className={styles.error} role="alert">{error}</p>:null}
+  <OwnerDeskHeader area="Community" title="Feedback Desk" description="Review member bugs, ideas, and improvement requests in one organized queue." icon="note"/>
+  {params.notice==="updated"?<OwnerDeskNotice kind="success">Feedback status updated.</OwnerDeskNotice>:null}
+  {params.notice==="invalid"||params.notice==="unavailable"?<OwnerDeskNotice kind="error">That update could not be saved. Please try again.</OwnerDeskNotice>:null}
+  {error?<OwnerDeskNotice kind="error">{error}</OwnerDeskNotice>:null}
   <section className={styles.summary}><div><span>Matching feedback</span><strong>{total}</strong></div><div><span>Showing</span><strong>{items.length}</strong></div><p>Messages are private and can only be reviewed in Owner Studio. All times shown in Ontario time.</p></section>
   <section className={styles.filters} aria-label="Filter feedback">
    <div><strong>Status</strong><nav aria-label="Filter by status">{statuses.map(item=><Link aria-current={item===status?"page":undefined} key={item} href={linkFor(item,category)}>{item==="all"?"All":stateNames[item]}</Link>)}</nav></div>

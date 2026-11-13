@@ -35,9 +35,9 @@ export function QuickAddBin({speciesId,speciesName,className,existingNames=[]}:{
   <button ref={opener} className={className||styles.launch} type="button" onClick={()=>{setName(nextBinName(speciesName,existingNames));setLabel("");setError("");setOpen(true)}}>+ Add Bin</button>
   {open?createPortal(<PodscapeInfoDialog eyebrow="MANAGER · QUICK SETUP" icon="bin" title={"Add a bin"} description={"New enclosure for "+speciesName+". Saving a species alone never creates a bin."} onClose={close}>
    <form className={styles.form} onSubmit={submit}>
-    <label className={styles.label}>Bin name<input required maxLength={80} minLength={1} autoFocus disabled={pending} placeholder={speciesName+" · Bin A01"} value={name} onChange={event=>setName(event.target.value)} /></label>
+    <label className={styles.label}>Your bin name (editable)<input required maxLength={80} minLength={1} autoFocus disabled={pending} placeholder={speciesName+" · Bin A01"} value={name} onChange={event=>setName(event.target.value)} /></label>
     <label className={styles.label}>Location (optional)<input maxLength={70} disabled={pending} placeholder="e.g. Rack A · Shelf 2" value={label} onChange={event=>setLabel(event.target.value)}/></label>
-    <p className={styles.hint}>This creates one actual bin, adds the species to My Collection if needed, and opens its private colony workspace. No other bins are changed.</p>
+    <p className={styles.hint}>Change the suggested name to anything that helps you identify this enclosure. The colony cards will still lead with the morph and scientific name; your custom bin name appears below. This creates one bin and keeps your other records untouched.</p>
     {error?<p className={styles.error} role="alert">{error}</p>:null}
     <button className={styles.submit} type="submit" disabled={pending||!name.trim()}>{pending?"Creating bin…":"Create & open bin →"}</button>
    </form>

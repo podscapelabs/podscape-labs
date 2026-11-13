@@ -1,4 +1,6 @@
 "use client";
+import {OwnerDeskNotice} from "@/components/OwnerDeskFoundation";
+import {OwnerDeskUnsavedGuard} from "@/components/OwnerDeskUnsavedGuard";
 import { useState } from "react";
 import { deleteProductRecord, saveProductRecord, toggleProductArchive } from "@/app/admin/products/actions";
 import { ProductPhotoEditor } from "@/components/ProductPhotoEditor";
@@ -56,13 +58,14 @@ export function ProductEditor({ product, speciesOptions, variants, adjustments, 
     if (!summary.trim() && selectedSpecies.summary) setSummary(selectedSpecies.summary.slice(0, 600));
   }
   return <section className={styles.workspace}>
-    {saved ? <p className="admin-save-message is-success">Product saved. The catalogue and shop preview now use this version.</p> : null}
-    {created ? <p className="admin-save-message is-success">Draft created. Add the product details below.</p> : null}
-    {error ? <p className="admin-save-message is-error">{error}</p> : null}
+    {saved ? <OwnerDeskNotice kind="success">Product saved. The catalogue and shop preview now use this version.</OwnerDeskNotice> : null}
+    {created ? <OwnerDeskNotice kind="success">Draft created. Add the product details below.</OwnerDeskNotice> : null}
+    {error ? <OwnerDeskNotice kind="error">{error}</OwnerDeskNotice> : null}
     <form className={`admin-species-form ${styles.form}`} id="product-editor-form" action={saveProductRecord}>
       <input type="hidden" name="id" value={product.id} />
       <input type="hidden" name="tagsMode" value={tagsEdited ? "manual" : "suggested"} />
       <input type="hidden" name="slugMode" value={newDraft && !slugEdited ? "auto" : "manual"} />
+      <OwnerDeskUnsavedGuard label="product"/>
       <nav className={styles.sectionNav} aria-label="Jump to product sections">
         <a href="#product-ledger">01 Species</a>
         <a href="#product-basics">02 Listing</a>
@@ -137,7 +140,7 @@ export function ProductEditor({ product, speciesOptions, variants, adjustments, 
           <p>To permanently delete <strong>{product.title}</strong>, type <strong>DELETE</strong> below.</p>
           <label htmlFor="delete-product-confirmation">Confirmation</label>
           <input id="delete-product-confirmation" name="confirmation" value={deleteText} onChange={(event) => setDeleteText(event.target.value)} autoComplete="off" spellCheck={false} placeholder="DELETE" required />
-          {deleteError ? <p className="admin-save-message is-error" role="alert">{deleteError}</p> : null}
+          {deleteError ? <OwnerDeskNotice kind="error">{deleteError}</OwnerDeskNotice> : null}
           <div className={styles.deleteButtons}>
             <button type="button" className={styles.cancelDelete} onClick={() => { setConfirmDeleteOpen(false); setDeleteText(""); setDeleteError(""); }} disabled={deleting}>Cancel</button>
             <button type="submit" className={styles.deleteTrigger} disabled={deleteText !== "DELETE" || deleting}>{deleting ? "Deleting…" : "Delete permanently"}</button>

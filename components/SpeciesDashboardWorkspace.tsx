@@ -1,4 +1,5 @@
 "use client";
+import {WidgetLibraryHeading,WidgetLibrarySummary} from "@/components/WidgetLibraryChrome";
 
 import {useEffect,useLayoutEffect,useRef,useState,type ReactNode} from "react";
 import {WorkspaceEditBlock,WorkspaceEditToolbar,useWorkspaceDrag} from "./WorkspaceEditCanvas";
@@ -107,9 +108,9 @@ export function SpeciesDashboardWorkspace({widgets,scope,preview=false}:{widgets
   {available.length===0&&<p className={styles.empty}>Species information is being prepared.</p>}
   {libraryOpen&&!preview&&<div className={homeStyles.homeEditorOverlay} onPointerDown={event=>{if(event.target===event.currentTarget)setLibraryOpen(false)}}>
    <div className={homeStyles.widgetLibrary} ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="species-widget-library">
-    <div className={homeStyles.homeEditorHead}><div><small>YOUR HOBBY, YOUR SPACE</small><h2 id="species-widget-library">Species widgets</h2></div><button type="button" onClick={()=>setLibraryOpen(false)}>Done</button></div>
+    <WidgetLibraryHeading eyebrow="YOUR HOBBY, YOUR SPACE" titleId="species-widget-library" onDone={()=>setLibraryOpen(false)}/>
     <p>Pick the information you care about. Hold any dashboard block to rearrange or remove it. Your layout carries across all species; missing facts remain hidden until researched.</p>
-    <div className={homeStyles.widgetLibraryActions}><span>{visible.length} active widgets</span><button type="button" onClick={()=>{setLibraryOpen(false);enterCanvas()}}>Arrange Dashboard</button></div>
+    <WidgetLibrarySummary added={speciesWidgetIds.filter(id=>layout.visible.includes(id)).length} total={speciesWidgetIds.length} arrangeLabel="Arrange Dashboard" onArrange={()=>{setLibraryOpen(false);enterCanvas()}}/>
     <WidgetLibraryFilter view={libraryView} onChange={setLibraryView} added={speciesWidgetIds.filter(id=>layout.visible.includes(id)).length} total={speciesWidgetIds.length}/>
     {!speciesWidgetIds.some(id=>widgetMatchesView(layout.visible.includes(id),libraryView))?<WidgetLibraryEmptyState view={libraryView}/>:null}
           <div className={homeStyles.widgetLibraryGroups}>{portalWidgetGroups.species.filter(group=>speciesWidgetIds.some(id=>widgetGroup("species",id)===group&&widgetMatchesView(layout.visible.includes(id),libraryView))).map(group=><section key={group}><h3>{group}</h3><div className={homeStyles.widgetGallery}>{speciesWidgetIds.filter(id=>widgetAllowed("species",id)&&widgetGroup("species",id)===group&&widgetMatchesView(layout.visible.includes(id),libraryView)).map(id=><article key={id} className={homeStyles.widgetGalleryCard}><div className={homeStyles.widgetPreview}><span aria-hidden="true"><PodscapeLineIcon name={speciesWidgetIcons[id]} /></span><div><strong>{speciesWidgetLabels[id]}</strong><small>{descriptions[id]}</small></div></div><div className={homeStyles.widgetGalleryCopy}><strong>{speciesWidgetLabels[id]}</strong><p>{available.includes(id)?"Available for this species":"No information for this species yet — your preference still applies to others."}</p><button type="button" className={layout.visible.includes(id)?homeStyles.widgetRemove:homeStyles.widgetAdd} onClick={()=>toggle(id)}>{layout.visible.includes(id)?"✓ Added · Remove":"+ Add to Dashboard"}</button></div></article>)}</div></section>)}</div>

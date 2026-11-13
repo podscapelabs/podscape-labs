@@ -1,38 +1,22 @@
 "use client";
 
-import {useEffect,useId,useRef,useState,type ReactNode} from "react";
+import {useRef,useState,type ReactNode} from "react";
+import {PodscapeInfoDialog} from "@/components/PodscapeInfoDialog";
 import type {SpeciesRecord} from "@/data/species";
 import styles from "@/components/SpeciesProfile.module.css";
 
 function has(record:SpeciesRecord,keys:(keyof SpeciesRecord)[]){return keys.some(k=>typeof record[k]==="string"&&Boolean((record[k] as string).trim()));}
-/** Native dialog keeps full editorial records one tap away from the compact dashboard. */
+/** Species details share the same focus-managed modal and responsive sheet as the rest of PodScape. */
 function ResearchDialog({title,preview,children}:{title:string;preview:ReactNode;children:ReactNode}){
- const dialogRef=useRef<HTMLDialogElement>(null);
  const triggerRef=useRef<HTMLButtonElement>(null);
- const titleId=useId();
  const [open,setOpen]=useState(false);
- useEffect(()=>{
-  const dialog=dialogRef.current;
-  if(!dialog)return;
-  if(open&&!dialog.open)dialog.showModal();
-  else if(!open&&dialog.open)dialog.close();
- },[open]);
+ const close=()=>{setOpen(false);requestAnimationFrame(()=>triggerRef.current?.isConnected&&triggerRef.current.focus({preventScroll:true}))};
  return <>
   <button ref={triggerRef} className={styles.researchCardTrigger} type="button" aria-haspopup="dialog" aria-expanded={open} onClick={()=>setOpen(true)} aria-label={"Explore "+title}>
    {preview}
    <span className={styles.researchOpenButton}><span>Explore details</span><span aria-hidden="true">↗</span></span>
   </button>
-  <dialog ref={dialogRef} aria-labelledby={titleId} className={styles.researchDialog}
-   onClose={()=>{setOpen(false);triggerRef.current?.focus({preventScroll:true})}}
-   onClick={event=>{if(event.target===event.currentTarget)dialogRef.current?.close()}}>
-   <div className={styles.researchDialogPanel}>
-    <div className={styles.researchDialogHeader}>
-     <div><small>LEAF LEDGER · SPECIES RESEARCH</small><h2 id={titleId}>{title}</h2></div>
-     <button type="button" className={styles.researchDialogClose} onClick={()=>dialogRef.current?.close()} aria-label={"Close "+title}>×</button>
-    </div>
-    <div className={styles.researchDialogBody}>{children}</div>
-   </div>
-  </dialog>
+  {open?<PodscapeInfoDialog eyebrow="LEAF LEDGER · SPECIES RESEARCH" icon="book" title={title} onClose={close}>{children}</PodscapeInfoDialog>:null}
  </>;
 }
 /** Dashboard previews end on word boundaries. The detail sheet always has the full value. */

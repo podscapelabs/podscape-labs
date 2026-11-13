@@ -1,4 +1,5 @@
 "use client";
+import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
 import {useCallback,useEffect,useId,useMemo,useRef,useState} from "react";
 import styles from "./picture-puzzles.module.css";
 
@@ -126,7 +127,7 @@ export function InterlockingJigsawBoard({userId,id,imageUrl,imageAlt,title,learn
     })}
    </svg>
   </div>:null}
-  {solved===count?<div className={styles.victory} role="status"><span aria-hidden="true">✦ 🧩 ✦</span><h2>Picture complete!</h2><p className={styles.victoryTitle}>{title}</p><p>You placed all {count} pieces with {moves} successful snaps.</p><div className={styles.victoryArt} role="img" aria-label={imageAlt} style={{backgroundImage:`url("${imageUrl}")`}}/>{learningNote?<div className={styles.victoryDiscovery}><strong>Did you know?</strong><p>{learningNote}</p></div>:null}{artistCredit?<p className={styles.victoryCredit}>Original artwork by <strong>{artistCredit}</strong></p>:null}{previewMode?<small>Preview only · No EXP or progress recorded</small>:rewardSaved?<strong className={styles.victoryExp}>{earnedExp?`+${earnedExp} EXP earned`:"Progress saved · No new EXP on replay"}</strong>:<small>Achievement EXP is awarded once for newly unlocked milestones.</small>}</div>:null}
+  {solved===count?<div className={styles.victory} role="status"><span aria-hidden="true"><PodscapeLineIcon name="trophy"/></span><h2>Picture complete!</h2><p className={styles.victoryTitle}>{title}</p><p>You placed all {count} pieces with {moves} successful snaps.</p><div className={styles.victoryArt} role="img" aria-label={imageAlt} style={{backgroundImage:`url("${imageUrl}")`}}/>{learningNote?<div className={styles.victoryDiscovery}><strong>Did you know?</strong><p>{learningNote}</p></div>:null}{artistCredit?<p className={styles.victoryCredit}>Original artwork by <strong>{artistCredit}</strong></p>:null}{previewMode?<small>Preview only · No EXP or progress recorded</small>:rewardSaved?<strong className={styles.victoryExp}>{earnedExp?`+${earnedExp} EXP earned`:"Progress saved · No new EXP on replay"}</strong>:<small>Achievement EXP is awarded once for newly unlocked milestones.</small>}</div>:null}
   <div className={styles.controls}><button type="button" onClick={startOver}>Shuffle pieces again</button></div>
   {solved!==count?<details className={styles.jigsawReference}><summary>View original artwork</summary><div className={styles.fullImage} role="img" aria-label={imageAlt} style={{backgroundImage:`url("${imageUrl}")`}}/></details>:null}
   {solved!==count?<p className={styles.note}>The board starts blank: build the picture by fitting its interlocking pieces together. {previewMode?"Preview only: nothing is saved.":"Progress is saved on this device."}</p>:null}

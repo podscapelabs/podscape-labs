@@ -6,28 +6,32 @@ import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
 import styles from "./guide-desk.module.css";
 
 type GuideItem = { id: string; title: string; summary: string; category: string; status: string; archived: boolean };
-type Props = { records: GuideItem[]; selectedId?: string; archivedView: boolean };
+type Props = { records: GuideItem[]; selectedId?: string; archivedView: boolean; initialQuery?: string; initialCategory?: string; initialStatus?: string };
 
-export function GuideDeskNavigator({ records, selectedId, archivedView }: Props) {
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("all");
+export function GuideDeskNavigator({ records, selectedId, archivedView, initialQuery="", initialCategory="all", initialStatus="all" }: Props) {
+  const [query, setQuery] = useState(initialQuery);
+  const [category, setCategory] = useState(initialCategory);
+  const [status, setStatus] = useState(initialStatus);
   const categories = useMemo(() => [...new Set(records.map(item => item.category).filter(Boolean))].sort(), [records]);
   const visible = useMemo(() => records.filter(item =>
     (category === "all" || item.category === category) &&
+    (status === "all" || item.status === status) &&
     [item.title, item.summary, item.category, item.status].some(value => value.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()))
-  ), [records, category, query]);
+  ), [records, category, status, query]);
+  const recordHref=(id:string)=>"/admin/guides?"+new URLSearchParams({view:archivedView?"archived":"active",record:id,...query.trim()?{q:query.trim()}:{},...category!=="all"?{category}:{},...status!=="all"?{status}:{}}).toString();
   return <div className={styles.recordFinder}>
     <div className={styles.searchField}>
       <PodscapeLineIcon name="search" />
       <input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Find a guide…" aria-label="Search guide records" />
     </div>
+    <label className={styles.publicationFilter}>Publication<select aria-label="Filter guides by publication status" value={status} onChange={event=>setStatus(event.target.value)}><option value="all">All statuses</option><option value="draft">Draft</option><option value="published">Published</option></select></label>
     <div className={styles.categoryRow} role="group" aria-label="Filter guides by category">
       <button type="button" className={category === "all" ? styles.activeCategory : ""} onClick={() => setCategory("all")} aria-pressed={category === "all"}>All</button>
       {categories.map(value => <button type="button" key={value} onClick={() => setCategory(value)} className={category === value ? styles.activeCategory : ""} aria-pressed={category === value}>{value}</button>)}
     </div>
-    <div className={styles.resultsMeta} aria-live="polite">{visible.length} {visible.length === 1 ? "guide" : "guides"}</div>
+    <div className={styles.resultsMeta} role="status">Showing {visible.length} of {records.length} {records.length===1?"guide":"guides"}{query||category!=="all"||status!=="all"?<button type="button" className={styles.clearFilters} onClick={()=>{setQuery("");setCategory("all");setStatus("all")}}>Clear filters</button>:null}</div>
     <nav className={styles.recordNav} aria-label="Guide records">
-      {visible.map(item => <Link key={item.id} href={`/admin/guides?view=${archivedView ? "archived" : "active"}&record=${encodeURIComponent(item.id)}`} className={item.id === selectedId ? styles.activeRecord : styles.record} aria-current={item.id === selectedId ? "page" : undefined}>
+      {visible.map(item => <Link key={item.id} href={recordHref(item.id)} className={item.id === selectedId ? styles.activeRecord : styles.record} aria-current={item.id === selectedId ? "page" : undefined}>
         <span className={styles.recordTop}><span>{item.category}</span><span className={styles.recordState}>{item.archived ? "Archived" : item.status}</span></span>
         <strong>{item.title || "Untitled guide"}</strong>
         <small>{item.summary || "No summary yet"}</small>

@@ -870,3 +870,15 @@
 @media(max-width:370px){.widgetLibraryFilter button{gap:3px;font-size:.65rem}.widgetGalleryCopy button{min-width:96px;max-width:104px}}
 
 .widgetLibraryEmpty{margin:0 0 12px;padding:12px 14px;border:1px dashed var(--line);border-radius:12px;background:var(--paper-strong);color:var(--muted);font-size:.76rem;line-height:1.55}
+
+/* Universal editor sheet: same overlay, hierarchy, focus and editing affordances in all portals. */
+.homeEditorOverlay{background:color-mix(in srgb,var(--ps-bg,var(--background)) 78%,transparent);backdrop-filter:blur(7px)}
+.homeEditorOverlay>.widgetLibrary{background:var(--ps-surface,var(--surface));color:var(--ps-text,var(--text-primary));border:1px solid var(--ps-border,var(--border));box-shadow:0 22px 70px color-mix(in srgb,var(--ps-text,var(--text-primary)) 19%,transparent)}
+.homeEditorHead{align-items:center;gap:12px}
+.homeEditorHead small{color:var(--ps-accent,var(--accent));font-weight:850}
+.homeEditorHead h2{color:var(--ps-text,var(--text-primary))}
+.homeEditorHead button,.widgetLibraryActions button{min-height:44px;border-color:var(--ps-border,var(--border));border-radius:var(--ps-radius-control,11px)}
+.homeEditorHead button:focus-visible,.widgetLibraryActions button:focus-visible,.widgetLibraryFilter button:focus-visible,.homeCanvasToolbar button:focus-visible,.homeCanvasBlockBar button:focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:2px}
+.homeCanvasBlockActive{border-color:var(--ps-accent,var(--accent));background:color-mix(in srgb,var(--ps-accent,var(--accent)) 4%,var(--ps-surface,var(--surface)))}
+.homeCanvasBlockBar>div button{background:var(--ps-surface,var(--surface));border-color:var(--ps-border,var(--border));color:var(--ps-accent,var(--accent));min-height:44px;min-width:44px}
+@media(max-width:720px){.homeEditorOverlay>.widgetLibrary{max-height:calc(91dvh - env(safe-area-inset-top,0px));height:min(88dvh,800px);padding-bottom:calc(15px + env(safe-area-inset-bottom,0px))}.homeCanvasBlockBar>div button{min-height:44px;min-width:44px}}

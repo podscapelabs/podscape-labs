@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Header } from "@/components/Header";
+import { PlatformShell } from "@/components/PlatformShell";
 import { getPodBoundArtworkUrl, getPodBoundCards, type CardCategory } from "@/lib/podbound-cards";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import styles from "./gallery.module.css";
@@ -23,9 +23,7 @@ export default async function PodBoundCardGallery({searchParams}:{searchParams:P
   const cards=await Promise.all(filtered.map(async c=>({...c,artUrl:await getPodBoundArtworkUrl(c.core_art_path)})));
   const highlighted=cards.find(c=>c.featured&&c.artUrl)||cards.find(c=>c.artUrl);
   const isOwner=await isAdminAuthenticated();
-  return <div className={styles.site}>
-    <a className="skip-link" href="#catalogue">Skip to cards</a>
-    <Header/>
+  return <PlatformShell><div className={styles.site}>
     <main className={styles.main} id="catalogue">
       <nav className={styles.crumbs} aria-label="Back to PodBound"><Link href="/podbound">← PodBound</Link></nav>
       <header className={styles.header}>
@@ -58,5 +56,5 @@ export default async function PodBoundCardGallery({searchParams}:{searchParams:P
       </section>
       {isOwner&&<aside className={styles.owner}><span>OWNER ACCESS</span><p>Ready to reveal more cards? Publish them from the Card Desk.</p><Link href="/admin/podbound">Open Card Desk →</Link></aside>}
     </main>
-  </div>;
+  </div></PlatformShell>;
 }

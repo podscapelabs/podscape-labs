@@ -66,7 +66,7 @@ export default async function PodAccessPage(){
 
    <footer className={styles.footer}>
     <span>PodScape Labs · Made in Canada</span>
-    <span>Thanks for helping this little world grow. <span aria-hidden="true">✦</span></span>
+    <span>Thanks for helping this little world grow.</span>
    </footer>
   </div>
  </main>;

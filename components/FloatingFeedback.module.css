@@ -16,7 +16,7 @@
  position:fixed;inset:0;z-index:5000;
  display:flex;justify-content:center;align-items:center;
  padding:max(18px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
- background:rgba(10,20,16,.75);
+ background:color-mix(in srgb,var(--theme-background) 80%,transparent);
  -webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);
  isolation:isolate;
 }
@@ -37,7 +37,7 @@
 .top h2{font-family:var(--theme-display,Georgia,serif);font-size:clamp(26px,6vw,32px);line-height:1.12;font-weight:500;letter-spacing:-.03em;margin:8px 0 16px}
 .close{
  flex:none;display:grid;place-items:center;
- width:40px;height:40px;padding:0;
+ width:44px;height:44px;padding:0;
  background:var(--theme-surface-secondary);
  color:var(--theme-text-primary);
  border:1px solid var(--theme-border);border-radius:50%;
@@ -84,4 +84,20 @@
 @media(prefers-reduced-motion:no-preference){
  .panel{animation:feedback-enter .17s ease-out}
  @keyframes feedback-enter{from{opacity:.7;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+}
+
+/* Phone: feedback stays reachable without covering an entire column of content. */
+@media(max-width:600px){
+ .tab{
+  top:auto;
+  bottom:calc(102px + env(safe-area-inset-bottom,0px));
+  right:max(10px,env(safe-area-inset-right,0px));
+  width:44px;height:44px;max-width:44px;
+  box-sizing:border-box;justify-content:center;
+  padding:0;
+  border:1px solid var(--theme-border);
+  border-radius:50%;
+ }
+ .tab span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;writing-mode:horizontal-tb;transform:none}
+ .tab svg{width:19px;height:19px;flex:none}
 }

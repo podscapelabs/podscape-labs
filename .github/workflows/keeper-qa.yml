@@ -6,6 +6,7 @@ on:
       - codex/ledger-navigation-optimization
       - codex/podscape-unified-release-20261109
       - codex/podscape-manager-psx-release-20261112
+      - codex/podscape-universe-polish-20261112
   pull_request:
   workflow_dispatch:
 permissions:
@@ -54,11 +55,19 @@ jobs:
         run: node scripts/verify-legacy-icon-rollout.mjs
       - name: Mobile, PWA and release readiness checks
         run: node scripts/verify-release-readiness.mjs
-      - name: Unified release: vendor, updates, widgets and splash
+      - name: "Unified release: vendor, updates, widgets and splash"
         run: node scripts/verify-unified-release.mjs
       - name: Theme role, contrast and overflow audit
         run: node scripts/verify-theme-system.mjs
       - name: Stabilization security and server-boundary checks
         run: node scripts/verify-stabilization-boundaries.mjs
+      - name: Universe-wide Owner Studio and contextual navigation checks
+        run: |
+          node scripts/verify-universe-polish.mjs
+          node scripts/verify-universe-consistency-audit.mjs
+          node scripts/verify-universe-interactions.mjs
+          node scripts/verify-interface-route-consistency.mjs
+          node scripts/verify-visual-refinement.mjs
+          node scripts/verify-keeper-bin-labels.mjs
       - name: Build Next.js application
         run: pnpm run build

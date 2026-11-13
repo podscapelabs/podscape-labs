@@ -29,9 +29,11 @@ assert.doesNotMatch(css,/#(?:[0-9a-f]{3,8})\b|rgba\(10,25,19/i,"No literal palet
 assert.match(updates,/PodscapeInfoDialog/,"What's Improved must use shared information sheet");
 assert.doesNotMatch(updatesCss,/\.backdrop|rgba\(10,25,19/,"No legacy green update backdrop");
 assert.match(updatesCss,/var\(--ps-accent-text\)/,"Update actions use contrast-aware text");
-assert.match(rankingCss,/\.dialog::backdrop\{background:color-mix\(in srgb,var\(--ps-bg/,"Rankings help uses same themed backdrop");
+assert.match(read("components/RankingModal.tsx"),/PodscapeInfoDialog/,"Ranking help reuses the canonical themed information sheet");
+assert.doesNotMatch(rankingCss,/\.dialog::backdrop/,"Ranking dialogs must not maintain a competing theme backdrop");
 assert.match(exchange,/rulesOpen\?createPortal\(<PodscapeInfoDialog/,"Exchange rules use shared help sheet");
-assert.match(exchange,/className=\{styles\.agendaFoot\}/,"Market event widget is condensed");
+assert.match(exchange,/className=\{styles\.marketPulse\}/,"Market event summary lives in the compact market pulse");
+assert.ok(exchange.indexOf("Leaf Street intelligence")<exchange.indexOf("className={styles.marketPulse}"),"Market news takes priority over events");
 assert.doesNotMatch(exchange,/className=\{styles\.agendaNext\}/,"Remove redundant second event card");
 assert.match(exchangeCss,/\.rulesShortcut/,"Exchange rules remain accessible");
 assert.doesNotMatch(exchangeCss,/\.rulesBody\{/,"Old accordion rules CSS is removed");
@@ -51,7 +53,8 @@ assert.match(collection,/\.page\{[^}]*background:var\(--background\)/,"Collectio
 assert.doesNotMatch(collection,/#[0-9a-f]{3,8}\b/i,"Old collection colour literals are obsolete");
 assert.match(shop,/\.hero\{[\s\S]*?var\(--portal-hero-glow\)/,"Shop hero must follow shared palette");
 assert.doesNotMatch(shop,/#[0-9a-f]{3,8}\b/i,"Remove dead fixed-green Shop colours");
-assert.match(species,/\.researchDialog::backdrop\{background:color-mix\(in srgb,var\(--ps-bg/,"Research dialog must use current theme overlay");
+assert.match(read("components/SpeciesResearchWidgets.tsx"),/PodscapeInfoDialog/,"Leaf Ledger research uses the canonical theme-safe modal");
+assert.doesNotMatch(species,/\.researchDialog::backdrop/,"Remove redundant research-specific dialog backdrop");
 assert.match(scanner,/\.binHero\{[^}]*var\(--portal-hero-start\)/,"Keeper scanner result hero must follow theme");
 assert.ok(!["#102d23","#153c2b","#f6f1e6","#fffdf5"].some(token=>ledgerCss.toLowerCase().includes(token)),"Ledger hero and search must not use fixed green/cream palette");
 assert.ok(ledgerCss.includes("var(--portal-hero-button-bg)"),"Ledger primary navigation uses theme palette");

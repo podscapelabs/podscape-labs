@@ -1,4 +1,6 @@
 "use client";
+import {WidgetLibraryHeading,WidgetLibrarySummary} from "@/components/WidgetLibraryChrome";
+import {PortalActionRail} from "@/components/PortalActionRail";
 
 import {useEffect,useLayoutEffect,useRef,useState,type ReactNode} from "react";
 import Link from "next/link";
@@ -170,7 +172,7 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
  const reorder=(from:Section,to:Section)=>update({...layout,order:dropBlock(layout.order,from,to)});
  const visible=layout.order.filter(id=>layout.visible.includes(id));
  const matching=query.trim().toLocaleLowerCase();
- const matchingBins=matching?bins.filter(bin=>[bin.name,bin.label,bin.species,bin.status].some(value=>value?.toLocaleLowerCase().includes(matching))).sort((a,b)=>Date.parse(b.updatedAt)-Date.parse(a.updatedAt)):[];
+ const matchingBins=matching?bins.filter(bin=>[bin.name,bin.label,bin.species,bin.displayName,bin.scientificName,bin.status].some(value=>value?.toLocaleLowerCase().includes(matching))).sort((a,b)=>Date.parse(b.updatedAt)-Date.parse(a.updatedAt)):[];
  const searchResults=matchingBins.slice(0,8);
  const {dragging,begin,move:dragMove,stop}=useWorkspaceDrag<Section>("manager",visible,reorder);
  const finishCanvas=()=>{stop();editAnchor.current=null;setCanvasEditing(false)};
@@ -180,18 +182,18 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
   hero:<>{hero}
   <section className={styles.managerPrimarySearch} role="search" aria-label="Search your colonies"><div className={styles.managerFinder}>
     <div className={styles.managerSearchField}><span aria-hidden="true"><PodscapeLineIcon name="search"/></span><input id="manager-collection-search" aria-label="Search your collection" type="search" enterKeyHint="search" value={query} onChange={event=>setQuery(event.target.value)} onKeyDown={event=>{if(event.key==="Escape"){setQuery("");event.currentTarget.blur()}else if(event.key==="Enter"&&searchResults.length){event.preventDefault();router.push("/keeper/"+searchResults[0].id)}}} placeholder="Find a species, bin or enclosure…" autoComplete="off"/>{query?<button type="button" onClick={()=>setQuery("")} aria-label="Clear collection search">×</button>:null}</div>
-    {matching?<div className={styles.managerSearchResults} role="region" aria-live="polite" aria-label="Matching colonies">{searchResults.length?<p className={styles.managerSearchCount}>{matchingBins.length} matching {matchingBins.length===1?"colony":"colonies"}{matchingBins.length>8?" · Showing 8 most recently updated":""}</p>:null}{searchResults.length?searchResults.map(bin=><Link key={bin.id} href={`/keeper/${bin.id}`}><strong>{bin.species}</strong><span>{bin.name}{bin.label?" · "+bin.label:""} · {bin.quantity} recorded</span><b aria-hidden="true">→</b></Link>):<p>No colonies match “{query}”. <Link href="/keeper/collection">Browse all colonies →</Link></p>}</div>:null}
+    {matching?<div className={styles.managerSearchResults} role="region" aria-live="polite" aria-label="Matching colonies">{searchResults.length?<p className={styles.managerSearchCount}>{matchingBins.length} matching {matchingBins.length===1?"colony":"colonies"}{matchingBins.length>8?" · Showing 8 most recently updated":""}</p>:null}{searchResults.length?searchResults.map(bin=><div className={styles.managerResultRow} key={bin.id}><Link href={`/keeper/${bin.id}`} aria-label={`Open ${bin.displayName}`}><strong>{bin.displayName}</strong><span>{bin.scientificName}</span><span>{[bin.binDetail,bin.label,`${bin.quantity} recorded`].filter(Boolean).join(" · ")}</span><b aria-hidden="true">→</b></Link><button type="button" onClick={()=>{setQuery("");openWorkflow("care",bin.id)}} aria-label={`Log care for ${bin.displayName}`}><PodscapeLineIcon name="droplet"/> Care</button></div>):<p>No colonies match “{query}”. <Link href="/keeper/collection">Browse all colonies →</Link></p>}</div>:null}
   </div></section>
   {!canvasEditing?<div className={styles.managerWorkflowEntry}>
    <div className={styles.managerWorkflowLabel}><strong>Work from your portal</strong><span>Choose a task and stay right here.</span></div>
-   <div className={styles.managerWorkflowActions} role="group" aria-label="Quick Manager actions">
-    <button type="button" onClick={()=>openWorkflow("care")}><PodscapeLineIcon name="droplet"/> Log care</button>
-    <button type="button" onClick={()=>openWorkflow("notes")}><PodscapeLineIcon name="note"/> Add note</button>
-    <button type="button" onClick={()=>openWorkflow("population")}><PodscapeLineIcon name="community"/> Population</button>
-    <button type="button" onClick={()=>openWorkflow("bulk")}><PodscapeLineIcon name="bin"/> Multi-care</button>
-   </div>
+   <PortalActionRail label="Quick Manager actions" actions={[
+  {label:"Log care",icon:"droplet",onClick:()=>openWorkflow("care")},
+  {label:"Add note",icon:"note",onClick:()=>openWorkflow("notes")},
+  {label:"Population",icon:"community",onClick:()=>openWorkflow("population")},
+  {label:"Multi-care",icon:"bin",onClick:()=>openWorkflow("bulk")}
+ ]}/>
   </div>:null}
-  {activeWorkflow&&!canvasEditing?<div id="manager-quick-workflow"><ManagerWorkflowPanel key={activeWorkflow+":"+(workflowBin||"")} mode={activeWorkflow} bins={bins} onClose={()=>setActiveWorkflow(null)}/></div>:null}
+  {activeWorkflow&&!canvasEditing?<div id="manager-quick-workflow"><ManagerWorkflowPanel key={activeWorkflow+":"+(workflowBin||"")} mode={activeWorkflow} bins={bins} initialBinId={workflowBin} onClose={()=>setActiveWorkflow(null)}/></div>:null}
   </>,
   stats,
   care:<ManagerCareOverview bins={bins}/>,
@@ -207,10 +209,10 @@ export function ManagerWorkspace({hero,stats,enclosures,bins,events,activityAvai
   {canvasEditing?<WorkspaceEditToolbar title="Arrange Manager" description="Drag sections to arrange your workspace. Quick Tools stay grouped." onAdd={()=>{finishCanvas();setEditing(true);setSlot(null)}} onReset={resetToDefault} onDone={finishCanvas}/>:null}
   {editing?<div className={homeStyles.homeEditorOverlay} onPointerDown={e=>{if(e.target===e.currentTarget){setEditing(false);setSlot(null)}}}>
    <div className={`${homeStyles.widgetEditor} ${homeStyles.widgetLibrary}`} ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="manager-widget-title">
-    <div className={homeStyles.homeEditorHead}><div><small>YOUR WORKSPACE, YOUR WAY</small><h2 id="manager-widget-title">Widget Library</h2></div><button type="button" onClick={()=>{setEditing(false);setSlot(null)}}>Done</button></div>
+    <WidgetLibraryHeading eyebrow="YOUR WORKSPACE, YOUR WAY" titleId="manager-widget-title" onDone={()=>{setEditing(false);setSlot(null)}}/>
     <p>Keep your bins and care upfront. Tools are optional widgets and remain available in the Manager tool directory.</p>
     <div className={styles.managerPresets} role="group" aria-label="Dashboard starting layouts"><button type="button" onClick={()=>applyPreset("compact")}>Everyday Manager <small>Your bins and care first, without extra shortcut rows</small></button><button type="button" onClick={()=>applyPreset("detailed")}>Detailed dashboard <small>All collection widgets</small></button></div>
-    <div className={homeStyles.widgetLibraryActions}><span>{layout.visible.length} of {defaults.length} sections shown</span><button type="button" onClick={()=>{setEditing(false);setSlot(null);setCanvasEditing(true)}}>Arrange Manager</button></div>
+    <WidgetLibrarySummary added={defaults.filter(id=>layout.visible.includes(id)).length} total={defaults.length} arrangeLabel="Arrange Manager" onArrange={()=>{setEditing(false);setSlot(null);setCanvasEditing(true)}}/>
     <WidgetLibraryFilter view={libraryView} onChange={setLibraryView} added={defaults.filter(id=>layout.visible.includes(id)).length} total={defaults.length}/>
     {slot!==null?<div className={styles.managerEditor}><div className={styles.managerPickerTitle}><h3>Replace Quick Tool {slot+1}</h3><button type="button" onClick={()=>setSlot(null)} aria-label="Close tool picker">×</button></div><div className={styles.managerToolLibrary}>{library.filter(tool=>tool.id!=="activity"||layout.tools.includes("activity")).map(tool=><button type="button" key={tool.id} onClick={()=>swap(tool.id)}><PodscapeLineIcon name={tool.icon}/><span>{tool.label}</span>{layout.tools[slot]===tool.id?" ✓":""}</button>)}</div></div>:<>
     {!defaults.some(id=>widgetMatchesView(layout.visible.includes(id),libraryView))?<WidgetLibraryEmptyState view={libraryView}/>:null}

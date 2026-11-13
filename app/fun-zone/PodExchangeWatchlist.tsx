@@ -13,6 +13,7 @@ export function PodExchangeWatchlist(){
  useEffect(()=>{
   let mounted=true;
   const read=async()=>{
+   if(document.visibilityState!=="visible")return;
    try{
     const [response,quoteResponse]=await Promise.all([
      fetch("/api/fun-zone/pod-exchange",{cache:"no-store"}),
@@ -41,11 +42,13 @@ export function PodExchangeWatchlist(){
    }catch{if(mounted)setPortfolioAvailable(false)}
   };
   void read();setTime(Date.now());
-  const timer=window.setInterval(()=>{setTime(Date.now());void read()},30_000);
-  const update=()=>void read();
+  const timer=window.setInterval(()=>{setTime(Date.now());void read()},45_000);
+  const update=()=>{setTime(Date.now());void read()};
   window.addEventListener("storage",update);
+  window.addEventListener("focus",update);
+  document.addEventListener("visibilitychange",update);
   window.addEventListener("podscape-exchange-wallet-updated",update);
-  return()=>{mounted=false;window.clearInterval(timer);window.removeEventListener("storage",update);window.removeEventListener("podscape-exchange-wallet-updated",update)}
+  return()=>{mounted=false;window.clearInterval(timer);window.removeEventListener("storage",update);window.removeEventListener("focus",update);document.removeEventListener("visibilitychange",update);window.removeEventListener("podscape-exchange-wallet-updated",update)}
  },[]);
  const cycle=arcadeCycleAt(time??0);
  const currentMarket=market?.cycle===cycle?market:null;

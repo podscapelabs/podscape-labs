@@ -1,0 +1,20 @@
+.page{width:min(920px,calc(100% - 28px));margin:0 auto;padding:14px 0 calc(130px + env(safe-area-inset-bottom,0px));color:var(--ps-text,var(--text-primary))}
+.sections{display:grid;gap:14px}
+.form{display:flex;align-items:end;flex-wrap:wrap;gap:10px}
+.form label{display:grid;gap:7px;flex:1 1 230px;font-size:12px;font-weight:750}
+.form input{min-height:46px;box-sizing:border-box;width:100%;padding:10px 12px;border:1px solid var(--ps-border,var(--border));border-radius:var(--ps-radius-control,11px);background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-text,var(--text-primary));font:inherit;font-size:16px}
+.form button,.secondary{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border-radius:var(--ps-radius-control,11px);border:1px solid var(--ps-accent,var(--accent));background:var(--ps-accent,var(--accent));color:var(--ps-accent-text,var(--accent-contrast));font-size:12px;font-weight:800;cursor:pointer}
+.secondary{border-color:var(--ps-border,var(--border));background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-text,var(--text-primary))}
+.form button:disabled,.secondary:disabled{opacity:.5;cursor:not-allowed}
+.form button:focus-visible,.secondary:focus-visible,.form input:focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:2px}
+.help{margin:12px 0 0;font-size:12px;line-height:1.5;color:var(--ps-text-secondary,var(--text-secondary))}
+.help a{color:var(--ps-accent,var(--accent));font-weight:750;text-decoration:underline;text-underline-offset:2px}
+.list{display:grid;gap:0}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:13px 0;border-bottom:1px solid var(--ps-border,var(--border))}
+.row:last-child{border-bottom:0}
+.identity{display:grid;gap:5px;min-width:0}
+.identity strong{overflow-wrap:anywhere;font-size:13px}
+.identity span{font-size:11px;color:var(--ps-text-secondary,var(--text-secondary))}
+.success,.error{padding:11px 13px;border:1px solid var(--ps-border,var(--border));border-radius:12px;font-size:12px;line-height:1.5;background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-text,var(--text-primary))}
+.error{border-color:var(--theme-danger,var(--ps-border));}
+@media(max-width:520px){.form button{width:100%}.row{align-items:start}.row form{flex:0 0 auto}}

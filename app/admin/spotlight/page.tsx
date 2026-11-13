@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {OwnerDeskHeader,OwnerDeskNotice} from "@/components/OwnerDeskFoundation";
 import { redirect } from "next/navigation";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getSpotlightOptions, getSpotlightSelection } from "@/lib/podscape-spotlights";
@@ -14,11 +15,11 @@ export default async function SpotlightDesk({searchParams}:{searchParams:Promise
   const optionHrefs=new Set(options.map(item=>item.href));
   const missing=selected?.filter(href=>!optionHrefs.has(href))||[];
   return <main className={styles.page}><div className={styles.wrap}>
-    <header className={styles.header}><div className={styles.heroCopy}><p>OWNER STUDIO · HOMEPAGE</p><h1>Spotlight Desk</h1><span>Curate the highlights your visitors see first.</span><Link className={styles.back} href="/account/owner-tools">← Owner Studio</Link></div></header>
-    {query.saved&&<p role="status" className={styles.success}>Spotlight selection saved. The homepage reads these exact choices; new content does not replace them.</p>}
-    {query.error&&<p role="alert" className={styles.error}>Could not save Spotlights. Check for duplicate choices and ensure the database migration is installed.</p>}
-    {missing.length>0?<p role="status" className={styles.error}>{missing.length} saved highlight(s) are unavailable or unpublished. Select replacements and save; PodScape will not automatically substitute new content.</p>:null}
-    {selected===null&&<p role="status" className={styles.error}>Spotlight storage isn&apos;t installed yet. The homepage keeps its existing highlights until the release migration is applied.</p>}
+    <OwnerDeskHeader area="Homepage" title="Spotlight Desk" description="Choose which published highlights members see first." icon="creative" actions={[{href:"/app",label:"View homepage",icon:"home",external:true}]}/>
+    {query.saved&&<OwnerDeskNotice kind="success">Spotlight selection saved. The homepage reads these exact choices; new content does not replace them.</OwnerDeskNotice>}
+    {query.error&&<OwnerDeskNotice kind="error">Could not save Spotlights. Check for duplicate choices and ensure the database migration is installed.</OwnerDeskNotice>}
+    {missing.length>0?<OwnerDeskNotice kind="info">{missing.length} saved highlight(s) are unavailable or unpublished. Select replacements and save; PodScape will not automatically substitute new content.</OwnerDeskNotice>:null}
+    {selected===null&&<OwnerDeskNotice kind="info">Spotlight storage isn&apos;t installed yet. The homepage keeps its existing highlights until the release migration is applied.</OwnerDeskNotice>}
     <form action={saveSpotlightSelection} className={styles.form}>
       <div className={styles.sectionHead}><h2>Featured highlights</h2><small>Up to five · Displayed in this order</small></div>
       {Array.from({length:5},(_,i)=><label className={styles.slot} key={i}>

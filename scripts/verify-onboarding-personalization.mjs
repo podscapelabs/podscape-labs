@@ -39,7 +39,7 @@ assert.match(tour,/steps:\["welcome","portals","editing","layout","appearance"\]
 assert.match(progress,/welcome,portals,editing,layout,appearance/,"Server should accept new five-step proof");
 assert.match(progress,/welcome,portals,editing,layout"/,"Server must accept legacy four-step proof");
 for(const name of ["tourTop","tourBody","tourFooter","presetGrid","presetTile","presetPreview","themeGrid","themeTile","themeSwatch","themeSummary"]){
- assert.ok(css.includes("."+name+"{"),"Missing onboarding style "+name);
+ assert.ok(css.includes("."+name+"{")||css.includes("."+name+","),"Missing onboarding style "+name);
 }
 assert.match(css,/overflow-y:auto/,"Only onboarding body should scroll");
 assert.match(css,/\.tourFooter\{flex:none/,"Buttons and progress must remain visible");
