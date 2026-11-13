@@ -29,7 +29,7 @@ export default async function OwnerToolsPage() {
       <section className={styles.quickSection} aria-label="Owner quick access">
         <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>RIGHT AT HAND</p><h2>Quick actions</h2></div></div>
         <PortalShortcutDock portal="owner-studio" label="Owner Studio shortcuts"
-          defaults={["/account/owner-tools/analytics","/admin/feedback","/admin/puzzle-desk","/admin/early-access"]}
+          defaults={["/account/owner-tools/analytics","/admin/feedback","/admin/puzzle-desk","/admin/early-access","/admin/species","/admin/products"]}
           features={[...ownerOperations,...ownerDesks].map(item=>({id:item.href,label:item.title,icon:item.icon,href:item.href}))}/>
 
       </section>
