@@ -33,6 +33,6 @@ export default async function CardDesk({searchParams}:{searchParams:Promise<{q?:
       <div className={styles.list}>{visible.map((card,i)=><Link className={styles.item} key={card.id} href={"/admin/podbound/"+card.id}><span className={styles.thumbnail}>{imageUrls[i]?<Image src={imageUrls[i]!} alt="" fill unoptimized sizes="64px"/>:<PodscapeLineIcon name="podbound"/>}</span><span className={styles.identity}><strong>{card.title}</strong><small>{card.card_number?card.card_number+" · ":""}{card.set_name} · {card.category}{card.alternate_art_path?" · Alt art":""}</small></span><span className={styles.pill} data-status={card.status}>{card.status}</span><span className={styles.arrow}>→</span></Link>)}
       {!visible.length&&<div className={styles.empty}><PodscapeLineIcon name="podbound"/><h3>No cards here yet.</h3><p>Create your first draft, or adjust your filters.</p><form action={createPodBoundCard}><button className={styles.primary}>Create a card</button></form></div>}</div>
     </section>
-    <p className={styles.note}>Only you can manage this archive. Publishing a card stores its status; the public Card Gallery will be connected in the next phase.</p>
+    <p className={styles.note}>Only you can manage this archive. Published cards appear in the public Card Catalogue; drafts and archived cards remain hidden.</p>
   </main>;
 }
