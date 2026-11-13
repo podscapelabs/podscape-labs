@@ -14,7 +14,7 @@ const tasks=[{label:"Misted",kind:"maintenance",icon:"droplet"},{label:"Fed",kin
 type UndoRecord={id:string;binId:string;label:string;previous?:string|null};
 function mistReminder(id:string){try{const k="podscape-keeper-reminder-"+id,old=localStorage.getItem(k);if(!old)return undefined;const obj=JSON.parse(old);if(!Number.isInteger(obj.intervalDays))return undefined;const now=new Date(),day=[now.getFullYear(),String(now.getMonth()+1).padStart(2,"0"),String(now.getDate()).padStart(2,"0")].join("-");localStorage.setItem(k,JSON.stringify({...obj,lastMisted:day,updatedAt:now.toISOString()}));return old}catch{return undefined}}
 function restoreReminder(id:string,value:string|null|undefined){if(value===undefined)return;try{const k="podscape-keeper-reminder-"+id;if(value===null)localStorage.removeItem(k);else localStorage.setItem(k,value)}catch{}}
-export function ManagerWorkflowPanel({bins,mode,onClose,initialBinId,speciesOptions=[],onBinCreated,events=[],activityAvailable=true}:{bins:ManagerBin[];mode:ManagerWorkflow;onClose:()=>void;initialBinId?:string|null;speciesOptions?:{id:string;name:string;scientific:string;existingNames:string[]}[];onBinCreated?:()=>void;events?:ManagerEvent[];activityAvailable?:boolean}){
+export function ManagerWorkflowPanel({bins,mode,onClose,initialBinId,speciesOptions=[],onBinCreated,events=[],activityAvailable=true,onSwitchWorkflow}:{bins:ManagerBin[];mode:ManagerWorkflow;onClose:()=>void;initialBinId?:string|null;speciesOptions?:{id:string;name:string;scientific:string;existingNames:string[]}[];onBinCreated?:()=>void;events?:ManagerEvent[];activityAvailable?:boolean;onSwitchWorkflow?:(mode:ManagerWorkflow,id?:string)=>void}){
  const initialBin=bins.find(item=>item.id===initialBinId)||bins[0];
  const router=useRouter(),[selected,setSelected]=useState(initialBin?.id||""),[query,setQuery]=useState(""),[note,setNote]=useState(""),[count,setCount]=useState(String(initialBin?.quantity??0)),[breeding,setBreeding]=useState(initialBin?.breeding||"unknown"),[ids,setIds]=useState<string[]>([]),[pending,start]=useTransition(),[error,setError]=useState(""),[message,setMessage]=useState(""),[undo,setUndo]=useState<UndoRecord[]|null>(null),[logged,setLogged]=useState<string[]>([]),[confirm,setConfirm]=useState<{kind:string;label:string;ids:string[]}|null>(null);
  const matches=bins.filter(item=>[item.name,item.label,item.species,item.displayName,item.scientificName].some(v=>v.toLowerCase().includes(query.trim().toLowerCase())));
@@ -52,7 +52,7 @@ export function ManagerWorkflowPanel({bins,mode,onClose,initialBinId,speciesOpti
   <div className={styles.binList} role="group" aria-label="Your colonies">
   {matched.map(item=><div key={item.id} className={styles.colonyRow}>
     <span><strong>{item.displayName}</strong><small>{item.scientificName}</small><small>{[item.binDetail,item.label].filter(Boolean).join(" · ")}</small></span>
-    <button type="button" onClick={()=>{router.push("/keeper/"+item.id)}} aria-label={"Open "+item.displayName}>Open</button>
+    <div className={styles.colonyActions}><button type="button" onClick={()=>onSwitchWorkflow?.("care",item.id)} aria-label={"Log care for "+item.displayName}>Care</button><button type="button" onClick={()=>router.push("/keeper/"+item.id)} aria-label={"Open full record for "+item.displayName}>Details</button></div>
   </div>)}
   {!matched.length?<p className={styles.noMatches}>No bins match this search.</p>:null}
   </div>
