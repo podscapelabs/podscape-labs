@@ -14,7 +14,7 @@ export function SpeciesRequestButton({launchSignal,hideTrigger=false}:{launchSig
   event.preventDefault();const name=String(new FormData(event.currentTarget).get("name")||"");setError("");
   start(async()=>{try{const result=await submitSpeciesRequest(name);if(result.error)setError(result.error);else setSent(true);}catch{setError("Could not send your request. Please try again.");}});
  }
- return <div className={styles.requestEntry}>
+ return <div className={hideTrigger?undefined:styles.requestEntry}>
   {!hideTrigger?<button type="button" ref={trigger} onClick={()=>{opener.current=trigger.current;setSent(false);setError("");setOpen(true);}}>Request species</button>:null}
   {open?createPortal(<PodscapeInfoDialog title="Request a species" eyebrow="LEAF LEDGER" icon="leaf" onClose={close}>
    {sent?<div className={styles.card}><p role="status">Request sent! Thanks for helping grow Leaf Ledger.</p><button type="button" onClick={close}>Done</button></div>:<form className={styles.card} onSubmit={submit}>
