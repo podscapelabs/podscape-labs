@@ -67,5 +67,6 @@ jobs:
           node scripts/verify-universe-consistency-audit.mjs
           node scripts/verify-universe-interactions.mjs
           node scripts/verify-interface-route-consistency.mjs
+          node scripts/verify-visual-refinement.mjs
       - name: Build Next.js application
         run: pnpm run build
