@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { PlatformShell } from "@/components/PlatformShell";
+import {PortalShortcutDock} from "@/components/PortalShortcutDock";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
 import { getSpeciesRecords } from "@/lib/species-store";
 import { getProductRecords } from "@/lib/product-store";
@@ -15,12 +16,7 @@ export const metadata: Metadata = {
   description: "Meet PodBound, an original isopod strategy card game. Explore the game, its artwork, the real species behind it, and the latest studio creations.",
 };
 
-const destinations = [
-  { icon: "podbound" as const, title: "The Game", description: "Discover the world of PodBound.", href: "#the-game", ready: true },
-  { icon: "book" as const, title: "How to Play", description: "Rules and strategies are being prepared.", href: "", ready: false },
-  { icon: "leaf" as const, title: "Card Catalogue", description: "Browse revealed cards and original artwork.", href: "/podbound/cards", ready: true },
-  { icon: "creative" as const, title: "Simulator", description: "The 2.0 simulator will arrive when playtesting is ready.", href: "", ready: false },
-];
+
 
 export default async function PodBoundHome() {
   const [speciesRecords, productRecords] = await Promise.all([getSpeciesRecords(), getProductRecords()]);
@@ -48,14 +44,13 @@ export default async function PodBoundHome() {
 
       <section className={styles.section} aria-labelledby="explore-title">
         <div className={styles.heading}><h2 id="explore-title">Explore PodBound</h2><span>One little world. Plenty to discover.</span></div>
-        <div className={styles.destinations}>
-          {destinations.map((item) => <div className={styles.destination} key={item.title}>
-            <span className={styles.destinationIcon}><PodscapeLineIcon name={item.icon} /></span>
-            <h3>{item.title}</h3><p>{item.description}</p>
-            {item.ready ? <Link href={item.href} className={styles.destinationArrow} aria-label={"Explore " + item.title}>→</Link> :
-              <span className={styles.soon}>Coming soon</span>}
-          </div>)}
-        </div>
+        <PortalShortcutDock portal="podbound" label="PodBound shortcuts" defaults={["game","cards","shop","ledger"]} features={[
+          {id:"game",label:"The Game",icon:"podbound",href:"#the-game"},
+          {id:"cards",label:"Card Gallery",icon:"book",href:"/podbound/cards"},
+          {id:"shop",label:"PodBound Shop",icon:"shop",href:"#shop-title"},
+          {id:"ledger",label:"Real Species",icon:"leaf",href:"#ledger-title"}
+        ]}/>
+
       </section>
 
       <section id="the-game" className={styles.story} aria-labelledby="story-title">
