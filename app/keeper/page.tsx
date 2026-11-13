@@ -38,6 +38,7 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
   const selected = (await searchParams).species;
   const selectedRecord = species.find((record) => record.id === selected && record.kind === "species");
   const speciesById = new Map(species.map((record) => [record.id, record]));
+  const speciesOptions=species.filter(record=>record.kind==="species"&&record.status==="published"&&!record.archivedAt).map(record=>({id:record.id,name:speciesDisplayName(record),scientific:speciesScientificName(record),existingNames:enclosures.filter(bin=>bin.speciesId===record.id).map(bin=>bin.name)})).sort((a,b)=>a.name.localeCompare(b.name));
   const active = enclosures.filter((enclosure) => !enclosure.isArchived);
   const archived = enclosures.filter((enclosure) => enclosure.isArchived);
   const uniqueSpecies = new Set(active.map(enclosure => enclosure.speciesId)).size;
@@ -65,7 +66,7 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
           <ManagerWorkspace hero={<section className={styles.managerHero} aria-label="Manager portal">
             {heroSpecies?.image?<div className={styles.managerHeroPhoto}><Image src={heroSpecies.image} alt="" fill sizes="(max-width: 720px) 100vw, 1100px" style={{objectFit:"cover",objectPosition:`${heroSpecies.imagePositionX}% ${heroSpecies.imagePositionY}%`}}/></div>:null}
             <div className={styles.managerHeroContent}><span>MANAGER · YOUR WORKSPACE</span><h1>Your colonies</h1><p>Everything you need to keep your colonies organized.</p><div className={styles.managerHeroActions}><Link href={firstBinHref}>{recent.length?"Open latest bin":"Create your first bin"} <span aria-hidden="true">→</span></Link>{recent.length?<Link className={styles.heroSecondaryAction} href="/keeper/collection?view=active">Browse all bins</Link>:null}</div></div>
-          </section>} scope={managerUser?.id || "guest"} primaryHref={firstBinHref} bins={managerBins} events={activity} activityAvailable={activityAvailable} stats={<div className={styles.metrics} role="group" aria-label="Manager collection snapshot">
+          </section>} scope={managerUser?.id || "guest"} primaryHref={firstBinHref} speciesOptions={speciesOptions} bins={managerBins} events={activity} activityAvailable={activityAvailable} stats={<div className={styles.metrics} role="group" aria-label="Manager collection snapshot">
             <Link href="/keeper/collection"><PodscapeLineIcon name="leaf" /><strong>{uniqueSpecies}</strong><span>Species</span><b>›</b></Link>
             <Link href="/keeper/collection"><PodscapeLineIcon name="bin" /><strong>{active.length}</strong><span>Bins</span><b>›</b></Link>
             <Link href="/keeper/collection"><PodscapeLineIcon name="community" /><strong>{totalPopulation}</strong><span>Recorded population</span><b>›</b></Link>
