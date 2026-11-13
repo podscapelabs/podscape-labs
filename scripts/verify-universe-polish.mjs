@@ -104,9 +104,10 @@ const collection=read("app/keeper/collection/page.tsx");
 for(const path of ["/keeper/scan?manual=1","/keeper/new","/keeper/import","/ledger"])
  assert.ok(collection.includes(path),"Keeper action should be one click: "+path);
 const fun=read("app/fun-zone/FunZonePortal.tsx");
-assert.match(fun,/active\.includes\("categories"\)/,"No invisible category anchor");
-assert.match(fun,/active\.includes\("favourites"\)/,"No invisible favourites anchor");
-assert.match(fun,/active\.includes\("rankings"\)/,"Rankings shortcut must work when widget hidden");
+assert.match(fun,/id==="categories"\?"arcade-games":/,"Category anchor must belong to a rendered category widget");
+assert.match(fun,/id==="favourites"\?"arcade-favourites":/,"Favorites anchor must belong to a rendered Favorites widget");
+assert.match(fun,/id==="rankings"\?"rankings-spotlight":/,"Rankings anchor must belong to a rendered Rankings widget");
+assert.doesNotMatch(fun,/href:"#arcade-(?:games|favourites)"/,"Quick play must not link to optional hidden widget anchors");
 assert.match(fun,/\/fun-zone\/pod-exchange/);
 assert.match(fun,/\/fun-zone\/picture-puzzles/);
 const shop=read("app/shop/page.tsx");
