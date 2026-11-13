@@ -36,7 +36,7 @@ const library:Tool[]=[
  {id:"bulkcare",label:"Multi-care",href:"/keeper/scan?manual=1",icon:"community"},
  {id:"population",label:"Population",href:"/keeper/collection",icon:"community"},
  {id:"schedule",label:"Schedule",href:"/keeper/schedule",icon:"calendar"},
- {id:"notes",label:"Observations",href:"/keeper/collection?intent=notes",icon:"note"},
+ {id:"notes",label:"Add note",href:"/keeper/collection?intent=notes",icon:"note"},
  {id:"colonies",label:"All colonies",href:"/keeper/collection",icon:"jar"},
  {id:"history",label:"Care history",href:"/keeper/activity",icon:"note"},
  {id:"activity",label:"Recent activity",href:"/keeper/activity",icon:"note"}
