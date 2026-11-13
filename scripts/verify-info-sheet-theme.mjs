@@ -31,7 +31,8 @@ assert.doesNotMatch(updatesCss,/\.backdrop|rgba\(10,25,19/,"No legacy green upda
 assert.match(updatesCss,/var\(--ps-accent-text\)/,"Update actions use contrast-aware text");
 assert.match(rankingCss,/\.dialog::backdrop\{background:color-mix\(in srgb,var\(--ps-bg/,"Rankings help uses same themed backdrop");
 assert.match(exchange,/rulesOpen\?createPortal\(<PodscapeInfoDialog/,"Exchange rules use shared help sheet");
-assert.match(exchange,/className=\{styles\.agendaFoot\}/,"Market event widget is condensed");
+assert.match(exchange,/className=\{styles\.marketPulse\}/,"Market event summary lives in the compact market pulse");
+assert.ok(exchange.indexOf("Leaf Street intelligence")<exchange.indexOf("className={styles.marketPulse}"),"Market news takes priority over events");
 assert.doesNotMatch(exchange,/className=\{styles\.agendaNext\}/,"Remove redundant second event card");
 assert.match(exchangeCss,/\.rulesShortcut/,"Exchange rules remain accessible");
 assert.doesNotMatch(exchangeCss,/\.rulesBody\{/,"Old accordion rules CSS is removed");
