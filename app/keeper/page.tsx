@@ -32,7 +32,7 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
 
   let activity: Awaited<ReturnType<typeof listManagerActivity>>=[];
   let activityAvailable=true;
-  if(member.signedIn&&!unavailable)try{activity=await listManagerActivity(12);}catch{activityAvailable=false;}
+  if(member.signedIn&&!unavailable)try{activity=await listManagerActivity(30);}catch{activityAvailable=false;}
 
   const heroSpecies=species.find(record=>record.kind==="species"&&record.image);
   const selected = (await searchParams).species;
