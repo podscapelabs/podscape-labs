@@ -1,6 +1,6 @@
 "use client";
 import {WidgetLibraryHeading,WidgetLibrarySummary} from "@/components/WidgetLibraryChrome";
-import {PortalActionRail} from "@/components/PortalActionRail";
+import {PortalShortcutDock,type PortalShortcut} from "@/components/PortalShortcutDock";
 import {useEffect,useLayoutEffect,useRef,useState} from "react";
 import Link from "next/link";
 import {PodscapeLineIcon,type PodscapeIconName} from "@/components/PodscapeLineIcon";
@@ -153,13 +153,17 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp}:{us
  return <div className={`${styles.portal} ${editing?homeEditStyles.homeCanvasEditing:""}`} data-workspace-root="fun-zone" onPointerMove={e=>{if(editing)moveDrag(e)}} onPointerUp={()=>{if(editing)stopDrag()}} onPointerCancel={()=>{if(editing)stopDrag()}}>
   <header className={styles.hero}><div><span className={styles.heroEyebrow}>PODSCAPE / FUN ZONE</span><h1>Your little arcade.</h1><p>Games, puzzles and a little market drama.</p></div></header>
   <section className={styles.quickStart} aria-label="Explore Fun Zone"><div className={styles.quickStartHeading}><strong>Explore the arcade</strong><span>Everything one tap away</span></div>
-   <PortalActionRail label="Fun Zone shortcuts" compact layout="grid" actions={[
-  {label:"Game categories",icon:"grid",...(active.includes("categories")?{href:"#arcade-games"}:{onClick:()=>setShortcutPanel(value=>value==="categories"?null:"categories"),description:"Browse available games by category"})},
-  {label:"My games",icon:"bookmark",...(active.includes("favourites")?{href:"#arcade-favourites"}:{onClick:()=>setShortcutPanel(value=>value==="favourites"?null:"favourites"),description:"View your saved games"})},
-  {label:"Rankings",icon:"trophy",href:active.includes("rankings")?"#rankings-spotlight":"/fun-zone/leaderboard"},
-  {label:"Pod Exchange",icon:"gamepad",href:"/fun-zone/pod-exchange"},
-  {label:"Picture puzzles",icon:"grid",href:"/fun-zone/picture-puzzles"}
- ]}/>
+   <PortalShortcutDock portal="fun-zone" label="Fun Zone shortcuts" scope={scopeKey}
+    defaults={["categories","favourites","rankings","exchange","picture"]}
+    features={[
+     {id:"categories",label:"Game categories",icon:"grid",...(active.includes("categories")?{href:"#arcade-games"}:{onClick:()=>setShortcutPanel(value=>value==="categories"?null:"categories")})},
+     {id:"favourites",label:"My games",icon:"bookmark",...(active.includes("favourites")?{href:"#arcade-favourites"}:{onClick:()=>setShortcutPanel(value=>value==="favourites"?null:"favourites")})},
+     {id:"rankings",label:"Rankings",icon:"trophy",href:active.includes("rankings")?"#rankings-spotlight":"/fun-zone/leaderboard"},
+     {id:"exchange",label:"Pod Exchange",icon:"gamepad",href:"/fun-zone/pod-exchange"},
+     {id:"picture",label:"Picture puzzles",icon:"grid",href:"/fun-zone/picture-puzzles"},
+     {id:"progress",label:"My progress",icon:"achievement",href:"/account/progress"},
+     ...ARCADE_GAMES.map(game=>({id:"game:"+game.key,label:game.title,icon:game.icon,href:game.href}))
+    ] satisfies PortalShortcut[]}/>
    {shortcutPanel&&!active.includes(shortcutPanel)?<div className={styles.shortcutContent} role="region" aria-label={shortcutPanel==="categories"?"Browse game categories":"Your saved games"}>
     <button type="button" className={styles.shortcutClose} onClick={()=>setShortcutPanel(null)} aria-label="Close shortcut details">Close <PodscapeLineIcon name="close"/></button>
     {renderWidget(shortcutPanel)}
