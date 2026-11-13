@@ -1,4 +1,5 @@
 "use client";
+import {feedbackAllowedOnRoute} from "@/lib/interface-route-policy";
 import {useEffect,useId,useRef,useState} from "react";
 import {createPortal} from "react-dom";
 import {usePathname} from "next/navigation";
@@ -12,7 +13,7 @@ export function FloatingFeedback({enabled}:{enabled:boolean}){
  const [category,setCategory]=useState<Category>("bug"),[message,setMessage]=useState("");
  const [sending,setSending]=useState(false),[success,setSuccess]=useState(false),[error,setError]=useState("");
  const heading=useId(),dialog=useRef<HTMLDivElement>(null),trigger=useRef<HTMLButtonElement>(null);
- const excluded=pathname==="/"||pathname.startsWith("/admin")||pathname.startsWith("/account/owner-tools")||pathname.startsWith("/fun-zone/picture-puzzles/")||pathname.startsWith("/auth/")||pathname.startsWith("/account/login")||pathname.startsWith("/account/register")||pathname.startsWith("/account/reset")||pathname.startsWith("/early-access");
+ const excluded=!feedbackAllowedOnRoute(pathname);
  useEffect(()=>setMounted(true),[]);
  useEffect(()=>{if(!open)return;const previous=document.activeElement as HTMLElement|null;
   const triggerNode=trigger.current;
@@ -25,9 +26,10 @@ export function FloatingFeedback({enabled}:{enabled:boolean}){
    if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
    else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
   };
+  const previousOverflow=document.body.style.overflow;
   window.addEventListener("keydown",handle);document.body.style.overflow="hidden";
   requestAnimationFrame(()=>dialog.current?.querySelector<HTMLElement>('button[aria-label="Close feedback"]')?.focus({preventScroll:true}));
-  return ()=>{window.removeEventListener("keydown",handle);document.body.style.overflow="";(triggerNode||previous)?.focus()};
+  return ()=>{window.removeEventListener("keydown",handle);document.body.style.overflow=previousOverflow;(triggerNode||previous)?.focus()};
  },[open]);
  if(!mounted||!enabled||excluded)return null;
  const close=()=>{if(sending)return;setOpen(false)};
