@@ -1,5 +1,5 @@
 import Link from "next/link";
-import {OwnerDeskHeader} from "@/components/OwnerDeskFoundation";
+import {OwnerDeskHeader,OwnerDeskNotice} from "@/components/OwnerDeskFoundation";
 import {redirect} from "next/navigation";
 import {isAdminAuthenticated} from "@/lib/admin-auth";
 import {DIFFICULTIES,PUZZLE_TYPES,LEVEL_NAMES,levelLabel,gridDescription,listPicturePuzzles,picturePuzzleImage,type PicturePuzzle} from "@/lib/picture-puzzles";
@@ -49,9 +49,9 @@ export default async function PuzzleDesk({searchParams}:{searchParams:Promise<{s
  const drafts=total-published;
  return <main className={styles.page}><div className={styles.wrap}>
   <OwnerDeskHeader area="Fun Zone" title="Puzzle Desk" description="Upload artwork, choose a challenge, play-test it, then publish." icon="grid" actions={[{href:"/fun-zone/picture-puzzles",label:"View puzzles",icon:"gamepad",external:true}]} aside={<div className={styles.heroStats} aria-label="Puzzle library overview"><span><strong>{total}</strong> Total</span><span><strong>{drafts}</strong> Drafts</span><span><strong>{published}</strong> Published</span></div>}/>
-  {params.saved?<p role="status" className={styles.notice}>Puzzle {params.saved==="updated"?"updated":params.saved==="draft"?"saved as draft":params.saved+" successfully"}.</p>:null}
-  {params.error?<p role="alert" className={styles.alert}>{params.error==="completed-immutable"?"This puzzle already has completions. Its format, difficulty and level cannot change without affecting player progress.":params.error==="artist-credit"?"Add an original artist credit before publishing this puzzle.":"Could not save. Check the required fields, artwork, storage and database."}</p>:null}
-  {puzzles===null?<p role="alert" className={styles.alert}>Puzzle storage is unavailable. Check the picture puzzle database configuration.</p>:null}
+  {params.saved?<OwnerDeskNotice kind="success">Puzzle {params.saved==="updated"?"updated":params.saved==="draft"?"saved as draft":params.saved+" successfully"}.</OwnerDeskNotice>:null}
+  {params.error?<OwnerDeskNotice kind="error">{params.error==="completed-immutable"?"This puzzle already has completions. Its format, difficulty and level cannot change without affecting player progress.":params.error==="artist-credit"?"Add an original artist credit before publishing this puzzle.":"Could not save. Check the required fields, artwork, storage and database."}</OwnerDeskNotice>:null}
+  {puzzles===null?<OwnerDeskNotice kind="error">Puzzle storage is unavailable. Check the picture puzzle database configuration.</OwnerDeskNotice>:null}
 
   <section className={styles.card} aria-labelledby="create-puzzle-heading">
    <div className={styles.heading}><span>CREATE A CHALLENGE</span><h2 id="create-puzzle-heading">New picture puzzle</h2><p>One simple workflow. Configure it, play-test it, then save a private draft.</p></div>
