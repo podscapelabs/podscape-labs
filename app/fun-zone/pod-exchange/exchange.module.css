@@ -384,7 +384,7 @@
 .intelligenceLead>p{font-size:12px}
 .intelligenceLead>small{font-size:11px}
 .intelligenceRumour{padding:13px 16px}
-.journalHelp{display:inline-flex;align-items:center;justify-content:center;gap:7px;flex:none;min-height:36px;padding:8px 11px;border-radius:11px;border:1px solid var(--border);background:var(--surface-secondary);color:var(--text-primary);font:750 11px/1.2 inherit;cursor:pointer}
+.journalHelp{display:inline-flex;align-items:center;justify-content:center;gap:7px;flex:none;min-height:36px;padding:8px 11px;border-radius:11px;border:1px solid var(--border);background:var(--surface-secondary);color:var(--text-primary);font-family:inherit;font-size:11px;line-height:1.2;font-weight:750;cursor:pointer}
 .journalHelp svg{width:16px;height:16px;color:var(--accent)}
 .journalHelp:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .marketPulse{margin-bottom:11px}
