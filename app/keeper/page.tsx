@@ -15,6 +15,7 @@ import { getMemberCollectionState } from "@/lib/member-collection";
 import { listEnclosures, listManagerActivity } from "@/lib/keeper";
 import { getSpeciesRecords } from "@/lib/species-store";
 import { speciesDisplayName, speciesScientificName } from "@/data/species";
+import {binCardIdentity} from "@/lib/bin-identity";
 import styles from "./page.module.css";
 
 export const dynamic = "force-dynamic";
@@ -46,6 +47,9 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
   const managerBins:ManagerBin[]=active.map(enclosure=>({
     id:enclosure.id,name:enclosure.name,label:enclosure.label,
     species:speciesById.get(enclosure.speciesId)?.commonName||"Species",
+    displayName:binCardIdentity(enclosure,speciesById.get(enclosure.speciesId)).title,
+    scientificName:binCardIdentity(enclosure,speciesById.get(enclosure.speciesId)).scientific,
+    binDetail:binCardIdentity(enclosure,speciesById.get(enclosure.speciesId)).binName,
     quantity:enclosure.quantity,status:enclosure.status,breeding:enclosure.breeding,
     createdAt:enclosure.createdAt,updatedAt:enclosure.updatedAt
   }));
@@ -70,12 +74,12 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
             {recent.length ? <div className={styles.attentionList}>{recent.map(enclosure => {
               const record = speciesById.get(enclosure.speciesId);
               return <div className={styles.directBinRow} key={enclosure.id}>
-                <Link className={styles.directBinMain} href={`/keeper/${enclosure.id}`} aria-label={`Open ${enclosure.name}`}>
+                <Link className={styles.directBinMain} href={`/keeper/${enclosure.id}`} aria-label={`Open ${binCardIdentity(enclosure,record).title}`}>
                   <span className={styles.thumb}>{record?.image ? <Image src={record.image} alt="" fill sizes="58px" style={{objectFit:"cover",objectPosition:`${record.imagePositionX}% ${record.imagePositionY}%`}}/>:<PodscapeLineIcon name="jar"/>}</span>
-                  <span><strong>{enclosure.name === "Primary colony" && record ? speciesDisplayName(record) : enclosure.name}</strong><small>{record ? speciesDisplayName(record) : "Species record"} · {enclosure.status.replaceAll("-"," ")}</small></span>
+                  <span><strong>{binCardIdentity(enclosure,record).title}</strong><small>{binCardIdentity(enclosure,record).scientific}</small><small>{[binCardIdentity(enclosure,record).binName,enclosure.label,enclosure.status.replaceAll("-"," ")].filter(Boolean).join(" · ")}</small></span>
                   <b aria-hidden="true">›</b>
                 </Link>
-                <ManagerInlineCare binId={enclosure.id} binName={enclosure.name} compact/>
+                <ManagerInlineCare binId={enclosure.id} binName={binCardIdentity(enclosure,record).title} compact/>
               </div>;
             })}</div> : <FirstActionEmptyState icon="jar" eyebrow="YOUR FIRST COLONY" title="Your first colony starts here." description="Add an enclosure to begin recording its population, care and observations. Your new colony will appear here automatically." primary={{href:"/keeper/new",label:"Add Your First Colony"}} secondary={{href:"/ledger",label:"Explore species"}} compact/>}
           </section>} />
