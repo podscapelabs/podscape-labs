@@ -4,3 +4,16 @@
 .addBinContent{min-width:0}
 .addBinContent>p{margin:8px 0 4px;color:var(--text-secondary);font-size:12px;line-height:1.5}
 .addBinContent a{color:var(--accent);font-weight:750}
+
+/* In-portal colony directory keeps quick care one tap away. */
+.colonyDirectory{min-width:0}
+.colonyDirectory .binList{max-height:325px;overflow:auto;margin:9px 0}
+.colonyRow{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:65px;padding:10px;border:1px solid var(--border);border-radius:11px;background:var(--surface);color:var(--text-primary)}
+.colonyRow>span{display:grid;min-width:0;flex:1;gap:3px}
+.colonyRow strong{font-size:12px;line-height:1.2}
+.colonyRow small{font-size:10px;color:var(--text-secondary);line-height:1.2}
+.colonyActions{display:flex;flex:none;gap:5px}
+.colonyActions button{min-height:38px;padding:7px 9px;border:1px solid var(--border);border-radius:9px;background:var(--surface-secondary);color:var(--accent);font:750 11px/1.2 var(--sans);cursor:pointer}
+.colonyActions button:first-child{background:var(--accent);color:var(--accent-contrast);border-color:var(--accent)}
+.colonyActions button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+@media(max-width:400px){.colonyActions{flex-direction:column}.colonyActions button{min-height:34px}}
