@@ -20,7 +20,9 @@ export default async function ColonyDetails({params,searchParams}:{params:Promis
  const {id}=await params;if(!/^[a-f0-9-]{36}$/i.test(id))notFound();
  const data=await getEnclosure(id);if(!data)notFound();
  const {enclosure}=data;
- const openCare=(await searchParams).panel==="care";
+ const activePanel=(await searchParams).panel;
+ const openCare=activePanel==="care";
+ const openBinDetails=activePanel==="bin";
  let mistingDate="";
  try{const dates=await listQuickCareDates([id]);mistingDate=dates[id]?.Misted||"";}catch{/* Settings remain usable if care history is unavailable. */}
  const db=await customerSupabase();
@@ -33,7 +35,7 @@ export default async function ColonyDetails({params,searchParams}:{params:Promis
   <div className={styles.extras}><PinToHome pin={{kind:"colony",id}} userId={user?.id||null}/>{record?<Link href={"/ledger/"+record.slug}>Species reference ↗</Link>:null}</div>
   
   <BinLifecycleControls id={id} name={enclosure.name} speciesId={enclosure.speciesId} archived={enclosure.isArchived}/>
-  <details className={styles.section}><summary><span className={styles.sectionIcon} aria-hidden="true"><PodscapeLineIcon name="manager" /></span><span className={styles.sectionLabel}><strong>Bin details</strong><small>Population, condition & setup</small></span><span className={styles.chevron} aria-hidden="true">⌄</span></summary><div className={styles.sectionBody}><KeeperControls entry={enclosure} showLogForm={false}/></div></details>
+  <details className={styles.section} id="bin-details" open={openBinDetails}><summary><span className={styles.sectionIcon} aria-hidden="true"><PodscapeLineIcon name="manager" /></span><span className={styles.sectionLabel}><strong>Bin details</strong><small>Custom bin name, population, condition & setup</small></span><span className={styles.chevron} aria-hidden="true">⌄</span></summary><div className={styles.sectionBody}><KeeperControls entry={enclosure} showLogForm={false}/></div></details>
   <details className={styles.section} id="care-reminders" open={openCare}><summary><span className={styles.sectionIcon} aria-hidden="true">▣</span><span className={styles.sectionLabel}><strong>QR & care reminders</strong><small>Labels and misting schedule</small></span><span className={styles.chevron} aria-hidden="true">⌄</span></summary><div className={styles.sectionBody}><KeeperBinTools binId={id} binName={enclosure.name} species={species} lastRecordedMisting={mistingDate}/></div></details>
   <WorkspaceLinks items={[{href:"/keeper/"+id+"/history",label:"Care history"},{href:"/keeper/schedule",label:"Schedules"}]}/>
  </div></main><KeeperMobileNav active="keeper"/></PlatformShell>;
