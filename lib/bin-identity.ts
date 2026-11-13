@@ -12,12 +12,15 @@ export type BinSpeciesIdentity={
  commonName?:string|null;morph?:string|null;scientificName?:string|null;
  genus?:string|null;species?:string|null;
 };
+export function organismDisplayName(record?:BinSpeciesIdentity|null){
+ const morph=(record?.morph||"").trim();
+ const generic=/^(?:wild[ -]?type|normal|standard|default|none|n\/?a)$/i.test(morph);
+ return (!generic&&morph)||(record?.commonName||"").trim()||morph;
+}
 export function binCardIdentity(bin:{name:string;label?:string},record?:BinSpeciesIdentity|null){
  const name=(bin.name||"").trim();
- const morph=(record?.morph||"").trim();
- const common=(record?.commonName||"").trim();
  const isGenerated=/^(?:primary (?:colony|enclosure|bin)|bin [a-f0-9]{6})$/i.test(name);
- const title=morph||common||(!isGenerated?name:"Colony");
+ const title=organismDisplayName(record)||(!isGenerated?name:"Colony");
  const scientific=(record?.scientificName||"").trim()||
   [record?.genus?.trim(),record?.species?.trim()].filter(Boolean).join(" ")||"Scientific identity unavailable";
  // A real custom bin name is useful as a third line, particularly for multiple
