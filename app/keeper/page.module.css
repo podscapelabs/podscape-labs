@@ -640,3 +640,24 @@
    permanent toolbar. Keep the active task readable above the fixed mobile nav. */
 .managerInlineWorkflow{min-width:0;scroll-margin-top:95px;padding-bottom:24px}
 @media(max-width:720px){.managerInlineWorkflow{scroll-margin-top:calc(80px + env(safe-area-inset-top,0px));padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}}
+
+/* Manager inline history: compact, expandable records in the existing workflow surface. */
+.managerHistoryEmbedded{min-width:0;max-width:none;margin:0}
+.managerHistoryEmbedded>p{margin:0 0 9px;font-size:11px!important}
+.managerHistoryEmbedded .managerHistoryFilters{margin:9px 0;gap:8px}
+.managerHistoryEmbedded .managerHistoryFilters :is(input,select){font-size:16px;min-height:42px}
+.managerHistoryEmbedded .managerHistoryList{max-height:340px;overflow:auto;border-radius:12px}
+.managerHistoryEntry{border-bottom:1px solid var(--border)}
+.managerHistoryEntry:last-child{border:0}
+.managerHistoryEntry summary{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:54px;padding:10px 12px;cursor:pointer;list-style:none}
+.managerHistoryEntry summary::-webkit-details-marker{display:none}
+.managerHistoryEntry summary>span{display:grid;min-width:0;gap:3px}
+.managerHistoryEntry summary strong{font-size:12px;text-transform:capitalize}
+.managerHistoryEntry summary small{font-size:11px;overflow-wrap:anywhere}
+.managerHistoryEntry summary time{flex:none;font-size:10px}
+.managerHistoryEntry[open]{background:var(--surface-secondary)}
+.managerHistoryEntry>div{padding:0 12px 12px;color:var(--text-primary);font-size:11px;line-height:1.5}
+.managerHistoryEntry>div p{margin:0 0 9px;overflow-wrap:anywhere;white-space:pre-wrap}
+.managerHistoryEntry>div a{color:var(--accent);font-weight:800;text-decoration:underline}
+.managerHistoryEntry summary:focus-visible{outline:2px solid var(--focus);outline-offset:-3px}
+@media(max-width:520px){.managerHistoryEmbedded .managerHistoryFilters{grid-template-columns:1fr}.managerHistoryEntry summary{padding:10px}}
