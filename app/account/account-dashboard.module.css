@@ -213,3 +213,8 @@
 .accountActions>a:focus-visible,.accountOwner a:focus-visible,.accountOwner summary:focus-visible,.accountSettings summary:focus-visible,.accountSettings a:focus-visible,.accountSettings button:focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:3px}
 .accountSettings .accordions{overflow:hidden}
 @media(max-width:700px){.inner{width:calc(100% - 24px)}.accountMark{width:44px;height:44px}.accountActions>a{min-height:102px}.accountOwnerGrid>a{min-height:97px}}
+
+.ownerStudioLink{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px;padding:11px 13px;margin-top:14px;border:1px solid var(--ps-border,var(--border));border-radius:var(--ps-radius-control,11px);background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-accent,var(--accent));font-size:13px;font-weight:800;text-decoration:none}
+.ownerStudioLink svg{width:20px;height:20px;flex:none}
+.ownerStudioLink:hover{border-color:var(--ps-accent,var(--accent))}
+.ownerStudioLink:focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:3px}
