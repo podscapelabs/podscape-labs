@@ -3,13 +3,13 @@
  * normal member and Owner Studio content keeps the standard controls.
  */
 const accessPages=[
- "/","/admin","/early-access",
+ "/","/early-access",
  "/account/login","/account/register","/account/sign-up",
  "/account/forgot-password","/account/change-password","/account/reset-password",
  "/admin/forgot-password","/admin/reset-password"
 ] as const;
 export function isStandaloneAccessRoute(pathname:string){
- if(pathname==="/")return true;
+ if(pathname==="/"||pathname==="/admin")return true;
  if(pathname==="/auth"||pathname.startsWith("/auth/"))return true;
  return accessPages.some(path=>path!=="/"&&(pathname===path||pathname.startsWith(path+"/")));
 }
