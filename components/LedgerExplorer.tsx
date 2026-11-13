@@ -154,7 +154,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
            {id:"discover",label:"Discover",icon:"leaf",href:"#ledger-directory"},
            {id:"collection",label:"My Collection",icon:"bookmark",href:signedIn?"/keeper/collection?view=saved":"/account/login"},
            {id:"colonies",label:"My Colonies",icon:"jar",href:signedIn?"/keeper/collection":"/account/login"},
-           {id:"guide",label:"Care Guides",icon:"book",href:"/guides"},
+           {id:"guide",label:"Care Guides",icon:"book",href:"/field-guide"},
            {id:"request",label:"Request Species",icon:"note",href:"#ledger-directory-title"}
           ]}/>
       </div>
