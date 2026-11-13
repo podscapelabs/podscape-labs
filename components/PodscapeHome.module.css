@@ -882,3 +882,11 @@
 .homeCanvasBlockActive{border-color:var(--ps-accent,var(--accent));background:color-mix(in srgb,var(--ps-accent,var(--accent)) 4%,var(--ps-surface,var(--surface)))}
 .homeCanvasBlockBar>div button{background:var(--ps-surface,var(--surface));border-color:var(--ps-border,var(--border));color:var(--ps-accent,var(--accent));min-height:44px;min-width:44px}
 @media(max-width:720px){.homeEditorOverlay>.widgetLibrary{max-height:calc(91dvh - env(safe-area-inset-top,0px));height:min(88dvh,800px);padding-bottom:calc(15px + env(safe-area-inset-bottom,0px))}.homeCanvasBlockBar>div button{min-height:44px;min-width:44px}}
+
+/* Screenshot QA: mobile Home carousels align to the same content gutters as widgets.
+   One whole card per swipe prevents the apparent off-centre/cropped-card state. */
+@media(max-width:720px){
+ .spotlightRail,.recentRail{width:100%;min-width:0;max-width:100%;box-sizing:border-box;gap:10px;scroll-snap-type:x mandatory;scroll-padding-inline:0;padding-inline:0}
+ .spotlightRail>.tile,.recentRail>.recentCategoryCard{flex:0 0 100%;width:100%;max-width:100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always}
+ .homeBlock,.homeBlock .section{min-width:0;max-width:100%}
+}
