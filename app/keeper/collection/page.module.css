@@ -54,3 +54,15 @@
 .heading .views a{background:color-mix(in srgb,var(--portal-hero-text) 8%,transparent);border-color:color-mix(in srgb,var(--portal-hero-text) 25%,transparent);color:var(--portal-hero-text)}
 .heading .views a[aria-current="page"]{background:var(--portal-hero-button-bg);border-color:var(--portal-hero-button-bg);color:var(--portal-hero-button-text)}
 @media(max-width:600px){.heading{padding:16px;border-radius:18px}.heading h1{font-size:clamp(28px,8vw,34px)}.heading .views{gap:6px}.heading .views a{min-height:40px;padding:9px 11px;font-size:11px}}
+
+/* Glanceability is the page rhythm, not a giant additional widget. */
+.overview{gap:9px;padding:12px 14px;margin:9px 0 12px;border-radius:16px}
+.overviewLabel{margin:0;color:var(--text-secondary);font:750 11px/1.25 var(--sans);letter-spacing:.04em}
+.overviewStats{gap:6px}
+.overviewStats>div{min-height:57px;padding:8px 10px;gap:2px}
+.overviewStats strong{font-size:23px}
+.overviewStats span{font-size:10px}
+.primaryTools a{min-height:44px}
+.moreTools{padding-top:4px}
+.moreTools summary{min-height:35px}
+@media(max-width:600px){.overview{padding:10px 11px;gap:8px;margin:8px 0 11px}.overviewStats>div{min-height:54px;padding:7px}.overviewStats strong{font-size:21px}.overviewStats span{font-size:10px}}
