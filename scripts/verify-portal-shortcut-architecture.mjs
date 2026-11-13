@@ -66,6 +66,15 @@ assert.match(owner,/<PortalShortcutDock portal="owner-studio"/,"Owner Studio mus
 assert.match(owner,/isAdminAuthenticated/,"Owner shortcuts must stay behind authorization");
 assert.match(owner,/\.\.\.ownerOperations,\.\.\.ownerDesks/,"All owner desks and operations must be discoverable");
 assert.match(manager,/useShortcutEditor\(ids,change,canvasEditing\)/,"Existing Manager shortcut editing must be preserved");
+assert.match(manager,/id==="add"\?"add"/,"Manager Add Bin must open an inline Quick Workflow instead of navigating away");
+assert.match(manager,/speciesOptions=\{speciesOptions\}/,"Manager workflow must receive eligible species choices");
+const workflow=read("components/ManagerWorkflowPanel.tsx");
+assert.match(workflow,/mode==="add"\?<div className=\{styles\.addBinContent\}/,"Add Bin uses existing Quick Care panel");
+assert.match(workflow,/NewBinForm species=\{speciesOptions\} embedded/,"Add Bin reuses the existing form and mutations");
+const newBinForm=read("app/keeper/new/NewBinForm.tsx");
+assert.match(newBinForm,/if\(embedded\)\{onCreated\?\.\(/,"Embedded Add Bin should stay on Manager and refresh instead of redirecting");
+assert.match(read("app/keeper/page.tsx"),/speciesOptions=\{speciesOptions\}/,"Server must supply published species and reserved bin names");
+
 assert.match(manager,/tools:\["care","notes","population","bulkcare"/,"Care, notes, population and multi-care are valid starter shortcuts");
 assert.doesNotMatch(manager,/Work from your portal/,"Do not bring back a duplicate fixed Manager action block");
 assert.match(home,/shortcuts:ReactNode/,"Home shortcut system must remain a core configurable block");
