@@ -18,9 +18,9 @@ assert.match(dock,/portal\+"\:"\+scope/,"Preference storage must be scoped by po
 assert.match(dock,/confirmWorkspaceReset\("portal-shortcuts"\)/,"Reset must only affect portal shortcuts");
 assert.doesNotMatch(dock,/>Edit shortcuts<|>Customize shortcuts</,"No extra edit button: hold-to-jiggle is primary");
 assert.match(css,/@media\(max-width:600px\)/,"Shortcut blocks must fit phones");
-assert.doesNotMatch(css,/grid\\[data-count="[1-5]"\\]/,"Never vary layout by shortcut count; every portal displays six");
-assert.match(dock,/for\\(const id of \\[\\.\\.\\.defaults,\\.\\.\\.available\\]\\)/,"Saved layouts must fill unused shortcut slots up to six without losing choices");
-assert.match(css,/grid-template-columns:repeat\\(6,/,"One consistent Home-style six-column shortcut row");
+assert.ok(!css.includes('grid[data-count="4"]')&&!css.includes('grid[data-count="5"]'),"Never vary layout by count; all portals display six");
+assert.ok(dock.includes("for(const id of [...defaults,...available])"),"Fill saved layouts to six without losing the selected order");
+assert.ok(css.includes("grid-template-columns:repeat(6,"),"One consistent six-column shortcut row");
 assert.match(dock,/onKeyDown=\{e=>\{if\(e\.key==="F2"\)/,"Keyboard users must have a non-visual shortcut editing gesture");
 assert.match(css,/prefers-reduced-motion:reduce/,"Respect reduced motion");
 
@@ -35,7 +35,7 @@ for(const [path,ids] of [
  const source=read(path);
  assert.ok(source.includes('defaults={['+ids.map(id=>'"'+id+'"').join(",")+']}'),path+" must start with six shortcuts");
 }
-assert.match(read("app/account/owner-tools/page.tsx"),/defaults=\\{\\["\\/account\\/owner-tools\\/analytics","\\/admin\\/feedback","\\/admin\\/puzzle-desk","\\/admin\\/early-access","\\/admin\\/species","\\/admin\\/products"\\]\\}/,"Owner Studio must start with six real shortcuts");
+assert.ok(read("app/account/owner-tools/page.tsx").includes('defaults={["/account/owner-tools/analytics","/admin/feedback","/admin/puzzle-desk","/admin/early-access","/admin/species","/admin/products"]}'),"Owner Studio must start with six real shortcuts");
 const fun=read("app/fun-zone/FunZonePortal.tsx");
 assert.match(fun,/<PortalShortcutDock portal="fun-zone"/,"Fun Zone must offer its custom shortcut dock");
 for(const id of ["categories","favourites","rankings","exchange","picture"])assert.ok(fun.includes('id:"'+id+'"'),"Fun Zone shortcut missing: "+id);
