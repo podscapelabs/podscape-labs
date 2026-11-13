@@ -6,6 +6,7 @@ import {useShortcutEditor} from "./useShortcutEditor";
 import {moveNavigationSlot} from "./navigation-customization";
 import {confirmWorkspaceReset} from "./workspace-edit-standards";
 import styles from "./PortalShortcutDock.module.css";
+import homeStyles from "./PodscapeHome.module.css";
 
 export type PortalShortcut={id:string;label:string;icon:PodscapeIconName;href?:string;onClick?:()=>void;description?:string};
 const limit=6;
@@ -57,16 +58,16 @@ export function PortalShortcutDock({portal,label,features,defaults,scope="device
     <button type="button" onClick={()=>{if(confirmWorkspaceReset("portal-shortcuts")){update(defaults);setSelected(0)}}}>Reset</button>
    </div>
   </div>:null}
-  <nav className={styles.grid} data-count={ids.length} aria-label={label}>
+  <nav className={`${homeStyles.shortcuts} ${styles.grid}`} data-count={ids.length} aria-label={label}>
    {ids.map((id,index)=>{
     const item=features.find(entry=>entry.id===id);if(!item)return null;
     const gesture=handlers(index);
-    return <button type="button" key={id} data-shortcut-index={index} className={[styles.shortcut,editing?styles.jiggling:"",editing&&selected===index?styles.selected:""].filter(Boolean).join(" ")}
+    return <button type="button" key={id} data-shortcut-index={index} className={[homeStyles.shortcut,styles.shortcut,editing?styles.jiggling:"",editing&&selected===index?styles.selected:""].filter(Boolean).join(" ")}
      aria-label={editing?"Choose or drag "+item.label:item.label}
      aria-description="Press and hold to rearrange or replace. Keyboard: F2."
      {...gesture} onKeyDown={e=>{if(e.key==="F2"){e.preventDefault();setSelected(index);setEditing(true)}}}
      onClick={e=>{gesture.onClick(e);if(!e.defaultPrevented&&!editing){if(item.onClick)item.onClick();else if(item.href)router.push(item.href)}}}>
-     <PodscapeLineIcon name={item.icon}/><span>{item.label}</span>
+     <span className={homeStyles.shortcutIcon}><PodscapeLineIcon name={item.icon}/></span><span className={styles.shortcutLabel}>{item.label}</span>
     </button>
    })}
   </nav>
