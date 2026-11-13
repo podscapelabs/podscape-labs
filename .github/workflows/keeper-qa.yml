@@ -70,5 +70,6 @@ jobs:
           node scripts/verify-visual-refinement.mjs
           node scripts/verify-keeper-bin-labels.mjs
           node scripts/verify-portal-layout-cohesion.mjs
+          node scripts/verify-portal-shortcut-architecture.mjs
       - name: Build Next.js application
         run: pnpm run build
