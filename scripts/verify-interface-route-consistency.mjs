@@ -6,7 +6,7 @@ const routing=read("lib/interface-route-policy.ts");
 const authPaths=["/","/auth/","/early-access","/account/login","/account/sign-up","/account/register","/account/forgot-password","/account/change-password","/account/reset-password","/admin","/admin/forgot-password","/admin/reset-password"];
 for(const name of authPaths)assert.ok(routing.includes('"' + name + '"')||name==="/auth/"&&routing.includes('"/auth/"'),"All standalone auth routes must be excluded from global chrome: "+name);
 assert.match(routing,/export function isStandaloneAccessRoute/);
-assert.match(routing,/pathname==="/"\|\|pathname==="/admin"/,"Only the admin login root may be treated as a standalone admin route");
+assert.ok(routing.includes('pathname==="/"||pathname==="/admin"'),"Only the admin login root may be treated as a standalone admin route");
 assert.ok(!routing.split("as const;")[0].includes('"/admin",'),"Nested owner desks must not be excluded by /admin prefix matching");
 assert.match(routing,/export function feedbackAllowedOnRoute/);
 const mobile=read("components/GlobalMobileNav.tsx");
