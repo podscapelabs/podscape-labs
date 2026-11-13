@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Header } from "@/components/Header";
+import { PlatformShell } from "@/components/PlatformShell";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
 import { getSpeciesRecords } from "@/lib/species-store";
 import { getProductRecords } from "@/lib/product-store";
@@ -34,10 +34,8 @@ export default async function PodBoundHome() {
   ).sort((a, b) => Number(b.featured) - Number(a.featured) || Date.parse(b.updatedAt) - Date.parse(a.updatedAt));
   const product = podBoundProducts[0];
 
-  return <div className={styles.site}>
-    <a className="skip-link" href="#platform-main">Skip to content</a>
-    <Header />
-    <main id="platform-main" className={styles.main}>
+  return <PlatformShell><div className={styles.site}>
+    <main className={styles.main}>
       <section className={styles.hero} aria-labelledby="game-title">
         <div className={styles.heroArt} aria-hidden="true"><span className={styles.cardBack}><PodscapeLineIcon name="podbound" /></span><span className={styles.cardFront}><PodscapeLineIcon name="leaf" /></span></div>
         <div className={styles.heroCopy}>
@@ -91,5 +89,5 @@ export default async function PodBoundHome() {
         <Link href="/app">Back to PodScape <span aria-hidden="true">→</span></Link>
       </section>
     </main>
-  </div>;
+  </div></PlatformShell>;
 }
