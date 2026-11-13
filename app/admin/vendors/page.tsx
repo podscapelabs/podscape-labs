@@ -18,7 +18,6 @@ export default async function VendorReviewDesk(){
   .order("updated_at",{ascending:false}).limit(200):{data:null,error:null};
  const vendors=data||[];
  return <main className={styles.page}><div className={styles.wrap}>
-  <Link className={styles.back} href="/account/owner-tools">← Owner Studio</Link>
   <OwnerDeskHeader area="Commerce" title="Vendor Desk" description="Create directory listings and review vendor applications." icon="vendor" actions={[{href:"/shop/vendors",label:"Public directory",icon:"vendor",external:true}]}/>
   <div className={styles.topline}><strong>{vendors.filter(v=>v.user_id!==null&&v.status==="pending").length} applications awaiting review · {vendors.filter(v=>v.user_id===null).length} manually managed</strong><Link href="/shop/vendors">View public directory →</Link></div>
   <section className={ownerStyles.desk} aria-labelledby="owner-create-vendor"><div className={ownerStyles.deskTitle}><h2 id="owner-create-vendor">Add a vendor</h2><span>Owner-managed directory listing</span></div>
