@@ -1,4 +1,5 @@
 "use client";
+import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
 import {useEffect,useState} from "react";
 import styles from "./puzzle-desk.module.css";
 
@@ -14,7 +15,7 @@ export function PuzzleArtworkPicker(){
   <label htmlFor="puzzle-upload" className={styles.artworkLabel}>Puzzle artwork <span>Required</span></label>
   <p className={styles.artworkHelp}>Choose a JPEG, PNG or WebP under 8 MB. Use artwork you own or have permission to publish.</p>
   <div className={styles.artworkPreview}>
-   {url?<img src={url} alt="Preview of selected puzzle artwork"/>:<div className={styles.artworkEmpty} aria-hidden="true"><span>✦</span><small>Artwork preview</small></div>}
+   {url?<img src={url} alt="Preview of selected puzzle artwork"/>:<div className={styles.artworkEmpty} aria-hidden="true"><PodscapeLineIcon name="creative"/><small>Artwork preview</small></div>}
    <div className={styles.artworkPickerTools}>
     <strong>{image?.name||"Choose an image to build your puzzle"}</strong>
     {image?<small>{(image.size/1024/1024).toFixed(2)} MB · Ready to preview</small>:<small>Artwork is only uploaded when you save the draft.</small>}
