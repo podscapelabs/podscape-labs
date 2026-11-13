@@ -8,6 +8,7 @@ import styles from "./LedgerLayout.module.css";
 import spotlight from "@/app/ledger/discover.module.css";
 import Link from "next/link";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
+import {PortalShortcutDock} from "./PortalShortcutDock";
 import {FirstActionEmptyState} from "./FirstActionEmptyState";
 import {SpeciesRequestButton} from "./SpeciesRequestForm";
 import {LEDGER_BROWSE_ORDER_KEY,LEDGER_EXPLORER_STATE_KEY,type LedgerExplorerSnapshot} from "@/lib/ledger-navigation";
@@ -147,10 +148,15 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
           <input type="search" aria-label="Search Leaf Ledger species" value={query} onChange={event=>setQuery(event.target.value)} placeholder="Search species, genus, or morph…" autoComplete="off"/>
           {query ? <button type="button" onClick={()=>setQuery("")} aria-label="Clear species search">×</button> : null}
         </div>
-        <nav className={spotlight.heroDestinations} aria-label="Leaf Ledger mini dashboard">
-          <a href="#ledger-directory" aria-current="page" className={spotlight.heroDestinationActive}><span aria-hidden="true"><PodscapeLineIcon name="leaf"/></span><strong>Discover</strong><small>Explore species</small></a>
-          <Link href={signedIn ? "/keeper/collection" : "/account/login"}><span aria-hidden="true"><PodscapeLineIcon name="bookmark"/></span><strong>My Colonies</strong><small>Saved species &amp; bins</small></Link>
-        </nav>
+        <PortalShortcutDock portal="leaf-ledger" label="Leaf Ledger shortcuts"
+          defaults={["discover","collection","guide"]}
+          features={[
+           {id:"discover",label:"Discover",icon:"leaf",href:"#ledger-directory"},
+           {id:"collection",label:"My Collection",icon:"bookmark",href:signedIn?"/keeper/collection?view=saved":"/account/login"},
+           {id:"colonies",label:"My Colonies",icon:"jar",href:signedIn?"/keeper/collection":"/account/login"},
+           {id:"guide",label:"Care Guides",icon:"book",href:"/guides"},
+           {id:"request",label:"Request Species",icon:"note",href:"#ledger-directory-title"}
+          ]}/>
       </div>
     </header> : null}
     <div className={heroMode && mode === "catalogue" ? spotlight.content : undefined}>
