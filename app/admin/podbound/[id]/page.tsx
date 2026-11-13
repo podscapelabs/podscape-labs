@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {OwnerDeskHeader,OwnerDeskNotice} from "@/components/OwnerDeskFoundation";
 import Image from "next/image";
 import {notFound,redirect} from "next/navigation";
 import {isAdminAuthenticated} from "@/lib/admin-auth";
@@ -17,10 +18,10 @@ export default async function CardEditor({params,searchParams}:{params:Promise<{
  if(!card)notFound();
  const [core,alternate]=await Promise.all([getPodBoundArtworkUrl(card.core_art_path),getPodBoundArtworkUrl(card.alternate_art_path)]);
  return <main className={styles.shell}>
-  <header className={styles.top}><Link href="/admin/podbound" className={styles.back} aria-label="Back to Card Desk">←</Link><div><p className={styles.eyebrow}>OWNER STUDIO · PODBOUND / EDITOR</p><h1>{card.title}</h1><p>Last edited {new Date(card.updated_at).toLocaleString("en-CA",{dateStyle:"medium",timeStyle:"short"})}</p></div><button form="card-editor" className={styles.primary}>Save card</button></header>
-  {query.saved&&<p className={styles.success} role="status">Card saved successfully.</p>}
-  {query.created&&<p className={styles.success} role="status">Draft created. Make it your own!</p>}
-  {query.error&&<p className={styles.failure} role="alert">{query.error}</p>}
+  <OwnerDeskHeader area="PodBound / Editor" title={card.title} description={"Last edited "+new Date(card.updated_at).toLocaleString("en-CA",{dateStyle:"medium",timeStyle:"short"})} icon="podbound" backHref="/admin/podbound" backLabel="Card Desk" actions={[{href:"/podbound/cards",label:"View Card Catalogue",icon:"podbound",external:true}]} aside={<button form="card-editor" className={styles.primary} type="submit">Save card</button>}/>
+  {query.saved&&<OwnerDeskNotice kind="success">Card saved successfully.</OwnerDeskNotice>}
+  {query.created&&<OwnerDeskNotice kind="success">Draft created. Make it your own!</OwnerDeskNotice>}
+  {query.error&&<OwnerDeskNotice kind="error">{query.error}</OwnerDeskNotice>}
   <CardEditorForm cardId={card.id} className={styles.editor}>
    <input type="hidden" name="id" value={card.id}/>
    <section className={styles.editPanel}><p className={styles.eyebrow}>01 / IDENTITY</p><h2>Card identity</h2><div className={styles.fieldGrid}>
