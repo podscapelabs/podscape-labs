@@ -1,25 +1,10 @@
-.trigger,.triggerSubtle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:43px;padding:9px 13px;border:1px solid var(--border);border-radius:11px;background:var(--surface);color:var(--accent);font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.trigger,.triggerSubtle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:43px;padding:9px 13px;border:1px solid var(--ps-border,var(--border));border-radius:11px;background:var(--ps-surface,var(--surface));color:var(--ps-accent,var(--accent));font:inherit;font-size:12px;font-weight:800;cursor:pointer}
 .trigger svg,.triggerSubtle svg{width:18px;height:18px}
 .trigger>span:last-child,.triggerSubtle>span:last-child{font-size:16px}
-.trigger:hover,.triggerSubtle:hover{border-color:var(--accent);background:var(--surface-secondary)}
-.triggerSubtle{min-height:36px;padding:7px 10px;font-size:11px;background:var(--surface-secondary)}
+.trigger:hover,.triggerSubtle:hover{border-color:var(--ps-accent,var(--accent));background:var(--ps-surface-muted,var(--surface-secondary))}
+.triggerSubtle{min-height:36px;padding:7px 10px;font-size:11px;background:var(--ps-surface-muted,var(--surface-secondary))}
 .triggerSubtle svg{width:16px;height:16px}
 .trigger:focus-visible,.triggerSubtle:focus-visible,.header button:focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:3px}
-.dialog{position:fixed;inset:0;width:min(690px,calc(100% - 28px));max-width:none;max-height:min(86dvh,780px);margin:auto;padding:0;overflow:hidden;color:var(--ps-text,var(--text-primary));background:var(--ps-surface,var(--surface));border:1px solid var(--ps-border,var(--border));border-radius:19px;box-shadow:0 22px 70px #0006}
-.dialog::backdrop{background:color-mix(in srgb,var(--ps-bg,var(--background)) 80%,transparent);backdrop-filter:blur(7px)}
-.content{display:flex;flex-direction:column;max-height:min(86dvh,780px);min-height:0}
-.header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex:none;padding:17px 20px;border-bottom:1px solid var(--border);background:var(--surface)}
-.header>div{min-width:0}
-.header small{font-size:9px;letter-spacing:.14em;font-weight:850;color:var(--accent)}
-.header h2{font:500 clamp(23px,3vw,30px)/1.15 var(--display);margin:5px 0 0}
-.header button{display:grid;place-items:center;flex:none;width:43px;height:43px;border:1px solid var(--border);border-radius:11px;background:var(--surface-secondary);color:var(--text-primary);cursor:pointer}
-.header button svg{width:21px;height:21px}
-.body{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:17px 20px 25px;display:grid;gap:13px}
-.body :is(p,li){line-height:1.55}
-@media(max-width:600px){.dialog{width:calc(100% - 18px);max-height:90dvh;border-radius:16px}.content{max-height:90dvh}.header{padding:13px 14px}.header h2{font-size:24px}.body{padding:13px 14px 22px}.trigger,.triggerSubtle{min-height:43px;font-size:11px}}
 
-/* Ranking help and privacy use the same themed backdrop and mobile sheet rhythm as Updates. */
-.header{background:var(--ps-surface,var(--surface));border-bottom-color:var(--ps-border,var(--border))}
-.header small{color:var(--ps-accent,var(--accent))}
-.body{color:var(--ps-text,var(--text-primary))}
-@media(max-width:600px){.dialog{width:100%;max-height:calc(91dvh - env(safe-area-inset-top,0px));margin:auto 0 0;border-radius:23px 23px 0 0;border-bottom:0}.content{max-height:calc(91dvh - env(safe-area-inset-top,0px))}.body{padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}}
+/* Dialog content is rendered by the shared PodscapeInfoDialog. */
+.trigger,.triggerSubtle{min-height:44px}
