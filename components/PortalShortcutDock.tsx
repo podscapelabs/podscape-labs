@@ -15,8 +15,11 @@ function normalized(value:unknown,available:string[],defaults:string[]):string[]
  const saved=Array.isArray(value)?value.filter((id):id is string=>typeof id==="string"):defaults;
  const selected:string[]=[];
  for(const id of saved){if(available.includes(id)&&!seen.has(id)&&selected.length<limit){seen.add(id);selected.push(id)}}
- // Never turn a saved user's custom set into the latest defaults after an update.
- return selected.length?selected:defaults.filter(id=>available.includes(id)).slice(0,limit);
+ // Keep the user's chosen order; fill only unused slots so every portal has six.
+ for(const id of [...defaults,...available]){
+  if(available.includes(id)&&!seen.has(id)&&selected.length<limit){seen.add(id);selected.push(id)}
+ }
+ return selected;
 }
 /** Available features stay in the library; only chosen shortcuts occupy portal space.
  * All regular actions stay one click; press-and-hold enters the existing jiggle editor.
