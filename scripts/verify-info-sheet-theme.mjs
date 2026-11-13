@@ -29,7 +29,8 @@ assert.doesNotMatch(css,/#(?:[0-9a-f]{3,8})\b|rgba\(10,25,19/i,"No literal palet
 assert.match(updates,/PodscapeInfoDialog/,"What's Improved must use shared information sheet");
 assert.doesNotMatch(updatesCss,/\.backdrop|rgba\(10,25,19/,"No legacy green update backdrop");
 assert.match(updatesCss,/var\(--ps-accent-text\)/,"Update actions use contrast-aware text");
-assert.match(rankingCss,/\.dialog::backdrop\{background:color-mix\(in srgb,var\(--ps-bg/,"Rankings help uses same themed backdrop");
+assert.match(read("components/RankingModal.tsx"),/PodscapeInfoDialog/,"Ranking help reuses the canonical themed information sheet");
+assert.doesNotMatch(rankingCss,/\.dialog::backdrop/,"Ranking dialogs must not maintain a competing theme backdrop");
 assert.match(exchange,/rulesOpen\?createPortal\(<PodscapeInfoDialog/,"Exchange rules use shared help sheet");
 assert.match(exchange,/className=\{styles\.marketPulse\}/,"Market event summary lives in the compact market pulse");
 assert.ok(exchange.indexOf("Leaf Street intelligence")<exchange.indexOf("className={styles.marketPulse}"),"Market news takes priority over events");
