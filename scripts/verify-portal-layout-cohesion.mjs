@@ -11,8 +11,11 @@ assert.match(home,/scroll-snap-type:x mandatory/, "Mobile home rails must snap c
 const portalActions=read("components/PortalActionRail.tsx");
 const funZone=read("app/fun-zone/FunZonePortal.tsx");
 assert.match(portalActions,/layout\?:"inline"\|"grid"/, "Shared portal actions should support a deliberate grid");
-assert.match(funZone,/aria-label="Explore Fun Zone"/, "Fun Zone needs one labelled navigation block");
-assert.match(funZone,/compact layout="grid"/, "Fun Zone shortcuts should not wrap as stray pills");
+assert.match(funZone,/aria-label="Quick play"/, "Fun Zone needs one clear direct-play block");
+assert.match(funZone,/compact layout="grid"/, "Fun Zone direct-play links should not wrap as stray pills");
+assert.doesNotMatch(funZone,/label:"Game categories",icon:/, "Top shortcuts must not duplicate the game category widget");
+assert.doesNotMatch(funZone,/label:"My games",icon:/, "Top shortcuts must not duplicate My Games");
+assert.doesNotMatch(funZone,/label:"Rankings",icon:/, "Top shortcuts must not duplicate the rankings widget");
 assert.match(funZone,/data-workspace-root="fun-zone"/, "Fun Zone customization must survive the shortcut redesign");
 
 const profile=read("app/ledger/[slug]/page.tsx");
@@ -33,6 +36,9 @@ assert.match(browser,/savedView\|\|Boolean\(initialSpecies\)\?"species":"bins"/,
 assert.match(browser,/styles\.browseMode/, "Species/Bins must be a subordinate group-by control");
 assert.doesNotMatch(browser,/className=\{styles\.actions\}><Link href="\/keeper\/new"/, "No duplicated Add bin/Import/Discover footer");
 assert.match(browser,/binCardSummary\(bin,record\)/, "Both colony browsers must use consistent compact bin metadata");
+assert.match(browser,/\{open\?<div id=\{"species-bins-"/, "Only expanded colony groups should expose management actions");
+assert.doesNotMatch(browser,/owned\.length===1\?<Link href=\{"\/keeper\/"\+owned\[0\]\.id\}>Open bin/, "Never duplicate an existing bin row link");
+assert.match(browser,/owned\.length>1\?<SpeciesQuickCare/, "Group-level care is only useful when multiple bins exist");
 
 const js=ts.transpileModule(read("lib/bin-identity.ts"),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;
 const exports={};
