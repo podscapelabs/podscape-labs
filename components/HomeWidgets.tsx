@@ -183,7 +183,7 @@ export function HomeWidgets({recentGroups,colony,progress,pinOptions,userId,gree
           <Link href={item.href} aria-label={`Open ${item.title}`}>Open ↗</Link>
           <button type="button" onClick={()=>removePin(item)} aria-label={`Remove ${item.title} from favorites`}>×</button>
         </article>)}</div>:
-        pins.length?<div className={styles.widgetPinEmpty}><p>Some pinned items are no longer available to this account.</p><Link href="/menu">Explore PodScape →</Link></div>:<FirstActionEmptyState icon="bookmark" title="Make Home your own." eyebrow={definitions.pins.name.toUpperCase()} description="Save a species, colony or game to keep it a tap away. You can change these shortcuts whenever you like." primary={{href:"/ledger",label:"Explore species"}} secondary={{href:"/fun-zone",label:"Explore games"}} compact/>}
+        pins.length?<div className={styles.widgetPinEmpty}><p>Some pinned items are no longer available to this account.</p><Link href="/menu">Explore PodScape →</Link></div>:<div className={styles.favoritesWelcome}><span className={styles.favoritesWelcomeIcon} aria-hidden="true"><PodscapeLineIcon name="bookmark"/></span><div className={styles.favoritesWelcomeBody}><strong>Your favorites live here.</strong><p>Pin species, colonies or games for one-tap access.</p><nav aria-label="Explore favorite things"><Link href="/ledger">Explore species <PodscapeLineIcon name="arrow-right"/></Link><Link href="/fun-zone">Browse games</Link></nav></div></div>}
       </section>;
 
       if(id==="recent")return <section className={styles.section} key={id} aria-label={definitions.recent.name}>
