@@ -48,4 +48,18 @@ assert.match(picker,/item\.displayName/,"Quick Care picker must use morph labels
 assert.match(picker,/item\.scientificName/,"Quick Care picker must show taxonomy");
 assert.match(colony,/<h1>\{colony\.species\}<\/h1><strong>\{colony\.scientificName\}<\/strong>/,"Colony page must share title hierarchy");
 assert.match(legacy,/g\.scientific/,"Legacy collection hub must also show scientific names");
+const quickAdd=read("components/QuickAddBin.tsx");
+const keeperEditor=read("components/KeeperWorkspace.tsx");
+const colonyPage=read("app/keeper/[id]/ColonyWorkspace.tsx");
+const detailsPage=read("app/keeper/[id]/details/page.tsx");
+const actions=read("app/keeper/actions.ts");
+assert.match(quickAdd,/Your bin name \(editable\)/,"New enclosures must explain their editable bin names");
+assert.match(quickAdd,/setName\(nextBinName/,"Suggested names must be overwritable");
+assert.match(quickAdd,/createEnclosure\(\{speciesId,name:name\.trim\(\),label:label\.trim\(\)\}\)/,"Custom name must be submitted for creation");
+assert.match(keeperEditor,/<label>Bin name<input/,"Keeper settings must still allow renaming");
+assert.match(keeperEditor,/updateEnclosure\(\{id:entry\.id,\.\.\.form\}\)/,"Keeper changes must use the saved bin record");
+assert.match(actions,/name:input\.name\.trim\(\)/,"Server action must persist the user's custom bin name");
+assert.match(colonyPage,/details\?panel=bin#bin-details/,"One-tap rename route must open the bin-details section");
+assert.match(detailsPage,/id="bin-details" open=\{openBinDetails\}/,"The name editor must be expanded on direct navigation");
+assert.match(detailsPage,/Custom bin name, population/,"The bin-details purpose must be clear");
 console.log("Morph-first keeper identity regression checks passed: IDs unchanged; Dashboard, My Colonies, Quick Care, history and colony detail share consistent labels.");
