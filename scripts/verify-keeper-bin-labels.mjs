@@ -13,6 +13,8 @@ assert.equal(typeof binCardIdentity,"function");
 const original={id:"a0000000-0000-4000-8000-000000071bbe",name:"Primary colony",label:""};
 const orange={commonName:"Giant Orange",morph:"Giant Orange",scientificName:"Porcellio laevis",genus:"Porcellio",species:"laevis"};
 assert.equal(binCardIdentity(original,orange).title,"Giant Orange");
+assert.equal(organismDisplayName({...orange,morph:"Orange"}),"Giant Orange","Recognizable hobby names must win over abbreviated morph labels");
+assert.equal(organismDisplayName({commonName:"Porcellio laevis",scientificName:"Porcellio laevis",morph:"Giant Orange"}),"Giant Orange","A scientific-only common name must not conceal the named morph");
 assert.equal(binCardIdentity(original,orange).scientific,"Porcellio laevis");
 assert.equal(binCardIdentity(original,orange).binName,"");
 assert.equal(original.name,"Primary colony","Rendering must not rewrite stored records");
