@@ -217,3 +217,35 @@
  .content :global(.v2-results-meta) :global(.requestEntry)>button{min-height:33px}
  .content :global(.v2-results-meta) :global(.requestEntry){flex:none}
 }
+
+/* One discovery workspace: search, organism selection, and the expandable
+   genus/care/sort filters are logically grouped. Shortcuts are separate,
+   compact mini-dashboard navigation immediately below the photo hero. */
+.heroDiscovery{display:grid;gap:9px;width:min(100%,570px);margin-top:17px;min-width:0}
+.heroDiscovery .heroSearch{width:100%;min-width:0;margin:0;box-shadow:none}
+.heroDiscovery .catalogueToolbar{display:flex;align-items:center;min-width:0;gap:7px;margin:0}
+.heroDiscovery .organismTabs{flex:1 1 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;min-width:0;overflow:visible;padding:0}
+.heroDiscovery .organismTabs button{min-width:0;min-height:39px;padding:8px 5px;white-space:normal;font:750 clamp(10px,2.5vw,12px)/1.16 var(--sans);color:var(--portal-hero-text);background:color-mix(in srgb,var(--portal-hero-start) 75%,transparent);border-color:color-mix(in srgb,var(--portal-hero-text) 32%,transparent)}
+.heroDiscovery .organismTabs button[aria-pressed="true"]{background:var(--portal-hero-button-bg);color:var(--portal-hero-button-text);border-color:var(--portal-hero-button-bg)}
+.heroDiscovery .catalogueFilterButton{flex:0 0 auto;min-height:39px;padding:8px 10px;border-radius:12px;color:var(--portal-hero-text);background:color-mix(in srgb,var(--portal-hero-start) 75%,transparent);border-color:color-mix(in srgb,var(--portal-hero-text) 32%,transparent)}
+.heroDiscovery .catalogueFilterButton svg{color:inherit}
+.heroDiscovery .catalogueFilterButton[aria-expanded="true"]{color:var(--portal-hero-button-text);background:var(--portal-hero-button-bg);border-color:var(--portal-hero-button-bg)}
+.heroFilterOptions{margin:0;min-width:0;padding:0!important;gap:0!important}
+.heroFilterOptions .collapsibleFilters{margin:0!important;padding:9px!important;border-radius:12px;border:1px solid color-mix(in srgb,var(--portal-hero-text) 24%,transparent);background:color-mix(in srgb,var(--portal-hero-start) 80%,transparent)}
+.heroFilterOptions .collapsibleFilters[hidden]{display:none!important}
+.heroFilterOptions .collapsibleFilters .filterPill{background:var(--surface);border-color:var(--border)}
+.shortcutStrip{width:min(1100px,calc(100% - 32px));margin:12px auto 0;min-width:0}
+.shortcutStrip :global(nav[aria-label="Leaf Ledger shortcuts"]){max-width:558px}
+@media(max-width:720px){
+ .heroInner{padding-bottom:18px}
+ .heroDiscovery{margin-top:13px;gap:8px}
+ .heroDiscovery .heroSearch{min-height:47px}
+ .heroDiscovery .catalogueToolbar{gap:6px}
+ .heroDiscovery .organismTabs{gap:5px}
+ .heroDiscovery .organismTabs button{padding:7px 3px;min-height:38px;font-size:clamp(9px,2.45vw,11px)}
+ .heroDiscovery .catalogueFilterButton{width:auto;min-width:40px;padding:8px 9px}
+ .heroDiscovery .catalogueFilterButton span:not(.filterCount){display:inline}
+ .shortcutStrip{width:calc(100% - 28px);margin-top:11px}
+ .content{padding-top:13px}
+}
+@media(max-width:375px){.heroDiscovery .catalogueFilterButton span:not(.filterCount){display:none}}
