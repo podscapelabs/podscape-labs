@@ -1,4 +1,5 @@
 "use client";
+import {WidgetLibraryHeading,WidgetLibrarySummary} from "@/components/WidgetLibraryChrome";
 
 import {useEffect,useLayoutEffect,useRef,useState,type ReactNode} from "react";
 import Link from "next/link";
@@ -136,12 +137,9 @@ export function HomeWidgets({recentGroups,colony,progress,pinOptions,userId,gree
     {canvasEditing?<WorkspaceEditToolbar title="Arrange Home" description="Drag blocks to move them. Shortcuts stay together." onAdd={()=>{finishCanvas();returnFocus.current=document.activeElement as HTMLElement;setEditing(true)}} onReset={resetToDefault} onDone={finishCanvas}/>:null}
     {editing&&<div className={styles.homeEditorOverlay} onPointerDown={event=>{if(event.target===event.currentTarget)close()}}>
       <div className={`${styles.widgetEditor} ${styles.widgetLibrary}`} id="podscape-home-widget-editor" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="widget-library-title">
-        <div className={styles.homeEditorHead}>
-          <div><small>YOUR LITTLE WORLD, YOUR WAY</small><h2 id="widget-library-title">Widget Library</h2></div>
-          <button type="button" onClick={close}>Done</button>
-        </div>
+        <WidgetLibraryHeading eyebrow="YOUR LITTLE WORLD, YOUR WAY" titleId="widget-library-title" onDone={close}/>
         <p>Add the widgets you love, remove the ones you don&apos;t. Changes are saved on this device.</p>
-        <div className={styles.widgetLibraryActions}><span>{layout.visible.length} of {available.length} widgets added</span><button type="button" onClick={()=>{close();setCanvasEditing(true)}}>Arrange Home</button></div>
+        <WidgetLibrarySummary added={available.filter(id=>layout.visible.includes(id)).length} total={available.length} arrangeLabel="Arrange Home" onArrange={()=>{close();setCanvasEditing(true)}}/>
         <WidgetLibraryFilter view={libraryView} onChange={setLibraryView} added={available.filter(id=>layout.visible.includes(id)).length} total={available.length}/>
           {!available.some(id=>widgetMatchesView(layout.visible.includes(id),libraryView))?<WidgetLibraryEmptyState view={libraryView}/>:null}
           <div className={styles.widgetLibraryGroups}>
