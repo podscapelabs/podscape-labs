@@ -16,7 +16,7 @@
  position:fixed;inset:0;z-index:5000;
  display:flex;justify-content:center;align-items:center;
  padding:max(18px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
- background:rgba(10,20,16,.75);
+ background:color-mix(in srgb,var(--theme-background) 80%,transparent);
  -webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);
  isolation:isolate;
 }
@@ -37,7 +37,7 @@
 .top h2{font-family:var(--theme-display,Georgia,serif);font-size:clamp(26px,6vw,32px);line-height:1.12;font-weight:500;letter-spacing:-.03em;margin:8px 0 16px}
 .close{
  flex:none;display:grid;place-items:center;
- width:40px;height:40px;padding:0;
+ width:44px;height:44px;padding:0;
  background:var(--theme-surface-secondary);
  color:var(--theme-text-primary);
  border:1px solid var(--theme-border);border-radius:50%;
