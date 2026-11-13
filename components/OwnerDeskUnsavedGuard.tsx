@@ -55,7 +55,7 @@ export function OwnerDeskUnsavedGuard({label="record"}:{label?:string}){
    window.removeEventListener("beforeunload",beforeUnload);
   };
  },[label]);
- return <span ref={ref} className={styles.status} role="status" aria-live="polite" data-dirty={dirty?"true":"false"}>{dirty?"● Unsaved changes":"All changes saved"}</span>;
+ return <span ref={ref} className={styles.status} role="status" aria-live="polite" data-dirty={dirty?"true":"false"}>{dirty?"● Unsaved changes":"No unsaved edits"}</span>;
 }
 function snapshot(form:HTMLFormElement){
  return [...new FormData(form).entries()].map(([name,value])=>
