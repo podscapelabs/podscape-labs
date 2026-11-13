@@ -36,7 +36,7 @@ export default async function UpdatesDesk({searchParams}:{searchParams:Promise<{
  const status=["all","draft","published"].includes(params.status||"")?params.status||"all":"all";
  const filtered=(rows||[]).filter(x=>
   (status==="all"||x.status===status)&&
-  (!search||[x.title,x.summary,x.category,x.href,...x.details].join(" ").toLocaleLowerCase("en-CA").includes(search))
+  (!search||[x.title,x.summary,x.category,x.href,...(Array.isArray(x.details)?x.details:[])].join(" ").toLocaleLowerCase("en-CA").includes(search))
  );
  return <main className={styles.page}><div className={styles.wrap}>
   <OwnerDeskHeader area="Communications" title="Updates Desk" description="Draft improvements, review announcements, and publish when they are live." icon="news" actions={[{href:"/updates",label:"View updates",icon:"news",external:true}]}/>
