@@ -102,12 +102,13 @@ assert.match(emptyComponent,/primary\.href/,"First-action empty states must offe
 for(const [path,phrase] of [
  ["app/keeper/page.tsx","Add Your First Colony"],
  ["components/KeeperCollectionHub.tsx","Add your first bin"],
- ["components/HomeWidgets.tsx","Make Home your own."],
+ ["components/HomeWidgets.tsx","Your favorites live here."],
  ["components/LedgerExplorer.tsx","Start your species collection."],
  ["app/account/progress/ProgressDashboard.tsx","YOUR FIRST MILESTONE"]
 ]){
- assert.ok(read(path).includes(phrase),"First-action empty-state missing from "+path);
+ assert.ok(read(path).includes(phrase),"First-action or compact welcome state missing from "+path);
 }
+assert.match(read("components/HomeWidgets.tsx"),/styles\.favoritesWelcome/,"Empty Home favorites must use a compact information block");
 assert.ok(read("components/KeeperCollectionHub.tsx").includes("Clear search"),"Filtered colony list must offer a recovery action");
 assert.ok(read("components/LedgerExplorer.tsx").includes("Reset filters"),"Filtered Ledger list must offer a recovery action");
 
