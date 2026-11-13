@@ -9,13 +9,13 @@ import {logKeeperEvent,undoKeeperEvent} from "@/app/keeper/actions";
 import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
 import {BinSwitcher,type SwitchableBin} from "@/components/BinSwitcher";
 import {useUnsavedBinChanges} from "@/components/useUnsavedBinChanges";
-import {binDisplayName} from "@/lib/bin-identity";
+import {binCardIdentity} from "@/lib/bin-identity";
 import {BinLifecycleControls} from "@/components/BinLifecycleControls";
 import {ManagerInlineCare} from "@/components/ManagerInlineCare";
 import styles from "./ColonyWorkspace.module.css";
 
 type CareEvent={id:string;kind:string;note:string;createdAt:string;quantityChange:number|null};
-type Colony={id:string;name:string;label:string;species:string;speciesId:string;image:string|null;status:string;breeding:string;quantity:number;archived:boolean;enclosureType:string};
+type Colony={id:string;name:string;label:string;species:string;scientificName:string;speciesId:string;image:string|null;status:string;breeding:string;quantity:number;archived:boolean;enclosureType:string};
 function dayLabel(timestamp:string){
  const d=new Date(timestamp);
  return Number.isNaN(d.getTime())?"Date unavailable":d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
@@ -115,19 +115,19 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
    </section>
  };
  return <div className={styles.root}>
-  <nav className={styles.breadcrumb} aria-label="Colony navigation"><Link href="/keeper">Manager</Link><span>/</span><Link href={"/keeper/collection?species="+encodeURIComponent(colony.speciesId)+"#colonies"}>My Colonies</Link><span>/</span><span>{binDisplayName({id:colony.id,name:colony.name})}</span></nav>
+  <nav className={styles.breadcrumb} aria-label="Colony navigation"><Link href="/keeper">Manager</Link><span>/</span><Link href={"/keeper/collection?species="+encodeURIComponent(colony.speciesId)+"#colonies"}>My Colonies</Link><span>/</span><span>{colony.species}</span></nav>
   <header className={styles.hero}>
    <div className={styles.heroImage}>{colony.image?<Image src={colony.image} alt="" fill sizes="(max-width:720px) 70px,96px" style={{objectFit:"cover"}}/>:<PodscapeLineIcon name="jar"/>}</div>
    <div className={styles.heroText}>
-    <p>MANAGER / YOUR COLONY</p><h1>{colony.species}</h1><strong>{binDisplayName({id:colony.id,name:colony.name})}</strong>
-    <span>{colony.label||"Location not set"} · {colony.status.replaceAll("-"," ")}{colony.archived?" · Archived":""}</span>
+    <p>MANAGER / YOUR COLONY</p><h1>{colony.species}</h1><strong>{colony.scientificName}</strong>
+    <span>{[binCardIdentity({name:colony.name,label:colony.label},{commonName:colony.species,scientificName:colony.scientificName}).binName,colony.label||"Location not set",colony.status.replaceAll("-"," "),colony.archived?"Archived":""].filter(Boolean).join(" · ")}</span>
    </div>
    <div className={styles.heroMetrics} aria-label="Colony overview"><span><b>{colony.quantity.toLocaleString()}</b> Population</span><span><b>{colony.breeding.replaceAll("-"," ")}</b> Breeding</span></div>
   </header>
   {created?<p className={styles.notice} role="status">Bin created. You’re ready to record care.</p>:null}
   <div className={styles.binToolbar}>
    <nav aria-label="Colony shortcuts">
-    {!colony.archived?<ManagerInlineCare binId={colony.id} binName={binDisplayName({id:colony.id,name:colony.name})}/>:null}
+    {!colony.archived?<ManagerInlineCare binId={colony.id} binName={colony.species}/>:null}
     {!colony.archived?<button type="button" className={styles.addNoteShortcut} aria-expanded={notesOpen} aria-controls="colony-note-panel" onClick={()=>setNotesOpen(v=>!v)}><PodscapeLineIcon name="note"/> {notesOpen?"Close note":"Add note"}</button>:null}
     <Link href={"/keeper/"+id+"/details"}><PodscapeLineIcon name="edit"/> Edit details</Link>
     <Link href={"/keeper/"+id+"/history"}><PodscapeLineIcon name="calendar"/> History</Link>
@@ -140,7 +140,7 @@ export function ColonyWorkspace({colony,initialEvents,careDates,initialPanel,ref
    </details>
   </div>
   {notesOpen&&!colony.archived?<section className={styles.quickObservation} id="colony-note-panel" aria-label="Quick colony observation">
-    <div><strong>New observation · {colony.name}</strong><button type="button" onClick={()=>setNotesOpen(false)} aria-label="Close observation editor">×</button></div>
+    <div><strong>New observation · {colony.species}</strong><button type="button" onClick={()=>setNotesOpen(false)} aria-label="Close observation editor">×</button></div>
     <form className={styles.noteForm} id="colony-note-editor" onSubmit={recordObservation}>
      <label htmlFor="colony-observation">What did you notice?</label>
      <textarea id="colony-observation" rows={3} maxLength={1500} placeholder="New mancae, changes in activity, feeding observations…" value={observation} onChange={e=>setObservation(e.target.value)} required/>
