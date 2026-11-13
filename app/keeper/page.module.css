@@ -593,7 +593,7 @@
 .managerResultRow>a strong{font:500 1rem var(--ps-font-display,var(--display));overflow-wrap:anywhere}
 .managerResultRow>a span{color:var(--ps-text-secondary,var(--text-secondary));font-size:.72rem;grid-column:1}
 .managerResultRow>a b{grid-column:2;grid-row:1/3;align-self:center;color:var(--ps-accent,var(--accent));font-weight:500}
-.managerResultRow>button{display:inline-flex;align-items:center;justify-content:center;gap:5px;align-self:center;min-height:42px;flex:none;padding:8px 11px;border:1px solid var(--ps-border,var(--border));border-radius:var(--ps-radius-control,10px);background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-text,var(--text-primary));font:700 11px/1.2 inherit;cursor:pointer}
+.managerResultRow>button{display:inline-flex;align-items:center;justify-content:center;gap:5px;align-self:center;min-height:42px;flex:none;padding:8px 11px;border:1px solid var(--ps-border,var(--border));border-radius:var(--ps-radius-control,10px);background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-text,var(--text-primary));font-family:inherit;font-weight:700;font-size:11px;line-height:1.2;cursor:pointer}
 .managerResultRow>button svg{width:16px;height:16px;color:var(--ps-accent,var(--accent))}
 .managerResultRow>a:focus-visible,.managerResultRow>button:focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:2px}
 @media(max-width:390px){.managerResultRow>button{padding:8px;font-size:10px}}
