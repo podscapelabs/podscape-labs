@@ -9,3 +9,10 @@
 .add svg,.scan svg{width:20px;height:20px}
 .add{border-radius:12px!important}
 .groups a:focus-visible,.groups button:focus-visible{outline:3px solid var(--focus,var(--accent));outline-offset:3px}
+
+/* Shared keeper workflow actions stay obvious and accessible on all themes. */
+.binActions{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:12px}
+.binActions a{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:9px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface-secondary);color:var(--accent);font-size:.72rem;font-weight:750;text-decoration:none}
+.binActions a:first-child{background:var(--accent);border-color:var(--accent);color:var(--accent-contrast)}
+.binActions a:focus-visible{outline:3px solid var(--focus,var(--accent));outline-offset:2px}
+@media(max-width:520px){.actions{flex-wrap:wrap}.actions a{flex:1 1 auto}.binActions a{flex:1 1 auto}}
