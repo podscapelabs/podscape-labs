@@ -16,3 +16,16 @@
 .binActions a:first-child{background:var(--accent);border-color:var(--accent);color:var(--accent-contrast)}
 .binActions a:focus-visible{outline:3px solid var(--focus,var(--accent));outline-offset:2px}
 @media(max-width:520px){.actions{flex-wrap:wrap}.actions a{flex:1 1 auto}.binActions a{flex:1 1 auto}}
+
+/* Compact Manager Schedule workflow: same saved intervals, no page transition. */
+.embeddedSchedule{min-width:0}
+.embeddedSchedule>.empty{padding:5px 0;margin:0 0 8px;font-size:11px;line-height:1.5}
+.embeddedSchedule .groups{gap:7px;max-height:340px;overflow:auto;padding-right:3px;margin:8px 0 10px}
+.embeddedSchedule .bin{display:flex;gap:10px;align-items:center;min-height:70px;padding:9px 10px;background:var(--surface);border:1px solid var(--border);border-radius:11px}
+.embeddedSchedule .bin>span:first-child{display:grid;min-width:0;flex:1 1 auto;gap:3px}
+.embeddedSchedule .bin strong{font-size:12px;line-height:1.2}
+.embeddedSchedule .bin small{font-size:10px;line-height:1.35}
+.embeddedSchedule .condition{max-width:none;display:grid;flex:0 0 132px;gap:4px;font-size:10px;color:var(--text-secondary);text-align:left}
+.embeddedSchedule .condition select{min-width:0;width:100%;min-height:40px;padding:8px;border:1px solid var(--border);border-radius:9px;background:var(--surface-secondary);color:var(--text-primary);font:700 12px/1.2 var(--sans);text-transform:none}
+.embeddedSchedule select:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+@media(max-width:390px){.embeddedSchedule .condition{flex-basis:113px}.embeddedSchedule .bin{padding:8px}}

@@ -121,3 +121,24 @@
 .binRowDetails small:last-of-type{color:var(--text-muted,var(--text-secondary));white-space:normal;overflow-wrap:anywhere}
 .groupBin>a:first-child small:first-of-type{font-style:italic;color:var(--text-secondary)}
 @media(max-width:600px){.binRowDetails small:first-of-type{font-size:11px}.binRowDetails small:last-of-type{font-size:10px}}
+
+/* My Colonies is one browser widget below the overview, not a second page hero. */
+.section{display:grid;gap:10px;min-width:0;margin:0 0 20px;padding:16px;border:1px solid var(--border);border-radius:19px;background:var(--surface)}
+.titleRow{align-items:center;margin:0;min-width:0}
+.titleRow>div{min-width:0}
+.browserEyebrow{display:block;margin-bottom:4px;color:var(--accent);font-size:10px;font-weight:800;letter-spacing:.11em}
+.titleRow h2{font-size:clamp(22px,4vw,29px);line-height:1.16}
+.browserCount{flex:none;color:var(--text-secondary);font-size:11px}
+.browseMode{display:flex;align-items:center;gap:9px;min-width:0}
+.browseMode>span{color:var(--text-secondary);font-size:11px;font-weight:680}
+.browseMode .tabs{padding:3px;border-radius:11px;background:var(--surface-secondary)}
+.browseMode .tabs button{min-height:38px;padding:8px 14px;border-radius:9px;font-size:12px}
+.searchRow{margin:0;gap:8px}
+.searchRow .search{background:var(--surface-secondary);border-radius:12px}
+.searchRow .filterToggle{border-radius:12px}
+.cards{gap:8px}
+.binRow{background:var(--surface-secondary);border-radius:14px;padding:10px}
+.binRowPhoto{background:var(--surface)}
+.binRowDetails strong{white-space:normal;overflow-wrap:anywhere}
+.binRowDetails small:last-of-type{line-height:1.35}
+@media(max-width:600px){.section{padding:12px;border-radius:17px;gap:9px;margin-bottom:12px}.titleRow h2{font-size:25px}.browserCount{font-size:10px}.browseMode .tabs button{min-height:37px;padding:7px 12px}.binRow{padding:9px}.binRowLink{grid-template-columns:48px minmax(0,1fr) 10px}.binRowPhoto{width:48px;height:55px}.binRowDetails strong{font-size:18px}.binRowDetails small:first-of-type{font-size:11px}.binRowDetails small:last-of-type{font-size:10px}}

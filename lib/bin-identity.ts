@@ -34,3 +34,15 @@ export function binCardIdentity(bin:{name:string;label?:string},record?:BinSpeci
  const binName=!isGenerated&&name.toLocaleLowerCase()!==title.toLocaleLowerCase()?name:"";
  return{title,scientific,binName,location:(bin.label||"").trim()};
 }
+
+/** Compact, display-only secondary details for colony cards.
+ * Do not repeat the morph in the keeper's custom bin name, and never
+ * substitute placeholder locations or empty population metrics for useful data.
+ */
+export function binCardSummary(bin:{name:string;label?:string;quantity:number;status:string},record?:BinSpeciesIdentity|null){
+ const identity=binCardIdentity(bin,record);
+ const prefix=identity.title+" · ";
+ const custom=identity.binName.startsWith(prefix)?identity.binName.slice(prefix.length):identity.binName;
+ const status=bin.status.trim().replaceAll("-"," ").replace(/^./,letter=>letter.toUpperCase());
+ return [custom,identity.location,bin.quantity>0?bin.quantity.toLocaleString("en-CA")+" recorded":"",status].filter(Boolean).join(" · ");
+}

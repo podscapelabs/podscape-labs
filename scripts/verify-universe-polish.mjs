@@ -89,9 +89,11 @@ assert.match(rail,/action\.href\?<Link/,"Links must support portal-to-portal nav
 assert.match(rail,/<button key=\{action\.label\}/,"Actions must support in-place workflows");
 assert.match(read("components/PortalActionRail.module.css"),/min-height:44px/,"Touch controls at least 44px");
 const keeper=read("components/ManagerWorkspace.tsx");
-for(const task of ['openWorkflow("care")','openWorkflow("notes")','openWorkflow("population")','openWorkflow("bulk")'])
- assert.ok(keeper.includes(task),"In-place Manager action preserved: "+task);
-assert.match(keeper,/PortalActionRail/);
+for(const [id,mode] of [["care","care"],["notes","notes"],["population","population"],["bulkcare","bulk"]])
+ assert.ok(keeper.includes('id:"'+id+'"')&&keeper.includes('id==="'+id+'"?')&&keeper.includes('"'+mode+'"'),"In-place Manager Quick Tool preserved: "+id);
+assert.doesNotMatch(keeper,/Work from your portal/,"Do not create a second non-customizable Manager task rail");
+assert.match(keeper,/useShortcutEditor\(ids,change,canvasEditing\)/,"Quick Tools must keep press-and-hold jiggle editing");
+assert.match(keeper,/managerHomeShortcuts/,"Manager shortcuts must remain visible");
 const workflow=read("components/ManagerWorkflowPanel.tsx");
 assert.match(workflow,/initialBinId/,"Manager Quick Care must accept a selected bin identifier");
 assert.match(workflow,/const bin=matches\.find\(item=>item\.id===selected\)/,"Care must never target a hidden nonmatching bin");
@@ -104,13 +106,16 @@ const collection=read("app/keeper/collection/page.tsx");
 for(const path of ["/keeper/scan?manual=1","/keeper/new","/keeper/import","/ledger"])
  assert.ok(collection.includes(path),"Keeper action should be one click: "+path);
 const fun=read("app/fun-zone/FunZonePortal.tsx");
-assert.match(fun,/active\.includes\("categories"\)/,"No invisible category anchor");
-assert.match(fun,/active\.includes\("favourites"\)/,"No invisible favourites anchor");
-assert.match(fun,/active\.includes\("rankings"\)/,"Rankings shortcut must work when widget hidden");
+assert.match(fun,/id==="categories"\?"arcade-games":/,"Category anchor must belong to a rendered category widget");
+assert.match(fun,/id==="favourites"\?"arcade-favourites":/,"Favorites anchor must belong to a rendered Favorites widget");
+assert.match(fun,/id==="rankings"\?"rankings-spotlight":/,"Rankings anchor must belong to a rendered Rankings widget");
+assert.match(fun,/active\.includes\("categories"\)\?\{href:"#arcade-games"\}/,"Categories shortcut links to the section only if the widget is visible");
+assert.match(fun,/active\.includes\("favourites"\)\?\{href:"#arcade-favourites"\}/,"My Games shortcut links to the section only if the widget is visible");
+assert.match(fun,/renderWidget\(shortcutPanel\)/,"When optional arcade widgets are hidden, shortcuts still show the actual content");
 assert.match(fun,/\/fun-zone\/pod-exchange/);
 assert.match(fun,/\/fun-zone\/picture-puzzles/);
 const shop=read("app/shop/page.tsx");
-assert.match(shop,/PortalActionRail/,"Shop uses shared contextual actions");
+assert.match(shop,/<PortalShortcutDock portal="shop"/,"Shop uses customizable shortcut navigation");
 assert.match(shop,/Storefront preview · Checkout not yet available/,"Shop must not imply checkout works");
 for(const path of ["app/podbound/page.tsx","app/podbound/cards/page.tsx","app/podbound/cards/[id]/page.tsx","app/menu/page.tsx"]){
  const source=read(path);

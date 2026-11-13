@@ -11,3 +11,9 @@
 
 .disabled{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 13px;border:1px solid var(--ps-border,var(--border));border-radius:var(--ps-radius-control,12px);background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-text-secondary,var(--text-secondary));font:750 12px/1.25 var(--ps-font-ui,var(--sans));opacity:.6;cursor:not-allowed}
 .disabled svg{width:19px;height:19px;flex:none}
+
+/* Opt-in portal shortcut block: fixed two-column rhythm, no orphaned pills. */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0}
+.grid .action,.grid .disabled{display:flex;min-width:0;width:100%;justify-content:flex-start;text-align:left;min-height:54px;padding:12px;flex:none}
+.grid .action:last-child:nth-child(odd),.grid .disabled:last-child:nth-child(odd){grid-column:1/-1}
+@media(max-width:600px){.grid{gap:8px}.grid .action,.grid .disabled,.compact.grid .action,.compact.grid .disabled{min-height:52px;flex:none;padding:11px 12px;font-size:12px}}

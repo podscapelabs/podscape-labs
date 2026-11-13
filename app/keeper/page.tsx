@@ -14,7 +14,7 @@ import { ManagerInlineCare } from "@/components/ManagerInlineCare";
 import { getMemberCollectionState } from "@/lib/member-collection";
 import { listEnclosures, listManagerActivity } from "@/lib/keeper";
 import { getSpeciesRecords } from "@/lib/species-store";
-import { speciesDisplayName, speciesScientificName } from "@/data/species";
+import { speciesDisplayName, speciesScientificName, isSpeciesRecordActive } from "@/data/species";
 import {binCardIdentity} from "@/lib/bin-identity";
 import styles from "./page.module.css";
 
@@ -32,12 +32,13 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
 
   let activity: Awaited<ReturnType<typeof listManagerActivity>>=[];
   let activityAvailable=true;
-  if(member.signedIn&&!unavailable)try{activity=await listManagerActivity(12);}catch{activityAvailable=false;}
+  if(member.signedIn&&!unavailable)try{activity=await listManagerActivity(30);}catch{activityAvailable=false;}
 
   const heroSpecies=species.find(record=>record.kind==="species"&&record.image);
   const selected = (await searchParams).species;
   const selectedRecord = species.find((record) => record.id === selected && record.kind === "species");
   const speciesById = new Map(species.map((record) => [record.id, record]));
+  const speciesOptions=species.filter(record=>record.kind==="species"&&record.status==="published"&&isSpeciesRecordActive(record)).map(record=>({id:record.id,name:speciesDisplayName(record),scientific:speciesScientificName(record),existingNames:enclosures.filter(bin=>bin.speciesId===record.id).map(bin=>bin.name)})).sort((a,b)=>a.name.localeCompare(b.name));
   const active = enclosures.filter((enclosure) => !enclosure.isArchived);
   const archived = enclosures.filter((enclosure) => enclosure.isArchived);
   const uniqueSpecies = new Set(active.map(enclosure => enclosure.speciesId)).size;
@@ -65,11 +66,11 @@ export default async function KeeperIndex({ searchParams }: { searchParams: Prom
           <ManagerWorkspace hero={<section className={styles.managerHero} aria-label="Manager portal">
             {heroSpecies?.image?<div className={styles.managerHeroPhoto}><Image src={heroSpecies.image} alt="" fill sizes="(max-width: 720px) 100vw, 1100px" style={{objectFit:"cover",objectPosition:`${heroSpecies.imagePositionX}% ${heroSpecies.imagePositionY}%`}}/></div>:null}
             <div className={styles.managerHeroContent}><span>MANAGER · YOUR WORKSPACE</span><h1>Your colonies</h1><p>Everything you need to keep your colonies organized.</p><div className={styles.managerHeroActions}><Link href={firstBinHref}>{recent.length?"Open latest bin":"Create your first bin"} <span aria-hidden="true">→</span></Link>{recent.length?<Link className={styles.heroSecondaryAction} href="/keeper/collection?view=active">Browse all bins</Link>:null}</div></div>
-          </section>} scope={managerUser?.id || "guest"} primaryHref={firstBinHref} bins={managerBins} events={activity} activityAvailable={activityAvailable} stats={<section className={styles.metrics} aria-label={managerWidgetNames.stats}>
+          </section>} scope={managerUser?.id || "guest"} primaryHref={firstBinHref} speciesOptions={speciesOptions} bins={managerBins} events={activity} activityAvailable={activityAvailable} stats={<div className={styles.metrics} role="group" aria-label="Manager collection snapshot">
             <Link href="/keeper/collection"><PodscapeLineIcon name="leaf" /><strong>{uniqueSpecies}</strong><span>Species</span><b>›</b></Link>
             <Link href="/keeper/collection"><PodscapeLineIcon name="bin" /><strong>{active.length}</strong><span>Bins</span><b>›</b></Link>
             <Link href="/keeper/collection"><PodscapeLineIcon name="community" /><strong>{totalPopulation}</strong><span>Recorded population</span><b>›</b></Link>
-          </section>} enclosures={<section className={styles.section}>
+          </div>} enclosures={<section className={styles.section}>
             <header><h2>Your bins</h2><Link href="/keeper/collection?view=active">View all <span>→</span></Link></header>
             {recent.length ? <div className={styles.attentionList}>{recent.map(enclosure => {
               const record = speciesById.get(enclosure.speciesId);

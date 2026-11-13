@@ -1,0 +1,26 @@
+/* The Home shortcut is the visual contract for every mini-dashboard.
+   This dock intentionally reuses Home's classes instead of inventing a tile style. */
+.dock{min-width:0;margin:0}
+.dock .grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;width:100%;max-width:558px;margin:0;padding:0;overflow:visible}
+.dock .grid>.shortcut{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;grid-column:auto;min-width:0;width:100%;min-height:79px;margin:0;padding:8px 3px;border:1px solid var(--ps-border,var(--border,var(--line)));border-radius:14px;background:var(--ps-surface,var(--surface,var(--paper)));color:var(--ps-text,var(--text-primary,var(--ink)));font:400 .74rem/1.12 var(--serif);text-align:center;box-shadow:none;cursor:pointer;touch-action:pan-y;-webkit-user-select:none;user-select:none}
+.dock .grid>.shortcut>span:first-child{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:10px;background:color-mix(in srgb,var(--ps-accent,var(--accent,var(--forest))) 12%,var(--ps-surface,var(--surface,var(--paper))));color:var(--ps-accent,var(--accent,var(--forest)))}
+.dock .grid>.shortcut>span:first-child svg{width:21px;height:21px;color:inherit}
+.dock .grid>.shortcut>.shortcutLabel{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;min-width:0;max-width:100%;overflow:hidden;overflow-wrap:anywhere;white-space:normal;font:inherit}
+.dock .grid>.shortcut:hover{border-color:var(--ps-accent,var(--accent,var(--forest)))}
+.dock .grid>.shortcut:focus-visible,.editor :is(button,select):focus-visible{outline:3px solid var(--ps-focus,var(--focus));outline-offset:2px}
+.jiggling{animation:portalShortcutJiggle .24s ease-in-out infinite alternate}
+.dock .grid>.shortcut.jiggling{touch-action:none;-webkit-touch-callout:none;cursor:grab}
+.dock .grid>.selected{outline:2px solid var(--ps-accent,var(--accent,var(--forest)));outline-offset:2px;background:var(--ps-surface-muted,var(--surface-secondary))}
+@keyframes portalShortcutJiggle{from{transform:rotate(-.5deg)}to{transform:rotate(.5deg)}}
+.editor{display:grid;gap:9px;padding:12px;margin-bottom:10px;border:1px solid var(--ps-border,var(--border));border-radius:13px;background:var(--ps-surface-muted,var(--surface-secondary));color:var(--ps-text,var(--text-primary))}
+.editorHead{display:flex;align-items:center;justify-content:space-between;gap:12px}.editorHead strong{font-size:13px}.editor p{margin:0;color:var(--ps-text-secondary,var(--text-secondary));font-size:11px}
+.editor button,.editor select{min-height:42px;border:1px solid var(--ps-border,var(--border));border-radius:10px;background:var(--ps-surface,var(--surface));color:var(--ps-text,var(--text-primary));padding:8px 11px;font:700 12px/1.25 var(--ps-font-ui,var(--sans));cursor:pointer}
+.editor label{display:grid;gap:5px;font-size:11px;font-weight:750}.move{display:flex;flex-wrap:wrap;gap:7px}.move button:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:600px){
+ .dock .grid{gap:5px}
+ .dock .grid>.shortcut{min-height:74px;padding:7px 1px;gap:5px;font:400 clamp(.56rem,2.15vw,.67rem)/1.12 var(--serif)}
+ .dock .grid>.shortcut>span:first-child{width:29px;height:29px}
+ .dock .grid>.shortcut>span:first-child svg{width:20px;height:20px}
+}
+@media(max-width:345px){.dock .grid>.shortcut{font-size:.55rem;min-height:72px}.dock .grid{gap:4px}}
+@media(prefers-reduced-motion:reduce){.jiggling{animation:none}}

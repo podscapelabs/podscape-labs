@@ -20,7 +20,7 @@ function proposeNames(species:SpeciesOption,count:number){
  }
  return result;
 }
-export function NewBinForm({species,initialSpeciesId}:{species:SpeciesOption[];initialSpeciesId?:string}){
+export function NewBinForm({species,initialSpeciesId,embedded=false,onCreated}:{species:SpeciesOption[];initialSpeciesId?:string;embedded?:boolean;onCreated?:(ids:string[])=>void}){
  const router=useRouter();
  const initial=species.find(item=>item.id===initialSpeciesId);
  const [selected,setSelected]=useState(initial?.id||"");
@@ -54,18 +54,18 @@ export function NewBinForm({species,initialSpeciesId}:{species:SpeciesOption[];i
    try{
     if(mode==="multiple"){
      const result=await createEnclosureBatch({speciesId:current.id,names,label:label.trim()});
-     if(result.success){router.push("/keeper/collection?created="+quantity);router.refresh();}
+     if(result.success){if(embedded){onCreated?.([]);router.refresh();}else{router.push("/keeper/collection?created="+quantity);router.refresh();}}
      else setError(result.error||"Couldn't create these bins.");
     }else{
      const result=await createEnclosure({speciesId:current.id,name:singleName,label:label.trim()});
-     if(result.success&&result.id){router.push("/keeper/"+result.id+"?created=1");router.refresh();}
+     if(result.success&&result.id){if(embedded){onCreated?.([result.id]);router.refresh();}else{router.push("/keeper/"+result.id+"?created=1");router.refresh();}}
      else setError(result.error||"Couldn't create this bin.");
     }
    }catch{setError("Connection interrupted. Check My Colonies before trying again.");}
   });
  };
- return <form className={styles.form} onSubmit={submit}>
-  <div className={styles.step}><span>01</span><div><h2>Choose your species</h2><p>Search the Leaf Ledger. You can add bins for any published species.</p></div></div>
+ return <form className={`${styles.form} ${embedded?styles.embeddedForm:""}`} onSubmit={submit}>
+  {!embedded?<div className={styles.step}><span>01</span><div><h2>Choose your species</h2><p>Search the Leaf Ledger. You can add bins for any published species.</p></div></div>:null}
   <div className={styles.searchPicker}>
    <label htmlFor="new-bin-species-search" className={styles.fieldTitle}>Find a species</label>
    <div className={styles.searchControl}>
@@ -88,10 +88,10 @@ export function NewBinForm({species,initialSpeciesId}:{species:SpeciesOption[];i
    </div>:null}
    {current&&!showOptions?<div className={styles.chosenSpecies}><PodscapeLineIcon name="check"/><span><strong>{current.name}</strong><small>{current.scientific}</small></span><button type="button" onClick={()=>setShowOptions(true)}>Change</button></div>:null}
   </div>
-  <p className={styles.helper}>Can&apos;t find it? <Link href="/ledger">Explore the Leaf Ledger →</Link></p>
+  {!embedded?<p className={styles.helper}>Can&apos;t find it? <Link href="/ledger">Explore the Leaf Ledger →</Link></p>:null}
 
-  <div className={styles.separator}/>
-  <div className={styles.step}><span>02</span><div><h2>How many bins?</h2><p>Create one enclosure, or add several for the same species at once.</p></div></div>
+  {!embedded?<div className={styles.separator}/>:null}
+  {!embedded?<div className={styles.step}><span>02</span><div><h2>How many bins?</h2><p>Create one enclosure, or add several for the same species at once.</p></div></div>:null}
   <div className={styles.modePicker} role="group" aria-label="Creation mode">
    <button type="button" disabled={pending} aria-pressed={mode==="single"} onClick={()=>{setMode("single");setError("");}}><PodscapeLineIcon name="jar"/><strong>Single bin</strong><small>One enclosure</small></button>
    <button type="button" disabled={pending} aria-pressed={mode==="multiple"} onClick={()=>{setMode("multiple");setError("");}}><PodscapeLineIcon name="grid"/><strong>Multiple bins</strong><small>Create 2–20 together</small></button>

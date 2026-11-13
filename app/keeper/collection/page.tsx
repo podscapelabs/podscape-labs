@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import {PortalActionRail} from "@/components/PortalActionRail";
+import {PodscapeLineIcon} from "@/components/PodscapeLineIcon";
 import Link from "next/link";
 import { PlatformShell } from "@/components/PlatformShell";
 import { KeeperMobileNav } from "@/components/KeeperMobileNav";
@@ -39,12 +39,22 @@ export default async function MyColoniesPage({searchParams}:{searchParams:Promis
           <p>{savedView?"Species saved for later, separate from your active enclosures.":archivedView?"Your preserved bins and care records.":"Find a bin, record care, or manage your collection."}</p>
           <nav className={styles.views} aria-label="Collection views"><Link href="/keeper/collection?view=active" aria-current={view==="active"?"page":undefined}>Active bins</Link><Link href="/keeper/collection?view=saved" aria-current={savedView?"page":undefined}>Saved species</Link><Link href="/keeper/collection?view=archived" aria-current={archivedView?"page":undefined}>Archived</Link></nav>
         </header>
-        {member.signedIn?<PortalActionRail label="Keeper quick actions" compact actions={[
-          {href:"/keeper/scan?manual=1",label:"Quick Care",icon:"droplet"},
-          {href:"/keeper/new",label:"Add a bin",icon:"bin"},
-          {href:"/keeper/import",label:"Import bins",icon:"note"},
-          {href:"/ledger",label:"Discover species",icon:"leaf"}
-        ]}/>:null}
+        {member.signedIn&&!unavailable?<section className={styles.overview} aria-label="Collection overview and tools">
+          <h2 className={styles.overviewLabel}>Collection snapshot</h2>
+          <div className={styles.overviewStats}>
+            <div><strong>{bins.filter(bin=>!bin.isArchived).length}</strong><span>Active bins</span></div>
+            <div><strong>{member.ids.length}</strong><span>In collection</span></div>
+            <div><strong>{bins.filter(bin=>bin.isArchived).length}</strong><span>Archived</span></div>
+          </div>
+          <div className={styles.primaryTools}>
+            <Link href="/keeper/scan?manual=1"><PodscapeLineIcon name="droplet"/> Quick Care</Link>
+            <Link href="/keeper/new"><PodscapeLineIcon name="bin"/> Add a bin</Link>
+          </div>
+          <details className={styles.moreTools}><summary>More collection tools <PodscapeLineIcon name="arrow-down"/></summary><nav aria-label="More collection tools">
+            <Link href="/keeper/import"><PodscapeLineIcon name="note"/> Import spreadsheet</Link>
+            <Link href="/ledger"><PodscapeLineIcon name="leaf"/> Discover species</Link>
+          </nav></details>
+        </section>:null}
         {!member.signedIn ? <section className={styles.empty}><h2>Your colonies are private.</h2><p>Sign in to see and manage your records.</p><Link href="/account/login">Sign in →</Link></section>
           : unavailable ? <section className={styles.empty} role="alert"><h2>Colony records are unavailable.</h2><p>Try again when the Keeper database is available.</p></section>
           : <ManagerColonies key={(member.userId||"guest")+":"+view+":"+(options.species||"")} scope={member.userId||"guest"} explicitView={Boolean(options.view||options.species||intent)} records={species} bins={active} allBins={bins.map(({speciesId,isArchived})=>({speciesId,isArchived}))} collectedIds={member.ids} intent={intent} initialSpecies={options.species} archivedView={archivedView} savedView={savedView} />}

@@ -66,7 +66,7 @@ export function ManagerInlineCare({binId,binName,compact=false}:{binId:string;bi
   });
  }
  return <div className={compact?styles.compact:styles.root}>
-  <button type="button" className={styles.launch} aria-expanded={open} aria-controls={"inline-care-"+binId} onClick={()=>setOpen(value=>!value)}><PodscapeLineIcon name="droplet"/><span>{open?"Close care":"Quick Care"}</span></button>
+  <button type="button" className={styles.launch} aria-expanded={open} aria-controls={"inline-care-"+binId} aria-label={(open?"Close Quick Care for ":"Quick Care for ")+binName} onClick={()=>setOpen(value=>!value)}><PodscapeLineIcon name="droplet"/><span>{open?"Close":compact?"Care":"Quick Care"}</span></button>
   {open?<div id={"inline-care-"+binId} className={styles.panel} aria-label={"Care for "+binName}>
    <div className={styles.heading}><strong>{binName}</strong><small>Tap an activity to record it now.</small></div>
    <div className={styles.tiles}>{actions.map(action=><button key={action.label} type="button" disabled={pending} onClick={()=>save(action)} aria-label={"Log "+action.label+" for "+binName} className={saved?.label===action.label?styles.recorded:""}><PodscapeLineIcon name={action.icon}/><span>{action.label}</span>{saved?.label===action.label?<span aria-hidden="true">✓</span>:null}</button>)}</div>

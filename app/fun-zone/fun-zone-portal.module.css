@@ -411,3 +411,25 @@
 /* Five portal quick links, including Picture Puzzles, stay balanced across screen sizes. */
 .quickLinks{grid-template-columns:repeat(5,minmax(0,1fr))}
 @media(max-width:760px){.quickLinks{grid-template-columns:repeat(2,minmax(0,1fr))}.quickLinks a:last-child{grid-column:1/-1}}
+
+/* Fun Zone top-level navigation is one intentional block, not five loose pills. */
+.quickStart{min-width:0;padding:14px;border:1px solid var(--border);border-radius:18px;background:var(--surface)}
+.quickStartHeading{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:5px 12px;margin-bottom:11px}
+.quickStartHeading strong{font:500 1.23rem/1.2 var(--display);color:var(--text-primary)}
+.quickStartHeading span{font-size:11px;color:var(--text-secondary)}
+@media(max-width:720px){.quickStart{padding:12px;border-radius:17px}.quickStartHeading{margin-bottom:9px}.quickStartHeading strong{font-size:1.17rem}}
+
+/* A shortcut is useful even if its matching dashboard widget is hidden. */
+.shortcutContent{min-width:0;margin-top:11px;border-top:1px solid var(--border);padding-top:11px}
+.shortcutContent>.card{margin:0;border:0;box-shadow:none;background:transparent;padding:5px 0}
+.shortcutClose{display:flex;align-items:center;gap:6px;margin:0 0 8px auto;padding:7px 11px;min-height:40px;border:1px solid var(--border);border-radius:10px;background:var(--surface-secondary);color:var(--text-primary);font:750 12px/1.25 var(--sans);cursor:pointer}
+.shortcutClose svg{width:16px;height:16px}
+.shortcutClose:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+/* Fun Zone shortcuts use the same compact dashboard rhythm as Home & Manager.
+   The portal heading can differ; the tiles, spacing and editing behavior cannot. */
+.quickStart{margin:12px 0 20px;padding:0;border:0;border-radius:0;background:transparent}
+.quickStartHeading{display:flex;align-items:center;justify-content:space-between;gap:8px 15px;margin:0 0 9px;flex-wrap:wrap}
+.quickStartHeading strong{font:500 clamp(1.2rem,3vw,1.45rem)/1.2 var(--display)}
+.quickStartHeading span{font-size:11px}
+@media(max-width:720px){.quickStart{margin:10px 0 16px;padding:0;border:0;border-radius:0;background:transparent}.quickStartHeading{margin-bottom:8px}.quickStartHeading strong{font-size:1.2rem}.quickStartHeading span{font-size:10px}}

@@ -568,3 +568,13 @@
 
 /* Semantic icon used by the Leaf Ledger About disclosure. */
 .aboutSymbol svg{display:block;width:22px;height:22px;flex:none}
+
+/* Put research discovery ahead of keeper management without adding another page. */
+.ledgerSearchBar{display:grid;grid-template-columns:minmax(135px,max-content) minmax(0,1fr);align-items:center;gap:10px 15px;margin:14px 0 8px;padding:12px 14px;border:1px solid var(--border);border-radius:16px;background:var(--surface);color:var(--text-primary)}
+.ledgerSearchBar label{font-size:.78rem;font-weight:760}
+.ledgerSearchBar>div{display:flex;min-width:0;gap:8px}
+.ledgerSearchBar input{flex:1;min-width:0;min-height:45px;border:1px solid var(--border);border-radius:11px;background:var(--surface-secondary);color:var(--text-primary);padding:10px 12px;font:inherit;font-size:16px}
+.ledgerSearchBar button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:45px;padding:9px 15px;border:1px solid var(--accent);border-radius:11px;background:var(--accent);color:var(--accent-contrast);font:750 .8rem var(--sans);cursor:pointer}
+.ledgerSearchBar button svg{width:18px;height:18px}
+.ledgerSearchBar :is(input,button):focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+@media(max-width:600px){.ledgerSearchBar{grid-template-columns:minmax(0,1fr);gap:7px;padding:11px 12px;margin-top:10px}.ledgerSearchBar label{font-size:.74rem}.ledgerSearchBar>div{gap:7px}.ledgerSearchBar button{padding:9px 11px;font-size:.74rem}}
