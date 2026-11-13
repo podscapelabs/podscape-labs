@@ -4,16 +4,16 @@ import Link from "next/link";
 import type {ManagerEvent} from "./ManagerCareWidgets";
 import styles from "@/app/keeper/page.module.css";
 
-export function ManagerActivityHistory({events,unavailable}:{events:ManagerEvent[];unavailable:boolean}){
+export function ManagerActivityHistory({events,unavailable,embedded=false}:{events:ManagerEvent[];unavailable:boolean;embedded?:boolean}){
  const [search,setSearch]=useState("");
  const [kind,setKind]=useState("all");
  const types=useMemo(()=>[...new Set(events.map(event=>event.kind))].sort(),[events]);
  const filtered=useMemo(()=>events.filter(event=>(kind==="all"||event.kind===kind)
   &&[event.kind,event.note,event.enclosureName].some(value=>value.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()))),[events,search,kind]);
- return <section className={styles.managerHistory}>
-  <p className={styles.managerEyebrow}>MANAGER / PRIVATE RECORDS</p>
-  <h1>Care activity</h1>
-  <p>Recent care and observations across your enclosures. Open an entry to view that bin&apos;s full history.</p>
+ return <section className={`${styles.managerHistory} ${embedded?styles.managerHistoryEmbedded:""}`}>
+  {!embedded?<><p className={styles.managerEyebrow}>MANAGER / PRIVATE RECORDS</p>
+  <h1>Care activity</h1></>:null}
+  <p>{embedded?"Search recent care and observations without leaving Manager.":"Recent care and observations across your enclosures. Open an entry to view that bin’s full history."}</p>
   {!unavailable?<div className={styles.managerHistoryFilters}>
     <label>Search logs<input type="search" placeholder="Bin, activity or note…" value={search} onChange={event=>setSearch(event.target.value)}/></label>
     <label>Activity type<select value={kind} onChange={event=>setKind(event.target.value)}><option value="all">All activities</option>{types.map(type=><option value={type} key={type}>{type.replaceAll("-"," ")}</option>)}</select></label>
