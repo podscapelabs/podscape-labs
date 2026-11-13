@@ -7,6 +7,11 @@ const manager=read("components/ManagerWorkspace.tsx");
 const home=read("components/HomeWidgets.tsx");
 for(const property of ["portal","label","features","defaults","scope"])assert.ok(dock.includes(property),"Shared shortcut dock prop missing: "+property);
 assert.match(dock,/useShortcutEditor\(ids,update\)/,"Portal shortcuts must retain hold-to-jiggle editing");
+assert.match(dock,/homeStyles\.shortcuts/,"All portals must reuse Home shortcut grid styles");
+assert.match(dock,/homeStyles\.shortcutIcon/,"Shortcut icon chips must share the Home and Manager visual system");
+assert.match(dock,/homeStyles\.shortcut,styles\.shortcut/,"Shortcut cards must inherit the shared PodScape tile");
+assert.match(css,/\.dock \.grid\{[^\n]*grid-template-columns:repeat\(6,/,"Shortcut dock must use the Home six-slot grid");
+assert.match(css,/\.dock \.grid>\.shortcut\{[^\n]*flex-direction:column/,"Shortcuts use compact stacked icons, never giant horizontal action cards");
 assert.match(dock,/moveNavigationSlot\(/,"Shortcuts need keyboard move controls");
 assert.match(dock,/localStorage\.setItem\(storageKey,JSON\.stringify\(valid\)\)/,"Choices must persist independently");
 assert.match(dock,/portal\+"\:"\+scope/,"Preference storage must be scoped by portal and member");
@@ -18,6 +23,8 @@ assert.match(css,/data-count="5"/,"Five visible shortcuts must form balanced row
 assert.match(dock,/onKeyDown=\{e=>\{if\(e\.key==="F2"\)/,"Keyboard users must have a non-visual shortcut editing gesture");
 assert.match(css,/prefers-reduced-motion:reduce/,"Respect reduced motion");
 
+const funCss=read("app/fun-zone/fun-zone-portal.module.css");
+assert.match(funCss,/\.quickStart\{margin:12px 0 20px;padding:0;border:0/,"Fun Zone shortcut rail should not be a huge nested panel");
 const fun=read("app/fun-zone/FunZonePortal.tsx");
 assert.match(fun,/<PortalShortcutDock portal="fun-zone"/,"Fun Zone must offer its custom shortcut dock");
 for(const id of ["categories","favourites","rankings","exchange","picture"])assert.ok(fun.includes('id:"'+id+'"'),"Fun Zone shortcut missing: "+id);
