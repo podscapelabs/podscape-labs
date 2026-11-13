@@ -1,0 +1,46 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+import {runInNewContext} from "node:vm";
+import ts from "typescript";
+
+const read=path=>readFileSync(new URL("../"+path,import.meta.url),"utf8");
+const home=read("components/PodscapeHome.module.css");
+assert.match(home,/\.recentRail>\.recentCategoryCard\{flex:0 0 100%/, "Home update rail must snap whole cards on phones");
+assert.match(home,/scroll-snap-type:x mandatory/, "Mobile home rails must snap consistently");
+
+const portalActions=read("components/PortalActionRail.tsx");
+const funZone=read("app/fun-zone/FunZonePortal.tsx");
+assert.match(portalActions,/layout\?:"inline"\|"grid"/, "Shared portal actions should support a deliberate grid");
+assert.match(funZone,/aria-label="Explore Fun Zone"/, "Fun Zone needs one labelled navigation block");
+assert.match(funZone,/compact layout="grid"/, "Fun Zone shortcuts should not wrap as stray pills");
+assert.match(funZone,/data-workspace-root="fun-zone"/, "Fun Zone customization must survive the shortcut redesign");
+
+const profile=read("app/ledger/[slug]/page.tsx");
+const catalogue=read("components/LedgerExplorer.tsx");
+assert.match(profile,/role="search" action="\/ledger" method="get"/, "Species profile must make catalogue search directly accessible");
+assert.match(catalogue,/URLSearchParams\(window.location.search\)\.get\("q"\)/, "Catalogue must accept explicit profile search");
+assert.match(catalogue,/setGenus\("all"\);setCare\("all"\);setOrganism\("all"\)/, "Explicit search should ignore stale filters");
+assert.match(read("components/SpeciesCollectionHub.module.css"),/\.actions\{display:grid;grid-template-columns:repeat\(2/, "Collection actions should be balanced");
+
+const collection=read("app/keeper/collection/page.tsx");
+const browser=read("components/ManagerColonies.tsx");
+assert.match(collection,/styles\.overviewStats/, "My Colonies needs a useful information overview");
+assert.match(collection,/member\.signedIn&&!unavailable/, "Database outages must not display fabricated zero counts");
+assert.match(collection,/In collection/, "Summary count should not confuse collection size with bin-free bookmarks");
+assert.doesNotMatch(collection,/PortalActionRail/, "My Colonies should not have an extra unstructured shortcut rail");
+assert.match(collection,/styles\.moreTools/, "Secondary import/discovery actions belong in progressive disclosure");
+assert.match(browser,/savedView\|\|Boolean\(initialSpecies\)\?"species":"bins"/, "Ledger species deep links must open species grouping");
+assert.match(browser,/styles\.browseMode/, "Species/Bins must be a subordinate group-by control");
+assert.doesNotMatch(browser,/className=\{styles\.actions\}><Link href="\/keeper\/new"/, "No duplicated Add bin/Import/Discover footer");
+assert.match(browser,/binCardSummary\(bin,record\)/, "Both colony browsers must use consistent compact bin metadata");
+
+const js=ts.transpileModule(read("lib/bin-identity.ts"),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;
+const exports={};
+runInNewContext(js,{exports,module:{exports}});
+const {binCardSummary}=exports;
+const source={commonName:"BC Maple",scientificName:"Oniscus asellus"};
+assert.equal(binCardSummary({name:"BC Maple · Bin 01",label:"",quantity:0,status:"establishing"},source),"Bin 01 · Establishing");
+assert.equal(binCardSummary({name:"Rack A",label:"Top shelf",quantity:14,status:"breeding"},source),"Rack A · Top shelf · 14 recorded · Breeding");
+assert.match(read("components/ManagerInlineCare.tsx"),/compact\?"Care":"Quick Care"/, "Compact bin care must remain a short action without removing accessibility");
+
+console.log("Portal cohesion QA passed: Home, Ledger, Fun Zone, Manager, deep links, outage states and bin metadata.");
