@@ -14,8 +14,14 @@ export type BinSpeciesIdentity={
 };
 export function organismDisplayName(record?:BinSpeciesIdentity|null){
  const morph=(record?.morph||"").trim();
+ const common=(record?.commonName||"").trim();
+ const scientific=(record?.scientificName||"").trim();
  const generic=/^(?:wild[ -]?type|normal|standard|default|none|n\/?a)$/i.test(morph);
- return (!generic&&morph)||(record?.commonName||"").trim()||morph;
+ // Preserve the hobby name members already recognize (e.g. "Giant Orange")
+ // even when an abbreviated morph field only says "Orange". If the common
+ // field is merely the scientific name, prefer the named morph instead.
+ const commonIsScientific=Boolean(common&&scientific&&common.toLowerCase()===scientific.toLowerCase());
+ return (common&&!commonIsScientific?common:"")||(!generic?morph:"")||common||morph;
 }
 export function binCardIdentity(bin:{name:string;label?:string},record?:BinSpeciesIdentity|null){
  const name=(bin.name||"").trim();
