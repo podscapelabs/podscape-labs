@@ -57,7 +57,7 @@ export function PortalShortcutDock({portal,label,features,defaults,scope="device
     <button type="button" onClick={()=>{if(confirmWorkspaceReset("portal-shortcuts")){update(defaults);setSelected(0)}}}>Reset</button>
    </div>
   </div>:null}
-  <nav className={styles.grid} aria-label={label}>
+  <nav className={styles.grid} data-count={ids.length} aria-label={label}>
    {ids.map((id,index)=>{
     const item=features.find(entry=>entry.id===id);if(!item)return null;
     const gesture=handlers(index);
