@@ -16,6 +16,8 @@ assert.match(funZone,/compact layout="grid"/, "Fun Zone direct-play links should
 assert.doesNotMatch(funZone,/label:"Game categories",icon:/, "Top shortcuts must not duplicate the game category widget");
 assert.doesNotMatch(funZone,/label:"My games",icon:/, "Top shortcuts must not duplicate My Games");
 assert.doesNotMatch(funZone,/label:"Rankings",icon:/, "Top shortcuts must not duplicate the rankings widget");
+assert.match(funZone,/label:"Picture puzzles"/, "Fun Zone must keep a direct puzzle entry point");
+assert.match(funZone,/label:"Pod Exchange"/, "Fun Zone must keep a direct market entry point");
 assert.match(funZone,/data-workspace-root="fun-zone"/, "Fun Zone customization must survive the shortcut redesign");
 
 const profile=read("app/ledger/[slug]/page.tsx");
@@ -50,6 +52,7 @@ assert.equal(binCardSummary({name:"Rack A",label:"Top shelf",quantity:14,status:
 assert.match(read("components/ManagerInlineCare.tsx"),/compact\?"Care":"Quick Care"/, "Compact bin care must remain a short action without removing accessibility");
 
 const managerWorkspace=read("components/ManagerWorkspace.tsx");
+assert.match(managerWorkspace,/const defaults:Section\[\]=\["hero","stats","enclosures","care","tools"/, "New Manager dashboards should show bins and care before the full tools grid");
 const heroSection=managerWorkspace.split("hero:<>")[1]?.split("  </>,")[0] || "";
 const toolsSection=managerWorkspace.split("tools:<section")[1]?.split("</section>")[0] || "";
 assert.ok(heroSection.includes("managerPrimarySearch"),"Manager hero must retain its primary search");
