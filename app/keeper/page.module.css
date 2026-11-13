@@ -602,3 +602,18 @@
 .directBinMain small:first-of-type,.managerDueRow>a small:first-of-type,.managerResultRow>a span:first-of-type{font-style:italic;color:var(--text-secondary);white-space:normal;overflow-wrap:anywhere}
 .directBinMain small:last-of-type,.managerDueRow>a small:last-of-type,.managerResultRow>a span:last-of-type{color:var(--text-muted,var(--text-secondary));white-space:normal;overflow-wrap:anywhere}
 .managerResultRow>a b{grid-row:1/4}
+
+/* Widget-first Manager: optional quick workflows live inside the Tools block,
+   not as a permanent second toolbar inside the required hero. */
+.managerWorkflowEntry{display:block;margin:12px 0 0;padding:0 12px;border-radius:13px;background:var(--surface-secondary)}
+.managerWorkflowEntry>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:46px;padding:10px 1px;list-style:none;color:var(--accent);font-size:12px;font-weight:760;cursor:pointer}
+.managerWorkflowEntry>summary::-webkit-details-marker{display:none}
+.managerWorkflowEntry>summary svg{width:18px;height:18px;flex:none;transition:transform .16s}
+.managerWorkflowEntry[open]>summary svg{transform:rotate(180deg)}
+.managerWorkflowEntry>summary:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:9px}
+.managerWorkflowExtra{display:grid;gap:7px;padding:0 0 12px;border-top:1px solid var(--border)}
+.managerWorkflowExtra .managerWorkflowLabel{padding-top:10px}
+.managerWorkflowExtra :global(nav[aria-label="Quick Manager actions"]){margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.managerWorkflowExtra :global(nav[aria-label="Quick Manager actions"]>button){width:100%;min-width:0;justify-content:flex-start;min-height:46px}
+@media(max-width:600px){.managerWorkflowEntry{padding:0 10px}.managerWorkflowExtra{gap:8px}.managerWorkflowExtra :global(nav[aria-label="Quick Manager actions"]>button){font-size:11px;min-height:45px}}
+@media(prefers-reduced-motion:reduce){.managerWorkflowEntry>summary svg{transition:none}}
