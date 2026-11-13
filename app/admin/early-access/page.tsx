@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {OwnerDeskHeader} from "@/components/OwnerDeskFoundation";
 import { redirect } from "next/navigation";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
@@ -13,12 +14,7 @@ export default async function EarlyAccessManager({ searchParams }: { searchParam
   const testers = data || [];
   const params = await searchParams;
   return <main className="admin-shell" style={{maxWidth:900,margin:"0 auto"}}>
-    <header style={{marginBottom:24}}>
-      <Link href="/admin" className="admin-back-link">← Owner Studio</Link>
-      <p className="eyebrow" style={{marginTop:24}}>Owner Studio · Private testing</p>
-      <h1 style={{fontFamily:"var(--serif)",fontSize:"clamp(2.2rem,6vw,3.7rem)",fontWeight:400}}>Early Access</h1>
-      <p style={{color:"var(--muted)",lineHeight:1.6}}>Approve a friend&apos;s email before they register. They can explore the platform with their own account; all editing tools remain owner-only.</p>
-    </header>
+    <OwnerDeskHeader area="Access" title="Early Access" description="Approve a tester’s email before registration. Every editing desk remains owner-only." icon="community"/>
     {params.added ? <p className="admin-save-message is-success">Tester approved. You can share the Early Access link.</p> : null}
     {params.revoked ? <p className="admin-save-message is-success">Tester access revoked.</p> : null}
     {params.error ? <p className="admin-save-message is-error">Unable to update tester access. Check the email and try again.</p> : null}
