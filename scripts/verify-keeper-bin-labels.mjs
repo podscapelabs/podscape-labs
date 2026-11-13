@@ -1,0 +1,51 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+import {runInNewContext} from "node:vm";
+import ts from "typescript";
+
+const read=path=>readFileSync(new URL("../"+path,import.meta.url),"utf8");
+const compiled=ts.transpileModule(read("lib/bin-identity.ts"),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;
+const exports={};
+runInNewContext(compiled,{exports,module:{exports}},{filename:"bin-identity.ts"});
+const {binCardIdentity,organismDisplayName,binDisplayName}=exports;
+assert.equal(typeof binCardIdentity,"function");
+
+const original={id:"a0000000-0000-4000-8000-000000071bbe",name:"Primary colony",label:""};
+const orange={commonName:"Giant Orange",morph:"Giant Orange",scientificName:"Porcellio laevis",genus:"Porcellio",species:"laevis"};
+assert.equal(binCardIdentity(original,orange).title,"Giant Orange");
+assert.equal(binCardIdentity(original,orange).scientific,"Porcellio laevis");
+assert.equal(binCardIdentity(original,orange).binName,"");
+assert.equal(original.name,"Primary colony","Rendering must not rewrite stored records");
+assert.equal(binCardIdentity({name:"Bin 071BBE"},orange).title,"Giant Orange");
+assert.equal(binDisplayName(original,orange.commonName),"Giant Orange","Old display helper should never print a UUID suffix");
+
+const curly={commonName:"Curly Woodlouse",morph:"Wild Type",scientificName:"Cylisticus convexus"};
+assert.equal(organismDisplayName(curly),"Curly Woodlouse","Generic wild-type values cannot replace meaningful common names");
+assert.equal(binCardIdentity({name:"Primary bin"},curly).scientific,"Cylisticus convexus");
+const labelled=binCardIdentity({name:"Shelf A bin",label:"Rack A"},orange);
+assert.equal(labelled.title,"Giant Orange");
+assert.equal(labelled.binName,"Shelf A bin","Keep distinct custom enclosure names in metadata");
+assert.equal(labelled.location,"Rack A");
+assert.equal(binCardIdentity({name:"Primary enclosure"},{commonName:"Powder Blue",genus:"Porcellionides",species:"pruinosus"}).scientific,"Porcellionides pruinosus");
+assert.equal(binCardIdentity({name:"Primary colony"},null).title,"Colony");
+
+const manager=read("app/keeper/page.tsx");
+const collection=read("components/ManagerColonies.tsx");
+const workspace=read("components/ManagerWorkspace.tsx");
+const care=read("components/ManagerCareWidgets.tsx");
+const picker=read("components/ManagerWorkflowPanel.tsx");
+const colony=read("app/keeper/[id]/ColonyWorkspace.tsx");
+const legacy=read("components/KeeperCollectionHub.tsx");
+assert.match(manager,/binCardIdentity\(enclosure,record\)\.title/,"Dashboard card must lead with morph name");
+assert.match(manager,/binCardIdentity\(enclosure,record\)\.scientific/,"Dashboard must display genus and species");
+assert.match(collection,/binCardIdentity\(bin,record\)\.title/,"My Colonies must lead with morph");
+assert.match(collection,/binCardIdentity\(bin,record\)\.scientific/,"My Colonies must display scientific name");
+assert.doesNotMatch(collection,/binDisplayName/,"My Colonies must never manufacture hex-numbered bin titles");
+assert.match(workspace,/bin\.displayName/,"Manager live search must use morph label");
+assert.match(workspace,/bin\.scientificName/,"Manager live search must show taxonomy");
+assert.match(care,/bin\.displayName/,"Due-care cards must use morph labels");
+assert.match(picker,/item\.displayName/,"Quick Care picker must use morph labels");
+assert.match(picker,/item\.scientificName/,"Quick Care picker must show taxonomy");
+assert.match(colony,/<h1>\{colony\.species\}<\/h1><strong>\{colony\.scientificName\}<\/strong>/,"Colony page must share title hierarchy");
+assert.match(legacy,/g\.scientific/,"Legacy collection hub must also show scientific names");
+console.log("Morph-first keeper identity regression checks passed: IDs unchanged; Dashboard, My Colonies, Quick Care, history and colony detail share consistent labels.");
