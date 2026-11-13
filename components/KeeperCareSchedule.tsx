@@ -27,7 +27,7 @@ export function KeeperCareSchedule({bins,embedded=false}:{bins:Bin[];embedded?:b
   }catch{setSavedMessage("Could not save this schedule on this device.")}
  }
  const start=new Date();start.setHours(0,0,0,0);
- if(embedded)return <section aria-label="Care schedule">
+ if(embedded)return <section className={styles.embeddedSchedule} aria-label="Care schedule">
   <p className={styles.empty}>Set your misting rotation for each bin. Scheduling is optional and saved on this device only; these are planning dates, not care recommendations.</p>
   {savedMessage?<p role="status" className={styles.empty}>{savedMessage}</p>:null}
   <div className={styles.groups}>{upcoming.length?upcoming.map(bin=>{
