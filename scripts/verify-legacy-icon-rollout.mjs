@@ -57,7 +57,7 @@ for (const path of audited) {
 }
 for (const path of [
   "app/community/page.tsx",
-  "app/fun-zone/page.tsx",
+  "app/fun-zone/FunZonePortal.tsx",
   "app/ledger/[slug]/page.tsx",
   "app/podbound/cards/page.tsx",
   "app/podbound/cards/[id]/page.tsx",
@@ -66,6 +66,7 @@ for (const path of [
 ]) {
   assert.match(read(path), /PodscapeLineIcon/, "Expected the canonical icon component in " + path);
 }
+assert.match(read("app/fun-zone/page.tsx"),/FunZonePortal/,"Fun Zone entry point must retain icon-bearing shared portal");
 const loading=read("app/app/loading.tsx");
 assert.match(loading,/PodscapeLineIcon name="leaf"/, "App splash must use a branded icon from the shared system");
 assert.match(loading,/<h1>PodScape<\/h1>/, "Use canonical PodScape capitalization in the splash");
