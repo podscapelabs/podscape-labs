@@ -25,7 +25,7 @@ import {managerStorageKey} from "@/lib/ui-preferences";
 
 type Section="hero"|"stats"|"care"|"tools"|"activity"|"enclosures"|"insights";
 type Tool={id:string;label:string;href:string;icon:PodscapeIconName};
-const defaults:Section[]=["hero","stats","enclosures","care","tools","activity","insights"];
+const defaults:Section[]=["hero","stats","tools","enclosures","care","activity","insights"];
 const required:Section[]=["hero"];
 const labels:Record<Section,string>=managerWidgetNames;
 const library:Tool[]=[
