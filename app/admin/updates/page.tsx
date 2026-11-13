@@ -1,5 +1,5 @@
 import Link from "next/link";
-import {OwnerDeskHeader} from "@/components/OwnerDeskFoundation";
+import {OwnerDeskHeader,OwnerDeskNotice} from "@/components/OwnerDeskFoundation";
 import {redirect} from "next/navigation";
 import {isAdminAuthenticated} from "@/lib/admin-auth";
 import {getAllUpdates,updateCategories,validDestination,type UpdateRecord} from "@/lib/podscape-updates";
@@ -33,9 +33,9 @@ export default async function UpdatesDesk({searchParams}:{searchParams:Promise<{
  const published=(rows||[]).filter(x=>x.status==="published");
  return <main className={styles.page}><div className={styles.wrap}>
   <OwnerDeskHeader area="Communications" title="Updates Desk" description="Draft improvements, review announcements, and publish when they are live." icon="news" actions={[{href:"/updates",label:"View updates",icon:"news",external:true}]}/>
-  {params.saved?<p role="status" className={styles.success}>Update saved successfully.</p>:null}
-  {params.error?<p role="alert" className={styles.error}>{params.error==="details"?"Add at least one fix or improvement before publishing.": "Could not save the update. Check the brief description, individual fix lines and destination, then retry."}</p>:null}
-  {rows===null?<p role="alert" className={styles.error}>Updates storage is unavailable. Check the updates database migration.</p>:null}
+  {params.saved?<OwnerDeskNotice kind="success">Update saved successfully.</OwnerDeskNotice>:null}
+  {params.error?<OwnerDeskNotice kind="error">{params.error==="details"?"Add at least one fix or improvement before publishing.": "Could not save the update. Check the brief description, individual fix lines and destination, then retry."}</OwnerDeskNotice>:null}
+  {rows===null?<OwnerDeskNotice kind="error">Updates storage is unavailable. Check the updates database migration.</OwnerDeskNotice>:null}
   <div className={styles.stats}><span><strong>{drafts.length}</strong> drafts</span><span><strong>{published.length}</strong> published</span><span><strong>{updateCategories.length}</strong> categories</span></div>
   <section className={styles.panel}><div className={styles.sectionHead}><h2>Compose an announcement</h2><span>New announcements start as drafts</span></div>
    <UpdateForm/>
