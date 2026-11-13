@@ -53,6 +53,8 @@ assert.match(rank,/PodscapeInfoDialog/,"Rankings must use universal info sheets"
 assert.match(rank,/aria-expanded=\{open\}/,"Ranking trigger must report modal state");
 assert.match(rank,/triggerButton\.current\.focus\(\)/,"Rankings must return focus to their trigger");
 assert.doesNotMatch(rankStyles,/\.dialog\{/,"Rankings must not maintain a competing modal design");
+assert.match(read("components/SpeciesResearchWidgets.tsx"),/PodscapeInfoDialog/,"Species research popups must use the same themed sheet");
+assert.doesNotMatch(read("components/SpeciesProfile.module.css"),/\.researchDialog::backdrop/,"The old research-specific popup backdrop must be retired");
 const chrome=read("components/WidgetLibraryChrome.tsx");
 assert.match(chrome,/id=\{titleId\}/,"Library headings need real labelled-by IDs");
 assert.match(chrome,/role="status"/,"Library counts need live accessible announcements");
