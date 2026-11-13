@@ -37,6 +37,7 @@ jobs:
           node scripts/verify-collection-ledger-flow.mjs
           node scripts/verify-refinement-era.mjs
           node scripts/verify-universe-polish.mjs
+          node scripts/verify-universe-consistency-audit.mjs
           node scripts/verify-universe-interactions.mjs
           node scripts/verify-design-system.mjs
           node scripts/verify-theme-system.mjs
