@@ -151,10 +151,13 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp}:{us
  };
  return <div className={`${styles.portal} ${editing?homeEditStyles.homeCanvasEditing:""}`} data-workspace-root="fun-zone" onPointerMove={e=>{if(editing)moveDrag(e)}} onPointerUp={()=>{if(editing)stopDrag()}} onPointerCancel={()=>{if(editing)stopDrag()}}>
   <header className={styles.hero}><div><span className={styles.heroEyebrow}>PODSCAPE / FUN ZONE</span><h1>Your little arcade.</h1><p>Games, puzzles and a little market drama.</p></div></header>
-  <section className={styles.quickStart} aria-label="Quick play"><div className={styles.quickStartHeading}><strong>Jump right in</strong><span>Choose an activity</span></div>
-   <PortalActionRail label="Quick play shortcuts" compact layout="grid" actions={[
-  {label:"Picture puzzles",icon:"grid",href:"/fun-zone/picture-puzzles"},
-  {label:"Pod Exchange",icon:"gamepad",href:"/fun-zone/pod-exchange"}
+  <section className={styles.quickStart} aria-label="Explore Fun Zone"><div className={styles.quickStartHeading}><strong>Explore the arcade</strong><span>Everything one tap away</span></div>
+   <PortalActionRail label="Fun Zone shortcuts" compact layout="grid" actions={[
+  {label:"Game categories",icon:"grid",href:active.includes("categories")?"#arcade-games":"/fun-zone/games"},
+  {label:"My games",icon:"bookmark",href:active.includes("favourites")?"#arcade-favourites":"/fun-zone/games"},
+  {label:"Rankings",icon:"trophy",href:active.includes("rankings")?"#rankings-spotlight":"/fun-zone/leaderboard"},
+  {label:"Pod Exchange",icon:"gamepad",href:"/fun-zone/pod-exchange"},
+  {label:"Picture puzzles",icon:"grid",href:"/fun-zone/picture-puzzles"}
  ]}/></section>
   {editing?<WorkspaceEditToolbar title="Arrange Fun Zone" description="Drag the handles or use arrows to reorder games and widgets." onAdd={()=>{finishCanvas();setLibraryOpen(true)}} onReset={reset} onDone={finishCanvas}/>:null}
   <div className={styles.widgets}>{active.map((id,i)=><div key={id} id={id==="rankings"?"rankings-spotlight":id==="categories"?"arcade-games":id==="favourites"?"arcade-favourites":undefined}><WorkspaceEditBlock id={id} scope="fun-zone" label={label(id)} index={i} count={active.length} editing={editing} dragging={dragging===id} required={false} onMove={move} onRemove={remove} begin={beginDrag} move={moveDrag} stop={stopDrag} onLongPress={()=>enterCanvas(id)}>{renderWidget(id)}</WorkspaceEditBlock></div>)}</div>
