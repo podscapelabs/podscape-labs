@@ -24,8 +24,3 @@
 }
 @media(max-width:345px){.dock .grid>.shortcut{font-size:.55rem;min-height:72px}.dock .grid{gap:4px}}
 @media(prefers-reduced-motion:reduce){.jiggling{animation:none}}
-/* The Ledger photo hero changes colors, never geometry or shortcut behavior. */
-.dock[data-portal-shortcuts="leaf-ledger"]{max-width:570px}
-.dock[data-portal-shortcuts="leaf-ledger"] .grid>.shortcut{background:color-mix(in srgb,var(--portal-hero-start) 73%,transparent);color:var(--portal-hero-text);border-color:color-mix(in srgb,var(--portal-hero-text) 36%,transparent)}
-.dock[data-portal-shortcuts="leaf-ledger"] .grid>.shortcut>span:first-child{background:color-mix(in srgb,var(--portal-hero-text) 12%,transparent);color:var(--portal-hero-text)}
-.dock[data-portal-shortcuts="leaf-ledger"] .editor{background:var(--portal-hero-start);color:var(--portal-hero-text);border-color:color-mix(in srgb,var(--portal-hero-text) 36%,transparent)}
