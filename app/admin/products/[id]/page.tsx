@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {OwnerDeskHeader} from "@/components/OwnerDeskFoundation";
 import { notFound, redirect } from "next/navigation";
 import { ProductEditor } from "@/components/ProductEditor";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
@@ -16,11 +17,7 @@ export default async function ProductEditorPage({ params, searchParams }: { para
   const management = await getProductManagementData(product);
 
   return <main className={`admin-shell ${styles.shell}`}>
-    <header className={styles.editorHeader}>
-      <Link className={styles.back} href="/admin/products" aria-label="Return to products">←</Link>
-      <div><p className="eyebrow">{product.status === "published" ? "Published product" : "Product draft"}</p><h1>{product.title}</h1><p>Last saved {new Date(product.updatedAt).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" })}</p></div>
-      <div className={styles.editorActions}><Link href={`/shop/${product.slug}`} target="_blank">Preview</Link><button type="submit" form="product-editor-form">Save</button></div>
-    </header>
+    <OwnerDeskHeader area="Commerce / Editor" title={product.title} description={"Last saved "+new Date(product.updatedAt).toLocaleString("en-CA",{dateStyle:"medium",timeStyle:"short"})} icon="shop" backHref="/admin/products" backLabel="Product Desk" actions={[{href:"/shop/"+product.slug,label:"Preview listing",icon:"shop",external:true}]} aside={<div className={styles.editorActions}><button type="submit" form="product-editor-form">Save product</button></div>}/>
     <ProductEditor product={product} speciesOptions={speciesRecords.filter((record) => record.kind === "species" && !record.archivedAt).map((record) => ({ id: record.id, commonName: record.commonName, scientificName: record.scientificName, genus: record.genus, species: record.species, morph: record.morph, summary: record.summary }))} variants={management.variants} adjustments={management.adjustments} normalized={management.normalized} saved={Boolean(messageParams.saved)} created={Boolean(messageParams.created)} error={messageParams.error} />
   </main>;
 }
