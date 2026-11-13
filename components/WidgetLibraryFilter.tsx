@@ -11,7 +11,7 @@ export function WidgetLibraryFilter({view,onChange,added,total}:{view:WidgetLibr
   ["all","All",total],["available","Available",Math.max(0,total-added)],["added","Added",added]
  ];
  return <div className={styles.widgetLibraryFilter} role="group" aria-label="Filter widget library">
-  {options.map(([id,label,count])=><button key={id} type="button" aria-pressed={view===id} onClick={()=>onChange(id)}>{label}<span>{count}</span></button>)}
+  {options.map(([id,label,count])=><button key={id} type="button" aria-pressed={view===id} aria-label={`${label} widgets (${count})`} onClick={()=>onChange(id)}>{label}<span aria-hidden="true">{count}</span></button>)}
  </div>;
 }
 
