@@ -64,8 +64,13 @@ assert.ok(heroSection.includes("managerPrimarySearch"),"Manager hero must retain
 assert.ok(!heroSection.includes("managerWorkflowEntry"),"Required Manager hero must not contain extra workflow buttons");
 assert.ok(heroSection.includes('id="manager-quick-workflow"'),"Search-initiated care must remain available when Tools widget is hidden");
 assert.ok(toolsSection.includes("ManagerQuickShortcuts"),"Manager tools must retain customizable shortcuts");
-assert.ok(toolsSection.includes("managerWorkflowEntry"),"Extra Manager workflows should be within the optional Tools widget");
-assert.ok(!toolsSection.includes('id="manager-quick-workflow"'),"Task panel cannot be mounted solely inside a hideable widget");
+assert.ok(!toolsSection.includes("managerWorkflowEntry"),"Do not duplicate configurable shortcuts with a fixed task rail");
+assert.ok(toolsSection.includes('id="manager-quick-workflow"'),"Shortcut actions should open the workflow inside Quick Tools");
+assert.match(managerWorkspace,/activeWorkflow&&!canvasEditing&&!visible\.includes\("tools"\)/,"Search-initiated workflow must work when Quick Tools is hidden");
+assert.match(managerWorkspace,/useShortcutEditor\(ids,change,canvasEditing\)/,"Hold-to-jiggle must remain the shortcut editor");
+assert.doesNotMatch(managerWorkspace,/managerEditShortcuts|Edit shortcuts|Work from your portal/,"Do not add a redundant edit button or action block");
+for(const id of ["care","notes","population","bulkcare"]) assert.ok(managerWorkspace.includes('id:"'+id+'"'),"Configurable workflow shortcut missing: "+id);
+assert.match(managerWorkspace,/const initial:Layout=\{[^\n]+tools:\["care","notes","population","bulkcare"/,"Starter shortcuts should include user-selected care and record actions");
 const speciesGroup=browser.split('{open?<div id={"species-bins-"')[1]?.split("</article>")[0] || "";
 assert.ok(speciesGroup.includes("styles.groupActions"),"Expanded groups should contain management actions");
 assert.ok(speciesGroup.includes("</div>:null}"),"Management actions must disappear when species group is collapsed");
