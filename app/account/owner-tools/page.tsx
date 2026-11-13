@@ -18,12 +18,12 @@ export default async function OwnerToolsPage() {
   if (!(await isAdminAuthenticated())) redirect("/admin");
   const db = await customerSupabase();
   const { data: { user } } = db ? await db.auth.getUser() : { data: { user: null } };
-  const analytics = ownerOperations.find(item => item.href.endsWith("/analytics"));
+
   const earlyAccess = ownerOperations.find(item => item.href.includes("early-access"));
   const security = ownerOperations.find(item => item.href.includes("reset-password"));
   return <main className={styles.page}>
     <div className={styles.inner}>
-      <OwnerDeskHeader area="Platform" title="Owner Studio" description="Manage content, member feedback, analytics and operations from one workspace." icon="grid" backHref={user?"/account":"/app"} backLabel="Back to PodScape" actions={analytics?[{href:analytics.href,label:"Platform analytics",icon:"community"}]:[]}/>
+      <OwnerDeskHeader area="Platform" title="Owner Studio" description="Manage content, member feedback, analytics and operations from one workspace." icon="grid" backHref={user?"/account":"/app"} backLabel="Back to PodScape" actions={[{href:"#owner-desks",label:"Browse Studio desks",icon:"grid"}]}/>
 
       <section className={styles.quickSection} aria-label="Owner quick access">
         <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>RIGHT AT HAND</p><h2>Quick actions</h2></div></div>
