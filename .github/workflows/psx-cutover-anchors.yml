@@ -25,7 +25,7 @@ jobs:
           const source=fs.readFileSync('lib/pod-exchange.ts','utf8');
           const compiled=ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}}).outputText;
           const market=await import('data:text/javascript;base64,'+Buffer.from(compiled).toString('base64'));
-          for(const iso of ['2026-11-13T06:00:00.000Z','2026-11-13T12:00:00.000Z','2026-11-14T00:00:00.000Z']){
+          for(const iso of ['2026-11-13T01:00:00.000Z','2026-11-13T12:00:00.000Z','2026-11-14T00:00:00.000Z']){
             const cutover=market.arcadeCycleAt(Date.parse(iso));
             const prices=Object.fromEntries(market.STOCKS.map(x=>[x.symbol,market.priceAt(x.symbol,cutover-1)]));
             console.log('PSX_CUTOVER_ANCHORS '+JSON.stringify({cutoverAt:iso,cutoverCycle:cutover,openingPrices:prices}));
