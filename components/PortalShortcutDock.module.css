@@ -2,11 +2,6 @@
    This dock intentionally reuses Home's classes instead of inventing a tile style. */
 .dock{min-width:0;margin:0}
 .dock .grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;width:100%;max-width:558px;margin:0;padding:0;overflow:visible}
-.dock .grid[data-count="1"]{grid-template-columns:minmax(0,1fr);max-width:86px}
-.dock .grid[data-count="2"]{grid-template-columns:repeat(2,minmax(0,1fr));max-width:180px}
-.dock .grid[data-count="3"]{grid-template-columns:repeat(3,minmax(0,1fr));max-width:266px}
-.dock .grid[data-count="4"]{grid-template-columns:repeat(4,minmax(0,1fr));max-width:354px}
-.dock .grid[data-count="5"]{grid-template-columns:repeat(5,minmax(0,1fr));max-width:442px}
 .dock .grid>.shortcut{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;grid-column:auto;min-width:0;width:100%;min-height:79px;margin:0;padding:8px 3px;border:1px solid var(--ps-border,var(--border,var(--line)));border-radius:14px;background:var(--ps-surface,var(--surface,var(--paper)));color:var(--ps-text,var(--text-primary,var(--ink)));font:400 .74rem/1.12 var(--serif);text-align:center;box-shadow:none;cursor:pointer;touch-action:pan-y;-webkit-user-select:none;user-select:none}
 .dock .grid>.shortcut>span:first-child{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:10px;background:color-mix(in srgb,var(--ps-accent,var(--accent,var(--forest))) 12%,var(--ps-surface,var(--surface,var(--paper))));color:var(--ps-accent,var(--accent,var(--forest)))}
 .dock .grid>.shortcut>span:first-child svg{width:21px;height:21px;color:inherit}
