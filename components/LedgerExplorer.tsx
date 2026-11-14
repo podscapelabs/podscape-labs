@@ -198,7 +198,6 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
             {id:"isopods",label:"Isopods",icon:"leaf",onClick:()=>{setOrganism("isopod");setGenus("all");document.getElementById("ledger-directory")?.scrollIntoView({behavior:"smooth"})}},
             {id:"springtails",label:"Springtails",icon:"leaf",onClick:()=>{setOrganism("springtail");setGenus("all");document.getElementById("ledger-directory")?.scrollIntoView({behavior:"smooth"})}},
             {id:"search",label:"Search species",icon:"search",href:"#ledger-hero-title"},
-            {id:"care",label:"Care Guides",icon:"book",href:"/field-guide"},
             {id:"manager",label:"Manager",icon:"manager",href:signedIn?"/keeper":"/account/login"},
             {id:"collections",label:"Saved Species",icon:"bookmark",href:signedIn?"/ledger/my-collection":"/account/login"},
             {id:"progress",label:"My Progress",icon:"achievement",href:signedIn?"/account/progress":"/account/login"}
