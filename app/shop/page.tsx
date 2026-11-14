@@ -46,7 +46,7 @@ export default async function ShopPage({searchParams}:{searchParams:Promise<{cat
   </section>
   <section className={styles.section} id="categories"><WorkspaceSectionHeader title="Shop by category" description="Choose a collection to see its products."/>
    <nav className={styles.categories} aria-label="Filter shop by category">
-    {productCategories.map((category,index)=><Link aria-current={selectedCategory===category?"page":undefined} className={styles.category} href={`/shop?category=${encodeURIComponent(category)}${query?`&q=${encodeURIComponent(query)}`:""}#products`} key={category}><span aria-hidden="true"><PodscapeLineIcon name={categoryIcons[index % categoryIcons.length]} /></span><strong>{category}</strong><small>{categoryCounts.get(category)||0} ${(categoryCounts.get(category)||0)===1?"product":"products"}</small></Link>)}
+    {productCategories.map((category,index)=><Link aria-current={selectedCategory===category?"page":undefined} className={styles.category} href={`/shop?category=${encodeURIComponent(category)}${query?`&q=${encodeURIComponent(query)}`:""}#products`} key={category}><span aria-hidden="true"><PodscapeLineIcon name={categoryIcons[index % categoryIcons.length]} /></span><strong>{category}</strong><small>{categoryCounts.get(category)||0} {(categoryCounts.get(category)||0)===1?"product":"products"}</small></Link>)}
    </nav>
   </section>
   <section className={styles.section} id="products">
