@@ -1,6 +1,6 @@
 "use client";
 
-import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { LedgerSpeciesCard } from "./LedgerSpeciesCard";
 import { CollectionSpeciesRow } from "./CollectionSpeciesRow";
 import collectionStyles from "./CollectionRows.module.css";
@@ -39,7 +39,7 @@ export function LedgerExplorer({ records, collectedIds = [], approvedPhotosById 
   const [organism,setOrganism]=useState<"all"|"isopod"|"springtail">("all");
   const [care, setCare] = useState("all");
   const [sort, setSort] = useState<SortMode>(mode === "collection" ? "recent" : "catalogue");
-  const deferredQuery = useDeferredValue(query.trim().toLowerCase());
+  const searchTerm = query.trim().toLocaleLowerCase();
   const restoredRef=useRef(mode!=="catalogue");
   const [scrollRestored,setScrollRestored]=useState(mode!=="catalogue");
   const pendingScrollRef=useRef<number|null>(null);
@@ -86,14 +86,14 @@ export function LedgerExplorer({ records, collectedIds = [], approvedPhotosById 
       return (organism === "all" || speciesOrganismGroup(record)===organism)
         && (genus === "all" || record.genus === genus)
         && (care === "all" || record.careLevel === care)
-        && (!deferredQuery || haystack.includes(deferredQuery));
+        && (!searchTerm || haystack.includes(searchTerm));
     })
     .sort((a, b) => {
       if (sort === "recent") return Date.parse(addedAtById[b.id] || "") - Date.parse(addedAtById[a.id] || "");
       if (sort === "common") return speciesDisplayName(a).localeCompare(speciesDisplayName(b));
       if (sort === "scientific") return speciesScientificName(a).localeCompare(speciesScientificName(b));
       return a.catalogueNumber.localeCompare(b.catalogueNumber,"en",{numeric:true,sensitivity:"base"});
-    }), [addedAtById, care, collectionOnly, deferredQuery, genus, mode, organism, records, saved, sort]);
+    }), [addedAtById, care, collectionOnly, genus, mode, organism, records, saved, searchTerm, sort]);
 
   const saveBrowseContext=()=>{
     if(mode!=="catalogue")return;
@@ -123,7 +123,7 @@ export function LedgerExplorer({ records, collectedIds = [], approvedPhotosById 
     };
   },[mode,query,genus,care,sort,organism,filtersOpen,collectionOnly,restorationReady,scrollRestored]);
   useEffect(()=>{
-    if(mode!=="catalogue"||!restorationReady||restoredRef.current||deferredQuery!==query.trim().toLowerCase())return;
+    if(mode!=="catalogue"||!restorationReady||restoredRef.current)return;
     let second=0;
     const first=requestAnimationFrame(()=>{second=requestAnimationFrame(()=>{
       window.scrollTo({top:pendingScrollRef.current||0,behavior:"instant"});
@@ -132,7 +132,7 @@ export function LedgerExplorer({ records, collectedIds = [], approvedPhotosById 
       setScrollRestored(true);
     })});
     return ()=>{cancelAnimationFrame(first);cancelAnimationFrame(second)};
-  },[mode,deferredQuery,query,results.length,restorationReady]);
+  },[mode,query,results.length,restorationReady]);
   function clear() {
     setQuery("");
     setFiltersOpen(false);
