@@ -5,20 +5,25 @@ import { SpecimenLeaf } from "./SpecimenLeaf";
 import { colonyStatusLabels, type ColonyStatus } from "@/data/collection";
 import { speciesDisplayName, speciesScientificName, type SpeciesRecord } from "@/data/species";
 
-export function LedgerSpeciesCard({ record, compact = false, showCollectionAction = false, collected = false, signedIn = false, collectionDetails }: {
+export function LedgerSpeciesCard({ record, compact = false, showCollectionAction = false, collected = false, signedIn = false, collectionDetails, nativeNavigation = false }: {
   record: SpeciesRecord;
+  nativeNavigation?: boolean;
   compact?: boolean;
   showCollectionAction?: boolean;
   collected?: boolean;
   signedIn?: boolean;
   collectionDetails?: { quantity: number; colonyStatus: ColonyStatus };
 }) {
-  const card = <Link className={`v2-species-card${compact ? " is-compact" : ""}`} href={`/ledger/${record.slug}`}>
+  const cardContent = <>
     <SpecimenLeaf image={record.image} alt={record.imageAlt || speciesScientificName(record)} number={showCollectionAction ? undefined : record.catalogueNumber} size="card" positionX={record.imagePositionX} positionY={record.imagePositionY} zoom={record.imageZoom} revivable={showCollectionAction && record.kind === "species"} organic />
     <strong>{speciesDisplayName(record)}</strong>
     <em>{speciesScientificName(record)}</em>
     {showCollectionAction ? <small className={styles.catalogueCode}>{record.catalogueNumber}</small> : null}
-  </Link>;
+  </>;
+  // Native links are a reliable escape from stalled client-side transitions on iOS.
+  const card = nativeNavigation
+    ? <a className={`v2-species-card${compact ? " is-compact" : ""}`} href={`/ledger/${record.slug}`}>{cardContent}</a>
+    : <Link className={`v2-species-card${compact ? " is-compact" : ""}`} href={`/ledger/${record.slug}`}>{cardContent}</Link>;
 
   // Keep the clickable card and the mutation button as separate, valid targets.
   if (!showCollectionAction || record.kind !== "species") return card;
