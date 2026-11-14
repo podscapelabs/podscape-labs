@@ -8,31 +8,55 @@ export function MemberPhotoGallery({species,initialPhotos=[],signedIn=true,launc
  species:SpeciesOption[];initialPhotos?:GalleryPhoto[];signedIn?:boolean;launchSignal?:number;compact?:boolean;enclosureId?:string;launcherOnly?:boolean;
 }){
  const [open,setOpen]=useState(false),[selected,setSelected]=useState(species[0]?.id||"");
+ const [speciesSearch,setSpeciesSearch]=useState("");
  const [file,setFile]=useState<File|null>(null),[contribute,setContribute]=useState(false),[credit,setCredit]=useState<"username"|"anonymous">("username");
  const [busy,setBusy]=useState(false),[message,setMessage]=useState(""),[photos,setPhotos]=useState(initialPhotos);
  const input=useRef<HTMLInputElement>(null);
  useEffect(()=>{if(launchSignal>0)setOpen(true)},[launchSignal]);
  useEffect(()=>{setPhotos(initialPhotos)},[initialPhotos]);
+ const matchedSpecies=speciesSearch.trim()?species.filter(item=>item.name.toLowerCase().includes(speciesSearch.trim().toLowerCase())):species;
  async function optimize(source:File):Promise<File>{
-   const bitmap=await createImageBitmap(source);
+   // Decode on iOS Safari as well as desktop; some Safari versions lack createImageBitmap for uploads.
+   let bitmap:ImageBitmap|null=null,photo:HTMLImageElement|null=null,objectUrl="";
    try{
-     const factor=Math.min(1,1920/Math.max(bitmap.width,bitmap.height));
+     if(typeof createImageBitmap==="function"){
+       try{bitmap=await createImageBitmap(source);}catch{}
+     }
+     if(!bitmap){
+       objectUrl=URL.createObjectURL(source);
+       photo=await new Promise<HTMLImageElement>((resolve,reject)=>{
+         const img=new Image();
+         img.onload=()=>resolve(img);
+         img.onerror=()=>reject(new Error("This photo format could not be opened. Please choose a JPEG or PNG."));
+         img.src=objectUrl;
+       });
+     }
+     const width=bitmap?.width||photo?.naturalWidth||0,height=bitmap?.height||photo?.naturalHeight||0;
+     if(!width||!height)throw new Error("Could not read this photo.");
+     const factor=Math.min(1,1920/Math.max(width,height));
      const canvas=document.createElement("canvas");
-     canvas.width=Math.max(1,Math.round(bitmap.width*factor));
-     canvas.height=Math.max(1,Math.round(bitmap.height*factor));
+     canvas.width=Math.max(1,Math.round(width*factor));
+     canvas.height=Math.max(1,Math.round(height*factor));
      const ctx=canvas.getContext("2d");
-     if(!ctx)throw new Error("Cannot process this photo.");
-     ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
-     const blob=await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,"image/webp",.78));
-     if(!blob||blob.type!=="image/webp")throw new Error("This browser cannot prepare WebP photos.");
-     return new File([blob],"species-photo.webp",{type:"image/webp"});
-   }finally{bitmap.close();}
+     if(!ctx)throw new Error("This browser cannot process photos.");
+     ctx.drawImage(bitmap||photo!,0,0,canvas.width,canvas.height);
+     const encode=(type:string,quality:number)=>new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,type,quality));
+     let blob=await encode("image/webp",.78);
+     if(!blob||blob.type!=="image/webp")blob=await encode("image/jpeg",.78);
+     if(!blob||(blob.type!=="image/webp"&&blob.type!=="image/jpeg"))throw new Error("Could not prepare this photo. Try a JPEG image.");
+     const ext=blob.type==="image/webp"?"webp":"jpg";
+     return new File([blob],"species-photo."+ext,{type:blob.type});
+   }finally{
+     bitmap?.close();
+     if(objectUrl)URL.revokeObjectURL(objectUrl);
+   }
  }
  async function save(event:React.FormEvent<HTMLFormElement>){
    event.preventDefault();if(!file||!selected||busy)return;
    setBusy(true);setMessage("");
    try{
      if(file.size>15*1024*1024)throw new Error("Choose a source image under 15 MB.");
+     if(species.length>1&&speciesSearch.trim()&&!matchedSpecies.some(item=>item.id===selected))throw new Error("Choose a matching species first.");
      const processed=await optimize(file);
      if(processed.size>5*1024*1024)throw new Error("The optimized photo is too large.");
      const data=new FormData();
@@ -59,9 +83,9 @@ export function MemberPhotoGallery({species,initialPhotos=[],signedIn=true,launc
   {open?<div className={styles.backdrop} onMouseDown={event=>{if(event.target===event.currentTarget&&!busy)setOpen(false)}}><div role="dialog" aria-modal="true" aria-label="Add species photo" className={styles.modal}>
    <div className={styles.heading}><strong>Add species photo</strong><button type="button" onClick={()=>setOpen(false)} disabled={busy} aria-label="Close">×</button></div>
    <form onSubmit={save}>
-    {species.length>1?<label>Species<select required value={selected} onChange={event=>setSelected(event.target.value)}>{species.map(item=><option key={item.id} value={item.id}>{item.name}</option>)}</select></label>:<p>{species[0]?.name}</p>}
+    {species.length>1?<div className={styles.speciesPicker}><label htmlFor="member-photo-species-search">Search species<input id="member-photo-species-search" type="search" value={speciesSearch} onChange={event=>setSpeciesSearch(event.target.value)} placeholder="Search species or morph…" autoComplete="off"/></label><label>Species<select required value={matchedSpecies.some(item=>item.id===selected)?selected:""} onChange={event=>{setSelected(event.target.value);setSpeciesSearch("");}}><option value="" disabled>{matchedSpecies.length?"Select species…":"No matching species"}</option>{matchedSpecies.map(item=><option key={item.id} value={item.id}>{item.name}</option>)}</select></label></div>:<p>{species[0]?.name}</p>}
     <label>Choose a photo<input ref={input} required type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" onChange={event=>setFile(event.target.files?.[0]||null)}/></label>
-    <small>Optimized locally before upload. Up to 15 MB source; maximum 5 MB stored. Camera metadata removed.</small>
+    <small>Optimized locally before upload as WebP or JPEG. Up to 15 MB source; maximum 5 MB stored. Camera metadata removed.</small>
     <label className={styles.checkbox}><input type="checkbox" checked={contribute} onChange={event=>setContribute(event.target.checked)}/> Submit to the public Leaf Ledger for approval</label>
     {contribute?<><p>By submitting, I confirm this is my photograph and permit PodScape to display it with credit. I retain copyright and may withdraw the photo.</p>
     <label>Photo credit<select value={credit} onChange={event=>setCredit(event.target.value as "username"|"anonymous")}><option value="username">My PodScape display name</option><option value="anonymous">Anonymous keeper</option></select></label></>:null}
