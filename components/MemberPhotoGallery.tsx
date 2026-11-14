@@ -1,0 +1,73 @@
+"use client";
+import {useEffect,useRef,useState} from "react";
+import type {GalleryPhoto} from "@/lib/member-photo-gallery";
+import styles from "./MemberPhotoGallery.module.css";
+
+type SpeciesOption={id:string;name:string};
+export function MemberPhotoGallery({species,initialPhotos=[],signedIn=true,launchSignal=0,compact=false,enclosureId}:{
+ species:SpeciesOption[];initialPhotos?:GalleryPhoto[];signedIn?:boolean;launchSignal?:number;compact?:boolean;enclosureId?:string;
+}){
+ const [open,setOpen]=useState(false),[selected,setSelected]=useState(species[0]?.id||"");
+ const [file,setFile]=useState<File|null>(null),[contribute,setContribute]=useState(false),[credit,setCredit]=useState<"username"|"anonymous">("username");
+ const [busy,setBusy]=useState(false),[message,setMessage]=useState(""),[photos,setPhotos]=useState(initialPhotos);
+ const input=useRef<HTMLInputElement>(null);
+ useEffect(()=>{if(launchSignal>0)setOpen(true)},[launchSignal]);
+ useEffect(()=>{setPhotos(initialPhotos)},[initialPhotos]);
+ async function optimize(source:File):Promise<File>{
+   const bitmap=await createImageBitmap(source);
+   try{
+     const factor=Math.min(1,1920/Math.max(bitmap.width,bitmap.height));
+     const canvas=document.createElement("canvas");
+     canvas.width=Math.max(1,Math.round(bitmap.width*factor));
+     canvas.height=Math.max(1,Math.round(bitmap.height*factor));
+     const ctx=canvas.getContext("2d");
+     if(!ctx)throw new Error("Cannot process this photo.");
+     ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
+     const blob=await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,"image/webp",.78));
+     if(!blob||blob.type!=="image/webp")throw new Error("This browser cannot prepare WebP photos.");
+     return new File([blob],"species-photo.webp",{type:"image/webp"});
+   }finally{bitmap.close();}
+ }
+ async function save(event:React.FormEvent<HTMLFormElement>){
+   event.preventDefault();if(!file||!selected||busy)return;
+   setBusy(true);setMessage("");
+   try{
+     if(file.size>15*1024*1024)throw new Error("Choose a source image under 15 MB.");
+     const processed=await optimize(file);
+     if(processed.size>5*1024*1024)throw new Error("The optimized photo is too large.");
+     const data=new FormData();
+     data.set("speciesId",selected);data.set("file",processed);data.set("contribute",String(contribute));data.set("creditType",credit);
+     if(enclosureId)data.set("enclosureId",enclosureId);
+     const response=await fetch("/api/member-photos",{method:"POST",body:data});
+     const result=await response.json();
+     if(!response.ok)throw new Error(result.error||"Upload failed.");
+     setMessage(contribute?"Photo saved and submitted for owner review.":"Photo saved privately.");
+     setFile(null);setContribute(false);if(input.current)input.current.value="";
+     if(species.length===1)window.location.reload();
+   }catch(error){setMessage(error instanceof Error?error.message:"Could not upload photo.");}
+   finally{setBusy(false);}
+ }
+ async function remove(id:string){
+   if(!window.confirm("Delete this photo? An approved contribution will also disappear from the public gallery."))return;
+   const response=await fetch("/api/member-photos",{method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({id})});
+   if(response.ok)setPhotos(items=>items.filter(item=>item.id!==id));else setMessage("Unable to remove photo.");
+ }
+ return <section className={styles.card} aria-label="Species photo gallery">
+  <div className={styles.heading}><div><strong>{compact?"Add a species photo":"Species photos"}</strong><small>Personal collection · Approved community contributions</small></div>
+   <button type="button" onClick={()=>signedIn?setOpen(true):window.location.assign("/account/login")}>+ Add Photo</button></div>
+  {!compact&&photos.length?<div className={styles.gallery}>{photos.map(photo=><figure key={photo.id}><a href={photo.url} target="_blank" rel="noreferrer"><img src={photo.url} alt="Keeper-submitted species photograph" loading="lazy"/></a><figcaption>{photo.mine?photo.status==="approved"?"Approved contribution":photo.status==="pending"?"Pending review":photo.status==="rejected"?"Not approved":"Private photo":"Photo by "+photo.credit}</figcaption>{photo.mine?<button type="button" onClick={()=>remove(photo.id)}>Remove</button>:null}</figure>)}</div>:!compact?<p>No community photos yet. Be the first to contribute!</p>:null}
+  {open?<div className={styles.backdrop} onMouseDown={event=>{if(event.target===event.currentTarget&&!busy)setOpen(false)}}><div role="dialog" aria-modal="true" aria-label="Add species photo" className={styles.modal}>
+   <div className={styles.heading}><strong>Add species photo</strong><button type="button" onClick={()=>setOpen(false)} disabled={busy} aria-label="Close">×</button></div>
+   <form onSubmit={save}>
+    {species.length>1?<label>Species<select required value={selected} onChange={event=>setSelected(event.target.value)}>{species.map(item=><option key={item.id} value={item.id}>{item.name}</option>)}</select></label>:<p>{species[0]?.name}</p>}
+    <label>Choose a photo<input ref={input} required type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" onChange={event=>setFile(event.target.files?.[0]||null)}/></label>
+    <small>Optimized locally before upload. Up to 15 MB source; maximum 5 MB stored. Camera metadata removed.</small>
+    <label className={styles.checkbox}><input type="checkbox" checked={contribute} onChange={event=>setContribute(event.target.checked)}/> Submit to the public Leaf Ledger for approval</label>
+    {contribute?<><p>By submitting, I confirm this is my photograph and permit PodScape to display it with credit. I retain copyright and may withdraw the photo.</p>
+    <label>Photo credit<select value={credit} onChange={event=>setCredit(event.target.value as "username"|"anonymous")}><option value="username">My PodScape display name</option><option value="anonymous">Anonymous keeper</option></select></label></>:null}
+    {message?<p role="status">{message}</p>:null}
+    <div className={styles.actions}><button type="button" disabled={busy} onClick={()=>setOpen(false)}>Close</button><button type="submit" disabled={!file||busy}>{busy?"Saving…":"Save photo"}</button></div>
+   </form>
+  </div></div>:null}
+ </section>;
+}
