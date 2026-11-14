@@ -32,6 +32,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [requestLaunch,setRequestLaunch]=useState(0);
   const [photoLaunch,setPhotoLaunch]=useState(0);
+  const [collectionOnly,setCollectionOnly]=useState(false);
   const [genus, setGenus] = useState("all");
   const [organism,setOrganism]=useState<"all"|"isopod"|"springtail">("all");
   const [care, setCare] = useState("all");
@@ -57,6 +58,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
       if(raw){
         const saved=JSON.parse(raw) as Partial<LedgerExplorerSnapshot>;
         if(typeof saved.query==="string")setQuery(saved.query);
+        if(typeof saved.collectionOnly==="boolean"&&signedIn)setCollectionOnly(saved.collectionOnly);
         if(saved.organism==="isopod"||saved.organism==="springtail"||saved.organism==="all")setOrganism(saved.organism);
         if(typeof saved.genus==="string"&&(saved.genus==="all"||records.some(item=>item.genus===saved.genus)))setGenus(saved.genus);
         if(typeof saved.care==="string"&&(saved.care==="all"||records.some(item=>item.careLevel===saved.care)))setCare(saved.care);
@@ -76,6 +78,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
 
   const results = useMemo(() => records
     .filter((record) => {
+      if(mode==="catalogue" && collectionOnly && !saved.has(record.id))return false;
       const haystack = `${speciesDisplayName(record)} ${speciesScientificName(record)} ${record.genus} ${record.species} ${record.morph} ${record.catalogueNumber} ${record.tags.join(" ")}`.toLowerCase();
       return (organism === "all" || speciesOrganismGroup(record)===organism)
         && (genus === "all" || record.genus === genus)
@@ -92,7 +95,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
   const saveBrowseContext=()=>{
     if(mode!=="catalogue")return;
     try{
-      const snapshot:LedgerExplorerSnapshot={query,genus,care,sort,organism,filtersOpen,scrollY:window.scrollY};
+      const snapshot:LedgerExplorerSnapshot={query,genus,care,sort,organism,filtersOpen,collectionOnly,scrollY:window.scrollY};
       sessionStorage.setItem(LEDGER_EXPLORER_STATE_KEY,JSON.stringify(snapshot));
       sessionStorage.setItem(LEDGER_BROWSE_ORDER_KEY,JSON.stringify({slugs:results.map(item=>item.slug)}));
     }catch{}
@@ -101,7 +104,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
     if(mode!=="catalogue"||!restorationReady||!scrollRestored)return;
     let pendingFrame:number|null=null;
     const save=()=>{
-      try{sessionStorage.setItem(LEDGER_EXPLORER_STATE_KEY,JSON.stringify({query,genus,care,sort,organism,filtersOpen,scrollY:window.scrollY} satisfies LedgerExplorerSnapshot));}catch{}
+      try{sessionStorage.setItem(LEDGER_EXPLORER_STATE_KEY,JSON.stringify({query,genus,care,sort,organism,filtersOpen,collectionOnly,scrollY:window.scrollY} satisfies LedgerExplorerSnapshot));}catch{}
     };
     const queueSave=()=>{
       if(pendingFrame!==null)return;
@@ -115,7 +118,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
       window.removeEventListener("pagehide",save);
       if(pendingFrame!==null)cancelAnimationFrame(pendingFrame);
     };
-  },[mode,query,genus,care,sort,organism,filtersOpen,restorationReady,scrollRestored]);
+  },[mode,query,genus,care,sort,organism,filtersOpen,collectionOnly,restorationReady,scrollRestored]);
   useEffect(()=>{
     if(mode!=="catalogue"||!restorationReady||restoredRef.current||deferredQuery!==query.trim().toLowerCase())return;
     let second=0;
@@ -188,8 +191,8 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
         <PortalShortcutDock portal="leaf-ledger" label="Leaf Ledger shortcuts"
           defaults={["discover","collection","colonies","guide","request","add-photo"]}
           features={[
-           {id:"discover",label:"Discover",icon:"leaf",href:"#ledger-directory"},
-           {id:"collection",label:"My Collection",icon:"bookmark",href:signedIn?"/keeper/collection?view=saved":"/account/login"},
+           {id:"discover",label:"Discover",icon:"leaf",onClick:()=>{setCollectionOnly(false);document.getElementById("ledger-directory")?.scrollIntoView({behavior:"smooth"});}},
+           {id:"collection",label:"My Collection",icon:"bookmark",...(signedIn?{onClick:()=>{setCollectionOnly(true);document.getElementById("ledger-directory")?.scrollIntoView({behavior:"smooth"});}}:{href:"/account/login"})},
            {id:"colonies",label:"My Colonies",icon:"jar",href:signedIn?"/keeper/collection":"/account/login"},
            {id:"guide",label:"Care Guides",icon:"book",href:"/field-guide"},
            {id:"request",label:"Request Species",icon:"note",...(signedIn?{onClick:()=>setRequestLaunch(value=>value+1)}:{href:"/account/login"})},
@@ -199,7 +202,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
             {id:"springtails",label:"Springtails",icon:"leaf",onClick:()=>{setOrganism("springtail");setGenus("all");document.getElementById("ledger-directory")?.scrollIntoView({behavior:"smooth"})}},
             {id:"search",label:"Search species",icon:"search",href:"#ledger-hero-title"},
             {id:"manager",label:"Manager",icon:"manager",href:signedIn?"/keeper":"/account/login"},
-            {id:"collections",label:"Saved Species",icon:"bookmark",href:signedIn?"/ledger/my-collection":"/account/login"},
+            {id:"collections",label:"Saved Species",icon:"bookmark",...(signedIn?{onClick:()=>{setCollectionOnly(true);document.getElementById("ledger-directory")?.scrollIntoView({behavior:"smooth"});}}:{href:"/account/login"})},
             {id:"progress",label:"My Progress",icon:"achievement",href:signedIn?"/account/progress":"/account/login"}
           ]}/>
     </div>:null}
@@ -223,9 +226,10 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
       {!(heroMode && mode==="catalogue")?filterOptions:null}
     </div>
     <div className={`v2-results-meta ${styles.resultMeta}`}>
-      <span id="ledger-directory-title" role="status" aria-live="polite" aria-atomic="true">{results.length} {results.length === 1 ? "record" : "records"}</span>
+      <span id="ledger-directory-title" role="status" aria-live="polite" aria-atomic="true">{mode==="catalogue"&&collectionOnly?"My Collection · ":""}{results.length} {results.length === 1 ? "record" : "records"}</span>
       <div className={styles.metaActions}>
         {mode==="catalogue"&&signedIn&&!heroMode?<SpeciesRequestButton/>:null}
+        {mode==="catalogue"&&collectionOnly?<button type="button" onClick={()=>setCollectionOnly(false)}>Show all species</button>:null}
         {filtersActive ? <button type="button" onClick={clear}>Clear filters</button> : null}
         {mode === "catalogue" ? <details className={styles.legend}>
           <summary>Leaf colour guide</summary>
@@ -249,6 +253,6 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
         {featured.image ? <img className={spotlight.featurePhoto} src={featured.image} alt="" loading="lazy" decoding="async" /> : null}
         <div className={spotlight.featureCopy}><small>Featured species</small><h2>{featured.name}</h2><p>{featured.summary || "Explore this species in the Leaf Ledger."}</p><Link href={`/ledger/${featured.slug}`}>View species →</Link></div>
       </aside> : null}</div>
-    ) : (mode==="collection"&&!filtersActive&&records.length===0?<FirstActionEmptyState icon="leaf" eyebrow="LEAF LEDGER" title="Start your species collection." description="Discover a species and add it to your collection to see it here. Your saved species will stay connected to their care profiles." primary={{href:"/ledger",label:"Explore the Leaf Ledger"}} secondary={{href:"/keeper/collection",label:"My colonies"}}/>:<div className="v2-empty-state"><PodscapeLineIcon name="search"/><h2>{organism==="springtail"&&!query&&genus==="all"&&care==="all"?"Springtail profiles are being curated.":"No species match these filters."}</h2><p>{organism==="springtail"&&!query&&genus==="all"&&care==="all"?"Collembola records will appear here as they are reviewed and published.":"Try a different name, genus, or care level."}</p><button type="button" onClick={clear}>Reset filters</button></div>)}
+    ) : (mode==="catalogue"&&collectionOnly&&!filtersActive?<FirstActionEmptyState icon="bookmark" eyebrow="LEAF LEDGER" title="No collected species yet." description="Add a species from the Leaf Ledger to see it here. Your collection is separate from your managed bins." primary={{href:"/ledger",label:"Discover species"}}/>:mode==="collection"&&!filtersActive&&records.length===0?<FirstActionEmptyState icon="leaf" eyebrow="LEAF LEDGER" title="Start your species collection." description="Discover a species and add it to your collection to see it here. Your saved species will stay connected to their care profiles." primary={{href:"/ledger",label:"Explore the Leaf Ledger"}} secondary={{href:"/keeper/collection",label:"My colonies"}}/>:<div className="v2-empty-state"><PodscapeLineIcon name="search"/><h2>{organism==="springtail"&&!query&&genus==="all"&&care==="all"?"Springtail profiles are being curated.":"No species match these filters."}</h2><p>{organism==="springtail"&&!query&&genus==="all"&&care==="all"?"Collembola records will appear here as they are reviewed and published.":"Try a different name, genus, or care level."}</p><button type="button" onClick={clear}>Reset filters</button></div>)}
   </section></div></div></>;
 }
