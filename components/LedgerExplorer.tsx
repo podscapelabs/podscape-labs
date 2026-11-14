@@ -53,6 +53,7 @@ export function LedgerExplorer({ records, collectedIds = [], approvedPhotosById 
     const requestedQuery=new URLSearchParams(window.location.search).get("q");
     if(requestedQuery!==null){
       setQuery(requestedQuery.slice(0,120));
+      setCollectionOnly(false);
       setGenus("all");setCare("all");setOrganism("all");
       pendingScrollRef.current=null;
     }else try{
@@ -92,7 +93,7 @@ export function LedgerExplorer({ records, collectedIds = [], approvedPhotosById 
       if (sort === "common") return speciesDisplayName(a).localeCompare(speciesDisplayName(b));
       if (sort === "scientific") return speciesScientificName(a).localeCompare(speciesScientificName(b));
       return a.catalogueNumber.localeCompare(b.catalogueNumber,"en",{numeric:true,sensitivity:"base"});
-    }), [addedAtById, care, deferredQuery, genus, organism, records, sort]);
+    }), [addedAtById, care, collectionOnly, deferredQuery, genus, mode, organism, records, saved, sort]);
 
   const saveBrowseContext=()=>{
     if(mode!=="catalogue")return;
@@ -181,7 +182,7 @@ export function LedgerExplorer({ records, collectedIds = [], approvedPhotosById 
         <div className={spotlight.heroDiscovery} aria-label="Species search and filters">
         <div className={spotlight.heroSearch} role="search" aria-label="Search the Leaf Ledger">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 5 5"/></svg>
-          <input type="search" aria-label="Search Leaf Ledger species" value={query} onChange={event=>setQuery(event.target.value)} placeholder="Search species, genus, or morph…" autoComplete="off"/>
+          <input id="ledger-hero-search" type="search" aria-label="Search Leaf Ledger species" value={query} onChange={event=>setQuery(event.target.value)} placeholder="Search species, genus, or morph…" autoComplete="off"/>
           {query ? <button type="button" onClick={()=>setQuery("")} aria-label="Clear species search">×</button> : null}
         </div>
           {catalogueToolbar}
@@ -202,7 +203,7 @@ export function LedgerExplorer({ records, collectedIds = [], approvedPhotosById 
             {id:"add-photo",label:"Add Photo",icon:"camera",...(signedIn?{onClick:()=>setPhotoLaunch(value=>value+1)}:{href:"/account/login"})},
             {id:"isopods",label:"Isopods",icon:"leaf",onClick:()=>{setOrganism("isopod");setGenus("all");document.getElementById("ledger-directory")?.scrollIntoView({behavior:"smooth"})}},
             {id:"springtails",label:"Springtails",icon:"leaf",onClick:()=>{setOrganism("springtail");setGenus("all");document.getElementById("ledger-directory")?.scrollIntoView({behavior:"smooth"})}},
-            {id:"search",label:"Search species",icon:"search",href:"#ledger-hero-title"},
+            {id:"search",label:"Search species",icon:"search",onClick:()=>{const field=document.getElementById("ledger-hero-search") as HTMLInputElement|null;field?.scrollIntoView({behavior:"smooth",block:"center"});field?.focus({preventScroll:true});}},
             {id:"manager",label:"Manager",icon:"manager",href:signedIn?"/keeper":"/account/login"},
             {id:"collections",label:"Saved Species",icon:"bookmark",...(signedIn?{onClick:()=>{setCollectionOnly(true);document.getElementById("ledger-directory")?.scrollIntoView({behavior:"smooth"});}}:{href:"/account/login"})},
             {id:"progress",label:"My Progress",icon:"achievement",href:signedIn?"/account/progress":"/account/login"}
