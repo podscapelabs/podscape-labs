@@ -4,8 +4,8 @@ import type {GalleryPhoto} from "@/lib/member-photo-gallery";
 import styles from "./MemberPhotoGallery.module.css";
 
 type SpeciesOption={id:string;name:string};
-export function MemberPhotoGallery({species,initialPhotos=[],signedIn=true,launchSignal=0,compact=false,enclosureId}:{
- species:SpeciesOption[];initialPhotos?:GalleryPhoto[];signedIn?:boolean;launchSignal?:number;compact?:boolean;enclosureId?:string;
+export function MemberPhotoGallery({species,initialPhotos=[],signedIn=true,launchSignal=0,compact=false,enclosureId,launcherOnly=false}:{
+ species:SpeciesOption[];initialPhotos?:GalleryPhoto[];signedIn?:boolean;launchSignal?:number;compact?:boolean;enclosureId?:string;launcherOnly?:boolean;
 }){
  const [open,setOpen]=useState(false),[selected,setSelected]=useState(species[0]?.id||"");
  const [file,setFile]=useState<File|null>(null),[contribute,setContribute]=useState(false),[credit,setCredit]=useState<"username"|"anonymous">("username");
@@ -52,10 +52,10 @@ export function MemberPhotoGallery({species,initialPhotos=[],signedIn=true,launc
    const response=await fetch("/api/member-photos",{method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({id})});
    if(response.ok)setPhotos(items=>items.filter(item=>item.id!==id));else setMessage("Unable to remove photo.");
  }
- return <section className={styles.card} aria-label="Species photo gallery">
-  <div className={styles.heading}><div><strong>{compact?"Add a species photo":"Species photos"}</strong><small>Personal collection · Approved community contributions</small></div>
+ return <section className={launcherOnly?styles.launcher:styles.card} aria-label="Species photo gallery">
+  {!launcherOnly?<><div className={styles.heading}><div><strong>{compact?"Add a species photo":"Species photos"}</strong><small>Personal collection · Approved community contributions</small></div>
    <button type="button" onClick={()=>signedIn?setOpen(true):window.location.assign("/account/login")}>+ Add Photo</button></div>
-  {!compact&&photos.length?<div className={styles.gallery}>{photos.map(photo=><figure key={photo.id}><a href={photo.url} target="_blank" rel="noreferrer"><img src={photo.url} alt="Keeper-submitted species photograph" loading="lazy"/></a><figcaption>{photo.mine?photo.status==="approved"?"Approved contribution":photo.status==="pending"?"Pending review":photo.status==="rejected"?"Not approved":"Private photo":"Photo by "+photo.credit}</figcaption>{photo.mine?<button type="button" onClick={()=>remove(photo.id)}>Remove</button>:null}</figure>)}</div>:!compact?<p>No community photos yet. Be the first to contribute!</p>:null}
+  {!compact&&photos.length?<div className={styles.gallery}>{photos.map(photo=><figure key={photo.id}><a href={photo.url} target="_blank" rel="noreferrer"><img src={photo.url} alt="Keeper-submitted species photograph" loading="lazy"/></a><figcaption>{photo.mine?photo.status==="approved"?"Approved contribution":photo.status==="pending"?"Pending review":photo.status==="rejected"?"Not approved":"Private photo":"Photo by "+photo.credit}</figcaption>{photo.mine?<button type="button" onClick={()=>remove(photo.id)}>Remove</button>:null}</figure>)}</div>:!compact?<p>No community photos yet. Be the first to contribute!</p>:null}</> : null}
   {open?<div className={styles.backdrop} onMouseDown={event=>{if(event.target===event.currentTarget&&!busy)setOpen(false)}}><div role="dialog" aria-modal="true" aria-label="Add species photo" className={styles.modal}>
    <div className={styles.heading}><strong>Add species photo</strong><button type="button" onClick={()=>setOpen(false)} disabled={busy} aria-label="Close">×</button></div>
    <form onSubmit={save}>
