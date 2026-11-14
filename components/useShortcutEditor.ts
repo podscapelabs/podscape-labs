@@ -12,6 +12,7 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void,exter
   const dragging=useRef<number|null>(null);
   const startPoint=useRef<{x:number;y:number}|null>(null);
   const suppressClick=useRef(false);
+  const suppressedIndex=useRef<number|null>(null);
   const wasDragged=useRef(false);
   const pointer=useRef<{element:HTMLElement;id:number}|null>(null);
   const idsRef=useRef(ids);
@@ -24,7 +25,7 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void,exter
   const feedback=()=>{try{if("vibrate" in navigator)navigator.vibrate(10)}catch{}};
   const clearGesture=()=>{holding.current=false;dragging.current=null;startPoint.current=null;pointer.current=null;stopTimer()};
   useEffect(()=>()=>{stopTimer();if(clickTimer.current!==null)clearTimeout(clickTimer.current)},[]);
-  const armClickSuppression=()=>{suppressClick.current=true;if(clickTimer.current!==null)clearTimeout(clickTimer.current);clickTimer.current=setTimeout(()=>{suppressClick.current=false;clickTimer.current=null},EDIT_CLICK_SUPPRESS_MS)};
+  const armClickSuppression=(index:number)=>{suppressClick.current=true;suppressedIndex.current=index;if(clickTimer.current!==null)clearTimeout(clickTimer.current);clickTimer.current=setTimeout(()=>{suppressClick.current=false;suppressedIndex.current=null;clickTimer.current=null},EDIT_CLICK_SUPPRESS_MS)};
   useEffect(()=>{
     if(!externalEditing)return;
     stopTimer();holding.current=false;
@@ -34,7 +35,7 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void,exter
   const handlers=(index:number)=>({
     onPointerDown:(event:React.PointerEvent<HTMLElement>)=>{
       if(event.pointerType==="mouse"&&event.button!==0)return;
-      if(editingRef.current)armClickSuppression();
+      if(editingRef.current)armClickSuppression(index);
       wasDragged.current=false;
       startPoint.current={x:event.clientX,y:event.clientY};
       pointer.current={element:event.currentTarget,id:event.pointerId};
@@ -46,7 +47,7 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void,exter
         stopTimer();
         timer.current=setTimeout(()=>{
           if(!holding.current)return;
-          armClickSuppression();
+          armClickSuppression(index);
           editingRef.current=true;
           feedback();
           if(!externalEditing)setEditing(true);setSelected(index);
@@ -75,16 +76,16 @@ export function useShortcutEditor(ids:string[],change:(ids:string[])=>void,exter
       if(pointer.current?.id===event.pointerId)clearGesture();
     },
     onClick:(event:React.MouseEvent<HTMLElement>)=>{
-      if(editingRef.current||suppressClick.current){
+      if(editingRef.current||(suppressClick.current&&suppressedIndex.current===index)){
         event.preventDefault();
         event.stopPropagation();
-        if(!editingRef.current){suppressClick.current=false;if(clickTimer.current!==null){clearTimeout(clickTimer.current);clickTimer.current=null}}
+        if(!editingRef.current){suppressClick.current=false;suppressedIndex.current=null;if(clickTimer.current!==null){clearTimeout(clickTimer.current);clickTimer.current=null}}
         if(!wasDragged.current)setSelected(index);
         wasDragged.current=false;
       }
     },
     onContextMenu:(event:React.MouseEvent<HTMLElement>)=>{event.preventDefault();if(!externalEditing)setEditing(true);editingRef.current=true;setSelected(index)}
   });
-  const done=()=>{setEditing(false);editingRef.current=false;clearGesture();suppressClick.current=false;if(clickTimer.current!==null){clearTimeout(clickTimer.current);clickTimer.current=null}};
+  const done=()=>{setEditing(false);editingRef.current=false;clearGesture();suppressClick.current=false;suppressedIndex.current=null;if(clickTimer.current!==null){clearTimeout(clickTimer.current);clickTimer.current=null}};
   return {editing:editing||externalEditing,setEditing,selected,setSelected,handlers,done};
 }
