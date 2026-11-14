@@ -578,3 +578,14 @@
 .ledgerSearchBar button svg{width:18px;height:18px}
 .ledgerSearchBar :is(input,button):focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 @media(max-width:600px){.ledgerSearchBar{grid-template-columns:minmax(0,1fr);gap:7px;padding:11px 12px;margin-top:10px}.ledgerSearchBar label{font-size:.74rem}.ledgerSearchBar>div{gap:7px}.ledgerSearchBar button{padding:9px 11px;font-size:.74rem}}
+
+/* Species pages lead with care, not layers of navigation chrome. */
+@media(max-width:600px){
+ .profileBrowse{gap:6px}
+ .profileBrowseBar{grid-template-columns:40px minmax(0,1fr) 40px;padding:4px 7px;gap:6px;border-radius:12px}
+ .profileBrowseArrow{min-width:40px;min-height:40px;border-radius:10px}
+ .profileBrowseProgress span{display:none}
+ .dashboardBody{padding-top:8px;gap:9px}
+ .speciesWorkspace{gap:9px}
+ .speciesWorkspace .ledgerSearchBar{margin:0}
+}

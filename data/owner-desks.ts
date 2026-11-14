@@ -2,6 +2,7 @@ import type { PodscapeIconName } from "@/components/PodscapeLineIcon";
 
 /** Owner-only destinations shared by Account and the full Owner Tools hub. */
 export const ownerDesks = [
+  { title: "Photo Contributions", label: "Leaf Ledger", icon: "camera" as PodscapeIconName, description: "Approve member-submitted photos and attribution.", href: "/admin/photo-contributions", symbol: "" },
   { title: "Species Requests", label: "Leaf Ledger", icon: "leaf" as PodscapeIconName, description: "See which species members would like added.", href: "/account/owner-tools/species-requests", symbol: "" },
   { title: "Spotlight Desk", label: "Homepage", icon: "creative" as PodscapeIconName, description: "Curate homepage highlights and their order.", href: "/admin/spotlight", symbol: "✧" },
   { title: "Updates Desk", label: "Recently Updated", icon: "news" as PodscapeIconName, description: "Draft and publish categorized platform improvements, features and announcements.", href: "/admin/updates", symbol: "✦" },
