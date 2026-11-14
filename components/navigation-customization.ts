@@ -50,9 +50,8 @@ export function cleanPreference(value:unknown,area:PreferenceArea,isOwner=false)
   if(!Array.isArray(value)||value.some(id=>typeof id!=="string"||!choiceById.has(id)||(!isOwner&&choiceById.get(id)?.ownerOnly))||new Set(value).size!==value.length)return [...defaults];
   // Restore a sixth slot without discarding existing five-slot preferences.
   if(area==="home"&&value.length===5)return [...value,...defaults.filter(id=>!value.includes(id))].slice(0,expected) as string[];
-  if(area==="home"){
-    if(value.length<4||value.length>10)return [...defaults];
-    return value as string[];
+  if(area==="home"&&value.length!==expected){
+    return [...value.slice(0,expected),...defaults.filter(id=>!value.includes(id))].slice(0,expected);
   }
   if(value.length!==expected)return [...defaults];
   return value as string[];
