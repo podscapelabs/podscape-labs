@@ -15,23 +15,23 @@ import styles from "./SpeciesProfile.module.css";
 import { PodscapeLineIcon, type PodscapeIconName } from "./PodscapeLineIcon";
 
 // Keep stable IDs to preserve saved layouts across this visual redesign.
-const speciesWidgetIcons: Record<string,PodscapeIconName> = {care:"jar",moisture:"droplet",about:"book",traits:"leaf",guides:"book",breeding:"grid",taxonomy:"search",nutrition:"leaf",behaviour:"community",habitatAdvanced:"jar",sources:"book",personal:"bookmark",navigation:"arrow-right"};
-export const speciesWidgetIds=["care","moisture","about","traits","guides","breeding","taxonomy","nutrition","behaviour","habitatAdvanced","sources","personal","navigation"] as const;
+const speciesWidgetIcons: Record<string,PodscapeIconName> = {care:"jar",collection:"bookmark",photos:"camera",search:"search",moisture:"droplet",about:"book",traits:"leaf",guides:"book",breeding:"grid",taxonomy:"search",nutrition:"leaf",behaviour:"community",habitatAdvanced:"jar",sources:"book",personal:"bookmark",navigation:"arrow-right"};
+export const speciesWidgetIds=["care","collection","photos","search","moisture","about","traits","guides","breeding","taxonomy","nutrition","behaviour","habitatAdvanced","sources","personal","navigation"] as const;
 export type SpeciesWidgetId=(typeof speciesWidgetIds)[number];
 export const speciesWidgetLabels:Record<SpeciesWidgetId,string>={
- about:"Species overview",care:"At a Glance",moisture:"Moisture & Humidity",
+ about:"Species overview",care:"At a Glance",collection:"Your collection",photos:"Species photos",search:"Search the Leaf Ledger",moisture:"Moisture & Humidity",
  traits:"Notable Traits",guides:"Related Field Guides",
  breeding:"Breeding & Growth",taxonomy:"Origins & Identity",nutrition:"Feeding & Nutrition",habitatAdvanced:"Habitat & Setup",behaviour:"Species Characteristics",sources:"Research & Sources",personal:"My Species Tools",navigation:"Explore Species"
 };
 const descriptions:Record<SpeciesWidgetId,string>={
- about:"A short introduction to the species",care:"Quick beginner suitability, temperature, activity and colony growth",
+ about:"A short introduction to the species",care:"Quick beginner suitability, temperature, activity and colony growth",collection:"Save this species, add bins and access your colonies",photos:"Your personal and approved community images",search:"Search for another species by name or morph",
  moisture:"Substrate gradient, approximate air humidity and moist-area coverage",
  traits:"Distinctive characteristics",guides:"Supporting species-specific guides",
  breeding:"Brood size, reproduction and development",taxonomy:"Distribution, scientific names, morph origins and identification",nutrition:"Staple diet, supplements and dietary cautions",behaviour:"Adult size, lifespan, defence and visibility",
  habitatAdvanced:"Ventilation, substrate, enclosure and natural microhabitat",sources:"Original references and research scope",personal:"Collection and pin-to-home shortcuts",navigation:"Related species guides and catalogue navigation"
 };
-const defaultOrder:SpeciesWidgetId[]=["care","moisture","behaviour","habitatAdvanced","nutrition","breeding","taxonomy","about","traits","guides","sources","personal","navigation"];
-const defaultVisible:SpeciesWidgetId[]=["care","moisture","behaviour","habitatAdvanced","about","traits","personal","navigation"];
+const defaultOrder:SpeciesWidgetId[]=["care","collection","moisture","behaviour","habitatAdvanced","nutrition","breeding","taxonomy","about","traits","guides","sources","personal","navigation"];
+const defaultVisible:SpeciesWidgetId[]=["care","collection","moisture","behaviour","habitatAdvanced","about","traits","personal","navigation"];
 type Layout={order:SpeciesWidgetId[];visible:SpeciesWidgetId[]};
 const defaultLayout=():Layout=>({order:[...defaultOrder],visible:[...defaultVisible]});
 function normalize(value:unknown):Layout{
@@ -48,7 +48,8 @@ function normalize(value:unknown):Layout{
  const migrated=combined.includes("behaviour")&&!combined.includes("care")?[...combined,"care"]:combined;
  // Legacy profiles had personal/navigation actions outside the customizable canvas.
  const migratedFooter=oldOrder.includes("personal")||oldOrder.includes("navigation")?migrated:[...migrated,"personal","navigation"];
- const visible=uniqueAllowed(migratedFooter,defaultOrder);
+ const upgraded=oldOrder.includes("collection")?migratedFooter:[...migratedFooter,"collection"];
+ const visible=uniqueAllowed(upgraded,defaultOrder);
  return {order,visible};
 }
 
