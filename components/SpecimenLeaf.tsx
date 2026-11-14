@@ -57,7 +57,7 @@ export function SpecimenLeaf({ image, approvedPhotos = [], alt = "", number, siz
       </>}
       <span className="specimen-photo">
         {image || approvedPhotos.length ? (
-          approvedPhotos.length ? <RotatingSpeciesPhoto official={image} officialAlt={alt} approved={approvedPhotos} positionX={positionX} positionY={positionY} zoom={zoom} /> : <Image src={image} alt={alt} fill sizes={size === "hero" ? "(min-width: 960px) 34vw, 78vw" : size === "profile" ? "(min-width: 780px) 360px, 265px" : "(max-width: 600px) 45vw, (max-width: 1100px) 28vw, 220px"} loading={size === "hero" ? "eager" : "lazy"} decoding="async" style={{ objectPosition: `${positionX}% ${positionY}%`, transform: `scale(${zoom})` }} />
+          approvedPhotos.length ? <RotatingSpeciesPhoto official={image} officialAlt={alt} approved={approvedPhotos} positionX={positionX} positionY={positionY} zoom={zoom} /> : <Image src={image!} alt={alt} fill sizes={size === "hero" ? "(min-width: 960px) 34vw, 78vw" : size === "profile" ? "(min-width: 780px) 360px, 265px" : "(max-width: 600px) 45vw, (max-width: 1100px) 28vw, 220px"} loading={size === "hero" ? "eager" : "lazy"} decoding="async" style={{ objectPosition: `${positionX}% ${positionY}%`, transform: `scale(${zoom})` }} />
         ) : (
           <span className="specimen-photo-placeholder" aria-label="Species photograph pending">
             <span>Photo</span>
