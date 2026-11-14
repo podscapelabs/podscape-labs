@@ -904,7 +904,3 @@
 .favoritesWelcomeBody>nav a:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:5px}
 @media(max-width:600px){.favoritesWelcome{padding:12px;gap:10px;border-radius:14px}.favoritesWelcomeIcon{width:38px;height:38px}.favoritesWelcomeBody>strong{font-size:19px}.favoritesWelcomeBody>nav a{min-height:40px}}
 
-/* Home offers optional extra shortcuts without forcing additional tiles on existing users. */
-.expandedShortcuts{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:7px;overflow:visible!important}
-.expandedShortcuts>.shortcut{width:100%;min-width:0;flex:none}
-@media(max-width:720px){.expandedShortcuts{grid-template-columns:repeat(5,minmax(0,1fr))!important}.expandedShortcuts>.shortcut{width:100%;font-size:clamp(.56rem,2vw,.7rem);padding-inline:2px}}
