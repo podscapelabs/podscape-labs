@@ -1,4 +1,6 @@
 import Image from "next/image";
+import {RotatingSpeciesPhoto} from "./RotatingSpeciesPhoto";
+import type {ApprovedSpeciesPhoto} from "@/lib/approved-species-photos";
 
 /* One shared botanical silhouette is used for both ownership states.
    The brown drawing and the green revival therefore align exactly. */
@@ -31,6 +33,7 @@ function OrganicLeafArtwork({ revivable }: { revivable: boolean }) {
 
 type SpecimenLeafProps = {
   image?: string | null;
+  approvedPhotos?: ApprovedSpeciesPhoto[];
   alt?: string;
   number?: string;
   size?: "hero" | "card" | "profile";
@@ -41,7 +44,7 @@ type SpecimenLeafProps = {
   organic?: boolean;
 };
 
-export function SpecimenLeaf({ image, alt = "", number, size = "card", positionX = 50, positionY = 50, zoom = 1, revivable = false, organic = false }: SpecimenLeafProps) {
+export function SpecimenLeaf({ image, approvedPhotos = [], alt = "", number, size = "card", positionX = 50, positionY = 50, zoom = 1, revivable = false, organic = false }: SpecimenLeafProps) {
   return (
     <div className={`specimen-leaf specimen-leaf-${size}`}>
       {organic ? <OrganicLeafArtwork revivable={revivable} /> : <>
@@ -53,8 +56,8 @@ export function SpecimenLeaf({ image, alt = "", number, size = "card", positionX
         </> : null}
       </>}
       <span className="specimen-photo">
-        {image ? (
-          <Image src={image} alt={alt} fill sizes={size === "hero" ? "(min-width: 960px) 34vw, 78vw" : size === "profile" ? "(min-width: 780px) 360px, 265px" : "(max-width: 600px) 45vw, (max-width: 1100px) 28vw, 220px"} loading={size === "hero" ? "eager" : "lazy"} decoding="async" style={{ objectPosition: `${positionX}% ${positionY}%`, transform: `scale(${zoom})` }} />
+        {image || approvedPhotos.length ? (
+          approvedPhotos.length ? <RotatingSpeciesPhoto official={image} officialAlt={alt} approved={approvedPhotos} positionX={positionX} positionY={positionY} zoom={zoom} /> : <Image src={image} alt={alt} fill sizes={size === "hero" ? "(min-width: 960px) 34vw, 78vw" : size === "profile" ? "(min-width: 780px) 360px, 265px" : "(max-width: 600px) 45vw, (max-width: 1100px) 28vw, 220px"} loading={size === "hero" ? "eager" : "lazy"} decoding="async" style={{ objectPosition: `${positionX}% ${positionY}%`, transform: `scale(${zoom})` }} />
         ) : (
           <span className="specimen-photo-placeholder" aria-label="Species photograph pending">
             <span>Photo</span>
