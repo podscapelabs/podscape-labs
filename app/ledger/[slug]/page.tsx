@@ -13,6 +13,7 @@ import { PinToHome } from "@/components/PinToHome";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import { PlatformShell } from "@/components/PlatformShell";
 import {RotatingSpeciesPhoto} from "@/components/RotatingSpeciesPhoto";
+import {SpeciesProfileSearch} from "@/components/SpeciesProfileSearch";
 import { SpeciesDiscoveryTracker } from "@/components/SpeciesDiscoveryTracker";
 import styles from "@/components/SpeciesProfile.module.css";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
@@ -142,10 +143,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
            <SpeciesDashboardWorkspace scope={user?.id || "guest"} preview={previewRequested} widgets={{
             collection:record.kind==="species"&&record.status==="published"?<SpeciesCollectionHub key={record.id+":"+Boolean(collectionEntry)} speciesId={record.id} speciesName={displayName} collected={Boolean(collectionEntry)} signedIn={member.signedIn} bins={speciesBins.map(({id,name,label,quantity,isArchived})=>({id,name,label,quantity,isArchived}))} unavailable={binsUnavailable}/>:null,
             photos:record.kind==="species"&&record.status==="published"?<MemberPhotoGallery species={[{id:record.id,name:displayName}]} signedIn={member.signedIn} initialPhotos={communityPhotos}/>:null,
-            search:<form className={styles.ledgerSearchBar} role="search" action="/ledger" method="get">
-              <label htmlFor="species-profile-search">Search the Leaf Ledger</label>
-              <div><input id="species-profile-search" name="q" type="search" placeholder="Species, genus or morph…" autoComplete="off" aria-label="Search species, genus or morph" required /><button type="submit"><PodscapeLineIcon name="search"/> Search</button></div>
-            </form>,
+            search:<SpeciesProfileSearch/>,
             about:about ? <details className={styles.dashboardAbout}>
               <summary><span className={styles.aboutSymbol} aria-hidden="true"><PodscapeLineIcon name="book" /></span><span className={styles.aboutSummary}><strong>About {displayName}</strong><span className={styles.aboutPreview}>{about}</span></span><span className={styles.aboutChevron} aria-hidden="true">⌄</span></summary>
               <div className={styles.aboutFull}><p>{authoredAbout || summary}</p></div>
