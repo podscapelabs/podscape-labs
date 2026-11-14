@@ -186,7 +186,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
     </header> : null}
     {heroMode && mode==="catalogue"?<div className={spotlight.shortcutStrip} aria-label="Leaf Ledger shortcuts">
         <PortalShortcutDock portal="leaf-ledger" label="Leaf Ledger shortcuts"
-          defaults={["discover","collection","colonies","guide","request","games"]}
+          defaults={["discover","collection","colonies","guide","request","add-photo"]}
           features={[
            {id:"discover",label:"Discover",icon:"leaf",href:"#ledger-directory"},
            {id:"collection",label:"My Collection",icon:"bookmark",href:signedIn?"/keeper/collection?view=saved":"/account/login"},
