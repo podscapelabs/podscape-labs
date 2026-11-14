@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SpeciesDashboardWorkspace } from "@/components/SpeciesDashboardWorkspace";
 import {SpeciesCollectionHub} from "@/components/SpeciesCollectionHub";
+import {MemberPhotoGallery} from "@/components/MemberPhotoGallery";
+import {getSpeciesPhotoGallery} from "@/lib/member-photo-gallery";
 import {listEnclosures} from "@/lib/keeper";
 import { SpeciesProfileNavigator } from "@/components/SpeciesProfileNavigator";
 import {MoistureAndHumidityWidget,BreedingDevelopmentWidget,TaxonomyOriginWidget,FeedingEcologyWidget,HabitatSetupWidget,BehaviourEcologyWidget,ResearchSourcesWidget} from "@/components/SpeciesResearchWidgets";
@@ -75,6 +77,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
   let speciesBins:Awaited<ReturnType<typeof listEnclosures>>=[];
   let binsUnavailable=false;
   if(member.signedIn){try{speciesBins=await listEnclosures(record.id);}catch{binsUnavailable=true;}}
+  const communityPhotos=record.kind==="species"&&record.status==="published"?await getSpeciesPhotoGallery(record.id):[];
   const displayName = speciesDisplayName(record);
   const scientificName = speciesScientificName(record);
 
@@ -142,7 +145,8 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
 
         <div className={styles.dashboardBody}>
           {record.kind==="species"&&record.status==="published"?<SpeciesCollectionHub key={record.id+":"+Boolean(collectionEntry)} speciesId={record.id} speciesName={displayName} collected={Boolean(collectionEntry)} signedIn={member.signedIn} bins={speciesBins.map(({id,name,label,quantity,isArchived})=>({id,name,label,quantity,isArchived}))} unavailable={binsUnavailable}/>:null}
-          <SpeciesDashboardWorkspace scope={user?.id || "guest"} preview={previewRequested} widgets={{
+          {record.kind==="species"&&record.status==="published"?<MemberPhotoGallery species={[{id:record.id,name:displayName}]} signedIn={member.signedIn} initialPhotos={communityPhotos}/>:null}
+           <SpeciesDashboardWorkspace scope={user?.id || "guest"} preview={previewRequested} widgets={{
             about:about ? <details className={styles.dashboardAbout}>
               <summary><span className={styles.aboutSymbol} aria-hidden="true"><PodscapeLineIcon name="book" /></span><span className={styles.aboutSummary}><strong>About {displayName}</strong><span className={styles.aboutPreview}>{about}</span></span><span className={styles.aboutChevron} aria-hidden="true">⌄</span></summary>
               <div className={styles.aboutFull}><p>{authoredAbout || summary}</p></div>
