@@ -14,13 +14,15 @@ import {SpeciesRequestButton} from "./SpeciesRequestForm";
 import {MemberPhotoGallery} from "./MemberPhotoGallery";
 import {LEDGER_BROWSE_ORDER_KEY,LEDGER_EXPLORER_STATE_KEY,type LedgerExplorerSnapshot} from "@/lib/ledger-navigation";
 import type { ColonyStatus } from "@/data/collection";
+import type {ApprovedSpeciesPhoto} from "@/lib/approved-species-photos";
 import { speciesDisplayName, speciesScientificName, speciesOrganismGroup, type SpeciesRecord } from "@/data/species";
 
 type SortMode = "catalogue" | "common" | "scientific" | "recent";
 
-export function LedgerExplorer({ records, collectedIds = [], signedIn = false, mode = "catalogue", addedAtById = {}, collectionDetailsById = {}, featured, heroMode = false }: {
+export function LedgerExplorer({ records, collectedIds = [], approvedPhotosById = {}, signedIn = false, mode = "catalogue", addedAtById = {}, collectionDetailsById = {}, featured, heroMode = false }: {
   records: SpeciesRecord[];
   collectedIds?: string[];
+  approvedPhotosById?: Record<string,ApprovedSpeciesPhoto[]>;
   signedIn?: boolean;
   mode?: "catalogue" | "collection";
   addedAtById?: Record<string, string>;
@@ -243,7 +245,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
     </div>
     {results.length ? (mode === "collection"
       ? <div className={collectionStyles.grid}>{results.map((record) => <CollectionSpeciesRow record={record} details={collectionDetailsById[record.id]} key={record.id} />)}</div>
-      : <div className="v2-species-grid" onClickCapture={event=>{if((event.target as HTMLElement).closest("a[href^=\"/ledger/\"]"))saveBrowseContext()}}>{results.map((record, index) => <LedgerSpeciesCard record={record} key={record.id} nativeNavigation={mode==="catalogue"} showCollectionAction collected={saved.has(record.id)} signedIn={signedIn} collectionDetails={collectionDetailsById[record.id]} />).flatMap((card, index) => {
+      : <div className="v2-species-grid" onClickCapture={event=>{if((event.target as HTMLElement).closest("a[href^=\"/ledger/\"]"))saveBrowseContext()}}>{results.map((record, index) => <LedgerSpeciesCard record={record} key={record.id} nativeNavigation={mode==="catalogue"} approvedPhotos={approvedPhotosById[record.id]||[]} showCollectionAction collected={saved.has(record.id)} signedIn={signedIn} collectionDetails={collectionDetailsById[record.id]} />).flatMap((card, index) => {
         const insertSpotlight = index === 3 && !!featured && !filtersActive;
         return insertSpotlight ? [card, <aside key="species-spotlight" className={spotlight.feature} aria-label="Featured species">
           {featured!.image ? <img className={spotlight.featurePhoto} src={featured!.image} alt="" loading="lazy" decoding="async" /> : <span className={spotlight.featureFallback} aria-hidden="true"><PodscapeLineIcon name="leaf"/></span>}
