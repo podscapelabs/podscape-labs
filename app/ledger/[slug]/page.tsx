@@ -12,7 +12,7 @@ import {getSpeciesTraitId} from "@/lib/species-traits";
 import { PinToHome } from "@/components/PinToHome";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import { PlatformShell } from "@/components/PlatformShell";
-import Image from "next/image";
+import {RotatingSpeciesPhoto} from "@/components/RotatingSpeciesPhoto";
 import { SpeciesDiscoveryTracker } from "@/components/SpeciesDiscoveryTracker";
 import styles from "@/components/SpeciesProfile.module.css";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
@@ -78,6 +78,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
   let binsUnavailable=false;
   if(member.signedIn){try{speciesBins=await listEnclosures(record.id);}catch{binsUnavailable=true;}}
   const communityPhotos=record.kind==="species"&&record.status==="published"?await getSpeciesPhotoGallery(record.id):[];
+  const approvedPhotoRotation=communityPhotos.filter(photo=>photo.status==="approved").slice(0,3).map(photo=>({url:photo.url,credit:photo.credit}));
   const displayName = speciesDisplayName(record);
   const scientificName = speciesScientificName(record);
 
@@ -127,8 +128,8 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
         </div>
 
         <SpeciesProfileNavigator currentSlug={record.slug} catalogue={previewRequested ? [] : catalogue}>
-        <header className={`${homeStyles.hero} ${styles.speciesHomeHero} ${record.image ? styles.speciesHeroHasArt : styles.speciesHeroNoArt}`}>
-          {record.image ? <div className={styles.speciesHeroArt}><Image className={homeStyles.heroImage} src={record.image} alt={record.imageAlt || scientificName} fill priority sizes="(max-width: 720px) 65vw, 540px" style={{objectFit:"contain",objectPosition:`${record.imagePositionX}% ${record.imagePositionY}%`,transform:`scale(${record.imageZoom})`}} /></div> : null}
+        <header className={`${homeStyles.hero} ${styles.speciesHomeHero} ${record.image||approvedPhotoRotation.length ? styles.speciesHeroHasArt : styles.speciesHeroNoArt}`}>
+          {record.image||approvedPhotoRotation.length ? <div className={styles.speciesHeroArt}><RotatingSpeciesPhoto className={homeStyles.heroImage} mode="hero" official={record.image} officialAlt={record.imageAlt||scientificName} approved={approvedPhotoRotation} positionX={record.imagePositionX} positionY={record.imagePositionY} zoom={record.imageZoom}/></div> : null}
           <div className={homeStyles.heroContent}>
             <p className={homeStyles.eyebrow}>LEAF LEDGER · SPECIES PROFILE</p>
             <h1>{displayName}</h1>
