@@ -72,18 +72,14 @@ function normalize(value:unknown):Layout{
  // Existing layouts keep their custom selections, but gain the new care/activity widgets on upgrade.
  const legacy=Array.isArray(raw.order)&&!raw.order.some(v=>v==="care"||v==="activity"||v==="insights");
  const visible=Array.isArray(raw.visible)?(oldUntouched&&untouchedVisibility?initial.visible:defaults.filter(v=>required.includes(v)||raw.visible!.includes(v)||(legacy&&(v==="care"||v==="activity")))):initial.visible;
- const tools=Array.isArray(raw.tools)?(oldUntouched&&untouchedTools?initial.tools:raw.tools.filter(v=>library.some(t=>t.id===v)).filter((v,i,a)=>a.indexOf(v)===i).slice(0,10)):initial.tools;
- return {order,visible,tools:tools.length>=4?tools:[...tools,...initial.tools.filter(id=>!tools.includes(id))].slice(0,6)};
+ const tools=Array.isArray(raw.tools)?(oldUntouched&&untouchedTools?initial.tools:raw.tools.filter(v=>library.some(t=>t.id===v)).filter((v,i,a)=>a.indexOf(v)===i).slice(0,6)):initial.tools;
+ return {order,visible,tools:[...tools,...initial.tools.filter(id=>!tools.includes(id))].slice(0,6)};
 }
 
 function ManagerQuickShortcuts({ids,change,primaryHref,canvasEditing,onWorkflow}:{ids:string[];change:(ids:string[])=>void;primaryHref:string;canvasEditing:boolean;onWorkflow:(mode:ManagerWorkflow)=>void}){
  const router=useRouter();
  const {editing,selected,setSelected,handlers,done}=useShortcutEditor(ids,change,canvasEditing);
  const current=library.find(tool=>tool.id===ids[selected])||library[0];
- const [addition,setAddition]=useState("");
- const unused=library.filter(tool=>!ids.includes(tool.id));
- const add=()=>{if(addition&&!ids.includes(addition)&&ids.length<10){change([...ids,addition]);setSelected(ids.length);setAddition("");}};
- const remove=()=>{if(ids.length>4){change(ids.filter((_,index)=>index!==selected));setSelected(Math.max(0,selected-1));}};
  const destination=(tool:Tool)=>tool.href;
  const workflow=(id:string):ManagerWorkflow|null=>id==="add"?"add":id==="schedule"?"schedule":id==="history"||id==="activity"?"history":id==="colonies"?"colonies":id==="care"?"care":id==="notes"?"notes":id==="population"?"population":id==="bulkcare"?"bulk":null;
  return <>
@@ -96,15 +92,12 @@ function ManagerQuickShortcuts({ids,change,primaryHref,canvasEditing,onWorkflow}
      </select>
     </label>
     <div className={homeStyles.shortcutMoveControls} role="group" aria-label="Move selected Manager shortcut">
-      <label>Add shortcut<select aria-label="Add Manager shortcut" value={addition} onChange={event=>setAddition(event.target.value)}><option value="">Choose…</option>{unused.map(tool=><option key={tool.id} value={tool.id}>{tool.label}</option>)}</select></label>
-      <button type="button" disabled={!addition||ids.length>=10} onClick={add}>Add</button>
-      <button type="button" disabled={ids.length<=4} onClick={remove}>Remove selected</button>
       <button type="button" disabled={selected<=0} onClick={()=>{change(moveNavigationSlot(ids,selected,selected-1));setSelected(selected-1)}} aria-label={`Move ${current.label} left`}>← Left</button>
       <button type="button" disabled={selected>=ids.length-1} onClick={()=>{change(moveNavigationSlot(ids,selected,selected+1));setSelected(selected+1)}} aria-label={`Move ${current.label} right`}>Right →</button>
     </div>
     <button type="button" className={homeStyles.jiggleReset} onClick={()=>{if(confirmWorkspaceReset("manager-shortcuts")){change([...initial.tools]);setSelected(0)}}}>Reset shortcuts</button>
    </div>:null}
-   {canvasEditing?<div className={homeStyles.inlineShortcutPicker}><span>Drag shortcuts to reorder · Tap one to replace</span><label>Add shortcut<select aria-label="Add Manager shortcut" value={addition} onChange={event=>setAddition(event.target.value)}><option value="">Choose…</option>{unused.map(tool=><option key={tool.id} value={tool.id}>{tool.label}</option>)}</select></label><button type="button" disabled={!addition||ids.length>=10} onClick={add}>Add</button><button type="button" disabled={ids.length<=4} onClick={remove}>Remove selected</button>
+   {canvasEditing?<div className={homeStyles.inlineShortcutPicker}><span>Drag shortcuts to reorder · Tap one to replace</span>
     <label>Replace {current.label}<select value={current.id} onChange={event=>change(swapManagerSlot(ids,selected,event.target.value))}>{library.map(tool=><option key={tool.id} value={tool.id}>{tool.label}</option>)}</select></label>
     <div className={homeStyles.shortcutMoveControls} role="group" aria-label="Move selected Manager shortcut">
       <button type="button" disabled={selected<=0} onClick={()=>{change(moveNavigationSlot(ids,selected,selected-1));setSelected(selected-1)}} aria-label={`Move ${current.label} left`}>← Left</button>
