@@ -11,6 +11,7 @@ import {PodscapeLineIcon} from "./PodscapeLineIcon";
 import {PortalShortcutDock} from "./PortalShortcutDock";
 import {FirstActionEmptyState} from "./FirstActionEmptyState";
 import {SpeciesRequestButton} from "./SpeciesRequestForm";
+import {MemberPhotoGallery} from "./MemberPhotoGallery";
 import {LEDGER_BROWSE_ORDER_KEY,LEDGER_EXPLORER_STATE_KEY,type LedgerExplorerSnapshot} from "@/lib/ledger-navigation";
 import type { ColonyStatus } from "@/data/collection";
 import { speciesDisplayName, speciesScientificName, speciesOrganismGroup, type SpeciesRecord } from "@/data/species";
@@ -30,6 +31,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
   const [query, setQuery] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [requestLaunch,setRequestLaunch]=useState(0);
+  const [photoLaunch,setPhotoLaunch]=useState(0);
   const [genus, setGenus] = useState("all");
   const [organism,setOrganism]=useState<"all"|"isopod"|"springtail">("all");
   const [care, setCare] = useState("all");
@@ -191,10 +193,12 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
            {id:"colonies",label:"My Colonies",icon:"jar",href:signedIn?"/keeper/collection":"/account/login"},
            {id:"guide",label:"Care Guides",icon:"book",href:"/field-guide"},
            {id:"request",label:"Request Species",icon:"note",...(signedIn?{onClick:()=>setRequestLaunch(value=>value+1)}:{href:"/account/login"})},
-           {id:"games",label:"Fun Zone",icon:"gamepad",href:"/fun-zone"}
+           {id:"games",label:"Fun Zone",icon:"gamepad",href:"/fun-zone"},
+            {id:"add-photo",label:"Add Photo",icon:"camera",...(signedIn?{onClick:()=>setPhotoLaunch(value=>value+1)}:{href:"/account/login"})}
           ]}/>
     </div>:null}
     {heroMode&&mode==="catalogue"&&signedIn?<SpeciesRequestButton launchSignal={requestLaunch} hideTrigger/>:null}
+     {heroMode&&mode==="catalogue"&&signedIn?<div style={{height:0,overflow:"visible",position:"relative"}}><MemberPhotoGallery compact species={records.map(record=>({id:record.id,name:speciesDisplayName(record)}))} launchSignal={photoLaunch}/></div>:null}
     <div className={heroMode && mode === "catalogue" ? spotlight.content : undefined}>
     <div className={heroMode && mode === "catalogue" ? "v2-container" : undefined} id={heroMode && mode === "catalogue" ? "ledger-directory" : undefined}>
     <section className="v2-ledger-explorer" aria-labelledby="ledger-directory-title">
