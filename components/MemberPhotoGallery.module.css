@@ -30,3 +30,16 @@
  .backdrop{bottom:calc(86px + env(safe-area-inset-bottom,0px));padding:12px 12px 4px;align-items:center}
  .modal{max-height:calc(100dvh - 112px - env(safe-area-inset-bottom,0px));padding:18px}
 }
+
+/* A keeper's lone photo must not stretch to fill an entire dashboard row. */
+.card{margin:0;padding:14px 16px}
+.gallery{grid-template-columns:repeat(auto-fill,minmax(112px,148px));gap:10px}
+.gallery figure{max-width:148px}
+.gallery img{width:100%;height:auto;aspect-ratio:1;object-fit:cover;border-radius:12px}
+.gallery figcaption{margin-top:4px;line-height:1.25}
+@media(max-width:600px){
+ .card{padding:12px}
+ .gallery{grid-template-columns:repeat(auto-fill,minmax(100px,132px))}
+ .gallery figure{max-width:132px}
+ .heading button{min-height:40px;padding:8px 10px}
+}
