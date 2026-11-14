@@ -17,7 +17,7 @@ export async function getSpeciesPhotoGallery(speciesId:string):Promise<GalleryPh
   const photos=new Map<string,Photo>();
   for(const photo of [...(publicResult.data||[]),...(mineResult.data||[])] as Photo[])photos.set(photo.id,photo);
   return (await Promise.all([...photos.values()].map(async photo=>{
-    const {data}=await db.storage.from("member-species-photos").createSignedUrl(photo.storage_path,300);
+    const {data}=await db.storage.from("member-species-photos").createSignedUrl(photo.storage_path,photo.moderation_status==="approved"?3600:300);
     if(!data?.signedUrl)return null;
     return {id:photo.id,url:data.signedUrl,credit:photo.credit_type==="anonymous"?"Anonymous keeper":photo.credit_name||"PodScape Keeper",status:photo.moderation_status,mine:photo.user_id===user?.id};
   }))).filter((photo):photo is GalleryPhoto=>Boolean(photo));
