@@ -207,7 +207,7 @@ export function LedgerExplorer({ records, collectedIds = [], signedIn = false, m
           ]}/>
     </div>:null}
     {heroMode&&mode==="catalogue"&&signedIn?<SpeciesRequestButton launchSignal={requestLaunch} hideTrigger/>:null}
-     {heroMode&&mode==="catalogue"&&signedIn?<div><MemberPhotoGallery launcherOnly compact species={records.map(record=>({id:record.id,name:speciesDisplayName(record)}))} launchSignal={photoLaunch}/></div>:null}
+     {heroMode&&mode==="catalogue"&&signedIn?<div><MemberPhotoGallery launcherOnly compact species={records.map(record=>({id:record.id,name:speciesDisplayName(record),scientific:speciesScientificName(record)}))} launchSignal={photoLaunch}/></div>:null}
     <div className={heroMode && mode === "catalogue" ? spotlight.content : undefined}>
     <div className={heroMode && mode === "catalogue" ? "v2-container" : undefined} id={heroMode && mode === "catalogue" ? "ledger-directory" : undefined}>
     <section className="v2-ledger-explorer" aria-labelledby="ledger-directory-title">
