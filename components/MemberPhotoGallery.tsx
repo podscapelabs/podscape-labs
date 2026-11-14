@@ -3,7 +3,7 @@ import {useEffect,useRef,useState} from "react";
 import type {GalleryPhoto} from "@/lib/member-photo-gallery";
 import styles from "./MemberPhotoGallery.module.css";
 
-type SpeciesOption={id:string;name:string};
+type SpeciesOption={id:string;name:string;scientific?:string};
 export function MemberPhotoGallery({species,initialPhotos=[],signedIn=true,launchSignal=0,compact=false,enclosureId,launcherOnly=false}:{
  species:SpeciesOption[];initialPhotos?:GalleryPhoto[];signedIn?:boolean;launchSignal?:number;compact?:boolean;enclosureId?:string;launcherOnly?:boolean;
 }){
@@ -14,7 +14,7 @@ export function MemberPhotoGallery({species,initialPhotos=[],signedIn=true,launc
  const input=useRef<HTMLInputElement>(null);
  useEffect(()=>{if(launchSignal>0)setOpen(true)},[launchSignal]);
  useEffect(()=>{setPhotos(initialPhotos)},[initialPhotos]);
- const matchedSpecies=speciesSearch.trim()?species.filter(item=>item.name.toLowerCase().includes(speciesSearch.trim().toLowerCase())):species;
+ const matchedSpecies=speciesSearch.trim()?species.filter(item=>(item.name+" "+(item.scientific||"")).toLowerCase().includes(speciesSearch.trim().toLowerCase())):species;
  async function optimize(source:File):Promise<File>{
    // Decode on iOS Safari as well as desktop; some Safari versions lack createImageBitmap for uploads.
    let bitmap:ImageBitmap|null=null,photo:HTMLImageElement|null=null,objectUrl="";
@@ -83,7 +83,7 @@ export function MemberPhotoGallery({species,initialPhotos=[],signedIn=true,launc
   {open?<div className={styles.backdrop} onMouseDown={event=>{if(event.target===event.currentTarget&&!busy)setOpen(false)}}><div role="dialog" aria-modal="true" aria-label="Add species photo" className={styles.modal}>
    <div className={styles.heading}><strong>Add species photo</strong><button type="button" onClick={()=>setOpen(false)} disabled={busy} aria-label="Close">×</button></div>
    <form onSubmit={save}>
-    {species.length>1?<div className={styles.speciesPicker}><label htmlFor="member-photo-species-search">Search species<input id="member-photo-species-search" type="search" value={speciesSearch} onChange={event=>setSpeciesSearch(event.target.value)} placeholder="Search species or morph…" autoComplete="off"/></label><label>Species<select required value={matchedSpecies.some(item=>item.id===selected)?selected:""} onChange={event=>{setSelected(event.target.value);setSpeciesSearch("");}}><option value="" disabled>{matchedSpecies.length?"Select species…":"No matching species"}</option>{matchedSpecies.map(item=><option key={item.id} value={item.id}>{item.name}</option>)}</select></label></div>:<p>{species[0]?.name}</p>}
+    {species.length>1?<div className={styles.speciesPicker}><label htmlFor="member-photo-species-search">Search species<input id="member-photo-species-search" type="search" value={speciesSearch} onChange={event=>setSpeciesSearch(event.target.value)} placeholder="Search species or morph…" autoComplete="off"/></label><label>Species<select required value={matchedSpecies.some(item=>item.id===selected)?selected:""} onChange={event=>{setSelected(event.target.value);setSpeciesSearch("");}}><option value="" disabled>{matchedSpecies.length?"Select species…":"No matching species"}</option>{matchedSpecies.map(item=><option key={item.id} value={item.id}>{item.name}{item.scientific?" · "+item.scientific:""}</option>)}</select></label></div>:<p>{species[0]?.name}</p>}
     <label>Choose a photo<input ref={input} required type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" onChange={event=>setFile(event.target.files?.[0]||null)}/></label>
     <small>Optimized locally before upload as WebP or JPEG. Up to 15 MB source; maximum 5 MB stored. Camera metadata removed.</small>
     <label className={styles.checkbox}><input type="checkbox" checked={contribute} onChange={event=>setContribute(event.target.checked)}/> Submit to the public Leaf Ledger for approval</label>
