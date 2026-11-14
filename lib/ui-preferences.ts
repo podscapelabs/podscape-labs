@@ -97,7 +97,7 @@ export function parseUiPreferences(value:unknown,isOwner=false):UiPreferences|nu
  if(!layout.visible.every(id=>optionalWidgets.includes(id as WidgetId)))return null;
  if(!validNavigation(data.navHome,"home",isOwner)||!validNavigation(data.navBottom,"bottom",isOwner))return null;
  const manager=data.manager===undefined?defaultManagerLayout():data.manager;
- const species=data.species===undefined?defaultSpeciesLayout():data.species;
+ const species=data.species===undefined?defaultSpeciesLayout():validSpecies(data.species)?data.species:normalizeSpeciesLegacy(data.species);
  if(!validManager(manager)||!validSpecies(species))return null;
  return {
   home:{order:layout.order as HomeId[],visible:layout.visible as WidgetId[]},
