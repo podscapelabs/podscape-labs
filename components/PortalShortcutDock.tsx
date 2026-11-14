@@ -54,6 +54,7 @@ export function PortalShortcutDock({portal,label,features,defaults,scope="device
   update(next);
  };
  return <section className={[styles.dock,className].filter(Boolean).join(" ")} aria-label={label} data-portal-shortcuts={portal} data-ready={ready}>
+  {!editing?<div className={styles.dockTools}><button type="button" onClick={()=>{setSelected(0);setEditing(true)}}>Customize shortcuts</button></div>:null}
   {editing?<div className={styles.editor} role="region" aria-label={"Customize "+label}>
    <div className={styles.editorHead}><strong>Arrange your shortcuts</strong><button type="button" onClick={done}>Done</button></div>
    <p>Hold and drag to reorder. Choose from the portal library, or add a second row (up to 10 shortcuts).</p>
