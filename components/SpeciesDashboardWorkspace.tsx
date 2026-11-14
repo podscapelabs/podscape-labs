@@ -30,7 +30,7 @@ const descriptions:Record<SpeciesWidgetId,string>={
  breeding:"Brood size, reproduction and development",taxonomy:"Distribution, scientific names, morph origins and identification",nutrition:"Staple diet, supplements and dietary cautions",behaviour:"Adult size, lifespan, defence and visibility",
  habitatAdvanced:"Ventilation, substrate, enclosure and natural microhabitat",sources:"Original references and research scope",personal:"Collection and pin-to-home shortcuts",navigation:"Related species guides and catalogue navigation"
 };
-const defaultOrder:SpeciesWidgetId[]=["care","collection","moisture","behaviour","habitatAdvanced","nutrition","breeding","taxonomy","about","traits","guides","sources","personal","navigation"];
+const defaultOrder:SpeciesWidgetId[]=["care","collection","moisture","behaviour","habitatAdvanced","nutrition","breeding","taxonomy","about","traits","guides","sources","photos","search","personal","navigation"];
 const defaultVisible:SpeciesWidgetId[]=["care","collection","moisture","behaviour","habitatAdvanced","about","traits","personal","navigation"];
 type Layout={order:SpeciesWidgetId[];visible:SpeciesWidgetId[]};
 const defaultLayout=():Layout=>({order:[...defaultOrder],visible:[...defaultVisible]});
