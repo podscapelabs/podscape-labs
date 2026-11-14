@@ -32,11 +32,13 @@ export async function POST(request:NextRequest){
   const creditType=form.get("creditType")==="anonymous"?"anonymous":"username";
   const file=form.get("file");
   if(!(file instanceof File))return failure("Choose a photo.");
-  // WebP is generated in-browser via canvas to remove camera EXIF/geotags.
-  if(file.size<100||file.size>MAX||file.type!=="image/webp")return failure("Please upload an optimized WebP photo under 5 MB.");
+  // Browsers such as iOS Safari may not support canvas WebP export. JPEG is a safe fallback.
+  const allowed=file.type==="image/webp"||file.type==="image/jpeg";
+  if(file.size<100||file.size>MAX||!allowed)return failure("Please upload an optimized JPEG or WebP photo under 5 MB.");
   const bytes=new Uint8Array(await file.arrayBuffer());
-  if(new TextDecoder().decode(bytes.slice(0,4))!=="RIFF"||new TextDecoder().decode(bytes.slice(8,12))!=="WEBP")
-    return failure("Invalid image format.");
+  const isWebp=bytes.length>12&&new TextDecoder().decode(bytes.slice(0,4))==="RIFF"&&new TextDecoder().decode(bytes.slice(8,12))==="WEBP";
+  const isJpeg=bytes.length>4&&bytes[0]===0xff&&bytes[1]===0xd8&&bytes[bytes.length-2]===0xff&&bytes[bytes.length-1]===0xd9;
+  if((file.type==="image/webp"&&!isWebp)||(file.type==="image/jpeg"&&!isJpeg))return failure("Invalid image format.");
   const species=(await getSpeciesRecords()).find(record=>record.id===speciesId&&record.kind==="species"&&record.status==="published");
   if(!species)return failure("Choose a published Leaf Ledger species.");
   if(enclosureId){
@@ -48,12 +50,13 @@ export async function POST(request:NextRequest){
   if((count??0)>=25)return failure("Your 25-photo beta allowance is full.");
   const {data:profile}=await admin.from("customer_profiles").select("display_name").eq("id",user.id).maybeSingle();
   const creditName=creditType==="anonymous"?"":String(profile?.display_name||"PodScape Keeper").slice(0,80);
-  const id=randomUUID(),path=user.id+"/"+id+".webp";
-  const {error:uploadError}=await admin.storage.from(BUCKET).upload(path,bytes,{contentType:"image/webp",upsert:false,cacheControl:"3600"});
+  const mime=file.type,extension=mime==="image/webp"?"webp":"jpg";
+  const id=randomUUID(),path=user.id+"/"+id+"."+extension;
+  const {error:uploadError}=await admin.storage.from(BUCKET).upload(path,bytes,{contentType:mime,upsert:false,cacheControl:"3600"});
   if(uploadError)return failure("Could not store photo. Try again.",503);
   const {error:dbError}=await admin.from("member_species_photos").insert({
     id,user_id:user.id,species_id:speciesId,enclosure_id:enclosureId||null,storage_path:path,
-    original_name:"species-photo.webp",mime_type:"image/webp",byte_size:bytes.length,
+    original_name:"species-photo."+extension,mime_type:mime,byte_size:bytes.length,
     credit_type:creditType,credit_name:creditName,contribution_consent:contributed,
     moderation_status:contributed?"pending":"private",
   });
