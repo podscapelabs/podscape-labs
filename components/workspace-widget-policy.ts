@@ -26,6 +26,9 @@ export const widgetPlacement={
   activity:{group:"Care & Activity",purpose:"Recent care history",placement:"optional"},
  },
  species:{
+  collection:{group:"My Species",purpose:"Collection status, adding bins and managing colonies",placement:"optional"},
+  photos:{group:"My Species",purpose:"Your submitted and approved community photos",placement:"optional"},
+  search:{group:"Explore Further",purpose:"Find species, genus or morph in the Leaf Ledger",placement:"optional"},
   care:{group:"Essentials",purpose:"Core husbandry at a glance",placement:"optional"},
   moisture:{group:"Essentials",purpose:"Moisture gradient and humidity",placement:"optional"},
   about:{group:"Essentials",purpose:"Compact species introduction",placement:"optional"},
