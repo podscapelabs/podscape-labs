@@ -23,3 +23,10 @@
 .actions button:disabled{opacity:.5}
 .modal :is(button,input,select):focus-visible{outline:3px solid var(--theme-focus,var(--amber));outline-offset:2px}
 @media(max-width:480px){.modal{padding:18px;border-radius:19px;max-height:calc(100dvh - 30px)}.modal form{gap:13px}}
+
+/* On phones the photo editor stays above the persistent five-slot navigation.
+   Its backdrop cannot swallow bottom-bar taps while a keeper changes portals. */
+@media(max-width:720px){
+ .backdrop{bottom:calc(86px + env(safe-area-inset-bottom,0px));padding:12px 12px 4px;align-items:center}
+ .modal{max-height:calc(100dvh - 112px - env(safe-area-inset-bottom,0px));padding:18px}
+}
