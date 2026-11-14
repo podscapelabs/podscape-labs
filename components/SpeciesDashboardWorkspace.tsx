@@ -43,7 +43,8 @@ function normalize(value:unknown):Layout{
  const oldOrder:unknown[]=Array.isArray(obj.order)?obj.order:[];
  const oldVisible:unknown[]=Array.isArray(obj.visible)?obj.visible:defaultVisible;
  const ordered=oldOrder.map(migrate);
- const order=[...uniqueAllowed(ordered,defaultOrder),...defaultOrder].filter((id,i,all)=>all.indexOf(id)===i);
+ const inserted=ordered.includes("collection")?ordered:[...ordered.slice(0,Math.max(0,ordered.indexOf("care")+1)),"collection",...ordered.slice(Math.max(0,ordered.indexOf("care")+1))];
+ const order=[...uniqueAllowed(inserted,defaultOrder),...defaultOrder].filter((id,i,all)=>all.indexOf(id)===i);
  const combined=oldVisible.map(migrate);
  const migrated=combined.includes("behaviour")&&!combined.includes("care")?[...combined,"care"]:combined;
  // Legacy profiles had personal/navigation actions outside the customizable canvas.
