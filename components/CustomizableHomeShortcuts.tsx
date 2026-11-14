@@ -1,6 +1,5 @@
 "use client";
 import {useRouter} from "next/navigation";
-import {useState} from "react";
 import {PodscapeLineIcon} from "./PodscapeLineIcon";
 import {choiceById,availableNavigationChoices,navigationGroups,moveNavigationSlot,swapNavigationSlot} from "./navigation-customization";
 import {useNavigationPreferences} from "./useNavigationPreferences";
@@ -11,17 +10,12 @@ import styles from "./PodscapeHome.module.css";
 
 export function CustomizableHomeShortcuts({isOwner=false}:{isOwner?:boolean}){
   const router=useRouter();
-  const [addition,setAddition]=useState("");
   const {ids,change,reset}=useNavigationPreferences("home",isOwner);
   const canvasEditing=useHomeCanvasEditing();
   const {editing,selected,setSelected,handlers,done}=useShortcutEditor(ids,change,canvasEditing);
   const accessibleChoices=availableNavigationChoices(isOwner);
   const choices=ids.map(id=>choiceById.get(id)).filter((x):x is NonNullable<typeof x>=>Boolean(x));
   const current=choices[selected]||choices[0];
-  const unused=accessibleChoices.filter(item=>!ids.includes(item.id)&&!item.planned);
-  const add=()=>{if(addition&&!ids.includes(addition)&&ids.length<10){change([...ids,addition]);setSelected(ids.length);setAddition("");}};
-  const remove=()=>{if(ids.length>4){change(ids.filter((_,i)=>i!==selected));setSelected(Math.max(0,selected-1));}};
-  const addControls=<div className={styles.shortcutMoveControls}><label>Add a shortcut<select aria-label="Choose Home shortcut to add" value={addition} onChange={event=>setAddition(event.target.value)}><option value="">Choose an action…</option>{navigationGroups.map(group=>unused.some(item=>item.group===group)?<optgroup label={group} key={group}>{unused.filter(item=>item.group===group).map(item=><option key={item.id} value={item.id}>{item.label}</option>)}</optgroup>:null)}</select></label><button type="button" disabled={!addition||ids.length>=10} onClick={add}>Add shortcut</button><button type="button" disabled={ids.length<=4} onClick={remove}>Remove selected</button></div>;
   return <section aria-label="Your Podscape shortcuts">
     {editing&&!canvasEditing&&<div className={styles.jiggleToolbar} role="region" aria-label="Customize homepage shortcuts">
       <span className={styles.jiggleHint}><PodscapeLineIcon name="grip" /> <strong>Arrange your shortcuts</strong><small>Drag icons or use the move buttons. Tap one to replace it.</small></span>
@@ -31,7 +25,6 @@ export function CustomizableHomeShortcuts({isOwner=false}:{isOwner?:boolean}){
           {navigationGroups.filter(group=>accessibleChoices.some(item=>item.group===group)).map(group=><optgroup label={group} key={group}>{accessibleChoices.filter(item=>item.group===group).map(item=><option value={item.id} key={item.id}>{item.label}{item.planned?" (coming later)":""}{ids.includes(item.id)&&item.id!==current?.id?" (swap)":""}</option>)}</optgroup>)}
         </select>
       </label>
-      {addControls}
       <div className={styles.shortcutMoveControls} role="group" aria-label="Move selected Home shortcut">
         <button type="button" disabled={selected<=0} onClick={()=>{change(moveNavigationSlot(ids,selected,selected-1));setSelected(selected-1)}} aria-label={`Move ${current?.label||"shortcut"} left`}>← Left</button>
         <button type="button" disabled={selected>=ids.length-1} onClick={()=>{change(moveNavigationSlot(ids,selected,selected+1));setSelected(selected+1)}} aria-label={`Move ${current?.label||"shortcut"} right`}>Right →</button>
@@ -51,7 +44,7 @@ export function CustomizableHomeShortcuts({isOwner=false}:{isOwner?:boolean}){
       </div>
       <button type="button" onClick={()=>{if(confirmWorkspaceReset("home-shortcuts")){reset();setSelected(0)}}}>Reset shortcuts</button>
     </div>}
-    <nav className={`${styles.shortcuts} ${ids.length>6?styles.expandedShortcuts:""} ${editing?styles.shortcutEditing:""}`} aria-label="Explore Podscape">
+    <nav className={`${styles.shortcuts} ${editing?styles.shortcutEditing:""}`} aria-label="Explore Podscape">
       {choices.map((item,index)=><button type="button" data-shortcut-index={index}
         className={`${styles.shortcut} ${styles[item.tone]} ${editing?styles.jiggling:""} ${editing&&selected===index?styles.shortcutSelected:""}`}
         aria-label={editing?`Choose or drag ${item.label}`:item.label}
