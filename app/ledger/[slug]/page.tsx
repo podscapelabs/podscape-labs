@@ -138,16 +138,14 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
           </div>
         </header>
         </SpeciesProfileNavigator>
-        <form className={styles.ledgerSearchBar} role="search" action="/ledger" method="get">
-          <label htmlFor="species-profile-search">Search the Leaf Ledger</label>
-          <div><input id="species-profile-search" name="q" type="search" placeholder="Species, genus or morph…" autoComplete="off" aria-label="Search species, genus or morph" required /><button type="submit"><PodscapeLineIcon name="search"/> Search</button></div>
-        </form>
-
-
         <div className={styles.dashboardBody}>
-          {record.kind==="species"&&record.status==="published"?<SpeciesCollectionHub key={record.id+":"+Boolean(collectionEntry)} speciesId={record.id} speciesName={displayName} collected={Boolean(collectionEntry)} signedIn={member.signedIn} bins={speciesBins.map(({id,name,label,quantity,isArchived})=>({id,name,label,quantity,isArchived}))} unavailable={binsUnavailable}/>:null}
-          {record.kind==="species"&&record.status==="published"?<MemberPhotoGallery species={[{id:record.id,name:displayName}]} signedIn={member.signedIn} initialPhotos={communityPhotos}/>:null}
            <SpeciesDashboardWorkspace scope={user?.id || "guest"} preview={previewRequested} widgets={{
+            collection:record.kind==="species"&&record.status==="published"?<SpeciesCollectionHub key={record.id+":"+Boolean(collectionEntry)} speciesId={record.id} speciesName={displayName} collected={Boolean(collectionEntry)} signedIn={member.signedIn} bins={speciesBins.map(({id,name,label,quantity,isArchived})=>({id,name,label,quantity,isArchived}))} unavailable={binsUnavailable}/>:null,
+            photos:record.kind==="species"&&record.status==="published"?<MemberPhotoGallery species={[{id:record.id,name:displayName}]} signedIn={member.signedIn} initialPhotos={communityPhotos}/>:null,
+            search:<form className={styles.ledgerSearchBar} role="search" action="/ledger" method="get">
+              <label htmlFor="species-profile-search">Search the Leaf Ledger</label>
+              <div><input id="species-profile-search" name="q" type="search" placeholder="Species, genus or morph…" autoComplete="off" aria-label="Search species, genus or morph" required /><button type="submit"><PodscapeLineIcon name="search"/> Search</button></div>
+            </form>,
             about:about ? <details className={styles.dashboardAbout}>
               <summary><span className={styles.aboutSymbol} aria-hidden="true"><PodscapeLineIcon name="book" /></span><span className={styles.aboutSummary}><strong>About {displayName}</strong><span className={styles.aboutPreview}>{about}</span></span><span className={styles.aboutChevron} aria-hidden="true">⌄</span></summary>
               <div className={styles.aboutFull}><p>{authoredAbout || summary}</p></div>
@@ -169,7 +167,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
             <div className={styles.dashboardPersonalTitle}>Your PodScape</div>
             <div className={styles.dashboardPersonalActions}>
               {record.status === "published" ? <PinToHome pin={{ kind: "species", id: record.slug }} userId={user?.id || null} /> : null}
-              <Link href="#your-species" className={styles.collectionDestination}>Your collection & bins ↑</Link>
+              <Link href="/keeper/collection" className={styles.collectionDestination}>My collection & bins →</Link>
             </div>
           </section> : null,
             navigation: <nav className={styles.compactFooter} aria-label="Explore more">
