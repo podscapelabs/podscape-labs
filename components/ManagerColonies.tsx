@@ -36,12 +36,14 @@ export function ManagerColonies({ records, bins, allBins=bins, collectedIds, int
   const [sort, setSort] = useState("recent");
   const view=savedView?"saved":archivedView?"archived":"active";
   const storageKey="podscape-colony-browser:"+scope+":"+view;
+  const preferencesKey="podscape-colony-view-preferences:"+scope+":"+view;
   const [memoryReady,setMemoryReady]=useState(false);
   useEffect(()=>{
     try{
       // Route decides the collection view. A remembered previous tab must never redirect users away from active bins.
       sessionStorage.setItem("podscape-colony-view:"+scope,view);
       const raw=sessionStorage.getItem(storageKey),saved=raw?JSON.parse(raw):null;
+      const savedPreferences=JSON.parse(localStorage.getItem(preferencesKey)||"null");
       if(initialSpecies){
         // Explicit species deep links always take precedence over remembered search/filter state.
         // Otherwise a previous query can make the requested colony appear to be missing.
@@ -56,9 +58,16 @@ export function ManagerColonies({ records, bins, allBins=bins, collectedIds, int
         if(typeof saved.expanded==="string")setExpanded(saved.expanded);
         if(Number.isFinite(saved.scrollY))requestAnimationFrame(()=>window.scrollTo(0,Math.max(0,saved.scrollY)));
       }
+      if(!initialSpecies&&savedPreferences&&typeof savedPreferences==="object"){
+        if(savedPreferences.tab==="species"||savedPreferences.tab==="bins"){if(!savedView)setTab(savedPreferences.tab);}
+        if(typeof savedPreferences.genus==="string")setGenus(savedPreferences.genus);
+        if(typeof savedPreferences.care==="string")setCare(savedPreferences.care);
+        if(["recent","name","count"].includes(savedPreferences.sort))setSort(savedPreferences.sort);
+        if(typeof savedPreferences.filtersOpen==="boolean")setFiltersOpen(savedPreferences.filtersOpen);
+      }
     }catch{/* Browser memory is optional. */}
     setMemoryReady(true);
-  },[storageKey,scope,view,explicitView,initialSpecies,intent,savedView]);
+  },[storageKey,preferencesKey,scope,view,explicitView,initialSpecies,intent,savedView]);
   useEffect(()=>{
     if(!memoryReady)return;
     let position=window.scrollY;
@@ -68,6 +77,13 @@ export function ManagerColonies({ records, bins, allBins=bins, collectedIds, int
     window.addEventListener("scroll",onScroll,{passive:true});
     return()=>{clearTimeout(timer);window.removeEventListener("scroll",onScroll);save();};
   },[memoryReady,storageKey,query,tab,genus,care,sort,expanded]);
+  // Persist the keeper's personal filter/sort preferences across routes and app sessions.
+  // Never overwrite them when following a one-off species deep link.
+  useEffect(()=>{
+    if(!memoryReady||initialSpecies)return;
+    try{localStorage.setItem(preferencesKey,JSON.stringify({tab,genus,care,sort,filtersOpen}));}
+    catch{/* Private browsing may disable storage. */}
+  },[memoryReady,preferencesKey,initialSpecies,tab,genus,care,sort,filtersOpen]);
   const binsBySpecies=new Map<string,Enclosure[]>();
   for(const bin of bins){const group=binsBySpecies.get(bin.speciesId)||[];group.push(bin);binsBySpecies.set(bin.speciesId,group);}
   const speciesTotals=new Map([...binsBySpecies].map(([id,group])=>[id,group.reduce((total,bin)=>total+bin.quantity,0)]));
