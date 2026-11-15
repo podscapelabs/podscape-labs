@@ -27,7 +27,8 @@ const actions=[
  {label:"Misted",kind:"maintenance",icon:"droplet"},
  {label:"Fed",kind:"feeding",icon:"jar"},
  {label:"Spot cleaned",kind:"maintenance",icon:"bin"},
- {label:"Leaf litter added",kind:"maintenance",icon:"leaf"}
+ {label:"Leaf litter added",kind:"maintenance",icon:"leaf"},
+ {label:"Inspected · No care",kind:"observation",icon:"search"}
 ] as const;
 
 /** Same owner-checked care events as QR Quick Care; no extra page navigation. */
