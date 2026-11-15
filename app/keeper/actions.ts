@@ -154,7 +154,7 @@ export async function logKeeperEventBatch(input:{ids:string[];kind:string;note:s
  await requireCustomerPreviewAccess();
  const ids=[...new Set(input.ids||[])];
  if(ids.length<1||ids.length>500||ids.some(id=>!/^[a-f0-9-]{36}$/i.test(id))||
-  !((input.kind==="feeding"&&input.note==="Fed")||(input.kind==="maintenance"&&["Misted","Spot cleaned","Leaf litter added"].includes(input.note))||(input.kind==="observation"&&input.note==="Inspected · No care performed")))
+  !((input.kind==="feeding"&&input.note==="Fed")||(input.kind==="maintenance"&&["Misted","Spot cleaned","Leaf litter added"].includes(input.note))||(input.kind==="observation"&&input.note==="Inspected · No care")))
   return{success:false,error:"Select up to 500 bins and a valid care action."};
  const {db,user}=await keeperContext();if(!db||!user)return{success:false,error:"Sign in first."};
  const {data:owned,error:checkError}=await db.from("keeper_enclosures").select("id").eq("user_id",user.id).eq("is_archived",false).in("id",ids);
