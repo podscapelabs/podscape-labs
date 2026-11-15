@@ -148,7 +148,7 @@ export function ManagerColonies({ records, bins, allBins=bins, collectedIds, int
           {!archivedView?<QuickAddBin speciesId={record.id} speciesName={speciesDisplayName(record)} existingNames={owned.map(bin=>bin.name)}/>:null}
           {!archivedView&&owned.length>1?<SpeciesQuickCare bins={owned.map(({id,name,label})=>({id,name,label}))} speciesName={speciesDisplayName(record)}/>:null}
           {record.status==="published"&&!record.archivedAt?<Link href={"/ledger/"+record.slug}>Species reference</Link>:null}
-          {!archivedView?<CollectionButton speciesId={record.id} speciesName={speciesDisplayName(record)} initialCollected={saved.has(record.id)} signedIn compact/>:null}
+          {!archivedView&&!savedView?<CollectionButton speciesId={record.id} speciesName={speciesDisplayName(record)} initialCollected={saved.has(record.id)} signedIn compact/>:null}
           </div>
         </div>:null}
       </article>;
