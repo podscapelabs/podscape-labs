@@ -121,6 +121,7 @@ export function ManagerColonies({ records, bins, allBins=bins, collectedIds, int
           </span>
           <span className={styles.expandArrow} aria-hidden="true">{open?"⌃":"⌄"}</span>
         </button>
+        {savedView&&!owned.length&&saved.has(record.id)?<div className={styles.savedSpeciesAction}><span>Saved without a bin · You can remove this species without creating an enclosure.</span><CollectionButton speciesId={record.id} speciesName={speciesDisplayName(record)} initialCollected signedIn detail/></div>:null}
         {open?<div id={"species-bins-"+record.id} className={styles.groupDetails}>
           {owned.length?owned.map(bin=><div className={styles.groupBin} key={bin.id}>
             <Link href={binHref(bin.id)}><strong>{binCardIdentity(bin,record).title}</strong><small>{binCardIdentity(bin,record).scientific}</small><small>{binCardSummary(bin,record)}</small></Link>
