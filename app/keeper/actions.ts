@@ -154,7 +154,7 @@ export async function logKeeperEventBatch(input:{ids:string[];kind:string;note:s
  await requireCustomerPreviewAccess();
  const ids=[...new Set(input.ids||[])];
  if(ids.length<1||ids.length>500||ids.some(id=>!/^[a-f0-9-]{36}$/i.test(id))||
-  !["feeding","maintenance"].includes(input.kind)||!["Misted","Fed","Spot cleaned","Leaf litter added"].includes(input.note))
+  !((input.kind==="feeding"&&input.note==="Fed")||(input.kind==="maintenance"&&["Misted","Spot cleaned","Leaf litter added"].includes(input.note))||(input.kind==="observation"&&input.note==="Inspected · No care performed")))
   return{success:false,error:"Select up to 500 bins and a valid care action."};
  const {db,user}=await keeperContext();if(!db||!user)return{success:false,error:"Sign in first."};
  const {data:owned,error:checkError}=await db.from("keeper_enclosures").select("id").eq("user_id",user.id).eq("is_archived",false).in("id",ids);
@@ -174,7 +174,7 @@ export async function undoKeeperEventBatch(input:{eventIds:string[]}):Promise<Re
  if(!ids.length||ids.length>500||ids.some(id=>!/^[a-f0-9-]{36}$/i.test(id)))return{success:false,error:"Invalid batch."};
  const {db,user}=await keeperContext();if(!db||!user)return{success:false,error:"Sign in first."};
  const {data:owned,error:checkError}=await db.from("keeper_events").select("id,enclosure_id").eq("user_id",user.id)
-  .in("id",ids).in("kind",["feeding","maintenance"]);
+  .in("id",ids).in("kind",["feeding","maintenance","observation"]);
  if(checkError||!owned||owned.length!==ids.length)return{success:false,error:"The original batch could not be verified."};
  const {data:removed,error}=await db.from("keeper_events").delete().eq("user_id",user.id).in("id",ids).select("id");
  if(error||!removed||removed.length!==ids.length)return{success:false,error:"Undo incomplete. Refresh your history before trying again."};
