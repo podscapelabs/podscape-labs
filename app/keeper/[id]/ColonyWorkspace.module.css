@@ -313,3 +313,15 @@
 .quickObservation .noteForm button[type=submit]{min-height:40px;padding:10px 16px;border:0;border-radius:999px;background:var(--theme-accent,var(--accent));color:var(--theme-accent-contrast,#fff);font-size:12px;font-weight:800}
 .quickObservation :is(button,textarea):focus-visible,.binToolbar .addNoteShortcut:focus-visible{outline:2px solid var(--theme-focus,var(--accent));outline-offset:3px}
 @media(max-width:650px){.binToolbar nav .addNoteShortcut{min-height:40px;padding:8px 11px;font-size:11px}.quickObservation{padding:12px}.quickObservation .noteForm textarea{min-height:89px}}
+
+/* Manage-bin options must remain inside the visible phone viewport. */
+@media(max-width:720px){
+ .manageMenu[open] .managePanel{
+  position:fixed;z-index:120;top:auto;left:12px;right:12px;
+  bottom:calc(103px + env(safe-area-inset-bottom,0px));
+  width:auto;min-width:0;max-width:none;box-sizing:border-box;
+  max-height:calc(100dvh - 155px - env(safe-area-inset-bottom,0px));
+  overflow-y:auto;overscroll-behavior:contain;
+  box-shadow:0 16px 48px rgba(0,0,0,.22);
+ }
+}
