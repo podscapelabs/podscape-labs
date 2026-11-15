@@ -23,7 +23,7 @@ function readId(value:string):string|null {
  if (/^[a-f\d-]{36}$/i.test(raw)) return raw;
  try {const url=new URL(raw);if(url.protocol!=="https:"&&url.protocol!=="http:")return null;const path=url.pathname.match(/\/(?:keeper|bins?)\/([a-f\d-]{36})(?:\/|$)/i);return path?.[1]||url.searchParams.get("bin")||null;}catch{return null;}
 }
-const tasks=[{label:"Misted",kind:"maintenance",note:"Misted",icon:"droplet"},{label:"Fed",kind:"feeding",note:"Fed",icon:"jar"},{label:"Spot cleaned",kind:"maintenance",note:"Spot cleaned",icon:"bin"},{label:"Leaf litter",kind:"maintenance",note:"Leaf litter added",icon:"leaf"}] as const;
+const tasks=[{label:"Misted",kind:"maintenance",note:"Misted",icon:"droplet"},{label:"Fed",kind:"feeding",note:"Fed",icon:"jar"},{label:"Spot cleaned",kind:"maintenance",note:"Spot cleaned",icon:"bin"},{label:"Leaf litter",kind:"maintenance",note:"Leaf litter added",icon:"leaf"},{label:"Inspected · No care",kind:"observation",note:"Inspected · No care performed",icon:"search"}] as const;
 type CareRecord={id:string;binId:string;label:string;note:string;createdAt:string;previous:string|null;reminderBefore?:string|null};
 type LastOperation={records:CareRecord[];label:string};
 type ActivityEntry={id:string;kind:string;note:string;createdAt:string;quantityChange:number|null};
