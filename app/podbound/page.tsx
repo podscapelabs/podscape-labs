@@ -50,7 +50,11 @@ export default async function PodBoundHome() {
           {id:"shop",label:"PodBound Shop",icon:"shop",href:"#shop-title"},
           {id:"ledger",label:"Real Species",icon:"leaf",href:"#ledger-title"},
           {id:"arcade",label:"Fun Zone",icon:"gamepad",href:"/fun-zone"},
-          {id:"fullshop",label:"Explore Shop",icon:"shop",href:"/shop"}
+          {id:"fullshop",label:"Explore Shop",icon:"shop",href:"/shop"},
+          {id:"species",label:"Leaf Ledger",icon:"leaf",href:"/ledger"},
+          {id:"puzzles",label:"Picture puzzles",icon:"grid",href:"/fun-zone/picture-puzzles"},
+          {id:"progress",label:"My Progress",icon:"achievement",href:"/account/progress"},
+          {id:"guides",label:"Care Guides",icon:"book",href:"/field-guide"}
         ]}/>
 
       </section>

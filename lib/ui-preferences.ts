@@ -9,11 +9,11 @@ type HomeId = (typeof homeOrder)[number];
 type WidgetId = (typeof optionalWidgets)[number];
 export const managerOrder = ["hero","tools","enclosures","care","activity","stats","insights"] as const;
 export const managerTools = ["scan","qr","bulkqr","add","care","schedule","notes","colonies","history","activity"] as const;
-export const speciesOrder = ["care","moisture","behaviour","habitatAdvanced","nutrition","breeding","taxonomy","about","traits","guides","sources","personal","navigation"] as const;
+export const speciesOrder = ["care","collection","photos","search","moisture","behaviour","habitatAdvanced","nutrition","breeding","taxonomy","about","traits","guides","sources","personal","navigation"] as const;
 export type ManagerLayout = {order:(typeof managerOrder)[number][];visible:(typeof managerOrder)[number][];tools:string[]};
 export type SpeciesLayout = {order:(typeof speciesOrder)[number][];visible:(typeof speciesOrder)[number][]};
 export const defaultManagerLayout=():ManagerLayout=>({order:[...managerOrder],visible:["hero","tools","enclosures","care"],tools:["scan","care","colonies","add","schedule","qr"]});
-export const defaultSpeciesLayout=():SpeciesLayout=>({order:[...speciesOrder],visible:["care","moisture","behaviour","habitatAdvanced","about","traits","personal","navigation"]});
+export const defaultSpeciesLayout=():SpeciesLayout=>({order:[...speciesOrder],visible:["care","collection","moisture","behaviour","habitatAdvanced","about","traits","personal","navigation"]});
 export const managerStorageKey=(id:string)=>"podscape-manager-layout-v1:"+id;
 export const speciesStorageKey=(id:string)=>"podscape-species-dashboard-v1:"+id;
 function hasExactIds(value:unknown,valid:readonly string[]):value is string[]{
@@ -56,11 +56,13 @@ function normalizeSpeciesLegacy(raw:unknown):SpeciesLayout{
  const v=raw as Record<string,unknown>;
  const migrate=(id:string)=>id==="environment"?"moisture":id==="feeding"?"nutrition":id==="habitat"?"habitatAdvanced":id;
  const orderIds=uniqueStrings(v.order)?v.order.map(migrate):[];
- const order=[...new Set([...orderIds.filter(id=>(speciesOrder as readonly string[]).includes(id)),...speciesOrder])] as SpeciesLayout["order"];
+ const upgradedOrder=orderIds.includes("collection")?orderIds:[...orderIds.slice(0,Math.max(0,orderIds.indexOf("care")+1)),"collection",...orderIds.slice(Math.max(0,orderIds.indexOf("care")+1))];
+ const order=[...new Set([...upgradedOrder.filter(id=>(speciesOrder as readonly string[]).includes(id)),...speciesOrder])] as SpeciesLayout["order"];
  const oldVisible=uniqueStrings(v.visible)?v.visible.map(migrate):defaultSpeciesLayout().visible;
  const withCare=oldVisible.includes("behaviour")&&!oldVisible.includes("care")?[...oldVisible,"care"]:oldVisible;
  const withFooter=orderIds.includes("personal")||orderIds.includes("navigation")?withCare:[...withCare,"personal","navigation"];
- const visible=[...new Set(withFooter.filter(id=>(speciesOrder as readonly string[]).includes(id)))] as SpeciesLayout["visible"];
+ const withCollection=orderIds.includes("collection")?withFooter:[...withFooter,"collection"];
+ const visible=[...new Set(withCollection.filter(id=>(speciesOrder as readonly string[]).includes(id)))] as SpeciesLayout["visible"];
  return {order,visible};
 }
 function readLocalWorkspace<T>(storageKey:string,valid:(v:unknown)=>v is T,fallback:()=>T,migrate:(v:unknown)=>T):T{
@@ -95,7 +97,7 @@ export function parseUiPreferences(value:unknown,isOwner=false):UiPreferences|nu
  if(!layout.visible.every(id=>optionalWidgets.includes(id as WidgetId)))return null;
  if(!validNavigation(data.navHome,"home",isOwner)||!validNavigation(data.navBottom,"bottom",isOwner))return null;
  const manager=data.manager===undefined?defaultManagerLayout():data.manager;
- const species=data.species===undefined?defaultSpeciesLayout():data.species;
+ const species=data.species===undefined?defaultSpeciesLayout():validSpecies(data.species)?data.species:normalizeSpeciesLegacy(data.species);
  if(!validManager(manager)||!validSpecies(species))return null;
  return {
   home:{order:layout.order as HomeId[],visible:layout.visible as WidgetId[]},

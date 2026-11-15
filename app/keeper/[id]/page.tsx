@@ -6,6 +6,8 @@ import {getEnclosure,listQuickCareDates,keeperContext,listEnclosures} from "@/li
 import {getSpeciesRecords} from "@/lib/species-store";
 import {organismDisplayName,binCardIdentity} from "@/lib/bin-identity";
 import {ColonyWorkspace} from "./ColonyWorkspace";
+import {MemberPhotoGallery} from "@/components/MemberPhotoGallery";
+import {getSpeciesPhotoGallery} from "@/lib/member-photo-gallery";
 import styles from "./ColonyWorkspace.module.css";
 
 export const dynamic="force-dynamic";
@@ -27,6 +29,7 @@ export default async function EnclosurePage({params,searchParams}:{params:Promis
  try{careDates=(await listQuickCareDates([id]))[id]||{};}catch{/* The workspace stays available if summary dates cannot load. */}
  const species=await getSpeciesRecords();
  const record=species.find(item=>item.id===enclosure.speciesId);
+ const gallery=record?await getSpeciesPhotoGallery(record.id):[];
  return <PlatformShell><main className={styles.page}>
   <ColonyWorkspace key={enclosure.id}
    colony={{id:enclosure.id,name:enclosure.name,speciesId:enclosure.speciesId,label:enclosure.label,species:record?organismDisplayName(record):"Unlinked species",scientificName:binCardIdentity(enclosure,record).scientific,image:record?.image||null,status:enclosure.status,breeding:enclosure.breeding,quantity:enclosure.quantity,archived:enclosure.isArchived,enclosureType:enclosure.enclosureType}}
@@ -38,5 +41,6 @@ export default async function EnclosurePage({params,searchParams}:{params:Promis
    initialPanel={panel}
    referenceUrl={record?"/ledger/"+record.slug:undefined}
   />
+  {record?<div className="v2-container"><MemberPhotoGallery species={[{id:record.id,name:organismDisplayName(record)}]} initialPhotos={gallery} signedIn enclosureId={enclosure.id}/></div>:null}
  </main><KeeperMobileNav active="keeper"/></PlatformShell>;
 }

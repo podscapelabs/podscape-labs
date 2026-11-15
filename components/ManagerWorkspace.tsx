@@ -39,7 +39,13 @@ const library:Tool[]=[
  {id:"notes",label:"Add note",href:"/keeper/collection?intent=notes",icon:"note"},
  {id:"colonies",label:"All colonies",href:"/keeper/collection",icon:"jar"},
  {id:"history",label:"Care history",href:"/keeper/activity",icon:"note"},
- {id:"activity",label:"Recent activity",href:"/keeper/activity",icon:"note"}
+ {id:"activity",label:"Recent activity",href:"/keeper/activity",icon:"note"},
+ {id:"archived",label:"Archived bins",href:"/keeper/collection?view=archived",icon:"bin"},
+ {id:"saved",label:"Saved species",href:"/keeper/collection?view=saved",icon:"bookmark"},
+ {id:"ledger",label:"Leaf Ledger",href:"/ledger",icon:"leaf"},
+ {id:"guides",label:"Care Guides",href:"/field-guide",icon:"book"},
+ {id:"import",label:"Import bins",href:"/keeper/import",icon:"grid"},
+ {id:"photos",label:"Species photos",href:"/ledger",icon:"camera"}
 ];
 type Layout={order:Section[];visible:Section[];tools:string[]};
 const initial:Layout={order:defaults,visible:["hero","stats","tools","enclosures","care"],tools:["care","notes","population","bulkcare","add","colonies"]};

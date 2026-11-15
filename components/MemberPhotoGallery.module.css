@@ -1,0 +1,45 @@
+.card{border:1px solid var(--theme-border,var(--line));border-radius:18px;padding:18px;background:var(--theme-surface,var(--paper));margin:14px 0;color:var(--theme-text-primary,var(--ink))}
+.heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.heading strong{font-size:1.06rem;color:var(--theme-text-primary,var(--ink))}
+.heading small{display:block;color:var(--theme-text-muted,var(--muted));font-size:.77rem}
+.heading button,.actions button{min-height:44px;border-radius:11px;padding:9px 14px;border:1px solid var(--theme-border-strong,var(--line));background:var(--theme-surface-secondary,var(--paper));color:var(--theme-text-primary,var(--ink));cursor:pointer}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:12px;margin-top:15px}
+.gallery figure{margin:0}.gallery img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px}
+.gallery figcaption{font-size:.75rem}.gallery figure button{font-size:.75rem;border:0;background:none;text-decoration:underline;color:inherit}
+.backdrop{position:fixed;inset:0;background:rgba(10,10,10,.7);display:grid;place-items:center;z-index:1000;padding:16px;overscroll-behavior:contain}
+.modal{background:var(--theme-surface-raised,var(--paper-strong));color:var(--theme-text-primary,var(--ink));border:1px solid var(--theme-border,var(--line));border-radius:20px;padding:22px;width:min(100%,460px);max-height:calc(100dvh - 40px);overflow-y:auto;overscroll-behavior:contain;box-shadow:0 20px 80px #0006}
+.modal form{display:grid;gap:15px;margin-top:16px}
+.modal label{display:grid;gap:6px;font-size:.9rem;color:var(--theme-text-primary,var(--ink));font-weight:650}
+.modal select,.modal input[type=file],.modal input[type=search]{width:100%;min-height:46px;padding:10px 12px;border:1px solid var(--theme-border-strong,var(--line));border-radius:11px;background:var(--theme-surface,var(--paper));color:var(--theme-text-primary,var(--ink));font-size:16px}
+.modal input::placeholder{color:var(--theme-text-muted,var(--muted));opacity:1}
+.modal input[type=file]::file-selector-button{border:1px solid var(--theme-border,var(--line));border-radius:8px;background:var(--theme-surface-secondary,var(--paper));color:var(--theme-text-primary,var(--ink));padding:7px 9px;margin-right:10px}
+.speciesPicker{display:grid;gap:12px}
+.modal .checkbox{display:flex;align-items:flex-start;gap:10px;line-height:1.4;font-weight:550}
+.checkbox input{width:21px;height:21px;flex:none;accent-color:var(--theme-accent,var(--forest))}
+.modal p,.modal small{line-height:1.45;color:var(--theme-text-secondary,var(--muted));font-size:.84rem}
+.modal form>p[role=status]{padding:10px 12px;border-radius:10px;border:1px solid var(--theme-border,var(--line));background:var(--theme-surface-secondary,var(--paper))}
+.actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap}
+.actions button:last-child{background:var(--theme-accent,var(--forest));color:var(--theme-accent-contrast,#fff);border-color:transparent;font-weight:750}
+.actions button:disabled{opacity:.5}
+.modal :is(button,input,select):focus-visible{outline:3px solid var(--theme-focus,var(--amber));outline-offset:2px}
+@media(max-width:480px){.modal{padding:18px;border-radius:19px;max-height:calc(100dvh - 30px)}.modal form{gap:13px}}
+
+/* On phones the photo editor stays above the persistent five-slot navigation.
+   Its backdrop cannot swallow bottom-bar taps while a keeper changes portals. */
+@media(max-width:720px){
+ .backdrop{bottom:calc(86px + env(safe-area-inset-bottom,0px));padding:12px 12px 4px;align-items:center}
+ .modal{max-height:calc(100dvh - 112px - env(safe-area-inset-bottom,0px));padding:18px}
+}
+
+/* A keeper's lone photo must not stretch to fill an entire dashboard row. */
+.card{margin:0;padding:14px 16px}
+.gallery{grid-template-columns:repeat(auto-fill,minmax(112px,148px));gap:10px}
+.gallery figure{max-width:148px}
+.gallery img{width:100%;height:auto;aspect-ratio:1;object-fit:cover;border-radius:12px}
+.gallery figcaption{margin-top:4px;line-height:1.25}
+@media(max-width:600px){
+ .card{padding:12px}
+ .gallery{grid-template-columns:repeat(auto-fill,minmax(100px,132px))}
+ .gallery figure{max-width:132px}
+ .heading button{min-height:40px;padding:8px 10px}
+}

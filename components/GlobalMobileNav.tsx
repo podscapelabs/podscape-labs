@@ -14,6 +14,9 @@ export function GlobalMobileNav({isOwner=false}:{isOwner?:boolean}){
   const {ids,change,reset}=useNavigationPreferences("bottom",isOwner);
   const {editing,selected,setSelected,handlers,done}=useShortcutEditor(ids,change);
   const excluded=isStandaloneAccessRoute(pathname);
+  // On Ledger, prefer normal browser navigation so a stalled App Router transition
+  // cannot leave the keeper trapped on this portal in iOS standalone mode.
+  const useNativeNavigation=pathname==="/ledger"||pathname.startsWith("/ledger/");
   if(excluded)return null;
   const accessibleChoices=availableNavigationChoices(isOwner);
   const items=ids.map(id=>choiceById.get(id)).filter((x):x is NonNullable<typeof x>=>Boolean(x));
@@ -37,13 +40,26 @@ export function GlobalMobileNav({isOwner=false}:{isOwner?:boolean}){
       <button type="button" className={styles.resetLink} onClick={()=>{if(confirmWorkspaceReset("bottom-navigation")){reset();setSelected(0)}}}>Reset toolbar</button>
     </div>}
     <nav className={`${styles.nav} ${editing?styles.editing:""}`} aria-label="PodScape mobile navigation">
-      {items.map((item,index)=><button type="button" data-shortcut-index={index} key={item.id} style={editing?{animationDelay:`${index*-70}ms`}:undefined}
-        aria-current={!editing&&activeFor(item.href)?"page":undefined}
-        aria-label={editing?`Choose ${item.label} to customize`:item.label}
-        className={`${styles.item} ${index===Math.floor(items.length/2)?styles.primary:""} ${!editing&&activeFor(item.href)?styles.active:""} ${editing?styles.jiggling:""} ${editing&&selected===index?styles.selected:""}`}
-        {...handlers(index)} onClick={event=>{handlers(index).onClick(event);if(!event.defaultPrevented)router.push(item.href)}}>
-        <span><PodscapeLineIcon name={item.icon}/></span><small>{item.label}</small>
-      </button>)}
+      {items.map((item,index)=>{
+        const gesture=handlers(index);
+        const classes=`${styles.item} ${index===Math.floor(items.length/2)?styles.primary:""} ${!editing&&activeFor(item.href)?styles.active:""} ${editing?styles.jiggling:""} ${editing&&selected===index?styles.selected:""}`;
+        const title=editing?`Choose ${item.label} to customize`:item.label;
+        const contents=<><span><PodscapeLineIcon name={item.icon}/></span><small>{item.label}</small></>;
+        return useNativeNavigation
+         ? <a href={item.href} key={item.id} data-shortcut-index={index}
+             aria-current={!editing&&activeFor(item.href)?"page":undefined}
+             aria-label={title} className={classes}
+             style={editing?{animationDelay:`${index*-70}ms`}:undefined}
+             {...gesture} onClick={event=>{gesture.onClick(event);if(editing)event.preventDefault();}}>
+             {contents}
+           </a>
+         : <button type="button" data-shortcut-index={index} key={item.id} style={editing?{animationDelay:`${index*-70}ms`}:undefined}
+             aria-current={!editing&&activeFor(item.href)?"page":undefined}
+             aria-label={title} className={classes}
+             {...gesture} onClick={event=>{gesture.onClick(event);if(!event.defaultPrevented)router.push(item.href);}}>
+             {contents}
+           </button>;
+      })}
     </nav>
   </>;
 }

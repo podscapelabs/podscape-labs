@@ -313,3 +313,31 @@
 .quickObservation .noteForm button[type=submit]{min-height:40px;padding:10px 16px;border:0;border-radius:999px;background:var(--theme-accent,var(--accent));color:var(--theme-accent-contrast,#fff);font-size:12px;font-weight:800}
 .quickObservation :is(button,textarea):focus-visible,.binToolbar .addNoteShortcut:focus-visible{outline:2px solid var(--theme-focus,var(--accent));outline-offset:3px}
 @media(max-width:650px){.binToolbar nav .addNoteShortcut{min-height:40px;padding:8px 11px;font-size:11px}.quickObservation{padding:12px}.quickObservation .noteForm textarea{min-height:89px}}
+
+/* Manage-bin options must remain inside the visible phone viewport. */
+@media(max-width:720px){
+ .manageMenu[open] .managePanel{
+  position:fixed;z-index:120;top:auto;left:12px;right:12px;
+  bottom:calc(103px + env(safe-area-inset-bottom,0px));
+  width:auto;min-width:0;max-width:none;box-sizing:border-box;
+  max-height:calc(100dvh - 155px - env(safe-area-inset-bottom,0px));
+  overflow-y:auto;overscroll-behavior:contain;
+  box-shadow:0 16px 48px rgba(0,0,0,.22);
+ }
+}
+
+/* Keep the bin workspace fluid at phone widths, including when switching routes. */
+@media(max-width:720px){
+ .page,.root,.colonyDashboard,.colonyWidgetGrid{min-width:0;max-width:100%}
+ .page{width:100%}
+ .root{box-sizing:border-box}
+ .root>*{min-width:0;max-width:100%}
+ .hero,.heroText,.heroMetrics,.binToolbar,.toolGrid,.widgetPanel{min-width:0;max-width:100%}
+ .heroText,.heroText h1,.heroText span{overflow-wrap:anywhere}
+ .colonyWidgetGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:370px){
+ .colonyWidgetGrid{grid-template-columns:minmax(0,1fr)}
+ .heroMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .binToolbar nav{min-width:0}
+}

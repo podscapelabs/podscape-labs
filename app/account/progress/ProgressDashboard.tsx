@@ -15,7 +15,7 @@ type Achievement = {
 function achievementMark(key:string):PodscapeIconName{
  if(key.startsWith("ranking_"))return "trophy";
  if(key.startsWith("exchange_"))return "gamepad";
- if(key.startsWith("puzzle_")||key.startsWith("secret_arcade")||key.startsWith("secret_burrow"))return "challenge";
+ if(key.startsWith("puzzle_")||key.startsWith("picture_")||key.startsWith("secret_arcade")||key.startsWith("secret_burrow"))return "challenge";
  if(key.startsWith("ledger_")||key.startsWith("collection_"))return "leaf";
  if(key.startsWith("care_")||key.startsWith("keeper_"))return "manager";
  if(key.startsWith("level_"))return "trophy";
@@ -34,8 +34,8 @@ const achievementCategories:{id:AchievementCategory;title:string;subtitle:string
 ];
 function achievementCategory(key:string):AchievementCategory{
  if(key.startsWith("ledger_")||key.startsWith("collection_"))return "exploration";
- if(key.startsWith("puzzle_")||key.startsWith("exchange_")||key.startsWith("ranking_")||
-    key==="secret_arcade_variety"||key==="secret_burrow_streak")return "fun-zone";
+ if(key.startsWith("puzzle_")||key.startsWith("picture_")||key.startsWith("exchange_")||key.startsWith("ranking_")||
+    key.startsWith("secret_arcade_")||key.startsWith("secret_burrow_"))return "fun-zone";
  if(key.startsWith("care_")||key.startsWith("keeper_"))return "care";
  if(key.startsWith("level_"))return "progression";
  return "customization";

@@ -142,3 +142,9 @@
 .binRowDetails strong{white-space:normal;overflow-wrap:anywhere}
 .binRowDetails small:last-of-type{line-height:1.35}
 @media(max-width:600px){.section{padding:12px;border-radius:17px;gap:9px;margin-bottom:12px}.titleRow h2{font-size:25px}.browserCount{font-size:10px}.browseMode .tabs button{min-height:37px;padding:7px 12px}.binRow{padding:9px}.binRowLink{grid-template-columns:48px minmax(0,1fr) 10px}.binRowPhoto{width:48px;height:55px}.binRowDetails strong{font-size:18px}.binRowDetails small:first-of-type{font-size:11px}.binRowDetails small:last-of-type{font-size:10px}}
+
+/* A saved species should be removable without opening or creating a bin. */
+.savedSpeciesAction{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 12px;border-top:1px solid var(--border);background:var(--surface-secondary)}
+.savedSpeciesAction>span{flex:1;min-width:160px;font-size:.72rem;line-height:1.4;color:var(--text-secondary)}
+.savedSpeciesAction>div{flex:none;max-width:100%}
+@media(max-width:500px){.savedSpeciesAction{align-items:stretch}.savedSpeciesAction>div{width:100%}}

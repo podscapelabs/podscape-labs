@@ -15,9 +15,11 @@ function normalized(value:unknown,available:string[],defaults:string[]):string[]
  const saved=Array.isArray(value)?value.filter((id):id is string=>typeof id==="string"):defaults;
  const selected:string[]=[];
  for(const id of saved){if(available.includes(id)&&!seen.has(id)&&selected.length<limit){seen.add(id);selected.push(id)}}
- // Keep the user's chosen order; fill only unused slots so every portal has six.
+ // Keep exactly six slots, including for users who tried expanded docks in preview.
+ const target=limit;
  for(const id of [...defaults,...available]){
-  if(available.includes(id)&&!seen.has(id)&&selected.length<limit){seen.add(id);selected.push(id)}
+  if(selected.length>=target)break;
+  if(available.includes(id)&&!seen.has(id)){seen.add(id);selected.push(id)}
  }
  return selected;
 }
@@ -49,7 +51,7 @@ export function PortalShortcutDock({portal,label,features,defaults,scope="device
  return <section className={[styles.dock,className].filter(Boolean).join(" ")} aria-label={label} data-portal-shortcuts={portal} data-ready={ready}>
   {editing?<div className={styles.editor} role="region" aria-label={"Customize "+label}>
    <div className={styles.editorHead}><strong>Arrange your shortcuts</strong><button type="button" onClick={done}>Done</button></div>
-   <p>Hold and drag to reorder. Tap a shortcut and choose what goes there.</p>
+   <p>Hold and drag to reorder. Tap a shortcut to choose a different action from the library. Six slots stay visible.</p>
    <label>Replace {current?.label||"shortcut"}
     <select value={current?.id||""} onChange={e=>replace(e.target.value)}>
      {features.map(item=><option key={item.id} value={item.id}>{item.label}{ids.includes(item.id)&&item.id!==current?.id?" (swap)":""}</option>)}

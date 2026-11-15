@@ -1,7 +1,7 @@
 /** Single interaction contract for editable PodScape dashboards and navigation. */
-export const EDIT_HOLD_MS = 500;
-export const EDIT_MOVE_CANCEL_PX = 11;
-export const EDIT_CLICK_SUPPRESS_MS = 1100;
+export const EDIT_HOLD_MS = 700;
+export const EDIT_MOVE_CANCEL_PX = 9;
+export const EDIT_CLICK_SUPPRESS_MS = 450;
 
 /** Confirmation text uses consistent, user-friendly boundaries and never implies data deletion. */
 export function confirmWorkspaceReset(

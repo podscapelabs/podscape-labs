@@ -10,7 +10,7 @@ import {KeeperCareSchedule} from "./KeeperCareSchedule";
 import {ManagerActivityHistory} from "./ManagerActivityHistory";
 import styles from "./ManagerWorkflowPanel.module.css";
 export type ManagerWorkflow="care"|"notes"|"population"|"bulk"|"add"|"schedule"|"history"|"colonies";
-const tasks=[{label:"Misted",kind:"maintenance",icon:"droplet"},{label:"Fed",kind:"feeding",icon:"jar"},{label:"Spot cleaned",kind:"maintenance",icon:"bin"},{label:"Leaf litter added",kind:"maintenance",icon:"leaf"}] as const;
+const tasks=[{label:"Misted",kind:"maintenance",icon:"droplet"},{label:"Fed",kind:"feeding",icon:"jar"},{label:"Spot cleaned",kind:"maintenance",icon:"bin"},{label:"Leaf litter added",kind:"maintenance",icon:"leaf"},{label:"Inspected · No care",kind:"observation",icon:"search"}] as const;
 type UndoRecord={id:string;binId:string;label:string;previous?:string|null};
 function mistReminder(id:string){try{const k="podscape-keeper-reminder-"+id,old=localStorage.getItem(k);if(!old)return undefined;const obj=JSON.parse(old);if(!Number.isInteger(obj.intervalDays))return undefined;const now=new Date(),day=[now.getFullYear(),String(now.getMonth()+1).padStart(2,"0"),String(now.getDate()).padStart(2,"0")].join("-");localStorage.setItem(k,JSON.stringify({...obj,lastMisted:day,updatedAt:now.toISOString()}));return old}catch{return undefined}}
 function restoreReminder(id:string,value:string|null|undefined){if(value===undefined)return;try{const k="podscape-keeper-reminder-"+id;if(value===null)localStorage.removeItem(k);else localStorage.setItem(k,value)}catch{}}

@@ -11,6 +11,7 @@ export type LedgerExplorerSnapshot={
  care:string;
  sort:"catalogue"|"common"|"scientific"|"recent";
  filtersOpen:boolean;
+ collectionOnly?:boolean;
  scrollY:number;
 };
 export type LedgerBrowseOrder={

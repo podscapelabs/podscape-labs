@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SpeciesDashboardWorkspace } from "@/components/SpeciesDashboardWorkspace";
 import {SpeciesCollectionHub} from "@/components/SpeciesCollectionHub";
+import {MemberPhotoGallery} from "@/components/MemberPhotoGallery";
+import {getSpeciesPhotoGallery} from "@/lib/member-photo-gallery";
 import {listEnclosures} from "@/lib/keeper";
 import { SpeciesProfileNavigator } from "@/components/SpeciesProfileNavigator";
 import {MoistureAndHumidityWidget,BreedingDevelopmentWidget,TaxonomyOriginWidget,FeedingEcologyWidget,HabitatSetupWidget,BehaviourEcologyWidget,ResearchSourcesWidget} from "@/components/SpeciesResearchWidgets";
@@ -10,7 +12,8 @@ import {getSpeciesTraitId} from "@/lib/species-traits";
 import { PinToHome } from "@/components/PinToHome";
 import { customerSupabase } from "@/lib/customer-auth/server";
 import { PlatformShell } from "@/components/PlatformShell";
-import Image from "next/image";
+import {RotatingSpeciesPhoto} from "@/components/RotatingSpeciesPhoto";
+import {SpeciesProfileSearch} from "@/components/SpeciesProfileSearch";
 import { SpeciesDiscoveryTracker } from "@/components/SpeciesDiscoveryTracker";
 import styles from "@/components/SpeciesProfile.module.css";
 import { PodscapeLineIcon } from "@/components/PodscapeLineIcon";
@@ -75,6 +78,8 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
   let speciesBins:Awaited<ReturnType<typeof listEnclosures>>=[];
   let binsUnavailable=false;
   if(member.signedIn){try{speciesBins=await listEnclosures(record.id);}catch{binsUnavailable=true;}}
+  const communityPhotos=record.kind==="species"&&record.status==="published"?await getSpeciesPhotoGallery(record.id):[];
+  const approvedPhotoRotation=communityPhotos.filter(photo=>photo.status==="approved").slice(0,3).map(photo=>({url:photo.url,credit:photo.credit}));
   const displayName = speciesDisplayName(record);
   const scientificName = speciesScientificName(record);
 
@@ -124,8 +129,8 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
         </div>
 
         <SpeciesProfileNavigator currentSlug={record.slug} catalogue={previewRequested ? [] : catalogue}>
-        <header className={`${homeStyles.hero} ${styles.speciesHomeHero} ${record.image ? styles.speciesHeroHasArt : styles.speciesHeroNoArt}`}>
-          {record.image ? <div className={styles.speciesHeroArt}><Image className={homeStyles.heroImage} src={record.image} alt={record.imageAlt || scientificName} fill priority sizes="(max-width: 720px) 65vw, 540px" style={{objectFit:"contain",objectPosition:`${record.imagePositionX}% ${record.imagePositionY}%`,transform:`scale(${record.imageZoom})`}} /></div> : null}
+        <header className={`${homeStyles.hero} ${styles.speciesHomeHero} ${record.image||approvedPhotoRotation.length ? styles.speciesHeroHasArt : styles.speciesHeroNoArt}`}>
+          {record.image||approvedPhotoRotation.length ? <div className={styles.speciesHeroArt}><RotatingSpeciesPhoto className={homeStyles.heroImage} mode="hero" official={record.image} officialAlt={record.imageAlt||scientificName} approved={approvedPhotoRotation} positionX={record.imagePositionX} positionY={record.imagePositionY} zoom={record.imageZoom}/></div> : null}
           <div className={homeStyles.heroContent}>
             <p className={homeStyles.eyebrow}>LEAF LEDGER · SPECIES PROFILE</p>
             <h1>{displayName}</h1>
@@ -134,15 +139,11 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
           </div>
         </header>
         </SpeciesProfileNavigator>
-        <form className={styles.ledgerSearchBar} role="search" action="/ledger" method="get">
-          <label htmlFor="species-profile-search">Search the Leaf Ledger</label>
-          <div><input id="species-profile-search" name="q" type="search" placeholder="Species, genus or morph…" autoComplete="off" aria-label="Search species, genus or morph" required /><button type="submit"><PodscapeLineIcon name="search"/> Search</button></div>
-        </form>
-
-
         <div className={styles.dashboardBody}>
-          {record.kind==="species"&&record.status==="published"?<SpeciesCollectionHub key={record.id+":"+Boolean(collectionEntry)} speciesId={record.id} speciesName={displayName} collected={Boolean(collectionEntry)} signedIn={member.signedIn} bins={speciesBins.map(({id,name,label,quantity,isArchived})=>({id,name,label,quantity,isArchived}))} unavailable={binsUnavailable}/>:null}
-          <SpeciesDashboardWorkspace scope={user?.id || "guest"} preview={previewRequested} widgets={{
+           <SpeciesDashboardWorkspace scope={user?.id || "guest"} preview={previewRequested} widgets={{
+            collection:record.kind==="species"&&record.status==="published"?<SpeciesCollectionHub key={record.id+":"+Boolean(collectionEntry)} speciesId={record.id} speciesName={displayName} collected={Boolean(collectionEntry)} signedIn={member.signedIn} bins={speciesBins.map(({id,name,label,quantity,isArchived})=>({id,name,label,quantity,isArchived}))} unavailable={binsUnavailable}/>:null,
+            photos:record.kind==="species"&&record.status==="published"?<MemberPhotoGallery species={[{id:record.id,name:displayName}]} signedIn={member.signedIn} initialPhotos={communityPhotos}/>:null,
+            search:<SpeciesProfileSearch/>,
             about:about ? <details className={styles.dashboardAbout}>
               <summary><span className={styles.aboutSymbol} aria-hidden="true"><PodscapeLineIcon name="book" /></span><span className={styles.aboutSummary}><strong>About {displayName}</strong><span className={styles.aboutPreview}>{about}</span></span><span className={styles.aboutChevron} aria-hidden="true">⌄</span></summary>
               <div className={styles.aboutFull}><p>{authoredAbout || summary}</p></div>
@@ -164,7 +165,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
             <div className={styles.dashboardPersonalTitle}>Your PodScape</div>
             <div className={styles.dashboardPersonalActions}>
               {record.status === "published" ? <PinToHome pin={{ kind: "species", id: record.slug }} userId={user?.id || null} /> : null}
-              <Link href="#your-species" className={styles.collectionDestination}>Your collection & bins ↑</Link>
+              <Link href="/keeper/collection" className={styles.collectionDestination}>My collection & bins →</Link>
             </div>
           </section> : null,
             navigation: <nav className={styles.compactFooter} aria-label="Explore more">

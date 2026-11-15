@@ -24,3 +24,21 @@
 .panel{position:absolute;z-index:35;left:0;top:calc(100% + 4px);width:min(338px,calc(100vw - 36px));max-width:none;margin:0;box-sizing:border-box}
 .compact .panel{left:auto;right:0}
 @media(max-width:410px){.root .panel{left:0}.compact .panel{right:0}}
+
+/* Keep inline Quick Care within the phone's safe viewport above fixed navigation. */
+@media(max-width:720px){
+ .root .panel,.compact .panel{
+  position:fixed;z-index:120;top:auto;left:12px;right:12px;
+  bottom:calc(103px + env(safe-area-inset-bottom,0px));
+  width:auto;max-width:none;max-height:calc(100dvh - 155px - env(safe-area-inset-bottom,0px));
+  overflow-y:auto;overscroll-behavior:contain;
+  box-shadow:0 16px 48px rgba(0,0,0,.22);
+ }
+}
+
+/* Always show an in-panel dismissal control, even when the launch button
+   has scrolled out of view on long Manager pages. */
+.headingTop{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.headingTop strong{font-size:14px;min-width:0;overflow-wrap:anywhere}
+.close{flex:none;display:grid;place-items:center;width:42px;height:42px;padding:0;border:1px solid var(--border-strong);border-radius:12px;background:var(--surface);color:var(--text-primary);cursor:pointer;touch-action:manipulation}
+.close svg{width:19px;height:19px}

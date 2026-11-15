@@ -162,6 +162,9 @@ export function FunZonePortal({userId,completedByGame,trackingAvailable,exp}:{us
      {id:"exchange",label:"Pod Exchange",icon:"gamepad",href:"/fun-zone/pod-exchange"},
      {id:"picture",label:"Picture puzzles",icon:"grid",href:"/fun-zone/picture-puzzles"},
      {id:"progress",label:"My progress",icon:"achievement",href:"/account/progress"},
+     {id:"market-rank",label:"Market rankings",icon:"trophy",href:"/fun-zone/pod-exchange/rankings"},
+     {id:"all-puzzles",label:"Puzzle library",icon:"grid",href:"/fun-zone/picture-puzzles"},
+     {id:"ledger",label:"Leaf Ledger",icon:"leaf",href:"/ledger"},
      ...ARCADE_GAMES.map(game=>({id:"game:"+game.key,label:game.title,icon:game.icon,href:game.href}))
     ] satisfies PortalShortcut[]}/>
    {shortcutPanel&&!active.includes(shortcutPanel)?<div className={styles.shortcutContent} role="region" aria-label={shortcutPanel==="categories"?"Browse game categories":"Your saved games"}>

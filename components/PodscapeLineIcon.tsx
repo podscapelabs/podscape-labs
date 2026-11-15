@@ -1,8 +1,9 @@
-export type PodscapeIconName = "search"|"leaf"|"jar"|"shop"|"book"|"community"|"vendor"|"creative"|"podbound"|"home"|"scan"|"manager"|"menu"|"qr"|"bin"|"droplet"|"calendar"|"note"|"crossword"|"connections"|"letters"|"challenge"|"quiz"|"word-search"|"achievement"|"check"|"lock"|"arrow-right"|"close"|"edit"|"grid"|"trophy"|"grip"|"arrow-up"|"arrow-down"|"bookmark"|"news"|"gamepad"|"heart"|"filter";
+export type PodscapeIconName = "search"|"leaf"|"jar"|"shop"|"book"|"community"|"vendor"|"creative"|"podbound"|"home"|"scan"|"manager"|"menu"|"qr"|"bin"|"droplet"|"calendar"|"note"|"crossword"|"connections"|"letters"|"challenge"|"quiz"|"word-search"|"achievement"|"check"|"lock"|"arrow-right"|"close"|"edit"|"grid"|"trophy"|"grip"|"arrow-up"|"arrow-down"|"bookmark"|"news"|"gamepad"|"heart"|"filter"|"camera";
 
 export function PodscapeLineIcon({name}:{name:PodscapeIconName}){
  const common={viewBox:"0 0 32 32",fill:"none",stroke:"currentColor",strokeWidth:1.65,strokeLinecap:"round" as const,strokeLinejoin:"round" as const,"aria-hidden":true};
- if(name==="filter")return <svg {...common}><path d="M4 8h24M8 16h16M12 24h8"/><circle cx="10" cy="8" r="2" fill="currentColor" stroke="none"/><circle cx="21" cy="16" r="2" fill="currentColor" stroke="none"/></svg>;
+ if(name==="camera")return <svg {...common}><path d="M5 10h6l2-3h6l2 3h6v16H5V10Z"/><circle cx="16" cy="18" r="5"/></svg>;
+  if(name==="filter")return <svg {...common}><path d="M4 8h24M8 16h16M12 24h8"/><circle cx="10" cy="8" r="2" fill="currentColor" stroke="none"/><circle cx="21" cy="16" r="2" fill="currentColor" stroke="none"/></svg>;
  if(name==="search")return <svg {...common}><circle cx="14" cy="14" r="8"/><path d="m20 20 7 7"/></svg>;
  if(name==="home")return <svg {...common}><path d="m4 15 12-10 12 10M7 13v14h18V13M13 27v-9h6v9"/></svg>;
  if(name==="leaf")return <svg {...common}><path d="M26 5C15 6 7 12 7 21c0 3 2 5 5 5 9 0 14-10 14-21Z"/><path d="M6 28c4-7 9-12 17-18M12 22c1-3 1-6 1-9M16 18c3 0 5 1 7 2"/></svg>;

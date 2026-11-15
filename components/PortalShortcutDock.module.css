@@ -24,3 +24,4 @@
 }
 @media(max-width:345px){.dock .grid>.shortcut{font-size:.55rem;min-height:72px}.dock .grid{gap:4px}}
 @media(prefers-reduced-motion:reduce){.jiggling{animation:none}}
+
