@@ -325,3 +325,19 @@
   box-shadow:0 16px 48px rgba(0,0,0,.22);
  }
 }
+
+/* Keep the bin workspace fluid at phone widths, including when switching routes. */
+@media(max-width:720px){
+ .page,.root,.colonyDashboard,.colonyWidgetGrid{min-width:0;max-width:100%}
+ .page{width:100%}
+ .root{box-sizing:border-box}
+ .root>*{min-width:0;max-width:100%}
+ .hero,.heroText,.heroMetrics,.binToolbar,.toolGrid,.widgetPanel{min-width:0;max-width:100%}
+ .heroText,.heroText h1,.heroText span{overflow-wrap:anywhere}
+ .colonyWidgetGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:370px){
+ .colonyWidgetGrid{grid-template-columns:minmax(0,1fr)}
+ .heroMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .binToolbar nav{min-width:0}
+}
