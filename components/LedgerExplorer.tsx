@@ -235,11 +235,11 @@ export function LedgerExplorer({ records, collectedIds = [], approvedPhotosById 
         {mode==="catalogue"&&collectionOnly?<button type="button" onClick={()=>setCollectionOnly(false)}>Show all species</button>:null}
         {filtersActive ? <button type="button" onClick={clear}>Clear filters</button> : null}
         {mode === "catalogue" ? <details className={styles.legend}>
-          <summary>Leaf colour guide</summary>
+          <summary>Collection status</summary>
           <div className={styles.legendPanel}>
-            <strong>Understanding the leaves</strong>
-            <p><span className={styles.legendSwatch} aria-hidden="true" /> Brown — Not collected</p>
-            <p><span className={`${styles.legendSwatch} ${styles.legendSwatchCollected}`} aria-hidden="true" /> Green — In your collection</p>
+            <strong>Collection indicators</strong>
+            <p>Outline bookmark — Not collected</p>
+            <p>Filled bookmark — In your collection</p>
           </div>
         </details> : null}
       </div>
