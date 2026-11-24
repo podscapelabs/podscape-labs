@@ -178,21 +178,18 @@
 .photoPending { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--text-secondary); font-size: .72rem; }
 .photoCard > strong, .photoCard > em { overflow-wrap: anywhere; }
 .tile:has(.photoCard) { --ownership-leaf-dormant: var(--text-secondary); --ownership-leaf-active: var(--accent); }
-.tile:has(.photoCard):has(.ownershipToggle[data-collected="true"]) { border-color: var(--accent); }
 .tile:has(.photoCard) .ownershipControl { top: 14px; right: 14px; }
-.tile:has(.photoCard) .ownershipToggle { background: var(--surface); border: 1px solid var(--border); color: var(--text-primary); border-radius: 11px; }
-.tile:has(.photoCard) .ownershipToggle[data-collected="true"] { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
+.tile:has(.photoCard) .ownershipToggle { background: var(--surface); border: 1px solid var(--border); color: var(--text-secondary); border-radius: 11px; transition: color 180ms ease; }
+.tile:has(.photoCard) .ownershipToggle:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .tile:has(.photoCard) .ownershipLeaf { width: 21px; height: 21px; }
 @media(max-width:520px){ .tile:has(.photoCard) .ownershipControl { top: 12px; right: 12px; } }
 
 /* Index ownership uses stable semantic colors, independent of theme accent. */
 .tile:has(.photoCard) { --index-collected:#23804e; --index-wishlist:#b77917; }
 :global(:root[data-theme="dark"]) .tile:has(.photoCard), :global(:root[data-theme="woodland"]) .tile:has(.photoCard), :global(:root[data-theme="ember"]) .tile:has(.photoCard) { --index-collected:#73c796; --index-wishlist:#edb65e; }
-.tile:has(.photoCard):has(.ownershipToggle[data-collected="true"]) { border-color:var(--index-collected); }
-.tile:has(.photoCard) .ownershipToggle[data-collected="true"] { background:#23623f; color:#fff; border-color:var(--index-collected); }
 
-.tile:has(.photoCard):has(.ownershipToggle[data-status="wishlist"]) { border-color:var(--index-wishlist); }
-.tile:has(.photoCard) .ownershipToggle[data-status="wishlist"] { background:#a16a14;color:#fff;border-color:var(--index-wishlist); }
+.tile:has(.photoCard) .ownershipToggle[data-collected="true"] { color: var(--index-collected); }
+.tile:has(.photoCard) .ownershipToggle[data-status="wishlist"] { color: var(--index-wishlist); }
 .statusMenu { position:absolute; top:49px; right:0; width:158px; display:grid; gap:2px; padding:5px; border:1px solid var(--border); border-radius:12px; background:var(--surface); box-shadow:0 8px 25px #0003; z-index:10; }
 .statusMenu button { display:flex; align-items:center; gap:7px; min-height:44px; padding:7px; border:0; border-radius:8px; background:transparent; color:var(--text-primary); text-align:left; font:inherit; font-size:12px; cursor:pointer; }
 .statusMenu button[aria-pressed="true"] { background:var(--surface-secondary); font-weight:700; }
