@@ -8,10 +8,9 @@ import {PodscapeConfirmDialog} from "./PodscapeConfirmDialog";
 import styles from "./CollectionControls.module.css";
 import {announceAchievement} from "./AchievementToast";
 
-function OwnershipLeaf({ filled }: { filled: boolean }) {
-  return <svg className={styles.ownershipLeaf} viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M20.3 3.7C11.6 3.2 5.7 5.7 4 11.2c-1.1 3.5.5 7.3 4.7 8 7.6 1.3 12.2-5.9 11.6-15.5Z" />
-    <path d="M5.7 18.2c2.9-3.7 6.5-6.4 10.7-8.4" fill="none" />
+function OwnershipBookmark({ filled }: { filled: boolean }) {
+  return <svg className={styles.ownershipLeaf} viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M6 4h12v16l-6-4-6 4z" />
   </svg>;
 }
 
@@ -42,7 +41,7 @@ export function CollectionButton({ speciesId, speciesName, initialCollected, sig
 
   if (!signedIn) {
     return compact
-      ? <div className={styles.ownershipControl}><Link className={styles.ownershipToggle} href="/account/login" aria-label={`Sign in to save ${speciesName}`} title={`Sign in to save ${speciesName}`}><OwnershipLeaf filled={false} /></Link></div>
+      ? <div className={styles.ownershipControl}><Link className={styles.ownershipToggle} href="/account/login" aria-label={`Sign in to save ${speciesName}`} title={`Sign in to save ${speciesName}`}><OwnershipBookmark filled={false} /></Link></div>
       : <Link className={`${styles.action} ${detail ? styles.detail : ""}`} href="/account/login">Sign in to collect →</Link>;
   }
 
@@ -82,7 +81,7 @@ export function CollectionButton({ speciesId, speciesName, initialCollected, sig
     return <div className={styles.ownershipControl}>
       <button type="button" className={styles.ownershipToggle} data-collected={collected} data-animation={animation || undefined} disabled={pending}
         onClick={toggle} aria-pressed={collected} aria-label={title} title={title}>
-        <OwnershipLeaf filled={collected} />
+        <OwnershipBookmark filled={collected} />
       </button>
       {confirmation}
       {feedback?<span role="status" className={styles.srOnly}>{feedback}</span>:null}
