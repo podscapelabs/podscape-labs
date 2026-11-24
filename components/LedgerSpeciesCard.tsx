@@ -1,6 +1,5 @@
 import Link from "next/link";
 import type {ApprovedSpeciesPhoto} from "@/lib/approved-species-photos";
-import { WishlistButton } from "./WishlistButton";
 import { CollectionButton } from "./CollectionButton";
 import styles from "./CollectionControls.module.css";
 import { RotatingSpeciesPhoto } from "./RotatingSpeciesPhoto";
@@ -35,8 +34,7 @@ export function LedgerSpeciesCard({ record, compact = false, showCollectionActio
   if (!showCollectionAction || record.kind !== "species") return card;
   return <article className={styles.tile}>
     {card}
-    {signedIn && !collected ? <WishlistButton speciesId={record.id} speciesName={speciesDisplayName(record)} initialWished={wished} /> : null}
-    <CollectionButton speciesId={record.id} speciesName={speciesDisplayName(record)} initialCollected={collected} signedIn={signedIn} compact />
+    <CollectionButton speciesId={record.id} speciesName={speciesDisplayName(record)} initialCollected={collected} initialWished={wished} signedIn={signedIn} compact statusSelector />
     {collectionDetails ? <p className={styles.collectionSummary} aria-label={`Quantity ${collectionDetails.quantity}, colony status ${colonyStatusLabels[collectionDetails.colonyStatus]}`}>
       <span>Qty ${collectionDetails.quantity}</span><span aria-hidden="true">·</span><span>${colonyStatusLabels[collectionDetails.colonyStatus]}</span>
     </p> : null}

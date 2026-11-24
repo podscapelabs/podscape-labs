@@ -190,11 +190,12 @@
 :global(:root[data-theme="dark"]) .tile:has(.photoCard), :global(:root[data-theme="woodland"]) .tile:has(.photoCard), :global(:root[data-theme="ember"]) .tile:has(.photoCard) { --index-collected:#73c796; --index-wishlist:#edb65e; }
 .tile:has(.photoCard):has(.ownershipToggle[data-collected="true"]) { border-color:var(--index-collected); }
 .tile:has(.photoCard) .ownershipToggle[data-collected="true"] { background:#23623f; color:#fff; border-color:var(--index-collected); }
-.tile:has(.photoCard):has(.wishToggle[data-wished="true"]):not(:has(.ownershipToggle[data-collected="true"])) { border-color:var(--index-wishlist); }
-.wishControl { position:absolute; top:14px; left:14px; z-index:5; }
-.wishToggle { display:grid; place-items:center; width:44px; height:44px; border:1px solid var(--border); border-radius:11px; background:var(--surface); color:var(--text-primary); cursor:pointer; }
-.wishToggle[data-wished="true"] { background:#a16a14; color:white; border-color:var(--index-wishlist); }
-.wishToggle:focus-visible { outline:3px solid var(--focus); outline-offset:2px; }
-.wishError { position:absolute; left:0; top:46px; width:140px; margin:0; padding:7px; background:var(--surface); color:var(--text-primary); border:1px solid var(--border); border-radius:7px; font-size:12px; }
-.tile:has(.ownershipToggle[data-collected="true"]) .wishControl { display:none; }
-@media(max-width:520px){.wishControl{top:12px;left:12px;}}
+
+.tile:has(.photoCard):has(.ownershipToggle[data-status="wishlist"]) { border-color:var(--index-wishlist); }
+.tile:has(.photoCard) .ownershipToggle[data-status="wishlist"] { background:#a16a14;color:#fff;border-color:var(--index-wishlist); }
+.statusMenu { position:absolute; top:49px; right:0; width:158px; display:grid; gap:2px; padding:5px; border:1px solid var(--border); border-radius:12px; background:var(--surface); box-shadow:0 8px 25px #0003; z-index:10; }
+.statusMenu button { display:flex; align-items:center; gap:7px; min-height:44px; padding:7px; border:0; border-radius:8px; background:transparent; color:var(--text-primary); text-align:left; font:inherit; font-size:12px; cursor:pointer; }
+.statusMenu button[aria-pressed="true"] { background:var(--surface-secondary); font-weight:700; }
+.statusMenu button[data-status="wishlist"] svg { color:var(--index-wishlist); }
+.statusMenu button[data-status="collected"] svg { color:var(--index-collected); }
+.statusMenu button:focus-visible { outline:2px solid var(--focus); }
