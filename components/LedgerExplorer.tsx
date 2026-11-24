@@ -19,9 +19,10 @@ import { speciesDisplayName, speciesScientificName, speciesOrganismGroup, type S
 
 type SortMode = "catalogue" | "common" | "scientific" | "recent";
 
-export function LedgerExplorer({ records, collectedIds = [], approvedPhotosById = {}, signedIn = false, mode = "catalogue", addedAtById = {}, collectionDetailsById = {}, featured, heroMode = false }: {
+export function LedgerExplorer({ records, collectedIds = [], wishlistIds = [], approvedPhotosById = {}, signedIn = false, mode = "catalogue", addedAtById = {}, collectionDetailsById = {}, featured, heroMode = false }: {
   records: SpeciesRecord[];
   collectedIds?: string[];
+  wishlistIds?: string[];
   approvedPhotosById?: Record<string,ApprovedSpeciesPhoto[]>;
   signedIn?: boolean;
   mode?: "catalogue" | "collection";
@@ -35,6 +36,8 @@ export function LedgerExplorer({ records, collectedIds = [], approvedPhotosById 
   const [requestLaunch,setRequestLaunch]=useState(0);
   const [photoLaunch,setPhotoLaunch]=useState(0);
   const [collectionOnly,setCollectionOnly]=useState(false);
+  const [wishlistOnly,setWishlistOnly]=useState(false);
+  const wished = useMemo(()=>new Set(wishlistIds),[wishlistIds]);
   const [genus, setGenus] = useState("all");
   const [organism,setOrganism]=useState<"all"|"isopod"|"springtail">("all");
   const [care, setCare] = useState("all");
@@ -82,6 +85,7 @@ export function LedgerExplorer({ records, collectedIds = [], approvedPhotosById 
   const results = useMemo(() => records
     .filter((record) => {
       if(mode==="catalogue" && collectionOnly && !saved.has(record.id))return false;
+      if(mode==="catalogue" && wishlistOnly && (!wished.has(record.id)||saved.has(record.id)))return false;
       const haystack = `${speciesDisplayName(record)} ${speciesScientificName(record)} ${record.genus} ${record.species} ${record.morph} ${record.catalogueNumber} ${record.tags.join(" ")}`.toLowerCase();
       return (organism === "all" || speciesOrganismGroup(record)===organism)
         && (genus === "all" || record.genus === genus)
@@ -93,7 +97,7 @@ export function LedgerExplorer({ records, collectedIds = [], approvedPhotosById 
       if (sort === "common") return speciesDisplayName(a).localeCompare(speciesDisplayName(b));
       if (sort === "scientific") return speciesScientificName(a).localeCompare(speciesScientificName(b));
       return a.catalogueNumber.localeCompare(b.catalogueNumber,"en",{numeric:true,sensitivity:"base"});
-    }), [addedAtById, care, collectionOnly, genus, mode, organism, records, saved, searchTerm, sort]);
+    }), [addedAtById, care, collectionOnly, wishlistOnly, wished, genus, mode, organism, records, saved, searchTerm, sort]);
 
   const saveBrowseContext=()=>{
     if(mode!=="catalogue")return;
@@ -142,7 +146,7 @@ export function LedgerExplorer({ records, collectedIds = [], approvedPhotosById 
     setSort(mode === "collection" ? "recent" : "catalogue");
   }
 
-  const filtersActive = Boolean(query || organism !== "all" || genus !== "all" || care !== "all" || sort !== (mode === "collection" ? "recent" : "catalogue"));
+  const filtersActive = Boolean(wishlistOnly || query || organism !== "all" || genus !== "all" || care !== "all" || sort !== (mode === "collection" ? "recent" : "catalogue"));
 
   const catalogueToolbar = <div className={spotlight.catalogueToolbar}>
        <div className={spotlight.organismTabs} role="group" aria-label="Browse organisms">
@@ -177,12 +181,12 @@ export function LedgerExplorer({ records, collectedIds = [], approvedPhotosById 
       <div className={spotlight.heroShade} aria-hidden="true" />
       <div className={spotlight.heroInner}>
         <p className={spotlight.heroEyebrow}>PODSCAPE / SPECIES ARCHIVE</p>
-        <h1 id="ledger-hero-title">Leaf Ledger</h1>
+        <h1 id="ledger-hero-title">Index</h1>
         <p className={spotlight.heroDescription}>Discover fascinating species, explore their stories, and grow your own collection.</p>
         <div className={spotlight.heroDiscovery} aria-label="Species search and filters">
-        <div className={spotlight.heroSearch} role="search" aria-label="Search the Leaf Ledger">
+        <div className={spotlight.heroSearch} role="search" aria-label="Search the Index">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 5 5"/></svg>
-          <input id="ledger-hero-search" type="search" aria-label="Search Leaf Ledger species" value={query} onChange={event=>setQuery(event.target.value)} placeholder="Search species, genus, or morph…" autoComplete="off"/>
+          <input id="ledger-hero-search" type="search" aria-label="Search Index species" value={query} onChange={event=>setQuery(event.target.value)} placeholder="Search species, genus, or morph…" autoComplete="off"/>
           {query ? <button type="button" onClick={()=>setQuery("")} aria-label="Clear species search">×</button> : null}
         </div>
           {catalogueToolbar}
@@ -190,12 +194,12 @@ export function LedgerExplorer({ records, collectedIds = [], approvedPhotosById 
         </div>
       </div>
     </header> : null}
-    {heroMode && mode==="catalogue"?<div className={spotlight.shortcutStrip} aria-label="Leaf Ledger shortcuts">
-        <PortalShortcutDock portal="leaf-ledger" label="Leaf Ledger shortcuts"
+    {heroMode && mode==="catalogue"?<div className={spotlight.shortcutStrip} aria-label="Index shortcuts">
+        <PortalShortcutDock portal="leaf-ledger" label="Index shortcuts"
           defaults={["discover","collection","colonies","guide","request","add-photo"]}
           features={[
-           {id:"discover",label:"Discover",icon:"leaf",onClick:()=>{setCollectionOnly(false);document.getElementById("ledger-directory")?.scrollIntoView({behavior:"smooth"});}},
-           {id:"collection",label:"My Collection",icon:"bookmark",...(signedIn?{onClick:()=>{setCollectionOnly(true);document.getElementById("ledger-directory")?.scrollIntoView({behavior:"smooth"});}}:{href:"/account/login"})},
+           {id:"discover",label:"Discover",icon:"leaf",onClick:()=>{setWishlistOnly(false);setCollectionOnly(false);document.getElementById("ledger-directory")?.scrollIntoView({behavior:"smooth"});}},
+           {id:"collection",label:"My Collection",icon:"bookmark",...(signedIn?{onClick:()=>{setWishlistOnly(false);setCollectionOnly(true);document.getElementById("ledger-directory")?.scrollIntoView({behavior:"smooth"});}}:{href:"/account/login"})},
            {id:"colonies",label:"My Colonies",icon:"jar",href:signedIn?"/keeper/collection":"/account/login"},
            {id:"guide",label:"Care Guides",icon:"book",href:"/field-guide"},
            {id:"request",label:"Request Species",icon:"note",...(signedIn?{onClick:()=>setRequestLaunch(value=>value+1)}:{href:"/account/login"})},
@@ -205,7 +209,7 @@ export function LedgerExplorer({ records, collectedIds = [], approvedPhotosById 
             {id:"springtails",label:"Springtails",icon:"leaf",onClick:()=>{setOrganism("springtail");setGenus("all");document.getElementById("ledger-directory")?.scrollIntoView({behavior:"smooth"})}},
             {id:"search",label:"Search species",icon:"search",onClick:()=>{const field=document.getElementById("ledger-hero-search") as HTMLInputElement|null;field?.scrollIntoView({behavior:"smooth",block:"center"});field?.focus({preventScroll:true});}},
             {id:"manager",label:"Manager",icon:"manager",href:signedIn?"/keeper":"/account/login"},
-            {id:"collections",label:"Saved Species",icon:"bookmark",...(signedIn?{onClick:()=>{setCollectionOnly(true);document.getElementById("ledger-directory")?.scrollIntoView({behavior:"smooth"});}}:{href:"/account/login"})},
+            {id:"collections",label:"Saved Species",icon:"bookmark",...(signedIn?{onClick:()=>{setWishlistOnly(false);setCollectionOnly(true);document.getElementById("ledger-directory")?.scrollIntoView({behavior:"smooth"});}}:{href:"/account/login"})},
             {id:"progress",label:"My Progress",icon:"achievement",href:signedIn?"/account/progress":"/account/login"}
           ]}/>
     </div>:null}
@@ -229,33 +233,35 @@ export function LedgerExplorer({ records, collectedIds = [], approvedPhotosById 
       {!(heroMode && mode==="catalogue")?filterOptions:null}
     </div>
     <div className={`v2-results-meta ${styles.resultMeta}`}>
-      <span id="ledger-directory-title" role="status" aria-live="polite" aria-atomic="true">{mode==="catalogue"&&collectionOnly?"My Collection · ":""}{results.length} {results.length === 1 ? "record" : "records"}</span>
+      <span id="ledger-directory-title" role="status" aria-live="polite" aria-atomic="true">{mode==="catalogue"&&collectionOnly?"My Collection · ":wishlistOnly?"Wishlist · ":""}{results.length} {results.length === 1 ? "record" : "records"}</span>
       <div className={styles.metaActions}>
         {mode==="catalogue"&&signedIn&&!heroMode?<SpeciesRequestButton/>:null}
+        {mode==="catalogue"&&signedIn?<button type="button" aria-pressed={wishlistOnly} onClick={()=>{setCollectionOnly(false);setWishlistOnly(value=>!value)}}>{wishlistOnly?"Show all species":"Wishlist"}</button>:null}
         {mode==="catalogue"&&collectionOnly?<button type="button" onClick={()=>setCollectionOnly(false)}>Show all species</button>:null}
         {filtersActive ? <button type="button" onClick={clear}>Clear filters</button> : null}
         {mode === "catalogue" ? <details className={styles.legend}>
           <summary>Collection status</summary>
           <div className={styles.legendPanel}>
             <strong>Collection indicators</strong>
-            <p>Outline bookmark — Not collected</p>
-            <p>Filled bookmark — In your collection</p>
+            <p>Plus — Not collected</p>
+            <p>Green check — In your collection</p>
+            <p>Amber star — On your wishlist</p>
           </div>
         </details> : null}
       </div>
     </div>
     {results.length ? (mode === "collection"
       ? <div className={collectionStyles.grid}>{results.map((record) => <CollectionSpeciesRow record={record} details={collectionDetailsById[record.id]} key={record.id} />)}</div>
-      : <div className="v2-species-grid" onClickCapture={event=>{if((event.target as HTMLElement).closest("a[href^=\"/ledger/\"]"))saveBrowseContext()}}>{results.map((record, index) => <LedgerSpeciesCard record={record} key={record.id} nativeNavigation={mode==="catalogue"} approvedPhotos={approvedPhotosById[record.id]||[]} showCollectionAction collected={saved.has(record.id)} signedIn={signedIn} collectionDetails={collectionDetailsById[record.id]} />).flatMap((card, index) => {
+      : <div className="v2-species-grid" onClickCapture={event=>{if((event.target as HTMLElement).closest("a[href^=\"/ledger/\"]"))saveBrowseContext()}}>{results.map((record, index) => <LedgerSpeciesCard record={record} key={record.id} nativeNavigation={mode==="catalogue"} approvedPhotos={approvedPhotosById[record.id]||[]} showCollectionAction collected={saved.has(record.id)} wished={wished.has(record.id)} signedIn={signedIn} collectionDetails={collectionDetailsById[record.id]} />).flatMap((card, index) => {
         const insertSpotlight = index === 3 && !!featured && !filtersActive;
         return insertSpotlight ? [card, <aside key="species-spotlight" className={spotlight.feature} aria-label="Featured species">
           {featured!.image ? <img className={spotlight.featurePhoto} src={featured!.image} alt="" loading="lazy" decoding="async" /> : <span className={spotlight.featureFallback} aria-hidden="true"><PodscapeLineIcon name="leaf"/></span>}
-          <div className={spotlight.featureCopy}><small>Featured species</small><h2>{featured!.name}</h2><p>{featured!.summary || "Explore this species in the Leaf Ledger."}</p><a href={`/ledger/${featured!.slug}`}>View species →</a></div>
+          <div className={spotlight.featureCopy}><small>Featured species</small><h2>{featured!.name}</h2><p>{featured!.summary || "Explore this species in the Index."}</p><a href={`/ledger/${featured!.slug}`}>View species →</a></div>
         </aside>] : [card];
       })}{results.length < 4 && featured && !filtersActive ? <aside className={spotlight.feature} aria-label="Featured species">
         {featured.image ? <img className={spotlight.featurePhoto} src={featured.image} alt="" loading="lazy" decoding="async" /> : null}
-        <div className={spotlight.featureCopy}><small>Featured species</small><h2>{featured.name}</h2><p>{featured.summary || "Explore this species in the Leaf Ledger."}</p><a href={`/ledger/${featured.slug}`}>View species →</a></div>
+        <div className={spotlight.featureCopy}><small>Featured species</small><h2>{featured.name}</h2><p>{featured.summary || "Explore this species in the Index."}</p><a href={`/ledger/${featured.slug}`}>View species →</a></div>
       </aside> : null}</div>
-    ) : (mode==="catalogue"&&collectionOnly&&!filtersActive?<div className="v2-empty-state"><PodscapeLineIcon name="bookmark"/><h2>No collected species yet.</h2><p>Add a species from the Leaf Ledger to see it here. Your collection is separate from your managed bins.</p><button type="button" onClick={()=>setCollectionOnly(false)}>Discover species</button></div>:mode==="collection"&&!filtersActive&&records.length===0?<FirstActionEmptyState icon="leaf" eyebrow="LEAF LEDGER" title="Start your species collection." description="Discover a species and add it to your collection to see it here. Your saved species will stay connected to their care profiles." primary={{href:"/ledger",label:"Explore the Leaf Ledger"}} secondary={{href:"/keeper/collection",label:"My colonies"}}/>:<div className="v2-empty-state"><PodscapeLineIcon name="search"/><h2>{organism==="springtail"&&!query&&genus==="all"&&care==="all"?"Springtail profiles are being curated.":"No species match these filters."}</h2><p>{organism==="springtail"&&!query&&genus==="all"&&care==="all"?"Collembola records will appear here as they are reviewed and published.":"Try a different name, genus, or care level."}</p><button type="button" onClick={clear}>Reset filters</button></div>)}
+    ) : (mode==="catalogue"&&wishlistOnly?<div className="v2-empty-state"><h2>No wishlist matches.</h2><p>Tap a star on an uncollected species to add it to your wishlist.</p><button type="button" onClick={()=>setWishlistOnly(false)}>Explore Index</button></div>:mode==="catalogue"&&collectionOnly&&!filtersActive?<div className="v2-empty-state"><PodscapeLineIcon name="bookmark"/><h2>No collected species yet.</h2><p>Add a species from the Index to see it here. Your collection is separate from your managed bins.</p><button type="button" onClick={()=>setCollectionOnly(false)}>Discover species</button></div>:mode==="collection"&&!filtersActive&&records.length===0?<FirstActionEmptyState icon="leaf" eyebrow="INDEX" title="Start your species collection." description="Discover a species and add it to your collection to see it here. Your saved species will stay connected to their care profiles." primary={{href:"/ledger",label:"Explore the Index"}} secondary={{href:"/keeper/collection",label:"My colonies"}}/>:<div className="v2-empty-state"><PodscapeLineIcon name="search"/><h2>{organism==="springtail"&&!query&&genus==="all"&&care==="all"?"Springtail profiles are being curated.":"No species match these filters."}</h2><p>{organism==="springtail"&&!query&&genus==="all"&&care==="all"?"Collembola records will appear here as they are reviewed and published.":"Try a different name, genus, or care level."}</p><button type="button" onClick={clear}>Reset filters</button></div>)}
   </section></div></div></>;
 }

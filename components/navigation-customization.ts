@@ -5,7 +5,7 @@ export type NavChoice={id:string;label:string;href:string;icon:PodscapeIconName;
 export const navigationChoices:NavChoice[]=[
   {id:"owner-tools",label:"Owner Tools",href:"/account/owner-tools",icon:"manager",tone:"sage",group:"Owner",description:"Your private owner management desks",ownerOnly:true},
   {id:"owner-analytics",label:"Analytics",href:"/account/owner-tools/analytics",icon:"community",tone:"sage",group:"Owner",description:"Private platform growth and activity metrics",ownerOnly:true},
-  {id:"owner-species",label:"Species Desk",href:"/admin/species",icon:"leaf",tone:"sage",group:"Owner",description:"Edit and publish Leaf Ledger species records",ownerOnly:true},
+  {id:"owner-species",label:"Species Desk",href:"/admin/species",icon:"leaf",tone:"sage",group:"Owner",description:"Edit and publish Index species records",ownerOnly:true},
   {id:"owner-products",label:"Product Desk",href:"/admin/products",icon:"shop",tone:"sand",group:"Owner",description:"Manage products, prices and inventory",ownerOnly:true},
   {id:"owner-guides",label:"Guide Desk",href:"/admin/guides",icon:"book",tone:"sage",group:"Owner",description:"Manage Field Guide content",ownerOnly:true},
   {id:"home",label:"Home",href:"/app",icon:"home",tone:"sage",group:"Main",description:"Your PodScape homepage"},
@@ -13,7 +13,7 @@ export const navigationChoices:NavChoice[]=[
   {id:"search",label:"Search",href:"/search",icon:"search",tone:"sage",group:"Main",description:"Find species, products, guides and more"},
   {id:"account",label:"Account",href:"/account",icon:"community",tone:"sage",group:"Main",description:"Your profile, rewards and account settings"},
   {id:"shop",label:"Shop",href:"/shop",icon:"shop",tone:"sand",group:"Discover",description:"Browse the PodScape shop"},
-  {id:"ledger",label:"Ledger",href:"/ledger",icon:"leaf",tone:"sage",group:"Discover",description:"Explore species in the Leaf Ledger"},
+  {id:"ledger",label:"Index",href:"/ledger",icon:"leaf",tone:"sage",group:"Discover",description:"Explore species in the Index"},
   {id:"guides",label:"Guides",href:"/field-guide",icon:"book",tone:"sage",group:"Discover",description:"Husbandry guides and resources"},
   {id:"collection",label:"My Collection",href:"/keeper/collection",icon:"jar",tone:"sage",group:"Keeper tools",description:"Your species, bins and colonies"},
   {id:"manager",label:"Manager",href:"/keeper",icon:"manager",tone:"sage",group:"Keeper tools",description:"Your colony manager dashboard"},

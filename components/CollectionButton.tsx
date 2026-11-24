@@ -9,8 +9,8 @@ import styles from "./CollectionControls.module.css";
 import {announceAchievement} from "./AchievementToast";
 
 function OwnershipBookmark({ filled }: { filled: boolean }) {
-  return <svg className={styles.ownershipLeaf} viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M6 4h12v16l-6-4-6 4z" />
+  return <svg className={styles.ownershipLeaf} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    {filled ? <path d="m5 12 4 4L19 6" /> : <path d="M12 5v14M5 12h14" />}
   </svg>;
 }
 

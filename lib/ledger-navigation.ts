@@ -1,4 +1,4 @@
-/** Shared session-only navigation context for the Leaf Ledger.
+/** Shared session-only navigation context for the Index.
  * No species data or account information is persisted here.
  */
 export const LEDGER_EXPLORER_STATE_KEY="podscape-ledger-explorer-v1";

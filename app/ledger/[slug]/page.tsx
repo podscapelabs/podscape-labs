@@ -29,7 +29,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const record = await getSpeciesRecord((await params).slug);
-  return { title: record ? `${speciesDisplayName(record)} — ${speciesScientificName(record)} | Podscape Leaf Ledger` : "Species record", robots: { index: false, follow: false } };
+  return { title: record ? `${speciesDisplayName(record)} — ${speciesScientificName(record)} | Podscape Index` : "Species record", robots: { index: false, follow: false } };
 }
 
 /** A short introductory extract, not a second full husbandry article. */
@@ -124,7 +124,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
         {!previewRequested && member.signedIn && record.kind === "species" ? <SpeciesDiscoveryTracker speciesId={record.id} /> : null}
         {previewRequested ? <div className={styles.ownerPreviewBanner}><span>Private owner preview · {record.status}</span><Link href={`/admin/species?record=${encodeURIComponent(record.id)}`}>← Return to Ledger Desk</Link></div> : null}
         <div className={styles.profileTopline}>
-          <Link href="/ledger" className={styles.ledgerBack}>← Leaf Ledger</Link>
+          <Link href="/ledger" className={styles.ledgerBack}>← Index</Link>
           <span className={styles.catalogueLabel}>{record.catalogueNumber}</span>
         </div>
 
@@ -132,7 +132,7 @@ export default async function SpeciesPage({ params, searchParams }: { params: Pr
         <header className={`${homeStyles.hero} ${styles.speciesHomeHero} ${record.image||approvedPhotoRotation.length ? styles.speciesHeroHasArt : styles.speciesHeroNoArt}`}>
           {record.image||approvedPhotoRotation.length ? <div className={styles.speciesHeroArt}><RotatingSpeciesPhoto className={homeStyles.heroImage} mode="hero" official={record.image} officialAlt={record.imageAlt||scientificName} approved={approvedPhotoRotation} positionX={record.imagePositionX} positionY={record.imagePositionY} zoom={record.imageZoom}/></div> : null}
           <div className={homeStyles.heroContent}>
-            <p className={homeStyles.eyebrow}>LEAF LEDGER · SPECIES PROFILE</p>
+            <p className={homeStyles.eyebrow}>INDEX · SPECIES PROFILE</p>
             <h1>{displayName}</h1>
             <p className={styles.speciesHeroScientific}><em>{scientificName}</em></p>
             <p className={styles.speciesHeroIdentity}>{speciesGenus(record)} <span aria-hidden="true">·</span> {speciesRecordLabel(record)}</p>
