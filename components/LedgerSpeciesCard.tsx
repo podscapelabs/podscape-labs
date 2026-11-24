@@ -2,7 +2,7 @@ import Link from "next/link";
 import type {ApprovedSpeciesPhoto} from "@/lib/approved-species-photos";
 import { CollectionButton } from "./CollectionButton";
 import styles from "./CollectionControls.module.css";
-import { SpecimenLeaf } from "./SpecimenLeaf";
+import { RotatingSpeciesPhoto } from "./RotatingSpeciesPhoto";
 import { colonyStatusLabels, type ColonyStatus } from "@/data/collection";
 import { speciesDisplayName, speciesScientificName, type SpeciesRecord } from "@/data/species";
 
@@ -17,15 +17,17 @@ export function LedgerSpeciesCard({ record, compact = false, showCollectionActio
   collectionDetails?: { quantity: number; colonyStatus: ColonyStatus };
 }) {
   const cardContent = <>
-    <SpecimenLeaf image={record.image} approvedPhotos={approvedPhotos} alt={record.imageAlt || speciesScientificName(record)} number={showCollectionAction ? undefined : record.catalogueNumber} size="card" positionX={record.imagePositionX} positionY={record.imagePositionY} zoom={record.imageZoom} revivable={showCollectionAction && record.kind === "species"} organic />
+    <div className={styles.cardPhoto}>
+      {record.image || approvedPhotos.length ? <RotatingSpeciesPhoto official={record.image} officialAlt={record.imageAlt || speciesScientificName(record)} approved={approvedPhotos} positionX={record.imagePositionX} positionY={record.imagePositionY} zoom={record.imageZoom} /> : <span className={styles.photoPending}><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m3 17 5-5 4 4 4-5 5 6"/></svg>Photo pending</span>}
+    </div>
     <strong>{speciesDisplayName(record)}</strong>
     <em>{speciesScientificName(record)}</em>
-    {showCollectionAction ? <small className={styles.catalogueCode}>{record.catalogueNumber}</small> : null}
+    <small className={styles.catalogueCode}>{record.catalogueNumber}</small>
   </>;
   // Native links are a reliable escape from stalled client-side transitions on iOS.
   const card = nativeNavigation
-    ? <a className={`v2-species-card${compact ? " is-compact" : ""}`} href={`/ledger/${record.slug}`}>{cardContent}</a>
-    : <Link className={`v2-species-card${compact ? " is-compact" : ""}`} href={`/ledger/${record.slug}`}>{cardContent}</Link>;
+    ? <a className={`v2-species-card ${styles.photoCard}${compact ? " is-compact" : ""}`} href={`/ledger/${record.slug}`}>{cardContent}</a>
+    : <Link className={`v2-species-card ${styles.photoCard}${compact ? " is-compact" : ""}`} href={`/ledger/${record.slug}`}>{cardContent}</Link>;
 
   // Keep the clickable card and the mutation button as separate, valid targets.
   if (!showCollectionAction || record.kind !== "species") return card;
