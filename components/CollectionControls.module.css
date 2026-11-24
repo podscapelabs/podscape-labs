@@ -170,3 +170,17 @@
     clip-path: inset(0 100% 0 0);
   }
 }
+
+/* Photo-first catalogue cards; keep the shared profile artwork untouched. */
+.photoCard { gap: 0; min-width: 0; }
+.cardPhoto { position: relative; aspect-ratio: 4 / 3; width: 100%; overflow: hidden; border-radius: 11px; background: var(--surface-secondary); margin-bottom: 11px; }
+.cardPhoto img { object-fit: cover; }
+.photoPending { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--text-secondary); font-size: .72rem; }
+.photoCard > strong, .photoCard > em { overflow-wrap: anywhere; }
+.tile:has(.photoCard) { --ownership-leaf-dormant: var(--text-secondary); --ownership-leaf-active: var(--accent); }
+.tile:has(.photoCard):has(.ownershipToggle[data-collected="true"]) { border-color: var(--accent); }
+.tile:has(.photoCard) .ownershipControl { top: 14px; right: 14px; }
+.tile:has(.photoCard) .ownershipToggle { background: var(--surface); border: 1px solid var(--border); color: var(--text-primary); border-radius: 11px; }
+.tile:has(.photoCard) .ownershipToggle[data-collected="true"] { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
+.tile:has(.photoCard) .ownershipLeaf { width: 21px; height: 21px; }
+@media(max-width:520px){ .tile:has(.photoCard) .ownershipControl { top: 12px; right: 12px; } }
