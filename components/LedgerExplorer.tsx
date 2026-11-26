@@ -213,7 +213,7 @@ export function LedgerExplorer({ records, collectedIds = [], wishlistIds = [], a
             {id:"progress",label:"My Progress",icon:"achievement",href:signedIn?"/account/progress":"/account/login"}
           ]}/>
     </div>:null}
-    {heroMode&&mode==="catalogue"&&signedIn?<SpeciesRequestButton launchSignal={requestLaunch} hideTrigger/>:null}
+    {heroMode&&mode==="catalogue"&&signedIn?<SpeciesRequestButton launchSignal={requestLaunch} onLaunchConsumed={()=>setRequestLaunch(0)} hideTrigger/>:null}
      {heroMode&&mode==="catalogue"&&signedIn?<div><MemberPhotoGallery launcherOnly compact species={records.map(record=>({id:record.id,name:speciesDisplayName(record),scientific:speciesScientificName(record)}))} launchSignal={photoLaunch}/></div>:null}
     <div className={heroMode && mode === "catalogue" ? spotlight.content : undefined}>
     <div className={heroMode && mode === "catalogue" ? "v2-container" : undefined} id={heroMode && mode === "catalogue" ? "ledger-directory" : undefined}>
